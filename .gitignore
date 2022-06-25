@@ -1,8 +1,6 @@
-target/
-!.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
-src/main/resources/com/gberard/tournament/credentials.json
+**/target/
+.mvn
+back/src/main/resources/com/gberard/tournament/credentials.json
 
 ### STS ###
 .apt_generated
@@ -19,15 +17,8 @@ src/main/resources/com/gberard/tournament/credentials.json
 *.iml
 *.ipr
 
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
-
 ### VS Code ###
 .vscode/
+
+### MacOS ###
+.DS_Store
