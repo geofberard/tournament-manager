@@ -10,6 +10,8 @@ import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,14 +28,14 @@ public class SheetService {
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
     private static final String TOKENS_DIRECTORY_PATH = "tokens";
 
+    static Logger logger = LoggerFactory.getLogger(SheetService.class);
+
     @Autowired
     private SpreadsheetConfig spreadsheetConfig;
 
     private static HttpCredentialsAdapter getSACredentials() throws IOException {
         GoogleCredentials credentials = GoogleCredentials.getApplicationDefault();
-        if (credentials.createScopedRequired()) {
-            credentials = credentials.createScoped(List.of(SheetsScopes.SPREADSHEETS_READONLY));
-        }
+        credentials = credentials.createScoped(List.of(SheetsScopes.SPREADSHEETS, SheetsScopes.DRIVE));
 
         return new HttpCredentialsAdapter(credentials);
     }
@@ -50,7 +52,7 @@ public class SheetService {
                     .execute();
             List<List<Object>> values = response.getValues();
             if (values == null || values.isEmpty()) {
-                System.out.println("No data found.");
+                logger.error("No data found.");
             } else {
                 return values.stream()
                         .map(objectMapper)
