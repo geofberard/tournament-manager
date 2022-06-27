@@ -1,0 +1,58 @@
+name: Java CI with Maven
+on:
+  push:
+    paths:
+      - 'back/*'
+jobs:
+  build:
+    name: Compiling and testing Spring boot App
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+      - name: Build with Maven
+        working-directory: back
+        run: mvn clean install
+  deploy:
+    if: github.ref_name == 'main'
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+    name: Deploying to Google Cloud
+    runs-on: ubuntu-latest
+    environment: production
+    needs: build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+      - name: Build with Maven
+        working-directory: back
+        run: mvn package appengine:stage
+      - id: auth
+        uses: google-github-actions/auth@v0.7.3
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+#      - name: Deploy to App Engine
+#        id: deploy
+#        working-directory: back
+#        run: mvn -DskipTests package appengine:deploy
+      - name: Deploy to App Engine
+        id: deploy
+        uses: google-github-actions/deploy-appengine@v0.8.0
+        with:
+          working_directory: back/
+          deliverables: target/appengine-staging/app.yaml
+          version: 1
+          promote: false
+          project_id: ${{ secrets.GCP_PROJECT }}
