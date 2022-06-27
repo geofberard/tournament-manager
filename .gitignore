@@ -1,6 +1,8 @@
 **/target/
 .mvn
+node_modules
 back/src/main/resources/com/gberard/tournament/credentials.json
+front/dist/bundle.*
 
 ### STS ###
 .apt_generated
