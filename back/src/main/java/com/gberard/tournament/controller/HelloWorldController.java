@@ -19,4 +19,9 @@ public class HelloWorldController {
         return "Hello World";
     }
 
+    @GetMapping("/happy")
+    public String hello() {
+        return "Hello World !!!!!!";
+    }
+
 }
