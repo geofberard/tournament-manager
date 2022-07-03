@@ -1,0 +1,25 @@
+name: Front - ReactJS
+on:
+  push:
+    paths:
+      - 'front/*'
+permissions:
+  contents: write
+jobs:
+  deploy:
+    name: Package and Deploy 🚀
+    if: github.ref_name == 'main'
+    concurrency: ci-front-${{ github.ref }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install and Build
+        working-directory: front/
+        run: |
+          npm install
+          npm run build
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: front/dist

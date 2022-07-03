@@ -1,11 +1,11 @@
-name: Java CI with Maven
+name: Back - Java
 on:
   push:
     paths:
       - 'back/*'
 jobs:
   build:
-    name: Compiling and testing Spring boot App
+    name: Build and Test 🔧
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -19,11 +19,12 @@ jobs:
         working-directory: back
         run: mvn clean install
   deploy:
+    name: Package and Deploy 🚀
     if: github.ref_name == 'main'
+    concurrency: ci-back-${{ github.ref }}
     permissions:
       contents: 'read'
       id-token: 'write'
-    name: Deploying to Google Cloud
     runs-on: ubuntu-latest
     environment: production
     needs: build
@@ -43,10 +44,6 @@ jobs:
         uses: google-github-actions/auth@v0.7.3
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
-#      - name: Deploy to App Engine
-#        id: deploy
-#        working-directory: back
-#        run: mvn -DskipTests package appengine:deploy
       - name: Deploy to App Engine
         id: deploy
         uses: google-github-actions/deploy-appengine@v0.8.0
