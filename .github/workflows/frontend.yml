@@ -2,7 +2,7 @@ name: Front - ReactJS
 on:
   push:
     paths:
-      - 'front/*'
+      - 'front/**'
 permissions:
   contents: write
 jobs:

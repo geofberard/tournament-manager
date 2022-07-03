@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require("webpack");
 
 module.exports = {
   entry: `${__dirname}/src/main.tsx`,
@@ -8,6 +9,7 @@ module.exports = {
   },
   devServer: {
     static: path.resolve(__dirname, 'dist'),
+    port: 80,
   },
   module: {
     rules: [
@@ -22,4 +24,9 @@ module.exports = {
     extensions: ['.tsx', '.ts', '.js'],
   },
   devtool: 'inline-source-map',
+  plugins: [
+    new webpack.DefinePlugin({
+      'ENV_API_URL': JSON.stringify(process.env.API_URL),
+    }),
+  ]
 };

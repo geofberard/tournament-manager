@@ -2,7 +2,7 @@ name: Back - Java
 on:
   push:
     paths:
-      - 'back/*'
+      - 'back/**'
 jobs:
   build:
     name: Build and Test 🔧
