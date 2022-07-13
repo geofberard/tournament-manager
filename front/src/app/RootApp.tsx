@@ -1,28 +1,46 @@
+import { CssBaseline } from "@mui/material";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 import * as React from "react";
-import { useState, useEffect } from "react";
 import { FC } from "react";
-import { createTheme, ThemeProvider } from "@material-ui/core/styles";
-import CssBaseline from "@material-ui/core/CssBaseline";
+import { TeamLogin } from "../component/page/TeamLogin";
 
-const theme = createTheme({});
+let defaultTheme = createTheme()
+const theme = createTheme(defaultTheme, {
+    palette: {
+        primary: {
+            light: '#484848',
+            main: '#212121',
+            dark: '#000000',
+            contrastText: '#ffffff',
+        },
+          secondary: {
+            light: '#ffeb90',
+            main: '#dcb961',
+            dark: '#a88933',
+            contrastText: '#000000',
+        },
+    },
+    typography: {
+        fontFamily: ['"Montserrat"', 'Sans-serif'].join(','),
+        h1: {
+            fontSize: "2rem",
+            fontWeight: 900,
+            [defaultTheme.breakpoints.up("md")]: {
+                fontSize: "2.8rem",
+            },
+        },
+        h2: {
+            fontSize: "2rem",
+            fontWeight: 900,
+        }
+    }
+});
 
 export const RootApp: FC = () => {
-    const [teams, setTeams] = useState([]);
-    // @ts-ignore
-    const api = ENV_API_URL;
-    useEffect(() => {
-        fetch(`${api}/api/teams`)
-            .then((res) => res.json())
-            .then(setTeams);
-    }, []);
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
-            <div>Hello World !</div>
-            {teams.map((team) => (
-                <div key={team.id}>{team.name}</div>
-            ))}
-            <div>Server: {api}</div>
+            <TeamLogin />
         </ThemeProvider>
     );
 };
