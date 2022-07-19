@@ -2,6 +2,7 @@ import { CssBaseline } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import * as React from "react";
 import { FC } from "react";
+import { CurrentTeamProvider } from "../component/hook/CurrentTeamContext";
 import { TeamLogin } from "../component/page/TeamLogin";
 
 let defaultTheme = createTheme()
@@ -13,7 +14,7 @@ const theme = createTheme(defaultTheme, {
             dark: '#000000',
             contrastText: '#ffffff',
         },
-          secondary: {
+        secondary: {
             light: '#ffeb90',
             main: '#dcb961',
             dark: '#a88933',
@@ -40,7 +41,9 @@ export const RootApp: FC = () => {
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
-            <TeamLogin />
+            <CurrentTeamProvider>
+                <TeamLogin />
+            </CurrentTeamProvider>
         </ThemeProvider>
     );
 };
