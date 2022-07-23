@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should match last snapshot 1`] = `
+<ForwardRef(Box)
+  alt="alt"
+  component="img"
+  src="url"
+  sx={
+    Object {
+      "color": "red",
+    }
+  }
+/>
+`;

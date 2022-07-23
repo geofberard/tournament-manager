@@ -26,7 +26,7 @@ module.exports = {
   devtool: 'inline-source-map',
   plugins: [
     new webpack.DefinePlugin({
-      'ENV_API_URL': JSON.stringify(process.env.API_URL),
+      'process.env.ENV_API_URL': JSON.stringify(process.env.API_URL),
     }),
   ]
 };

@@ -1,0 +1,38 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should match last snapshot 1`] = `
+<ForwardRef(Grid)
+  alignItems="center"
+  container={true}
+  direction="column"
+  flexGrow={1}
+  item={true}
+  justifyContent="center"
+  md={7}
+>
+  <ForwardRef(Card)
+    elevation={5}
+    sx={
+      Object {
+        "maxWidth": "400px",
+      }
+    }
+  >
+    <ForwardRef(CardMedia)
+      alt="VolleyBall"
+      component="img"
+      image="img/scuf-miniature.png"
+      title=""
+    />
+    <ForwardRef(CardContent)
+      sx={
+        Object {
+          "textAlign": "center",
+        }
+      }
+    >
+      <TeamSelector />
+    </ForwardRef(CardContent)>
+  </ForwardRef(Card)>
+</ForwardRef(Grid)>
+`;

@@ -3,8 +3,8 @@ import * as React from "react";
 import { FC, useEffect, useState } from "react";
 import { Team } from "../../data/Team";
 import { sortByName } from "../../data/TeamUtils";
-import { parseElementId } from "../../service/DataService";
-import { fetchTeams } from "../../service/TeamService";
+import { findById } from "../../service/DataService";
+import { getTeams } from "../../service/TeamService";
 import { useCurrentTeam } from "../hook/CurrentTeamContext";
 
 export const TeamSelector: FC = () => {
@@ -12,7 +12,10 @@ export const TeamSelector: FC = () => {
     const [currentTeam, setCurrentTeam] = useCurrentTeam();
 
     useEffect(() => {
-        fetchTeams().then(setTeams);
+        getTeams().then(setTeams).catch(error => {
+            console.log(error)
+            setCurrentTeam(undefined)
+        }) ;
     }, []);
 
     return teams.length === 0 ? (<CircularProgress />) : (
@@ -21,7 +24,7 @@ export const TeamSelector: FC = () => {
             <Select
                 native
                 value={currentTeam ? currentTeam.id : ""}
-                onChange={event => setCurrentTeam(parseElementId(event.target.value,teams))}
+                onChange={event => setCurrentTeam(findById(event.target.value,teams))}
                 label="Choisir une équipe">
                 <option aria-label="None" value="" />
                 {teams

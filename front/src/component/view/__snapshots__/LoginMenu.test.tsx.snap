@@ -1,0 +1,79 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should match last snapshot 1`] = `
+<ForwardRef(Grid)
+  alignItems={
+    Object {
+      "md": "center",
+      "xs": "stretch",
+    }
+  }
+  container={true}
+  direction={
+    Object {
+      "md": "column-reverse",
+      "xs": "row",
+    }
+  }
+  item={true}
+  justifyContent={
+    Object {
+      "md": "center",
+      "xs": "space-between",
+    }
+  }
+  md={5}
+  sx={
+    Object {
+      "backgroundColor": "primary.dark",
+      "color": "primary.contrastText",
+    }
+  }
+>
+  <ForwardRef(Grid)
+    item={true}
+    sx={
+      Object {
+        "alignItems": "center",
+        "display": "flex",
+      }
+    }
+  >
+    <Image
+      alt="SCUF"
+      src="img/scuf-logo.svg"
+      sx={
+        Object {
+          "width": Object {
+            "md": "250px",
+            "xs": "75px",
+          },
+        }
+      }
+    />
+  </ForwardRef(Grid)>
+  <ForwardRef(Grid)
+    item={true}
+    sx={
+      Object {
+        "alignItems": "center",
+        "borderBottom": [Function],
+        "display": "flex",
+        "paddingBottom": Object {
+          "md": "30px",
+          "xs": "0",
+        },
+      }
+    }
+  >
+    <ForwardRef(Typography)
+      variant="h1"
+    >
+      Tournois
+    </ForwardRef(Typography)>
+  </ForwardRef(Grid)>
+  <ForwardRef(Grid)
+    item={true}
+  />
+</ForwardRef(Grid)>
+`;

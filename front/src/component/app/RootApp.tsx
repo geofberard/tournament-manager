@@ -2,8 +2,8 @@ import { CssBaseline } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import * as React from "react";
 import { FC } from "react";
-import { CurrentTeamProvider } from "../component/hook/CurrentTeamContext";
-import { TeamLogin } from "../component/page/TeamLogin";
+import { CurrentTeamProvider } from "../hook/CurrentTeamContext";
+import { TeamLogin } from "../page/TeamLogin";
 
 let defaultTheme = createTheme()
 const theme = createTheme(defaultTheme, {

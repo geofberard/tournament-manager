@@ -1,5 +1,6 @@
 import * as React from "react";
-import * as ReactDom from "react-dom";
-import { RootApp } from "./app/RootApp";
+import { createRoot } from 'react-dom/client';
+import { RootApp } from "./component/app/RootApp";
 
-ReactDom.render(<RootApp />, document.getElementById("app"));
+createRoot(document.getElementById("app")).render(<RootApp />);
+
