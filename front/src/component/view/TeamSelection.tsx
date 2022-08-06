@@ -1,6 +1,6 @@
-import { Card, CardContent, CardMedia, Grid } from "@mui/material";
+import { Card, CardContent, CardMedia, CircularProgress, Grid } from "@mui/material";
 import * as React from "react";
-import { FC } from "react";
+import { FC, Suspense } from "react";
 import { TeamSelector } from "../atom/TeamSelector";
 
 export const TeamSelection: FC = () => {
@@ -18,7 +18,9 @@ export const TeamSelection: FC = () => {
                     title=""
                 />
                 <CardContent sx={{ textAlign: "center" }}>
-                    <TeamSelector />
+                    <Suspense fallback={<CircularProgress />} >
+                        <TeamSelector />
+                    </Suspense>
                 </CardContent>
             </Card>
         </Grid>

@@ -31,7 +31,11 @@ exports[`should match last snapshot 1`] = `
         }
       }
     >
-      <TeamSelector />
+      <React.Suspense
+        fallback={<ForwardRef(CircularProgress) />}
+      >
+        <TeamSelector />
+      </React.Suspense>
     </ForwardRef(CardContent)>
   </ForwardRef(Card)>
 </ForwardRef(Grid)>

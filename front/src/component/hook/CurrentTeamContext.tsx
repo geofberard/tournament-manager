@@ -13,21 +13,12 @@ interface CurrentTeamManager {
 const CurrentTeamContext: React.Context<CurrentTeamManager> = React.createContext(undefined);
 
 export const CurrentTeamProvider: FC<PropsWithChildren> = ({ children }) => {
-    const [currentTeam, setCurrentTeam] = useState<Team>();
+    const [currentTeam, setCurrentTeam] = useState<Team>(TeamService.getCurrentTeam);
 
     const setCurrentTeamAndPersist = (team: Team) => {
         setCurrentTeam(team);
         TeamService.setCurrentTeam(team);
     };
-
-    useEffect(() => { 
-        TeamService.getCurrentTeam()
-        .then(setCurrentTeam)
-        .catch(error => {
-            console.log(error)
-            setCurrentTeam(undefined)
-        }) 
-    }, []);
 
     return (
         <CurrentTeamContext.Provider value={{ currentTeam, setCurrentTeam: setCurrentTeamAndPersist }}>

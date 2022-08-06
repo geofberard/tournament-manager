@@ -17,9 +17,8 @@ const wrapper: FC<React.PropsWithChildren> = ({ children }) => <CurrentTeamProvi
 const MOCKED_TEAM: Team = { id: "currentTeam", name: "currentTeam" };
 
 function mockGetCookie(team: Team = undefined) {
-    const currentTeamPromise = Promise.resolve(team);
     const getCookieMocked = getCurrentTeam as jest.MockedFunction<typeof getCurrentTeam>;
-    getCookieMocked.mockImplementation(() => currentTeamPromise);
+    getCookieMocked.mockImplementation(() => team);
 }
 
 describe('initialization', () => {
@@ -39,7 +38,7 @@ describe('initialization', () => {
         })
     })
 
-    it('should set initial value if TeamService returns undefined ', async () => {
+    it('should not set initial value if TeamService returns undefined ', async () => {
         // Given
         mockGetCookie();
         let hook: RenderHookResult<[Team, (team: Team) => void], {}>;
