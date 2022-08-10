@@ -41,4 +41,16 @@ describe("getCurrentTeam", () => {
         // Then
         expect(currentTeam).toStrictEqual(TEAMS[2]);
     });
+
+    it("should return undefined if cookie does'nt exists", () => {
+        // Given
+        const getCookieMocked = getCookie as jest.MockedFunction<typeof getCookie>;
+        getCookieMocked.mockImplementation(() => undefined);
+
+        // When
+        const currentTeam = getCurrentTeam();
+
+        // Then
+        expect(currentTeam).toStrictEqual(undefined);
+    });
 });
