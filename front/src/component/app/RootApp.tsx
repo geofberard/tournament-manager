@@ -5,7 +5,7 @@ import { FC } from "react";
 import { CurrentTeamProvider } from "../hook/CurrentTeamContext";
 import { TeamLogin } from "../page/TeamLogin";
 
-let defaultTheme = createTheme();
+const defaultTheme = createTheme();
 const theme = createTheme(defaultTheme, {
     palette: {
         primary: {
@@ -22,7 +22,7 @@ const theme = createTheme(defaultTheme, {
         },
     },
     typography: {
-        fontFamily: ['"Montserrat"', "Sans-serif"].join(","),
+        fontFamily: ["\"Montserrat\"", "Sans-serif"].join(","),
         h1: {
             fontSize: "2rem",
             fontWeight: 900,

@@ -17,8 +17,8 @@ describe("initializing", () => {
 
     it("should forward props to img tag", async () => {
         // Given
-        const src: string = "imageSrc";
-        const alt: string = "imageAlt";
+        const src = "imageSrc";
+        const alt = "imageAlt";
         const sx: SxProps<Theme> = { background: "red" };
 
         // When

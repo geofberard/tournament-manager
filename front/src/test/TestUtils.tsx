@@ -15,7 +15,7 @@ export * from "@testing-library/react";
 export { customRender as render };
 
 export const testSnapshot = (component: JSX.Element) => {
-    it(`should match last snapshot`, () => {
+    it("should match last snapshot", () => {
         // Given
         const renderer = createRenderer();
 

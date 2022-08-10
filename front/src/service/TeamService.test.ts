@@ -13,7 +13,7 @@ const TEAMS = [
     { id: "id3", name: "name3" },
 ];
 
-global.fetch = jest.fn((url: string) =>
+global.fetch = jest.fn(() =>
     Promise.resolve({
         json: () => Promise.resolve<Team[]>(TEAMS),
     }),

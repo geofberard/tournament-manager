@@ -26,7 +26,6 @@ describe("parseElementId", () => {
     it("should return nothing if no ids are matching ", () => {
         // Given
         const searchedId = "searched";
-        const searchedObject: ObjectWithId = { id: searchedId, value: "searchedValue" };
         const objects: ObjectWithId[] = [
             { id: "wrong1", value: "wrongA" },
             { id: "wrong2", value: "wrongB" },
