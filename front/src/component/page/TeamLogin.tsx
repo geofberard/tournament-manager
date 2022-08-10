@@ -6,15 +6,12 @@ import { TeamSelection } from "../view/TeamSelection";
 
 const fullScreen: SxProps = {
     height: "100vh",
-}
+};
 
 export const TeamLogin: FC = () => {
     return (
         <>
-            <Grid container
-                spacing={0}
-                direction={{ xs: 'column', md: "row" }}
-                sx={fullScreen}>
+            <Grid container spacing={0} direction={{ xs: "column", md: "row" }} sx={fullScreen}>
                 <LoginMenu />
                 <TeamSelection />
             </Grid>

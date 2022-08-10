@@ -9,8 +9,7 @@ export const API_TEAMS = `/api/teams`;
 
 export const TEAM_CNAME = "team";
 
-export const getCurrentTeam: () => Team = () => 
-    JSON.parse(getCookie(TEAM_CNAME));
+export const getCurrentTeam: () => Team = () => JSON.parse(getCookie(TEAM_CNAME));
 
-export const setCurrentTeam = (team: Team | undefined) => 
+export const setCurrentTeam = (team: Team | undefined) =>
     setCookie(TEAM_CNAME, JSON.stringify(team), 10);

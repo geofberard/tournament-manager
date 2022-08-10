@@ -15,12 +15,15 @@ export const TeamSelector: FC = () => {
             <Select
                 native
                 value={currentTeam ? currentTeam.id : ""}
-                onChange={event => setCurrentTeam(findById(event.target.value,teams))}
-                label="Choisir une équipe">
+                onChange={(event) => setCurrentTeam(findById(event.target.value, teams))}
+                label="Choisir une équipe"
+            >
                 <option aria-label="None" value="" />
-                {teams
-                    .sort(sortByName)
-                    .map(team => <option key={team.id} value={team.id}>{team.name}</option>)}
+                {teams.sort(sortByName).map((team) => (
+                    <option key={team.id} value={team.id}>
+                        {team.name}
+                    </option>
+                ))}
             </Select>
         </FormControl>
     );

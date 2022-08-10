@@ -1,7 +1,5 @@
 import * as React from "react";
-import {
-    FC, PropsWithChildren, useContext, useEffect, useState,
-} from "react";
+import { FC, PropsWithChildren, useContext, useEffect, useState } from "react";
 import { Team } from "../../data/Team";
 import * as TeamService from "../../service/TeamService";
 
@@ -21,7 +19,9 @@ export const CurrentTeamProvider: FC<PropsWithChildren> = ({ children }) => {
     };
 
     return (
-        <CurrentTeamContext.Provider value={{ currentTeam, setCurrentTeam: setCurrentTeamAndPersist }}>
+        <CurrentTeamContext.Provider
+            value={{ currentTeam, setCurrentTeam: setCurrentTeamAndPersist }}
+        >
             {children}
         </CurrentTeamContext.Provider>
     );

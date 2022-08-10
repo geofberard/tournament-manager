@@ -5,11 +5,15 @@ import { TeamSelector } from "../atom/TeamSelector";
 
 export const TeamSelection: FC = () => {
     return (
-        <Grid container item md={7}
+        <Grid
+            container
+            item
+            md={7}
             flexGrow={1}
             direction="column"
             justifyContent="center"
-            alignItems="center">
+            alignItems="center"
+        >
             <Card sx={{ maxWidth: "400px" }} elevation={5}>
                 <CardMedia
                     component="img"
@@ -18,7 +22,7 @@ export const TeamSelection: FC = () => {
                     title=""
                 />
                 <CardContent sx={{ textAlign: "center" }}>
-                    <Suspense fallback={<CircularProgress />} >
+                    <Suspense fallback={<CircularProgress />}>
                         <TeamSelector />
                     </Suspense>
                 </CardContent>

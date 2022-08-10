@@ -5,24 +5,24 @@ import { FC } from "react";
 import { CurrentTeamProvider } from "../hook/CurrentTeamContext";
 import { TeamLogin } from "../page/TeamLogin";
 
-let defaultTheme = createTheme()
+let defaultTheme = createTheme();
 const theme = createTheme(defaultTheme, {
     palette: {
         primary: {
-            light: '#484848',
-            main: '#212121',
-            dark: '#000000',
-            contrastText: '#ffffff',
+            light: "#484848",
+            main: "#212121",
+            dark: "#000000",
+            contrastText: "#ffffff",
         },
         secondary: {
-            light: '#ffeb90',
-            main: '#dcb961',
-            dark: '#a88933',
-            contrastText: '#000000',
+            light: "#ffeb90",
+            main: "#dcb961",
+            dark: "#a88933",
+            contrastText: "#000000",
         },
     },
     typography: {
-        fontFamily: ['"Montserrat"', 'Sans-serif'].join(','),
+        fontFamily: ['"Montserrat"', "Sans-serif"].join(","),
         h1: {
             fontSize: "2rem",
             fontWeight: 900,
@@ -33,8 +33,8 @@ const theme = createTheme(defaultTheme, {
         h2: {
             fontSize: "2rem",
             fontWeight: 900,
-        }
-    }
+        },
+    },
 });
 
 export const RootApp: FC = () => {
