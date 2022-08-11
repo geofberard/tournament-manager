@@ -5,7 +5,7 @@ export const API_TEAMS = "/api/teams";
 
 export const TEAM_CNAME = "team";
 
-export const getCurrentTeam: () => (Team | undefined) = () => {
+export const getCurrentTeam: () => Team | undefined = () => {
     return getCookie(TEAM_CNAME) ? JSON.parse(getCookie(TEAM_CNAME)) : undefined;
 };
 

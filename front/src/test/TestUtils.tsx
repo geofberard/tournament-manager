@@ -26,3 +26,11 @@ export const testSnapshot = (component: JSX.Element) => {
         expect(result).toMatchSnapshot();
     });
 };
+
+export const mockFunctionReturn: <T>(functionToMock: () => T, resultToReturn: T) => void = (
+    functionToMock,
+    resultToReturn,
+) => {
+    const useTeamsMocked = functionToMock as jest.MockedFunction<typeof functionToMock>;
+    useTeamsMocked.mockImplementation(() => resultToReturn);
+};

@@ -22,7 +22,7 @@ const theme = createTheme(defaultTheme, {
         },
     },
     typography: {
-        fontFamily: ["\"Montserrat\"", "Sans-serif"].join(","),
+        fontFamily: ['"Montserrat"', "Sans-serif"].join(","),
         h1: {
             fontSize: "2rem",
             fontWeight: 900,
