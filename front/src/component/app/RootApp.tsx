@@ -40,9 +40,9 @@ const theme = createTheme(defaultTheme, {
             fontSize: "1.3rem",
             fontWeight: 900,
             alignSelf: "center",
-            [defaultTheme.breakpoints.up("md")]: {
-                fontSize: "1.7rem",
-            },
+            // [defaultTheme.breakpoints.up("md")]: {
+            //     fontSize: "1.7rem",
+            // },
         },
     },
 });

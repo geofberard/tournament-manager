@@ -14,24 +14,20 @@ const logoContainer: SxProps = {
 };
 
 const titleContainer: SxProps = {
-    display: "flex",
-    width: "80%",
-    justifyContent: "space-evenly",
-    paddingBottom: { xs: "0", md: "0"},
+    ...logoContainer,
     borderBottom: (theme: Theme) => `5px solid ${theme.palette.secondary.main}`,
 };
 
 const logo: SxProps = {
-    width: { xs: "75px" },
+    width: "75px" 
 };
 
 export const GeneralMenu: FC = () => (
     <Grid
         container
         item
-        direction={{ xs: "row"}}
-        justifyContent={{ xs: "space-between"}}
-        alignItems={{ xs: "stretch"}}
+        direction={"row"}
+        justifyContent={"space-between"}
         sx={menuContainer}
     >
         <Grid item sx={logoContainer}>
@@ -39,8 +35,14 @@ export const GeneralMenu: FC = () => (
         </Grid>
         <Grid sx={titleContainer} >
             <Typography variant="h3">Tous les matchs</Typography>
+        </Grid>
+        <Grid sx={titleContainer} >
             <Typography variant="h3">Classement</Typography>
+        </Grid>
+        <Grid sx={titleContainer} >
             <Typography variant="h3">Vos Matchs</Typography>
+        </Grid>
+        <Grid sx={titleContainer} >
             <Typography variant="h3">Phases finales</Typography>
         </Grid>
         <Grid item />

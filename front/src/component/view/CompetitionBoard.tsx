@@ -1,9 +1,29 @@
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Badge, Grid } from "@mui/material";
+import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Badge, Grid, tableCellClasses, styled, SxProps, Typography, Theme} from "@mui/material";
 import * as React from "react";
 import { FC } from "react";
 import { useCurrentTeam } from "../hook/CurrentTeamContext";
 import { useTeams } from "../hook/useTeams";
 
+const boardContainer: SxProps = {
+    paddingLeft: { xs: "0", md: "15px" }, 
+    paddingRight: { xs: "0", md: "15px" }, 
+};
+
+const titleContainer: SxProps = {
+    maxWidth: "300px",
+    margin: "0 auto",
+    marginBottom: "5px",
+    paddingTop: "10px" ,
+    paddingBottom: { xs: "0", md: "10px" },
+    borderBottom: (theme: Theme) => `5px solid ${theme.palette.secondary.main}`,
+};
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+    [`&.${tableCellClasses.head}`]: {
+        backgroundColor: theme.palette.primary.dark,
+        color: theme.palette.common.white,
+    },
+}));
 
 export const CompetitionBoard: FC = () => {
 
@@ -14,22 +34,25 @@ export const CompetitionBoard: FC = () => {
         <Grid
             container
             item
-            md={8}
+            md={7}
             flexGrow={1}
             direction="column"
-            justifyContent="center"
-            alignItems="center"
+            sx={boardContainer}
         >
-            <TableContainer>
+            <Grid item sx={titleContainer}>
+                <Typography variant="h3">Classement</Typography>
+            </Grid>
+
+            <TableContainer style={{borderRadius: "15px"}}>
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell align="center">#</TableCell>
-                            <TableCell align="center">Equipes</TableCell>
-                            <TableCell align="center">P</TableCell>
-                            <TableCell align="center">W</TableCell>
-                            <TableCell align="center">L</TableCell>
-                            <TableCell align="center">Pts</TableCell>
+                            <StyledTableCell align="center">#</StyledTableCell>
+                            <StyledTableCell align="center">Equipes</StyledTableCell>
+                            <StyledTableCell align="center">P</StyledTableCell>
+                            <StyledTableCell align="center">W</StyledTableCell>
+                            <StyledTableCell align="center">L</StyledTableCell>
+                            <StyledTableCell align="center">Pts</StyledTableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
