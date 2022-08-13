@@ -1,7 +1,9 @@
 import { Grid, SxProps, TableContainer, Table, TableBody, Typography, Theme} from "@mui/material";
 import * as React from "react";
 import { FC } from "react";
+import Game from "../../data/Game";
 import { RowGame } from "../atom/RowGame";
+import { useTeams } from "../hook/useTeams";
 
 const gameContainer: SxProps = {
     backgroundColor: "primary.dark",
@@ -19,47 +21,38 @@ const titleContainer: SxProps = {
     borderBottom: (theme: Theme) => `5px solid ${theme.palette.secondary.main}`,
 };
 
-function createData(
-    id: string,
-    time: string,
-    court: string,
-    teamA: string,
-    teamB: string,
-    referee?: string,
-    scoreA?: number,
-    scoreB?: number
-) {
-    return {id, time, court, teamA, teamB, referee, scoreA, scoreB };
-}
+export const GameList: FC = () => {
+    const teams = useTeams();
 
-const games = [
-    createData("Game 1", '11:00', "Terrain 1", "Les Pilou-Pilou", "Les Baby Sharkies", "", 25, 7),
-    createData("Game 2", '12:00', "Terrain 3", "Les Pilou-Pilou", "Les Mercenaires", "", 12, 25),
-    createData("Game 3", '13:00', "Terrain 2", "Les Pilou-Pilou", "Les 4 Fantastiques", "", 22, 22),
-    createData("Game 4", '14:00', "Terrain 4", "Les Pilou-Pilou", "L'équipe en carton", "", 0, 0),
-    createData("Game 5", '15:00', "Terrain 1", "Les Pilou-Pilou", "Les Volley Fenêtre", "", 0, 0),
-    createData("Game 6", '16:00', "Terrain 2", "Les Pilou-Pilou", "Les Viking", "", 0, 0),
-];
+    const games = [
+        new Game("Game 1", new Date("2022-01-01 11:00") , "Terrain 1", teams[0], teams[1], "", 25, 7),
+        new Game("Game 2", new Date("2022-01-01 12:00"), "Terrain 3", teams[0], teams[2], "", 12, 25),
+        new Game("Game 3", new Date("2022-01-01 13:00"), "Terrain 2", teams[0], teams[3], "", 22, 22),
+        new Game("Game 4", new Date("2022-01-01 14:00"), "Terrain 4", teams[0], teams[4], "", 0, 0),
+        new Game("Game 5", new Date("2022-01-01 15:00"), "Terrain 1", teams[0], teams[5], "", 0, 0),
+        new Game("Game 6", new Date("2022-01-01 16:00"), "Terrain 2", teams[0], teams[6], "", 0, 0),
+    ];
 
-export const GameList: FC = () => (
-    <Grid
-        container
-        item
-        md={5}
-        direction={{ xs: "row", md: "column" }}
-        sx={gameContainer}
-    >
-        <Grid item sx={titleContainer}>
-            <Typography variant="h3">Vos Matchs</Typography>
+    return (
+        <Grid
+            container
+            item
+            md={5}
+            direction={{ xs: "row", md: "column" }}
+            sx={gameContainer}
+        >
+            <Grid item sx={titleContainer}>
+                <Typography variant="h3">Vos Matchs</Typography>
+            </Grid>
+            <TableContainer >
+                <Table>
+                    <TableBody>
+                        {games.map((game, index) => (
+                            <RowGame key={index} game={game} />
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
         </Grid>
-        <TableContainer >
-            <Table>
-                <TableBody>
-                    {games.map((game, index) => (
-                        <RowGame key={index} game={game} />
-                    ))}
-                </TableBody>
-            </Table>
-        </TableContainer>
-    </Grid>
-);
+    );
+};
