@@ -1,14 +1,39 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`should match last snapshot 1`] = `
-<ForwardRef(Box)
-  alt="alt"
-  component="img"
-  src="url"
-  sx={
-    Object {
-      "color": "red",
-    }
-  }
-/>
+exports[`snapshot should match last snapshot 1`] = `
+<ForwardRef(FormControl)
+  variant="outlined"
+>
+  <ForwardRef(InputLabel)
+    htmlFor="outlined-age-native-simple"
+  >
+    Choisir une équipe
+  </ForwardRef(InputLabel)>
+  <ForwardRef(Select)
+    label="Choisir une équipe"
+    native={true}
+    onChange={[Function]}
+    value=""
+  >
+    <option
+      aria-label="None"
+      value=""
+    />
+    <option
+      value="team1"
+    >
+      Team1
+    </option>
+    <option
+      value="team2"
+    >
+      Team2
+    </option>
+    <option
+      value="team3"
+    >
+      Team3
+    </option>
+  </ForwardRef(Select)>
+</ForwardRef(FormControl)>
 `;
