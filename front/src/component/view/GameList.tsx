@@ -2,7 +2,7 @@ import { Grid, SxProps, TableContainer, Table, TableBody, Typography, Theme} fro
 import * as React from "react";
 import { FC } from "react";
 import Game from "../../data/Game";
-import { RowGame } from "../atom/RowGame";
+import { GameRow } from "../atom/GameRow";
 import { useTeams } from "../hook/useTeams";
 
 const gameContainer: SxProps = {
@@ -48,7 +48,7 @@ export const GameList: FC = () => {
                 <Table>
                     <TableBody>
                         {games.map((game, index) => (
-                            <RowGame key={index} game={game} />
+                            <GameRow key={index} game={game} />
                         ))}
                     </TableBody>
                 </Table>
