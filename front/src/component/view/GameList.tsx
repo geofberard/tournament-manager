@@ -25,12 +25,12 @@ export const GameList: FC = () => {
     const teams = useTeams();
 
     const games = [
-        new Game("Game 1", new Date("2022-01-01 11:00") , "Terrain 1", teams[0], teams[1], "", 25, 7),
-        new Game("Game 2", new Date("2022-01-01 12:00"), "Terrain 3", teams[0], teams[2], "", 12, 25),
-        new Game("Game 3", new Date("2022-01-01 13:00"), "Terrain 2", teams[0], teams[3], "", 22, 22),
-        new Game("Game 4", new Date("2022-01-01 14:00"), "Terrain 4", teams[0], teams[4], "", 0, 0),
-        new Game("Game 5", new Date("2022-01-01 15:00"), "Terrain 1", teams[0], teams[5], "", 0, 0),
-        new Game("Game 6", new Date("2022-01-01 16:00"), "Terrain 2", teams[0], teams[6], "", 0, 0),
+        new Game("Game 1", new Date("2022-01-01 11:00") , "Terrain 1", teams[0], teams[1], undefined, 25, 7),
+        new Game("Game 2", new Date("2022-01-01 12:00"), "Terrain 3", teams[0], teams[2], undefined, 12, 25),
+        new Game("Game 3", new Date("2022-01-01 13:00"), "Terrain 2", teams[0], teams[3], undefined, 22, 22),
+        new Game("Game 4", new Date("2022-01-01 14:00"), "Terrain 4", teams[0], teams[4]),
+        new Game("Game 5", new Date("2022-01-01 15:00"), "Terrain 1", teams[0], teams[5]),
+        new Game("Game 6", new Date("2022-01-01 16:00"), "Terrain 2", teams[0], teams[6]),
     ];
 
     return (
