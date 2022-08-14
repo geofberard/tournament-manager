@@ -17,14 +17,15 @@ export interface GameProps {
 export const RowGame: FC<GameProps> = ({game}) => {
 
     function setStyleTeam(team: Team) {
-        if (game.getResultGameByTeam(team) === "WON"){
-            return {color: "green"}
-        } else if (game.getResultGameByTeam(team) === "NOT_PLAYED") {
-            return {color: "white"};
-        } else if (game.getResultGameByTeam(team) === "DEUCE") {
-            return {color: "orange"};
-        } else {
-            return {color: "grey"};
+        switch (game.getResultGameByTeam(team)) {
+            case "WON":
+                return {color: "green"};
+            case "NOT_PLAYED":
+                return {color: "white"};
+            case "DEUCE":
+                return {color: "orange"};
+            case "LOST":
+                return {color: "grey"};
         }
     };
 
