@@ -1,13 +1,12 @@
 import { act, renderHook, RenderHookResult, waitFor } from "@testing-library/react";
 import useSWR from "swr";
-import { Team } from "../../data/Team";
-import { fetchJson } from "../../service/PromiseService";
-import { API_TEAMS } from "../../service/TeamService";
-import { useTeams } from "./useTeams";
+import Game from "../../data/Game";
+import { API_GAMES, fetchGames } from "../../service/GameService";
+import { useGames } from "./useGames";
 
-const MOCKED_TEAMS: Team[] = [
-    { id: "team1", name: "Team1" },
-    { id: "team2", name: "Team2" },
+const MOCKED_GAMES: Game[] = [
+    new Game({ id: "game1"}),
+    new Game({ id: "game2"})
 ];
 
 jest.mock("swr", () => ({
@@ -17,7 +16,7 @@ jest.mock("swr", () => ({
 const mockedUseSWR = useSWR as jest.MockedFunction<typeof useSWR>;
 
 mockedUseSWR.mockImplementation(() => ({
-    data: MOCKED_TEAMS,
+    data: MOCKED_GAMES,
     mutate: undefined,
     isValidating: undefined,
 }));
@@ -25,41 +24,41 @@ mockedUseSWR.mockImplementation(() => ({
 describe("initialization", () => {
     it("should init using API url", async () => {
         // Given
-        let hook: RenderHookResult<Team[], {}>;
+        let hook: RenderHookResult<Game[], {}>;
 
         // When
         act(() => {
-            hook = renderHook(() => useTeams());
+            hook = renderHook(() => useGames());
         });
 
         // Then
         await waitFor(() => {
-            expect(useSWR).toHaveBeenCalledWith(API_TEAMS, expect.anything(), expect.anything());
+            expect(useSWR).toHaveBeenCalledWith(API_GAMES, expect.anything(), expect.anything());
         });
     });
 
-    it("should init using fetchJson", async () => {
+    it("should init using fetchGames", async () => {
         // Given
-        let hook: RenderHookResult<Team[], {}>;
+        let hook: RenderHookResult<Game[], {}>;
 
         // When
         act(() => {
-            hook = renderHook(() => useTeams());
+            hook = renderHook(() => useGames());
         });
 
         // Then
         await waitFor(() => {
-            expect(useSWR).toHaveBeenCalledWith(expect.anything(), fetchJson, expect.anything());
+            expect(useSWR).toHaveBeenCalledWith(expect.anything(), fetchGames, expect.anything());
         });
     });
 
     it("should init using suspense", async () => {
         // Given
-        let hook: RenderHookResult<Team[], {}>;
+        let hook: RenderHookResult<Game[], {}>;
 
         // When
         act(() => {
-            hook = renderHook(() => useTeams());
+            hook = renderHook(() => useGames());
         });
 
         // Then
