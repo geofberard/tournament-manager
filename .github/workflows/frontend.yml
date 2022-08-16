@@ -29,7 +29,11 @@ jobs:
     name: Package and Deploy 🚀
     if: github.ref_name == 'main'
     concurrency: ci-front-${{ github.ref }}
+    permissions:
+      contents: 'read'
+      id-token: 'write'
     runs-on: ubuntu-latest
+    environment: production
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -44,9 +48,19 @@ jobs:
         run: |
           npm install
           npm run build
-      - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@v4
+      - id: auth
+        uses: google-github-actions/auth@v0.7.3
         with:
-          folder: front/dist
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+      - name: Deploy to Cloud Storage
+        uses: google-github-actions/upload-cloud-storage@v0
+        id: 'upload-folder'
+        with:
+          path: 'front/dist'
+          destination: 'static-scuf-tournois-prod'
+          gzip: false
+          parent: false
+          headers: |-
+            cache-control:no-cache,max-age=0
 
 
