@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 import static java.util.Collections.*;
@@ -33,7 +34,10 @@ public class SheetService {
 
     static Logger logger = LoggerFactory.getLogger(SheetService.class);
 
-    public final Cache<String, List<List<Object>>> spreadSheetCache = Caffeine.newBuilder().build();
+    public final Cache<String, List<List<Object>>> spreadSheetCache =
+            Caffeine.newBuilder()
+                    .expireAfterAccess(30, TimeUnit.SECONDS)
+                    .build();
 
     @Autowired
     private SpreadsheetConfig spreadsheetConfig;
