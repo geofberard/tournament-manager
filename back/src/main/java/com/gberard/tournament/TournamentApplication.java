@@ -9,19 +9,23 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @SpringBootApplication
 public class TournamentApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(TournamentApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(TournamentApplication.class, args);
+    }
 
-	@Bean
-	public WebMvcConfigurer corsConfigurer() {
-		return new WebMvcConfigurer() {
-			@Override
-			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/**")
-						.allowedOrigins("http://localhost","https://geofberard.github.io/");
-			}
-		};
-	}
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**")
+                        .allowedOrigins(
+                                "http://localhost",
+                                "https://geofberard.github.io/",
+                                "https://static-scuf-tournois-prod.storage.googleapis.com/"
+                        );
+            }
+        };
+    }
 
 }
