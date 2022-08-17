@@ -27,6 +27,7 @@ module.exports = {
   plugins: [
     new webpack.DefinePlugin({
       'process.env.ENV_API_URL': JSON.stringify(process.env.API_URL),
+      'process.env.ENV_STATIC_URL': JSON.stringify(process.env.STATIC_URL),
     }),
   ]
 };

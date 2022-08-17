@@ -34,7 +34,7 @@ export const LoginMenu: FC = () => (
         sx={menuContainer}
     >
         <Grid item sx={logoContainer}>
-            <Image src="img/scuf-logo.svg" alt="SCUF" sx={logo} />
+            <Image src="/img/scuf-logo.svg" alt="SCUF" sx={logo} />
         </Grid>
         <Grid item sx={titleContainer}>
             <Typography variant="h1">Tournois</Typography>

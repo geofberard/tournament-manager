@@ -1,4 +1,9 @@
 // @ts-ignore
-const baseUrl = process.env.ENV_API_URL || "";
+const baseApiUrl = process.env.ENV_API_URL || "";
 
-export const fetchJson = (api: string) => fetch(`${baseUrl}${api}`).then((res) => res.json());
+// @ts-ignore
+const baseStaticUrl = process.env.ENV_STATIC_URL || "";
+
+export const getStaticURL = (path: string) => `${baseStaticUrl}${path}`
+
+export const fetchJson = (api: string) => fetch(`${baseApiUrl}${api}`).then((res) => res.json());

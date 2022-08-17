@@ -21,7 +21,7 @@ exports[`should match last snapshot 1`] = `
     <ForwardRef(CardMedia)
       alt="VolleyBall"
       component="img"
-      image="img/scuf-miniature.png"
+      image="/img/scuf-miniature.png"
       title=""
     />
     <ForwardRef(CardContent)

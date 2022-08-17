@@ -1,6 +1,7 @@
 import { Card, CardContent, CardMedia, CircularProgress, Grid } from "@mui/material";
 import * as React from "react";
 import { FC, Suspense } from "react";
+import { getStaticURL } from "../../service/PromiseService";
 import { TeamSelector } from "../atom/TeamSelector";
 
 export const TeamSelection: FC = () => {
@@ -18,7 +19,7 @@ export const TeamSelection: FC = () => {
                 <CardMedia
                     component="img"
                     alt="VolleyBall"
-                    image="img/scuf-miniature.png"
+                    image={getStaticURL("/img/scuf-miniature.png")}
                     title=""
                 />
                 <CardContent sx={{ textAlign: "center" }}>
