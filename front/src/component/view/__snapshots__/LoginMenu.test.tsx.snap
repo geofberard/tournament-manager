@@ -41,7 +41,7 @@ exports[`should match last snapshot 1`] = `
   >
     <Image
       alt="SCUF"
-      src="img/scuf-logo.svg"
+      src="/img/scuf-logo.svg"
       sx={
         Object {
           "width": Object {
