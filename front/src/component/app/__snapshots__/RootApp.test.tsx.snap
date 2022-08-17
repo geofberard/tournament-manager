@@ -235,9 +235,10 @@ exports[`should match last snapshot 1`] = `
           "lineHeight": 1.2,
         },
         "h3": Object {
+          "alignSelf": "center",
           "fontFamily": "\\"Roboto\\", \\"Helvetica\\", \\"Arial\\", sans-serif",
-          "fontSize": "3rem",
-          "fontWeight": 400,
+          "fontSize": "1.3rem",
+          "fontWeight": 900,
           "letterSpacing": "0em",
           "lineHeight": 1.167,
         },

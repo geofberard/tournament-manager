@@ -1,0 +1,99 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should match last snapshot 1`] = `
+<ForwardRef(Grid)
+  container={true}
+  direction="row"
+  item={true}
+  justifyContent="space-between"
+  sx={
+    Object {
+      "backgroundColor": "primary.dark",
+      "color": "primary.contrastText",
+    }
+  }
+>
+  <ForwardRef(Grid)
+    item={true}
+    sx={
+      Object {
+        "alignItems": "center",
+        "display": "flex",
+      }
+    }
+  >
+    <Image
+      alt="SCUF"
+      src="img/scuf-logo.svg"
+      sx={
+        Object {
+          "width": "75px",
+        }
+      }
+    />
+  </ForwardRef(Grid)>
+  <ForwardRef(Grid)
+    sx={
+      Object {
+        "alignItems": "center",
+        "borderBottom": [Function],
+        "display": "flex",
+      }
+    }
+  >
+    <ForwardRef(Typography)
+      variant="h3"
+    >
+      Tous les matchs
+    </ForwardRef(Typography)>
+  </ForwardRef(Grid)>
+  <ForwardRef(Grid)
+    sx={
+      Object {
+        "alignItems": "center",
+        "borderBottom": [Function],
+        "display": "flex",
+      }
+    }
+  >
+    <ForwardRef(Typography)
+      variant="h3"
+    >
+      Classement
+    </ForwardRef(Typography)>
+  </ForwardRef(Grid)>
+  <ForwardRef(Grid)
+    sx={
+      Object {
+        "alignItems": "center",
+        "borderBottom": [Function],
+        "display": "flex",
+      }
+    }
+  >
+    <ForwardRef(Typography)
+      variant="h3"
+    >
+      Vos Matchs
+    </ForwardRef(Typography)>
+  </ForwardRef(Grid)>
+  <ForwardRef(Grid)
+    sx={
+      Object {
+        "alignItems": "center",
+        "borderBottom": [Function],
+        "display": "flex",
+      }
+    }
+  >
+    <ForwardRef(Typography)
+      variant="h3"
+    >
+      Phases finales
+    </ForwardRef(Typography)>
+  </ForwardRef(Grid)>
+  <ForwardRef(Grid)
+    item={true}
+  />
+</ForwardRef(Grid)>
+`;

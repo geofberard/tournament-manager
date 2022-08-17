@@ -28,15 +28,19 @@ export interface GameProps {
 }
 
 export const GameRow: FC<GameProps> = ({game}) => {
+
+    const date = new Date(game.time);
+
     return (
         <TableRow
             key={1}
             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+            className="row-game"
         >
-            <StyledTableCell align="center">{(game.isFinished()) ? 'FT'  : game.time.toLocaleTimeString()}</StyledTableCell>
-            <StyledTableCell align="center" style={ setStyleTeam(game, game.teamA) }>{game.teamA.name}</StyledTableCell>
+            <StyledTableCell align="center">{(game.isFinished()) ? 'FT'  : date.toLocaleTimeString(undefined, {hour:"2-digit", minute:"2-digit"})}</StyledTableCell>
+            <StyledTableCell className="teamA-cell" align="center" style={ setStyleTeam(game, game.teamA) }>{game.teamA.name}</StyledTableCell>
             <StyledTableCell align="center">{(game.isFinished()) ? game.scoreA + ' - ' + game.scoreB : game.court }</StyledTableCell>
-            <StyledTableCell align="center" style={ setStyleTeam(game, game.teamB) }>{game.teamB.name}</StyledTableCell>
+            <StyledTableCell className="teamB-cell" align="center" style={ setStyleTeam(game, game.teamB) }>{game.teamB.name}</StyledTableCell>
         </TableRow>
     );
 };

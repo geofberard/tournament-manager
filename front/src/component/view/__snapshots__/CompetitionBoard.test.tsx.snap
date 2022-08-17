@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should match last snapshot 1`] = `
+<React.Fragment>
+  <ForwardRef(Grid)
+    container={true}
+    spacing={0}
+    sx={
+      Object {
+        "height": "100vh",
+      }
+    }
+  >
+    <GeneralMenu />
+    <CompetitionBoard />
+    <GameList />
+  </ForwardRef(Grid)>
+</React.Fragment>
+`;
