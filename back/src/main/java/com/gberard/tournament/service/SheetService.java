@@ -1,6 +1,9 @@
 package com.gberard.tournament.service;
 
 import com.gberard.tournament.config.SpreadsheetConfig;
+import com.gberard.tournament.data.Team;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
@@ -17,6 +20,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 import static java.util.Collections.*;
@@ -30,8 +34,20 @@ public class SheetService {
 
     static Logger logger = LoggerFactory.getLogger(SheetService.class);
 
+    public final Cache<String, List<List<Object>>> spreadSheetCache =
+            Caffeine.newBuilder()
+                    .expireAfterAccess(30, TimeUnit.SECONDS)
+                    .build();
+
     @Autowired
     private SpreadsheetConfig spreadsheetConfig;
+
+    public <T> List<T> getData(String range, Function<List<Object>, T> objectMapper) {
+        return (List<T>) spreadSheetCache.get(range, newRange -> readSpreadSheet(newRange))
+                .stream()
+                .map(objectMapper)
+                .collect(toList());
+    }
 
     private static HttpCredentialsAdapter getSACredentials() throws IOException {
         GoogleCredentials credentials = GoogleCredentials.getApplicationDefault();
@@ -40,7 +56,7 @@ public class SheetService {
         return new HttpCredentialsAdapter(credentials);
     }
 
-    public <T> List<T> getData(String range, Function<List<Object>, T> objectMapper) {
+    private List<List<Object>> readSpreadSheet(String range) {
         try {
             final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
 
@@ -54,9 +70,7 @@ public class SheetService {
             if (values == null || values.isEmpty()) {
                 logger.error("No data found.");
             } else {
-                return values.stream()
-                        .map(objectMapper)
-                        .collect(toList());
+                return values;
             }
         } catch (Exception e) {
             e.printStackTrace();

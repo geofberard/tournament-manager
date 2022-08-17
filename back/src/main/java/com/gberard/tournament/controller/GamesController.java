@@ -1,6 +1,8 @@
 package com.gberard.tournament.controller;
 
+import com.gberard.tournament.data.Game;
 import com.gberard.tournament.data.Team;
+import com.gberard.tournament.service.GameService;
 import com.gberard.tournament.service.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,25 +11,18 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @RestController
-public class TeamsController {
+public class GamesController {
 
     @Autowired
-    public TeamService teamService;
+    public GameService gameService;
 
-    @GetMapping("/teams")
-    public List<Team> getTeams() {
-        return teamService.getTeams();
-    }
-
-    @GetMapping("/teams/{id}")
-    public Team getTeam(@PathVariable String id) {
-        return teamService.getTeam(id)
-                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Unable to find resource"));
+    @GetMapping("/games")
+    public List<Game> getTeams() {
+        return gameService.getGames();
     }
 
 }
