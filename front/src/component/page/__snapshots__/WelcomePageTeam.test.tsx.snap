@@ -13,7 +13,76 @@ exports[`should match last snapshot 1`] = `
   >
     <GeneralMenu />
     <CompetitionBoard />
-    <GameList title="Vos Matchs" games={Array [ ]}/>
+    <GameList
+      games={
+        Array [
+          Game {
+            "court": "court",
+            "getResultGameByTeam": [Function],
+            "id": "gameId",
+            "isFinished": [Function],
+            "referee": Object {
+              "id": "teamC",
+              "name": "TeamC",
+            },
+            "scoreA": 25,
+            "scoreB": 14,
+            "teamA": Object {
+              "id": "teamA",
+              "name": "TeamA",
+            },
+            "teamB": Object {
+              "id": "teamB",
+              "name": "TeamB",
+            },
+            "time": 2022-08-19T13:00:00.000Z,
+          },
+          Game {
+            "court": "court",
+            "getResultGameByTeam": [Function],
+            "id": "gameId",
+            "isFinished": [Function],
+            "referee": Object {
+              "id": "teamC",
+              "name": "TeamC",
+            },
+            "scoreA": 14,
+            "scoreB": 25,
+            "teamA": Object {
+              "id": "teamA",
+              "name": "TeamA",
+            },
+            "teamB": Object {
+              "id": "teamB",
+              "name": "TeamB",
+            },
+            "time": 2022-08-19T14:00:00.000Z,
+          },
+          Game {
+            "court": "court",
+            "getResultGameByTeam": [Function],
+            "id": "gameId",
+            "isFinished": [Function],
+            "referee": Object {
+              "id": "teamC",
+              "name": "TeamC",
+            },
+            "scoreA": 22,
+            "scoreB": 22,
+            "teamA": Object {
+              "id": "teamA",
+              "name": "TeamA",
+            },
+            "teamB": Object {
+              "id": "teamB",
+              "name": "TeamB",
+            },
+            "time": 2022-08-19T15:00:00.000Z,
+          },
+        ]
+      }
+      title="Vos Matchs"
+    />
   </ForwardRef(Grid)>
 </React.Fragment>
 `;
