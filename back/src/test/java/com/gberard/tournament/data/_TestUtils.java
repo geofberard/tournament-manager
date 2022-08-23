@@ -1,6 +1,7 @@
 package com.gberard.tournament.data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class _TestUtils {
 
@@ -25,6 +26,10 @@ public class _TestUtils {
                 .setTeamB(teamB)
                 .setScoreB(scoreB)
                 .createGame();
+    }
+
+    public static List<Object> rawData(Object...values) {
+        return List.of(values);
     }
 
 }

@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class GameTest {
 
     @Nested
-    @DisplayName("isFinished")
+    @DisplayName("isFinished()")
     class IsFinished {
 
         @Test
@@ -28,9 +28,7 @@ class GameTest {
 
         @Test
         void should_be_finished() {
-            Game game = buildGame(teamA, 10, teamB, 9);
-            System.out.println(game);
-            assertThat(game.isFinished()).isTrue();
+            assertThat(buildGame(teamA, 10, teamB, 9).isFinished()).isTrue();
             assertThat(buildGame(teamA, 12, teamB, 12).isFinished()).isTrue();
             assertThat(buildGame(teamA, 15, teamB, 24).isFinished()).isTrue();
         }
@@ -38,7 +36,7 @@ class GameTest {
     }
 
     @Nested
-    @DisplayName("getTeamStatus")
+    @DisplayName("getTeamStatus()")
     class GetTeamStatusTest {
 
         public static Stream<Arguments> notPlayedScenario() {
@@ -98,7 +96,7 @@ class GameTest {
     }
 
     @Nested
-    @DisplayName("getPointsFor")
+    @DisplayName("getPointsFor()")
     class GetPointsFor {
 
         @Test
@@ -126,7 +124,7 @@ class GameTest {
     }
 
     @Nested
-    @DisplayName("getPointsAgainst")
+    @DisplayName("getPointsAgainst()")
     class GetPointsAgainst {
 
         @Test

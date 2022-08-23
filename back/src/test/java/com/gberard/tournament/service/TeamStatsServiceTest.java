@@ -46,7 +46,7 @@ class TeamStatsServiceTest {
     );
 
     @Nested
-    @DisplayName("getTeamStats")
+    @DisplayName("getTeamStats()")
     class GetTeamStats {
 
         public static Stream<Arguments> getExpectedStats() {
@@ -74,7 +74,7 @@ class TeamStatsServiceTest {
     }
 
     @Nested
-    @DisplayName("getTeamsStats")
+    @DisplayName("getTeamsStats()")
     class GetTeamsStats {
 
         @Test

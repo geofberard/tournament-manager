@@ -13,7 +13,7 @@ class DataUtilsTest {
 
 
     @Nested
-    @DisplayName("parseDate")
+    @DisplayName("parseDate()")
     class ParseDate {
 
         @Test
@@ -48,7 +48,7 @@ class DataUtilsTest {
 
 
     @Nested
-    @DisplayName("parseInteger")
+    @DisplayName("parseInteger()")
     class GetTeamStatusTest {
 
 

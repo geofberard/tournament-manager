@@ -1,5 +1,7 @@
 package com.gberard.tournament.data;
 
+import org.apache.commons.codec.digest.DigestUtils;
+
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.OptionalInt;
@@ -57,6 +59,6 @@ public class GameBuilder {
     }
 
     public Game createGame() {
-        return new Game(court + time.toString(), time, court, teamA, teamB, referee, scoreA, scoreB);
+        return new Game(DigestUtils.sha1Hex(court + time.toString()), time, court, teamA, teamB, referee, scoreA, scoreB);
     }
 }

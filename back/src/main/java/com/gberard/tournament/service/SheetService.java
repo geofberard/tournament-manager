@@ -13,6 +13,7 @@ import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
+import com.google.common.annotations.VisibleForTesting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import static java.util.Collections.*;
 import static java.util.stream.Collectors.toList;
@@ -42,11 +44,9 @@ public class SheetService {
     @Autowired
     private SpreadsheetConfig spreadsheetConfig;
 
-    public <T> List<T> getData(String range, Function<List<Object>, T> objectMapper) {
-        return (List<T>) spreadSheetCache.get(range, newRange -> readSpreadSheet(newRange))
-                .stream()
-                .map(objectMapper)
-                .collect(toList());
+    public Stream<List<Object>> getData(String range) {
+        return spreadSheetCache.get(range, newRange -> readSpreadSheet(newRange))
+                .stream();
     }
 
     private static HttpCredentialsAdapter getSACredentials() throws IOException {
@@ -76,5 +76,9 @@ public class SheetService {
             e.printStackTrace();
         }
         return emptyList();
+    }
+
+    public static String getValue(List<Object> value, int index) {
+        return value.size() > index ? value.get(index).toString() : "";
     }
 }
