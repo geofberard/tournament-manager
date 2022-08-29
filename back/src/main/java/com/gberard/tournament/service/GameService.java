@@ -44,19 +44,21 @@ public class GameService {
     @VisibleForTesting
     protected Game toGame(List<Object> value) {
         var gameBuilder = Game.builder()
-                .time(parseDateTime(getValue(value, 0), getValue(value, 1)))
-                .court(getValue(value, 2));
-        teamService.getTeam(getValue(value, 3)).ifPresent(gameBuilder::teamA);
-        teamService.getTeam(getValue(value, 4)).ifPresent(gameBuilder::teamB);
-        teamService.getTeam(getValue(value, 5)).ifPresent(gameBuilder::referee);
-        parseInteger(getValue(value, 6)).ifPresent(gameBuilder::scoreA);
-        parseInteger(getValue(value, 7)).ifPresent(gameBuilder::scoreB);
+                .id(getValue(value, 0))
+                .time(parseDateTime(getValue(value, 1), getValue(value, 2)))
+                .court(getValue(value, 3));
+        teamService.getTeam(getValue(value, 4)).ifPresent(gameBuilder::teamA);
+        teamService.getTeam(getValue(value, 5)).ifPresent(gameBuilder::teamB);
+        teamService.getTeam(getValue(value, 6)).ifPresent(gameBuilder::referee);
+        parseInteger(getValue(value, 7)).ifPresent(gameBuilder::scoreA);
+        parseInteger(getValue(value, 8)).ifPresent(gameBuilder::scoreB);
         return gameBuilder.build();
     }
 
     @VisibleForTesting
     protected List<Object> toRawData(Game game) {
         return List.of(
+                game.id(),
                 formatDate(game.time()),
                 formatTime(game.time()),
                 game.court(),

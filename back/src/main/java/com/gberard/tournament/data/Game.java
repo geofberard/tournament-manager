@@ -57,8 +57,9 @@ public record Game(
         return (teamA.equals(team) ? scoreB : scoreA);
     }
 
-    @Builder(builderMethodName = "builder")
+    @Builder
     public static Game createGame(
+            String id,
             LocalDateTime time,
             String court,
             Team teamA,
@@ -67,7 +68,7 @@ public record Game(
             Integer scoreA,
             Integer scoreB
     ) {
-        return new Game(DigestUtils.sha1Hex(court + time.toString()), time, court, teamA, teamB,
+        return new Game(id, time, court, teamA, teamB,
                 Optional.ofNullable(referee), Optional.ofNullable(scoreA), Optional.ofNullable(scoreB));
     }
 }

@@ -3,7 +3,9 @@ package com.gberard.tournament.service;
 import com.gberard.tournament.config.SpreadsheetConfig;
 import com.gberard.tournament.data.Game;
 import com.gberard.tournament.data.Team;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -11,7 +13,6 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
-import java.time.Month;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -23,22 +24,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.when;
 
 
 @ExtendWith(MockitoExtension.class)
 class GameServiceTest {
 
     public static final List<Object> RAW_GAME_1 =
-            rawData("23/08/2022", "10:00", "Court1", "teamA", "teamB", "teamC", "25", "16");
+            rawData("game1", "23/08/2022", "10:00", "Court1", "teamA", "teamB", "teamC", "25", "16");
     public static final List<Object> RAW_GAME_2 =
-            rawData("23/08/2022", "11:00", "Court1", "teamA", "teamB", "teamC");
+            rawData("game2", "23/08/2022", "11:00", "Court1", "teamA", "teamB", "teamC");
     public static final List<Object> RAW_GAME_3 =
-            rawData("23/08/2022", "12:00", "Court1", "teamA", "teamB");
+            rawData("game3", "23/08/2022", "12:00", "Court1", "teamA", "teamB");
     public static final List<Object> RAW_GAME_4 =
-            rawData("23/08/2022", "13:00", "Court1", "teamA", "teamC", "", "", "");
+            rawData("game4", "23/08/2022", "13:00", "Court1", "teamA", "teamC", "", "", "");
     public static final List<Object> RAW_GAME_5 =
-            rawData("23/08/2022", "14:00", "Court1", "teamA", "teamB", "");
+            rawData("game5", "23/08/2022", "14:00", "Court1", "teamA", "teamB", "");
 
     @Spy
     @InjectMocks
@@ -90,7 +90,7 @@ class GameServiceTest {
             Game game = gameService.toGame(RAW_GAME_1);
 
             // Then
-            assertThat(game.id()).isEqualTo("36d06d05ba9b3b43dc607915f913f260dd1c4ad9");
+            assertThat(game.id()).isEqualTo("game1");
             assertThat(game.time()).isEqualTo(LocalDateTime.of(2022, 8, 23, 10, 0));
             assertThat(game.court()).isEqualTo("Court1");
             assertThat(game.teamA()).isEqualTo(teamA);
@@ -191,10 +191,7 @@ class GameServiceTest {
             List<Game> gamesFor = gameService.getGamesFor(teamB);
 
             // Then
-            // Hard Coded until Game::id Refactoring
-            assertThat(gamesFor).map(Game::id).containsExactly(
-                    "36d06d05ba9b3b43dc607915f913f260dd1c4ad9",
-                    "d337a36f4856f9586596c1908ce05bbfb2ca60a4");
+            assertThat(gamesFor).map(Game::id).containsExactly("game1", "game5");
         }
 
     }
@@ -208,7 +205,8 @@ class GameServiceTest {
             // Given
             String court = "court";
             Game game = Game.builder()
-                    .time(LocalDateTime.of(2022, AUGUST,29,10,30))
+                    .id("gameId")
+                    .time(LocalDateTime.of(2022, AUGUST, 29, 10, 30))
                     .court(court)
                     .teamA(teamA)
                     .teamB(teamB)
@@ -221,8 +219,8 @@ class GameServiceTest {
             List<Object> rawData = gameService.toRawData(game);
 
             // Then
-            assertThat(rawData)
-                    .containsExactly("29/08/2022","10:30",court,teamA.id(),teamB.id(), teamC.id(),"25","14");
+            assertThat(rawData).containsExactly("gameId", "29/08/2022", "10:30", court, teamA.id(), teamB.id(),
+                    teamC.id(), "25", "14");
         }
 
         @Test
@@ -230,7 +228,8 @@ class GameServiceTest {
             // Given
             String court = "court";
             Game game = Game.builder()
-                    .time(LocalDateTime.of(2022, AUGUST,29,10,30))
+                    .id("gameId")
+                    .time(LocalDateTime.of(2022, AUGUST, 29, 10, 30))
                     .court(court)
                     .teamA(teamA)
                     .teamB(teamB)
@@ -241,7 +240,7 @@ class GameServiceTest {
 
             // Then
             assertThat(rawData)
-                    .containsExactly("29/08/2022","10:30",court,teamA.id(),teamB.id(), "","","");
+                    .containsExactly("gameId", "29/08/2022", "10:30", court, teamA.id(), teamB.id(), "", "", "");
         }
 
     }
