@@ -11,12 +11,14 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 import static com.gberard.tournament.data._TestUtils.*;
+import static java.time.Month.AUGUST;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -62,8 +64,8 @@ class GameServiceTest {
     }
 
     @Nested
-    @DisplayName("mapGame()")
-    class MapGame {
+    @DisplayName("toGame()")
+    class ToGame {
 
         @Test
         void should_use_teamService() {
@@ -71,7 +73,7 @@ class GameServiceTest {
             mockTeamService(teamA, teamB, teamC);
 
             // When
-            Game game = gameService.mapGame(RAW_GAME_1);
+            Game game = gameService.toGame(RAW_GAME_1);
 
             // Then
             verify(teamService, times(1)).getTeam(eq(teamA.id()));
@@ -85,7 +87,7 @@ class GameServiceTest {
             mockTeamService(teamA, teamB, teamC);
 
             // When
-            Game game = gameService.mapGame(RAW_GAME_1);
+            Game game = gameService.toGame(RAW_GAME_1);
 
             // Then
             assertThat(game.id()).isEqualTo("36d06d05ba9b3b43dc607915f913f260dd1c4ad9");
@@ -104,7 +106,7 @@ class GameServiceTest {
             mockTeamService(teamA, teamB);
 
             // When
-            Game game = gameService.mapGame(RAW_GAME_2);
+            Game game = gameService.toGame(RAW_GAME_2);
 
             // Then
             assertThat(game.scoreA()).isEmpty();
@@ -117,7 +119,7 @@ class GameServiceTest {
             mockTeamService(teamA, teamC);
 
             // When
-            Game game = gameService.mapGame(RAW_GAME_4);
+            Game game = gameService.toGame(RAW_GAME_4);
 
             // Then
             assertThat(game.scoreA()).isEmpty();
@@ -130,7 +132,7 @@ class GameServiceTest {
             mockTeamService(teamA, teamB);
 
             // When
-            Game game = gameService.mapGame(RAW_GAME_5);
+            Game game = gameService.toGame(RAW_GAME_5);
 
             // Then
             assertThat(game.referee()).isEmpty();
@@ -147,30 +149,30 @@ class GameServiceTest {
             // Given
             String gameRange = "GameRange";
             when(sheetConfig.getGameRange()).thenReturn(gameRange);
-            when(sheetService.getData(any())).thenReturn(Stream.of());
+            when(sheetService.readData(any())).thenReturn(Stream.of());
 
             // When
             gameService.getGames();
 
             // Then
             verify(sheetConfig, times(1)).getGameRange();
-            verify(sheetService, times(1)).getData(eq(gameRange));
+            verify(sheetService, times(1)).readData(eq(gameRange));
         }
 
         @Test
         void should_use_mapper_on_each_elements() {
             // Given
-            when(sheetService.getData(any())).thenReturn(Stream.of(RAW_GAME_1, RAW_GAME_2, RAW_GAME_3));
+            when(sheetService.readData(any())).thenReturn(Stream.of(RAW_GAME_1, RAW_GAME_2, RAW_GAME_3));
             mockTeamService(teamA, teamB, teamC);
 
             // When
             gameService.getGames();
 
             // Then
-            verify(gameService, times(3)).mapGame(any());
-            verify(gameService, times(1)).mapGame(eq(RAW_GAME_1));
-            verify(gameService, times(1)).mapGame(eq(RAW_GAME_2));
-            verify(gameService, times(1)).mapGame(eq(RAW_GAME_3));
+            verify(gameService, times(3)).toGame(any());
+            verify(gameService, times(1)).toGame(eq(RAW_GAME_1));
+            verify(gameService, times(1)).toGame(eq(RAW_GAME_2));
+            verify(gameService, times(1)).toGame(eq(RAW_GAME_3));
         }
     }
 
@@ -182,7 +184,7 @@ class GameServiceTest {
         @Test
         void should_filter_properly() {
             // Given
-            when(sheetService.getData(any())).thenReturn(Stream.of(RAW_GAME_1, RAW_GAME_4, RAW_GAME_5));
+            when(sheetService.readData(any())).thenReturn(Stream.of(RAW_GAME_1, RAW_GAME_4, RAW_GAME_5));
             mockTeamService(teamA, teamB, teamC);
 
             // When
@@ -193,6 +195,53 @@ class GameServiceTest {
             assertThat(gamesFor).map(Game::id).containsExactly(
                     "36d06d05ba9b3b43dc607915f913f260dd1c4ad9",
                     "d337a36f4856f9586596c1908ce05bbfb2ca60a4");
+        }
+
+    }
+
+    @Nested
+    @DisplayName("toRawData()")
+    class ToRawData {
+
+        @Test
+        void should_handle_full_game() {
+            // Given
+            String court = "court";
+            Game game = Game.builder()
+                    .time(LocalDateTime.of(2022, AUGUST,29,10,30))
+                    .court(court)
+                    .teamA(teamA)
+                    .teamB(teamB)
+                    .referee(teamC)
+                    .scoreA(25)
+                    .scoreB(14)
+                    .build();
+
+            // Given
+            List<Object> rawData = gameService.toRawData(game);
+
+            // Then
+            assertThat(rawData)
+                    .containsExactly("29/08/2022","10:30",court,teamA.id(),teamB.id(), teamC.id(),"25","14");
+        }
+
+        @Test
+        void should_handle_partiel_game() {
+            // Given
+            String court = "court";
+            Game game = Game.builder()
+                    .time(LocalDateTime.of(2022, AUGUST,29,10,30))
+                    .court(court)
+                    .teamA(teamA)
+                    .teamB(teamB)
+                    .build();
+
+            // Given
+            List<Object> rawData = gameService.toRawData(game);
+
+            // Then
+            assertThat(rawData)
+                    .containsExactly("29/08/2022","10:30",court,teamA.id(),teamB.id(), "","","");
         }
 
     }

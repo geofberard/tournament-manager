@@ -8,6 +8,7 @@ import com.google.api.client.testing.http.MockLowLevelHttpResponse;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.AccessToken;
 import com.google.auth.oauth2.GoogleCredentials;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -20,7 +21,6 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.List;
 
-import static com.gberard.tournament.service.SheetService.getValue;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -28,33 +28,73 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class SheetServiceTest {
 
+    private static String RANGE = "range";
+    private static String SPREADSHEET_ID = "spreadsheetId";
+    public static final String TARGET_URL =
+            "https://sheets.googleapis.com/v4/spreadsheets/" + SPREADSHEET_ID + "/values/" + RANGE;
+
     @InjectMocks
     private SheetService sheetService;
-
     @Mock
     private GoogleApiService googleApiService;
-
     @Mock
     private SpreadsheetConfig spreadsheetConfig;
 
+    @BeforeEach
+    void prepare_google_api() throws IOException {
+        GoogleCredentials googleCredentials = GoogleCredentials.newBuilder()
+                .setAccessToken(mock(AccessToken.class))
+                .build();
+
+        when(googleApiService.getSACredentials()).thenReturn(new HttpCredentialsAdapter(googleCredentials));
+        when(googleApiService.getJsonFactory()).thenReturn(GsonFactory.getDefaultInstance());
+        when(spreadsheetConfig.getId()).thenReturn(SPREADSHEET_ID);
+    }
+
     @Nested
-    @DisplayName("getValue()")
-    class GetData {
+    @DisplayName("createData()")
+    class CreateData {
 
         @Test
         void shoud_use_google_api_to_call_spreadsheet_url() throws GeneralSecurityException, IOException {
             // Given
-            String range = "range";
-            String spreadsheetId = "spreadsheetId";
+            var resp = new MockLowLevelHttpResponse()
+                    .setStatusCode(200)
+                    .setContentType(Json.MEDIA_TYPE)
+                    .setContent("{\"spreadsheetId\":\"1UPLp5vo_q3XogkOoWtibyeaDww0imckzqIbhEY-UMHI\"," +
+                            "\"tableRange\":\"Teams!A1:B10\"," +
+                            "\"updates\":{\"spreadsheetId\":\"1UPLp5vo_q3XogkOoWtibyeaDww0imckzqIbhEY-UMHI\"," +
+                            "\"updatedCells\":2,\"updatedColumns\":2,\"updatedRange\":\"Teams!A11:B11\"," +
+                            "\"updatedRows\":1}}");
 
-            GoogleCredentials googleCredentials = GoogleCredentials.newBuilder()
-                    .setAccessToken(mock(AccessToken.class))
+            var httpTransport = new MockHttpTransport.Builder()
+                    .setLowLevelHttpResponse(resp)
                     .build();
 
+            when(googleApiService.getHttpTransport()).thenReturn(httpTransport);
+
+            // When
+            sheetService.createData(RANGE, List.of("A","B","C"));
+
+            // Then
+            assertThat(httpTransport.getLowLevelHttpRequest().getUrl())
+                    .isEqualTo(TARGET_URL + ":append?valueInputOption=USER_ENTERED");
+            assertThat(httpTransport.getLowLevelHttpRequest().getContentAsString())
+                    .contains("{\"values\":[[\"A\",\"B\",\"C\"]]}");
+        }
+
+    }
+
+    @Nested
+    @DisplayName("readData()")
+    class ReadData {
+
+        @Test
+        void shoud_use_google_api_to_call_spreadsheet_url() throws GeneralSecurityException, IOException {
+            // Given
             MockLowLevelHttpResponse resp = new MockLowLevelHttpResponse()
                     .setStatusCode(200)
                     .setContentType(Json.MEDIA_TYPE)
-                    .setContent("{\"error\":\"invalid credentials\"}")
                     .setContent("{\"majorDimension\":\"ROWS\",\"range\":\"Teams!A2:B10\",\"values\":[[\"A\",\"B\"]]}");
 
             MockHttpTransport httpTransport = new MockHttpTransport.Builder()
@@ -62,50 +102,15 @@ class SheetServiceTest {
                     .build();
 
             when(googleApiService.getHttpTransport()).thenReturn(httpTransport);
-            when(googleApiService.getSACredentials()).thenReturn(new HttpCredentialsAdapter(googleCredentials));
-            when(googleApiService.getJsonFactory()).thenReturn(GsonFactory.getDefaultInstance());
-            when(spreadsheetConfig.getId()).thenReturn(spreadsheetId);
 
             // When
-            sheetService.getData(range);
+            sheetService.readData(RANGE);
 
             // Then
             assertThat(httpTransport.getLowLevelHttpRequest().getUrl())
-                    .isEqualTo("https://sheets.googleapis.com/v4/spreadsheets/" + spreadsheetId + "/values/" + range);
+                    .isEqualTo(TARGET_URL);
         }
 
-    }
-
-    @Nested
-    @DisplayName("getValue()")
-    class GetValue {
-
-        @Test
-        void should_return_the_toString_method_of_targeted_element() {
-            // Given
-            String expectedValue = "expectedValue";
-            Object targetValue = mock(Object.class);
-            when(targetValue.toString()).thenReturn(expectedValue);
-            List<Object> rawData = List.of("1", "2", targetValue, "4");
-
-            // When
-            String foundValue = getValue(rawData, 2);
-
-            // Then
-            assertThat(foundValue).isEqualTo(expectedValue);
-        }
-
-        @Test
-        void should_return_an_empty_string_if_target_dont_exist() {
-            // Given
-            List<Object> rawData = List.of("1", "2", "3");
-
-            // When
-            String foundValue = getValue(rawData, 5);
-
-            // Then
-            assertThat(foundValue).isEmpty();
-        }
     }
 
 }

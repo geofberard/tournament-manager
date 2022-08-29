@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import static com.gberard.tournament.data._TestUtils.rawData;
+import static com.gberard.tournament.data._TestUtils.teamA;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -37,19 +38,33 @@ class TeamServiceTest {
     private SpreadsheetConfig sheetConfig;
 
     @Nested
-    @DisplayName("mapTeam()")
-    class MapTeam {
-
+    @DisplayName("addTeam()")
+    class AddTeam {
         @Test
-        void should_map_to_team() {
+        void should_user_range_in_config() {
+            // Given
+            String teamRange = "TeamRange";
+            when(sheetConfig.getTeamRange()).thenReturn(teamRange);
+
             // When
-            Team team = teamService.mapTeam(RAW_TEAM_1);
+            teamService.addTeam(teamA);
 
             // Then
-            assertThat(team.id()).isEqualTo("team1");
-            assertThat(team.name()).isEqualTo("Team1");
+            verify(sheetConfig,times(1)).getTeamRange();
+            verify(sheetService,times(1)).createData(eq(teamRange),any());
         }
 
+        @Test
+        void should_use_mapper_on_each_elements() {
+            // Given
+            when(sheetConfig.getTeamRange()).thenReturn("TeamRange");
+
+            // When
+            teamService.addTeam(teamA);
+
+            // Then
+            verify(teamService,times(1)).toRawData(eq(teamA));
+        }
     }
 
     @Nested
@@ -61,29 +76,29 @@ class TeamServiceTest {
             // Given
             String teamRange = "TeamRange";
             when(sheetConfig.getTeamRange()).thenReturn(teamRange);
-            when(sheetService.getData(any())).thenReturn(Stream.of(rawData()));
+            when(sheetService.readData(any())).thenReturn(Stream.of(rawData()));
 
             // When
             teamService.getTeams();
 
             // Then
             verify(sheetConfig,times(1)).getTeamRange();
-            verify(sheetService,times(1)).getData(eq(teamRange));
+            verify(sheetService,times(1)).readData(eq(teamRange));
         }
 
         @Test
         void should_use_mapper_on_each_elements() {
             // Given
             when(sheetConfig.getTeamRange()).thenReturn("TeamRange");
-            when(sheetService.getData(any())).thenReturn(Stream.of(RAW_TEAM_1, RAW_TEAM_2));
+            when(sheetService.readData(any())).thenReturn(Stream.of(RAW_TEAM_1, RAW_TEAM_2));
 
             // When
             teamService.getTeams();
 
             // Then
-            verify(teamService,times(2)).mapTeam(any());
-            verify(teamService,times(1)).mapTeam(eq(RAW_TEAM_1));
-            verify(teamService,times(1)).mapTeam(eq(RAW_TEAM_2));
+            verify(teamService,times(2)).toTeam(any());
+            verify(teamService,times(1)).toTeam(eq(RAW_TEAM_1));
+            verify(teamService,times(1)).toTeam(eq(RAW_TEAM_2));
         }
     }
 
@@ -95,7 +110,7 @@ class TeamServiceTest {
         void should_return_team_if_present() {
             // Given
             when(sheetConfig.getTeamRange()).thenReturn("TeamRange");
-            when(sheetService.getData(any())).thenReturn(Stream.of(RAW_TEAM_1, RAW_TEAM_2));
+            when(sheetService.readData(any())).thenReturn(Stream.of(RAW_TEAM_1, RAW_TEAM_2));
 
             // When
             Optional<Team> team = teamService.getTeam("team2");
@@ -110,7 +125,7 @@ class TeamServiceTest {
         void should_return_empty_if_absent() {
             // Given
             when(sheetConfig.getTeamRange()).thenReturn("TeamRange");
-            when(sheetService.getData(any())).thenReturn(Stream.of());
+            when(sheetService.readData(any())).thenReturn(Stream.of());
 
             // When
             Optional<Team> team = teamService.getTeam("team2");
@@ -120,5 +135,35 @@ class TeamServiceTest {
         }
     }
 
+    @Nested
+    @DisplayName("toTeam()")
+    class ToTeam {
+
+        @Test
+        void should_map_to_team() {
+            // When
+            Team team = teamService.toTeam(RAW_TEAM_1);
+
+            // Then
+            assertThat(team.id()).isEqualTo("team1");
+            assertThat(team.name()).isEqualTo("Team1");
+        }
+
+    }
+
+    @Nested
+    @DisplayName("toRawData()")
+    class ToRawData {
+
+        @Test
+        void should_map_to_team() {
+            // When
+            List<Object> objects = teamService.toRawData(teamA);
+
+            // Then
+            assertThat(objects).containsExactlyInAnyOrder(teamA.id(),teamA.name());
+        }
+
+    }
 
 }

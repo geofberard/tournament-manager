@@ -8,10 +8,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
-import static com.gberard.tournament.service.SheetService.getValue;
+import static com.gberard.tournament.data.DataUtils.getValue;
 import static java.util.stream.Collectors.*;
 
 @Component
@@ -23,16 +21,15 @@ public class TeamService {
     @Autowired
     private SpreadsheetConfig spreadsheetConfig;
 
-    public List<Team> getTeams(){
-        return sheetService
-                .getData(spreadsheetConfig.getTeamRange())
-                .map(this::mapTeam)
-                .collect(toList());
+    public boolean addTeam(Team team) {
+        return sheetService.createData(spreadsheetConfig.getTeamRange(), toRawData(team));
     }
 
-    @VisibleForTesting
-    protected Team mapTeam(List<Object> rawData) {
-        return new Team(getValue(rawData,0), getValue(rawData,1));
+    public List<Team> getTeams(){
+        return sheetService
+                .readData(spreadsheetConfig.getTeamRange())
+                .map(this::toTeam)
+                .collect(toList());
     }
 
     public Optional<Team> getTeam(String teamId) {
@@ -40,4 +37,15 @@ public class TeamService {
                 .filter(team -> team.id().equals(teamId))
                 .findFirst();
     }
+
+    @VisibleForTesting
+    protected Team toTeam(List<Object> rawData) {
+        return new Team(getValue(rawData,0), getValue(rawData,1));
+    }
+
+    @VisibleForTesting
+    protected List<Object> toRawData(Team team) {
+        return List.of(team.id(),team.name());
+    }
+
 }

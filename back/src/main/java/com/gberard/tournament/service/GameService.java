@@ -9,9 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-import static com.gberard.tournament.data.DataUtils.parseDate;
-import static com.gberard.tournament.data.DataUtils.parseInteger;
-import static com.gberard.tournament.service.SheetService.getValue;
+import static com.gberard.tournament.data.DataUtils.*;
 import static java.util.stream.Collectors.toList;
 
 @Component
@@ -26,23 +24,27 @@ public class GameService {
     @Autowired
     private SpreadsheetConfig spreadsheetConfig;
 
-    public List<Game> getGames(){
+    public boolean addGame(Game game) {
+        return sheetService.createData(spreadsheetConfig.getGameRange(), toRawData(game));
+    }
+
+    public List<Game> getGames() {
         return sheetService
-                .getData(spreadsheetConfig.getGameRange())
-                .map(this::mapGame)
+                .readData(spreadsheetConfig.getGameRange())
+                .map(this::toGame)
                 .collect(toList());
     }
 
-    public List<Game> getGamesFor(Team team){
+    public List<Game> getGamesFor(Team team) {
         return getGames().stream()
                 .filter(game -> game.hasContestant(team))
                 .collect(toList());
     }
 
     @VisibleForTesting
-    protected Game mapGame(List<Object> value) {
+    protected Game toGame(List<Object> value) {
         var gameBuilder = Game.builder()
-                .time(parseDate(getValue(value, 0), getValue(value, 1)))
+                .time(parseDateTime(getValue(value, 0), getValue(value, 1)))
                 .court(getValue(value, 2));
         teamService.getTeam(getValue(value, 3)).ifPresent(gameBuilder::teamA);
         teamService.getTeam(getValue(value, 4)).ifPresent(gameBuilder::teamB);
@@ -50,6 +52,20 @@ public class GameService {
         parseInteger(getValue(value, 6)).ifPresent(gameBuilder::scoreA);
         parseInteger(getValue(value, 7)).ifPresent(gameBuilder::scoreB);
         return gameBuilder.build();
+    }
+
+    @VisibleForTesting
+    protected List<Object> toRawData(Game game) {
+        return List.of(
+                formatDate(game.time()),
+                formatTime(game.time()),
+                game.court(),
+                game.teamA().id(),
+                game.teamB().id(),
+                game.referee().map(Team::id).orElse(""),
+                game.scoreA().map(Object::toString).orElse(""),
+                game.scoreB().map(Object::toString).orElse("")
+        );
     }
 
 }
