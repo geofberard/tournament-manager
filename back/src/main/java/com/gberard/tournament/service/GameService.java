@@ -2,7 +2,6 @@ package com.gberard.tournament.service;
 
 import com.gberard.tournament.config.SpreadsheetConfig;
 import com.gberard.tournament.data.Game;
-import com.gberard.tournament.data.GameBuilder;
 import com.gberard.tournament.data.Team;
 import com.google.common.annotations.VisibleForTesting;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,15 +41,15 @@ public class GameService {
 
     @VisibleForTesting
     protected Game mapGame(List<Object> value) {
-        return new GameBuilder()
-                .setTime(parseDate(getValue(value, 0), getValue(value, 1)))
-                .setCourt(getValue(value, 2))
-                .setTeamA(teamService.getTeam(getValue(value, 3)).get())
-                .setTeamB(teamService.getTeam(getValue(value, 4)).get())
-                .setReferee(teamService.getTeam(getValue(value, 5)))
-                .setScoreA(parseInteger(getValue(value, 6)))
-                .setScoreB(parseInteger(getValue(value, 7)))
-                .createGame();
+        var gameBuilder = Game.builder()
+                .time(parseDate(getValue(value, 0), getValue(value, 1)))
+                .court(getValue(value, 2));
+        teamService.getTeam(getValue(value, 3)).ifPresent(gameBuilder::teamA);
+        teamService.getTeam(getValue(value, 4)).ifPresent(gameBuilder::teamB);
+        teamService.getTeam(getValue(value, 5)).ifPresent(gameBuilder::referee);
+        parseInteger(getValue(value, 6)).ifPresent(gameBuilder::scoreA);
+        parseInteger(getValue(value, 7)).ifPresent(gameBuilder::scoreB);
+        return gameBuilder.build();
     }
 
 }

@@ -1,5 +1,6 @@
 package com.gberard.tournament.data;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,11 +10,10 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.OptionalInt;
 
+@Slf4j
 public class DataUtils {
 
     private static DateTimeFormatter DATE_FORMATER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
-    private static Logger LOGGER = LoggerFactory.getLogger(DataUtils.class);
 
     public static LocalDateTime parseDate(String date, String time) {
         return LocalDateTime.of(LocalDate.parse(date, DATE_FORMATER), LocalTime.parse(time));
@@ -26,7 +26,7 @@ public class DataUtils {
         try {
             return OptionalInt.of(Integer.parseInt(value));
         } catch (final NumberFormatException e) {
-            LOGGER.error("Unable to parse \"" + value +"\" into integer");
+            log.error("Unable to parse \"" + value +"\" into integer");
         }
         return OptionalInt.empty();
     }

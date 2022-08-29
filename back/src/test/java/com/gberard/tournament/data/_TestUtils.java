@@ -11,21 +11,21 @@ public class _TestUtils {
     public static Team teamD = new Team("teamD", "TeamD");
     public static Team teamE = new Team("teamE", "TeamE");
 
-    public static GameBuilder gameBuilder() {
-        return new GameBuilder()
-                .setTime(LocalDateTime.now())
-                .setCourt("court")
-                .setTeamA(teamA)
-                .setTeamB(teamB);
+    public static Game.GameBuilder gameBuilder() {
+        return Game.builder()
+                .time(LocalDateTime.now())
+                .court("court")
+                .teamA(teamA)
+                .teamB(teamB);
     }
 
     public static Game buildGame(Team teamA, int scoreA, Team teamB, int scoreB) {
         return gameBuilder()
-                .setTeamA(teamA)
-                .setScoreA(scoreA)
-                .setTeamB(teamB)
-                .setScoreB(scoreB)
-                .createGame();
+                .teamA(teamA)
+                .scoreA(scoreA)
+                .teamB(teamB)
+                .scoreB(scoreB)
+                .build();
     }
 
     public static List<Object> rawData(Object...values) {
