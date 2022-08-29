@@ -1,134 +1,147 @@
 package com.gberard.tournament.service;
 
-import com.gberard.tournament.config.SpreadsheetConfig;
 import com.gberard.tournament.data.Team;
+import com.google.api.client.testing.http.MockHttpTransport;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
-import static com.gberard.tournament.data._TestUtils.rawData;
-import static com.gberard.tournament.data._TestUtils.teamA;
+import static com.gberard.tournament.data._TestUtils.*;
+import static com.gberard.tournament.service.TeamService.RANGE;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class TeamServiceTest {
+class TeamServiceTest extends SheetServiceTest{
 
-    public static final List<Object> RAW_TEAM_1 = rawData("team1", "Team1");
-    public static final List<Object> RAW_TEAM_2 = rawData("team2", "Team2");
+    public static final List<Object> RAW_TEAM_1 = rawData("teamA", "TeamA");
+    public static final List<Object> RAW_TEAM_2 = rawData("teamB", "TeamB");
 
     @Spy
     @InjectMocks
     private TeamService teamService = new TeamService();
 
-    @Mock
-    private SheetService sheetService;
-
-    @Mock
-    private SpreadsheetConfig sheetConfig;
-
     @Nested
-    @DisplayName("addTeam()")
-    class AddTeam {
+    @DisplayName("create()")
+    class Create {
+
         @Test
-        void should_user_range_in_config() {
+        void shoud_call_spreadsheet_url() throws Exception{
             // Given
-            String teamRange = "TeamRange";
-            when(sheetConfig.getTeamRange()).thenReturn(teamRange);
+            MockHttpTransport httpTransport = mockServerResponse();
 
             // When
-            teamService.addTeam(teamA);
+            teamService.create(teamA);
 
             // Then
-            verify(sheetConfig,times(1)).getTeamRange();
-            verify(sheetService,times(1)).create(eq(teamRange),any());
+            assertThat(httpTransport.getLowLevelHttpRequest().getUrl())
+                    .isEqualTo(TARGET_URL + "/" + RANGE +  ":append?valueInputOption=USER_ENTERED");
         }
 
         @Test
-        void should_use_mapper_on_each_elements() {
+        void shoud_use_toRawData_mapper() throws Exception{
             // Given
-            when(sheetConfig.getTeamRange()).thenReturn("TeamRange");
+            mockServerResponse();
 
             // When
-            teamService.addTeam(teamA);
+            teamService.create(teamA);
 
             // Then
             verify(teamService,times(1)).toRawData(eq(teamA));
         }
+
+        @Test
+        void shoud_send_serialized_team() throws Exception{
+            // Given
+            MockHttpTransport httpTransport = mockServerResponse();
+
+            // When
+            teamService.create(teamA);
+
+            // Then
+            assertThat(httpTransport.getLowLevelHttpRequest().getContentAsString())
+                    .contains("{\"values\":[[\"teamA\",\"TeamA\"]]}");
+        }
+
     }
 
     @Nested
-    @DisplayName("getTeams()")
-    class GetTeams {
+    @DisplayName("readAll()")
+    class ReadAll {
 
         @Test
-        void should_user_range_in_config() {
+        void shoud_call_spreadsheet_url() throws Exception {
             // Given
-            String teamRange = "TeamRange";
-            when(sheetConfig.getTeamRange()).thenReturn(teamRange);
-            when(sheetService.readAll(any())).thenReturn(Stream.of(rawData()));
+            MockHttpTransport httpTransport = mockServerResponse();
 
             // When
-            teamService.getTeams();
+            teamService.readAll();
 
             // Then
-            verify(sheetConfig,times(1)).getTeamRange();
-            verify(sheetService,times(1)).readAll(eq(teamRange));
+            assertThat(httpTransport.getLowLevelHttpRequest().getUrl()).isEqualTo(TARGET_URL + "/" + RANGE);
         }
 
         @Test
-        void should_use_mapper_on_each_elements() {
+        void shoud_use_fromRawData_mapper() throws Exception{
             // Given
-            when(sheetConfig.getTeamRange()).thenReturn("TeamRange");
-            when(sheetService.readAll(any())).thenReturn(Stream.of(RAW_TEAM_1, RAW_TEAM_2));
+            mockServerResponse(getGetResponse(List.of(RAW_TEAM_1, RAW_TEAM_2)));
 
             // When
-            teamService.getTeams();
+            teamService.readAll();
 
             // Then
-            verify(teamService,times(2)).toTeam(any());
-            verify(teamService,times(1)).toTeam(eq(RAW_TEAM_1));
-            verify(teamService,times(1)).toTeam(eq(RAW_TEAM_2));
+            verify(teamService,times(1)).fromRawData(eq(RAW_TEAM_1));
+            verify(teamService,times(1)).fromRawData(eq(RAW_TEAM_2));
         }
+
+        @Test
+        void shoud_return_deserialized_team() throws Exception{
+            // Given
+            mockServerResponse(getGetResponse(List.of(RAW_TEAM_1, RAW_TEAM_2)));
+
+            // When
+            List<Team> teams = teamService.readAll();
+
+            // Then
+            assertThat(teams).hasSize(2);
+            assertThat(teams.get(0)).isEqualTo(teamA);
+            assertThat(teams.get(1)).isEqualTo(teamB);
+        }
+
     }
 
     @Nested
-    @DisplayName("getTeam()")
-    class GetTeam {
+    @DisplayName("search()")
+    class Search {
 
         @Test
-        void should_return_team_if_present() {
+        void should_return_team_if_present() throws Exception{
             // Given
-            when(sheetConfig.getTeamRange()).thenReturn("TeamRange");
-            when(sheetService.readAll(any())).thenReturn(Stream.of(RAW_TEAM_1, RAW_TEAM_2));
+            mockServerResponse(getGetResponse(List.of(RAW_TEAM_1, RAW_TEAM_2)));
 
             // When
-            Optional<Team> team = teamService.getTeam("team2");
+            Optional<Team> team = teamService.search("teamB");
 
             // Then
             assertThat(team.isPresent()).isTrue();
-            assertThat(team.get().id()).isEqualTo("team2");
-            assertThat(team.get().name()).isEqualTo("Team2");
+            assertThat(team.get().id()).isEqualTo("teamB");
+            assertThat(team.get().name()).isEqualTo("TeamB");
         }
 
         @Test
-        void should_return_empty_if_absent() {
+        void should_return_empty_if_absent()  throws Exception{
             // Given
-            when(sheetConfig.getTeamRange()).thenReturn("TeamRange");
-            when(sheetService.readAll(any())).thenReturn(Stream.of());
+            mockServerResponse(getGetResponse(List.of(RAW_TEAM_1)));
 
             // When
-            Optional<Team> team = teamService.getTeam("team2");
+            Optional<Team> team = teamService.search("team2");
 
             // Then
             assertThat(team.isPresent()).isFalse();
@@ -136,32 +149,20 @@ class TeamServiceTest {
     }
 
     @Nested
-    @DisplayName("toTeam()")
-    class ToTeam {
+    @DisplayName("DeleteAll()")
+    class DeleteAll {
 
         @Test
-        void should_map_to_team() {
+        void shoud_call_spreadsheet_url() throws Exception {
+            // Given
+            MockHttpTransport httpTransport = mockServerResponse();
+
             // When
-            Team team = teamService.toTeam(RAW_TEAM_1);
+            teamService.deleteAll();
 
             // Then
-            assertThat(team.id()).isEqualTo("team1");
-            assertThat(team.name()).isEqualTo("Team1");
-        }
-
-    }
-
-    @Nested
-    @DisplayName("toRawData()")
-    class ToRawData {
-
-        @Test
-        void should_map_to_team() {
-            // When
-            List<Object> objects = teamService.toRawData(teamA);
-
-            // Then
-            assertThat(objects).containsExactlyInAnyOrder(teamA.id(),teamA.name());
+            assertThat(httpTransport.getLowLevelHttpRequest().getUrl())
+                    .isEqualTo(TARGET_URL + ":batchClearByDataFilter");
         }
 
     }

@@ -31,7 +31,7 @@ public class TeamStatsController {
 
     @GetMapping("/team-stats/{teamId}")
     public TeamStats getTeam(@PathVariable String teamId) {
-        Optional<Team> team = teamService.getTeam(teamId);
+        Optional<Team> team = teamService.search(teamId);
         if(team.isEmpty()) {
             throw  new ResponseStatusException(NOT_FOUND, "Team not found");
         }

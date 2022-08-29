@@ -63,7 +63,7 @@ class TeamStatsServiceTest {
         @MethodSource("getExpectedStats")
         void should_return_team_stats(TeamStats expected) {
             // Given
-            when(gameService.getGames()).thenReturn(games);
+            when(gameService.readAll()).thenReturn(games);
 
             // When
             TeamStats stats = teamStatsService.getTeamStats(expected.team());
@@ -80,8 +80,8 @@ class TeamStatsServiceTest {
         @Test
         void should_return_teams_stats() {
             // Given
-            when(teamService.getTeams()).thenReturn(teams);
-            when(gameService.getGames()).thenReturn(games);
+            when(teamService.readAll()).thenReturn(teams);
+            when(gameService.readAll()).thenReturn(games);
 
             // When
             List<TeamStats> teamsStats = teamStatsService.getTeamsStats();

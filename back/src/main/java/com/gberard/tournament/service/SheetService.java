@@ -1,33 +1,25 @@
 package com.gberard.tournament.service;
 
 import com.gberard.tournament.config.SpreadsheetConfig;
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.BatchClearValuesByDataFilterRequest;
 import com.google.api.services.sheets.v4.model.DataFilter;
 import com.google.api.services.sheets.v4.model.ValueRange;
+import com.google.common.annotations.VisibleForTesting;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toList;
 
 @Slf4j
-@Component
-public class SheetService {
+public abstract class SheetService<T> {
     public static final String USER_ENTERED = "USER_ENTERED";
     private static final String APPLICATION_NAME = "Google Sheets API Java Quickstart";
-    public final Cache<String, List<List<Object>>> spreadSheetCache =
-            Caffeine.newBuilder()
-                    .expireAfterAccess(30, TimeUnit.SECONDS)
-                    .build();
 
     @Autowired
     private SpreadsheetConfig spreadsheetConfig;
@@ -35,47 +27,52 @@ public class SheetService {
     @Autowired
     private GoogleApiService googleApiService;
 
-    public boolean create(String range, List<Object> data) {
+    private final String range;
+
+    protected SheetService(String range) {
+        this.range = range;
+    }
+
+    public boolean create(T data) {
         try {
-            var valueRange = new ValueRange().setValues(List.of(data));
+            var valueRange = new ValueRange().setValues(List.of(toRawData(data)));
 
             var response = getService().spreadsheets().values()
                     .append(spreadsheetConfig.getId(), range, valueRange)
                     .setValueInputOption(USER_ENTERED)
                     .execute();
 
-            log.info("Creating new data " + response.toString());
+            log.info("Creating new data - " + response.toString());
             return true;
         } catch (Exception e) {
-            log.error("Error while creating data", e);
+            log.error("Creating new data - Error", e);
         }
         return false;
     }
 
-    public Stream<List<Object>> readAll(String range) {
-        return spreadSheetCache.get(range, newRange -> readSpreadSheet(newRange))
-                .stream();
-    }
-
-    private List<List<Object>> readSpreadSheet(String range) {
+    public List<T> readAll() {
         try {
-            Sheets service = getService();
-            ValueRange response = service.spreadsheets().values()
+            var response = getService().spreadsheets().values()
                     .get(spreadsheetConfig.getId(), range)
                     .execute();
+
             List<List<Object>> values = response.getValues();
+
             if (values == null || values.isEmpty()) {
-                log.error("No data found.");
+                log.error("Reading all - No data found.");
             } else {
-                return values;
+                log.info("Reading all - " + response.toString());
+                return values.stream()
+                        .map(this::fromRawData)
+                        .collect(toList());
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Reading all - Error", e);
         }
         return emptyList();
     }
 
-    public boolean deleteAll(String range) {
+    public boolean deleteAll() {
         try {
             var dataFilter = new DataFilter().setA1Range(range);
 
@@ -85,10 +82,10 @@ public class SheetService {
                     .batchClearByDataFilter(spreadsheetConfig.getId(), clearRequest)
                     .execute();
 
-            log.info("Deleting all data in " + response.toString());
+            log.info("Deleting all - " + response.toString());
             return true;
         } catch (Exception e) {
-            log.error("Error while deleting all data", e);
+            log.error("Deleting all - Error", e);
         }
         return false;
     }
@@ -102,4 +99,10 @@ public class SheetService {
                 .build();
         return service;
     }
+
+    @VisibleForTesting
+    protected abstract T fromRawData(List<Object> rawData);
+
+    @VisibleForTesting
+    protected abstract List<Object> toRawData(T element);
 }

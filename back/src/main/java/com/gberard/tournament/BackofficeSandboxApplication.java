@@ -17,7 +17,8 @@ import java.time.LocalDateTime;
 
 import static java.time.Month.AUGUST;
 
-@SpringBootApplication
+//Remove comments before usage
+//@SpringBootApplication
 public class BackofficeSandboxApplication {
     @Autowired
     private TeamService teamService;
@@ -33,10 +34,10 @@ public class BackofficeSandboxApplication {
     public void doSomethingAfterStartup() {
         teamService.deleteAll();
         gameService.deleteAll();
-        teamService.addTeam(new Team("TeamA","TeamA"));
-        teamService.addTeam(new Team("TeamB","TeamB"));
-        teamService.addTeam(new Team("TeamC","TeamC"));
-        gameService.addGame(Game.builder()
+        teamService.create(new Team("TeamA","TeamA"));
+        teamService.create(new Team("TeamB","TeamB"));
+        teamService.create(new Team("TeamC","TeamC"));
+        gameService.create(Game.builder()
                 .id("game1")
                 .time(LocalDateTime.of(2022, AUGUST,29,10,30))
                 .court("test")
@@ -46,14 +47,14 @@ public class BackofficeSandboxApplication {
                 .scoreA(25)
                 .scoreB(14)
                 .build());
-        gameService.addGame(Game.builder()
+        gameService.create(Game.builder()
                 .id("game2")
                 .time(LocalDateTime.of(2022, AUGUST,29,10,30))
                 .court("test")
                 .teamA(new Team("TeamA",""))
                 .teamB(new Team("TeamB",""))
                 .build());
-        System.out.println(teamService.getTeam("TeamA"));
+        System.out.println(teamService.search("TeamA"));
         System.out.println("Done");
         System.exit(1);
     }

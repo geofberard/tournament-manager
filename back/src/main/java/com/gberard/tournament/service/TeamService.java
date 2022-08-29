@@ -1,53 +1,36 @@
 package com.gberard.tournament.service;
 
-import com.gberard.tournament.config.SpreadsheetConfig;
 import com.gberard.tournament.data.Team;
 import com.google.common.annotations.VisibleForTesting;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
 
 import static com.gberard.tournament.data.DataUtils.getValue;
-import static java.util.stream.Collectors.*;
 
 @Component
-public class TeamService {
+public class TeamService extends SheetService<Team> {
 
-    @Autowired
-    SheetService sheetService;
+    @VisibleForTesting
+    protected static final String RANGE = "Teams!A2:B";
 
-    @Autowired
-    private SpreadsheetConfig spreadsheetConfig;
-
-    public boolean addTeam(Team team) {
-        return sheetService.create(spreadsheetConfig.getTeamRange(), toRawData(team));
+    public TeamService() {
+        super(RANGE);
     }
 
-    public List<Team> getTeams(){
-        return sheetService
-                .readAll(spreadsheetConfig.getTeamRange())
-                .map(this::toTeam)
-                .collect(toList());
-    }
-
-    public Optional<Team> getTeam(String teamId) {
-        return getTeams().stream()
+    public Optional<Team> search(String teamId) {
+        return readAll().stream()
                 .filter(team -> team.id().equals(teamId))
                 .findFirst();
     }
 
-    public boolean deleteAll() {
-        return sheetService.deleteAll(spreadsheetConfig.getTeamRange());
-    }
-
-    @VisibleForTesting
-    protected Team toTeam(List<Object> rawData) {
+    @Override
+    protected Team fromRawData(List<Object> rawData) {
         return new Team(getValue(rawData,0), getValue(rawData,1));
     }
 
-    @VisibleForTesting
+    @Override
     protected List<Object> toRawData(Team team) {
         return List.of(team.id(),team.name());
     }

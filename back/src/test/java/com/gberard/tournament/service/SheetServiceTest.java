@@ -8,35 +8,26 @@ import com.google.api.client.testing.http.MockLowLevelHttpResponse;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.AccessToken;
 import com.google.auth.oauth2.GoogleCredentials;
+import com.google.gson.Gson;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.util.List;
+import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
 class SheetServiceTest {
 
-    private static String RANGE = "range";
-    private static String SPREADSHEET_ID = "spreadsheetId";
-    public static final String TARGET_URL =
+    protected static String SPREADSHEET_ID = "spreadsheetId";
+    protected static final String TARGET_URL =
             "https://sheets.googleapis.com/v4/spreadsheets/" + SPREADSHEET_ID + "/values";
 
-    @InjectMocks
-    private SheetService sheetService;
     @Mock
     private GoogleApiService googleApiService;
+
     @Mock
     private SpreadsheetConfig spreadsheetConfig;
 
@@ -51,94 +42,28 @@ class SheetServiceTest {
         when(spreadsheetConfig.getId()).thenReturn(SPREADSHEET_ID);
     }
 
-    @Nested
-    @DisplayName("create()")
-    class Create {
-
-        @Test
-        void shoud_use_google_api_to_call_spreadsheet_url() throws GeneralSecurityException, IOException {
-            // Given
-            var resp = new MockLowLevelHttpResponse()
-                    .setStatusCode(200)
-                    .setContentType(Json.MEDIA_TYPE)
-                    .setContent("{\"spreadsheetId\":\"1UPLp5vo_q3XogkOoWtibyeaDww0imckzqIbhEY-UMHI\"," +
-                            "\"tableRange\":\"Teams!A1:B10\"," +
-                            "\"updates\":{\"spreadsheetId\":\"1UPLp5vo_q3XogkOoWtibyeaDww0imckzqIbhEY-UMHI\"," +
-                            "\"updatedCells\":2,\"updatedColumns\":2,\"updatedRange\":\"Teams!A11:B11\"," +
-                            "\"updatedRows\":1}}");
-
-            var httpTransport = new MockHttpTransport.Builder()
-                    .setLowLevelHttpResponse(resp)
-                    .build();
-
-            when(googleApiService.getHttpTransport()).thenReturn(httpTransport);
-
-            // When
-            sheetService.create(RANGE, List.of("A","B","C"));
-
-            // Then
-            assertThat(httpTransport.getLowLevelHttpRequest().getUrl())
-                    .isEqualTo(TARGET_URL + "/" + RANGE +  ":append?valueInputOption=USER_ENTERED");
-            assertThat(httpTransport.getLowLevelHttpRequest().getContentAsString())
-                    .contains("{\"values\":[[\"A\",\"B\",\"C\"]]}");
-        }
-
+    protected MockHttpTransport mockServerResponse() throws Exception {
+        return mockServerResponse(null);
     }
 
-    @Nested
-    @DisplayName("readAll()")
-    class ReadAll {
+    protected MockHttpTransport mockServerResponse(String json) throws Exception {
+        var resp = new MockLowLevelHttpResponse()
+                .setStatusCode(200)
+                .setContentType(Json.MEDIA_TYPE)
+                .setContent(Optional.ofNullable(json).orElse("{}"));
 
-        @Test
-        void shoud_use_google_api_to_call_spreadsheet_url() throws GeneralSecurityException, IOException {
-            // Given
-            MockLowLevelHttpResponse resp = new MockLowLevelHttpResponse()
-                    .setStatusCode(200)
-                    .setContentType(Json.MEDIA_TYPE)
-                    .setContent("{\"majorDimension\":\"ROWS\",\"range\":\"Teams!A2:B10\",\"values\":[[\"A\",\"B\"]]}");
+        var httpTransport = new MockHttpTransport.Builder()
+                .setLowLevelHttpResponse(resp)
+                .build();
 
-            MockHttpTransport httpTransport = new MockHttpTransport.Builder()
-                    .setLowLevelHttpResponse(resp)
-                    .build();
+        when(googleApiService.getHttpTransport()).thenReturn(httpTransport);
 
-            when(googleApiService.getHttpTransport()).thenReturn(httpTransport);
-
-            // When
-            sheetService.readAll(RANGE);
-
-            // Then
-            assertThat(httpTransport.getLowLevelHttpRequest().getUrl()).isEqualTo(TARGET_URL + "/" + RANGE);
-        }
-
+        return httpTransport;
     }
 
-    @Nested
-    @DisplayName("DeleteAll()")
-    class DeleteAll {
-
-        @Test
-        void shoud_use_google_api_to_call_spreadsheet_url() throws GeneralSecurityException, IOException {
-            // Given
-            var resp = new MockLowLevelHttpResponse()
-                    .setStatusCode(200)
-                    .setContentType(Json.MEDIA_TYPE)
-                    .setContent("{\"clearedRanges\":[\"Teams!A2:B19\"]," +
-                            "\"spreadsheetId\":\"1uAzFMh90-uowmsHHIYz1QmLnOOVm7XIbLuytxDfj9j0\"}");
-
-            var httpTransport = new MockHttpTransport.Builder()
-                    .setLowLevelHttpResponse(resp)
-                    .build();
-
-            when(googleApiService.getHttpTransport()).thenReturn(httpTransport);
-
-            // When
-            sheetService.deleteAll(RANGE);
-
-            // Then
-            assertThat(httpTransport.getLowLevelHttpRequest().getUrl())
-                    .isEqualTo(TARGET_URL + ":batchClearByDataFilter");
-        }
-
+    protected String getGetResponse(List<List<Object>> values) {
+        String jsonValues = new Gson().toJson(values);
+        return "{\"majorDimension\":\"ROWS\",\"range\":\"Teams!A2:B10\",\"values\":" + jsonValues + "}";
     }
 
 }

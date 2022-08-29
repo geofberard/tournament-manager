@@ -1,14 +1,13 @@
 package com.gberard.tournament.service;
 
 import com.gberard.tournament.data.*;
-import com.google.common.annotations.VisibleForTesting;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 import static com.gberard.tournament.data.GameTeamStatus.*;
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toList;
 
 @Component
 public class TeamStatsService {
@@ -20,13 +19,13 @@ public class TeamStatsService {
     GameService gameService;
 
     public List<TeamStats> getTeamsStats() {
-        return teamService.getTeams().stream()
+        return teamService.readAll().stream()
                 .map(this::getTeamStats)
                 .collect(toList());
     }
 
     public TeamStats getTeamStats(Team team) {
-        return gameService.getGames().stream()
+        return gameService.readAll().stream()
                 .filter(game -> game.hasContestant(team))
                 .reduce(
                         new TeamStatsAccumulator(team),

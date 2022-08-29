@@ -1,8 +1,8 @@
 package com.gberard.tournament.service;
 
-import com.gberard.tournament.config.SpreadsheetConfig;
 import com.gberard.tournament.data.Game;
 import com.gberard.tournament.data.Team;
+import com.google.api.client.testing.http.MockHttpTransport;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -12,14 +12,12 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import static com.gberard.tournament.data._TestUtils.*;
-import static java.time.Month.AUGUST;
+import static com.gberard.tournament.service.GameService.RANGE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -27,220 +25,173 @@ import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
-class GameServiceTest {
+class GameServiceTest extends SheetServiceTest {
 
-    public static final List<Object> RAW_GAME_1 =
-            rawData("game1", "23/08/2022", "10:00", "Court1", "teamA", "teamB", "teamC", "25", "16");
-    public static final List<Object> RAW_GAME_2 =
-            rawData("game2", "23/08/2022", "11:00", "Court1", "teamA", "teamB", "teamC");
-    public static final List<Object> RAW_GAME_3 =
-            rawData("game3", "23/08/2022", "12:00", "Court1", "teamA", "teamB");
-    public static final List<Object> RAW_GAME_4 =
-            rawData("game4", "23/08/2022", "13:00", "Court1", "teamA", "teamC", "", "", "");
-    public static final List<Object> RAW_GAME_5 =
-            rawData("game5", "23/08/2022", "14:00", "Court1", "teamA", "teamB", "");
+    private static final List<Object> RAW_GAME_1 =
+            rawData("game1", "29/08/2022", "10:30", "court", "teamA", "teamB", "teamC", "25", "14");
+    private static final List<Object> RAW_GAME_2 =
+            rawData("game2", "29/08/2022", "11:30", "court", "teamC", "teamB");
+    private static final List<Object> RAW_GAME_3 =
+            rawData("game3", "29/08/2022", "13:30", "court", "teamA", "teamC", "", "", "");
+    private static final List<Object> RAW_GAME_4 =
+            rawData("game4", "29/08/2022", "14:30", "court", "teamA", "teamB", "");
 
     @Spy
     @InjectMocks
-    private GameService gameService = new GameService();
-
-    @Mock
-    private SheetService sheetService;
+    private GameService gameService;
 
     @Mock
     private TeamService teamService;
 
-    @Mock
-    private SpreadsheetConfig sheetConfig;
-
     private void mockTeamService(Team... teams) {
         if (teams.length == 0) {
-            when(teamService.getTeam(any())).thenReturn(Optional.of(teamA));
+            when(teamService.search(any())).thenReturn(Optional.of(teamA));
         } else {
-            Arrays.stream(teams).forEach(
-                    team -> when(teamService.getTeam(eq(team.id()))).thenReturn(Optional.of(team))
-            );
+            Arrays.stream(teams)
+                    .forEach(team -> when(teamService.search(eq(team.id()))).thenReturn(Optional.of(team)));
         }
     }
 
     @Nested
-    @DisplayName("toGame()")
-    class ToGame {
+    @DisplayName("create()")
+    class Create {
 
         @Test
-        void should_use_teamService() {
+        void shoud_call_spreadsheet_url() throws Exception{
             // Given
-            mockTeamService(teamA, teamB, teamC);
+            MockHttpTransport httpTransport = mockServerResponse();
 
             // When
-            Game game = gameService.toGame(RAW_GAME_1);
+            gameService.create(game1);
 
             // Then
-            verify(teamService, times(1)).getTeam(eq(teamA.id()));
-            verify(teamService, times(1)).getTeam(eq(teamB.id()));
-            verify(teamService, times(1)).getTeam(eq(teamC.id()));
+            assertThat(httpTransport.getLowLevelHttpRequest().getUrl())
+                    .isEqualTo(TARGET_URL + "/" + RANGE +  ":append?valueInputOption=USER_ENTERED");
         }
 
         @Test
-        void should_map_game_completed() {
+        void shoud_use_toRawData_mapper() throws Exception{
             // Given
-            mockTeamService(teamA, teamB, teamC);
+            mockServerResponse();
 
             // When
-            Game game = gameService.toGame(RAW_GAME_1);
+            gameService.create(game1);
 
             // Then
-            assertThat(game.id()).isEqualTo("game1");
-            assertThat(game.time()).isEqualTo(LocalDateTime.of(2022, 8, 23, 10, 0));
-            assertThat(game.court()).isEqualTo("Court1");
-            assertThat(game.teamA()).isEqualTo(teamA);
-            assertThat(game.teamB()).isEqualTo(teamB);
-            assertThat(game.referee()).isNotEmpty().hasValue(teamC);
-            assertThat(game.scoreA()).isNotEmpty().hasValue(25);
-            assertThat(game.scoreB()).isNotEmpty().hasValue(16);
+            verify(gameService,times(1)).toRawData(eq(game1));
         }
 
         @Test
-        void should_map_game_scoreless() {
+        void shoud_send_serialized_completed_game() throws Exception{
             // Given
-            mockTeamService(teamA, teamB);
+            MockHttpTransport httpTransport = mockServerResponse();
 
             // When
-            Game game = gameService.toGame(RAW_GAME_2);
+            gameService.create(game1);
 
             // Then
-            assertThat(game.scoreA()).isEmpty();
-            assertThat(game.scoreB()).isEmpty();
+            assertThat(httpTransport.getLowLevelHttpRequest().getContentAsString())
+                    .contains("{\"values\":[[\"game1\",\"29/08/2022\",\"10:30\",\"court\",\"teamA\",\"teamB\"," +
+                            "\"teamC\",\"25\",\"14\"]]}");
         }
 
         @Test
-        void should_map_game_score_empty() {
+        void shoud_send_serialized_partial_game() throws Exception{
             // Given
-            mockTeamService(teamA, teamC);
+            MockHttpTransport httpTransport = mockServerResponse();
 
             // When
-            Game game = gameService.toGame(RAW_GAME_4);
+            gameService.create(game2);
 
             // Then
-            assertThat(game.scoreA()).isEmpty();
-            assertThat(game.scoreB()).isEmpty();
-        }
-
-        @Test
-        void should_map_game_referee_empty() {
-            // Given
-            mockTeamService(teamA, teamB);
-
-            // When
-            Game game = gameService.toGame(RAW_GAME_5);
-
-            // Then
-            assertThat(game.referee()).isEmpty();
+            assertThat(httpTransport.getLowLevelHttpRequest().getContentAsString())
+                    .contains("{\"values\":[[\"game2\",\"29/08/2022\",\"11:30\",\"court\",\"teamC\",\"teamB\"," +
+                            "\"\",\"\",\"\"]]}");
         }
 
     }
 
     @Nested
-    @DisplayName("getGames()")
-    class GetGames {
+    @DisplayName("readAll()")
+    class ReadAll {
 
         @Test
-        void should_user_range_in_config() {
+        void shoud_call_spreadsheet_url() throws Exception {
             // Given
-            String gameRange = "GameRange";
-            when(sheetConfig.getGameRange()).thenReturn(gameRange);
-            when(sheetService.readAll(any())).thenReturn(Stream.of());
+            MockHttpTransport httpTransport = mockServerResponse();
 
             // When
-            gameService.getGames();
+            gameService.readAll();
 
             // Then
-            verify(sheetConfig, times(1)).getGameRange();
-            verify(sheetService, times(1)).readAll(eq(gameRange));
+            assertThat(httpTransport.getLowLevelHttpRequest().getUrl()).isEqualTo(TARGET_URL + "/" + RANGE);
         }
 
         @Test
-        void should_use_mapper_on_each_elements() {
+        void shoud_use_fromRawData_mapper() throws Exception{
             // Given
-            when(sheetService.readAll(any())).thenReturn(Stream.of(RAW_GAME_1, RAW_GAME_2, RAW_GAME_3));
+            mockServerResponse(getGetResponse(List.of(RAW_GAME_1, RAW_GAME_2)));
             mockTeamService(teamA, teamB, teamC);
 
             // When
-            gameService.getGames();
+            gameService.readAll();
 
             // Then
-            verify(gameService, times(3)).toGame(any());
-            verify(gameService, times(1)).toGame(eq(RAW_GAME_1));
-            verify(gameService, times(1)).toGame(eq(RAW_GAME_2));
-            verify(gameService, times(1)).toGame(eq(RAW_GAME_3));
+            verify(gameService,times(1)).fromRawData(eq(RAW_GAME_1));
+            verify(gameService,times(1)).fromRawData(eq(RAW_GAME_2));
         }
-    }
-
-
-    @Nested
-    @DisplayName("getGamesFor()")
-    class GetGamesFor {
 
         @Test
-        void should_filter_properly() {
+        void shoud_return_deserialized_game() throws Exception{
             // Given
-            when(sheetService.readAll(any())).thenReturn(Stream.of(RAW_GAME_1, RAW_GAME_4, RAW_GAME_5));
+            mockServerResponse(getGetResponse(List.of(RAW_GAME_1, RAW_GAME_2)));
             mockTeamService(teamA, teamB, teamC);
 
             // When
-            List<Game> gamesFor = gameService.getGamesFor(teamB);
+            List<Game> teams = gameService.readAll();
 
             // Then
-            assertThat(gamesFor).map(Game::id).containsExactly("game1", "game5");
+            assertThat(teams).hasSize(2);
+            assertThat(teams.get(0)).isEqualTo(game1);
+            assertThat(teams.get(1)).isEqualTo(game2);
         }
 
     }
 
     @Nested
-    @DisplayName("toRawData()")
-    class ToRawData {
+    @DisplayName("searchFor()")
+    class SearchFor {
 
         @Test
-        void should_handle_full_game() {
+        void should_filter_properly() throws Exception{
             // Given
-            String court = "court";
-            Game game = Game.builder()
-                    .id("gameId")
-                    .time(LocalDateTime.of(2022, AUGUST, 29, 10, 30))
-                    .court(court)
-                    .teamA(teamA)
-                    .teamB(teamB)
-                    .referee(teamC)
-                    .scoreA(25)
-                    .scoreB(14)
-                    .build();
+            mockServerResponse(getGetResponse(List.of(RAW_GAME_1, RAW_GAME_3, RAW_GAME_4)));
+            mockTeamService(teamA, teamB, teamC);
 
-            // Given
-            List<Object> rawData = gameService.toRawData(game);
+            // When
+            List<Game> gamesFor = gameService.searchFor(teamB);
 
             // Then
-            assertThat(rawData).containsExactly("gameId", "29/08/2022", "10:30", court, teamA.id(), teamB.id(),
-                    teamC.id(), "25", "14");
+            assertThat(gamesFor).map(Game::id).containsExactly("game1", "game4");
         }
 
-        @Test
-        void should_handle_partiel_game() {
-            // Given
-            String court = "court";
-            Game game = Game.builder()
-                    .id("gameId")
-                    .time(LocalDateTime.of(2022, AUGUST, 29, 10, 30))
-                    .court(court)
-                    .teamA(teamA)
-                    .teamB(teamB)
-                    .build();
+    }
 
+    @Nested
+    @DisplayName("DeleteAll()")
+    class DeleteAll {
+
+        @Test
+        void shoud_call_spreadsheet_url() throws Exception {
             // Given
-            List<Object> rawData = gameService.toRawData(game);
+            MockHttpTransport httpTransport = mockServerResponse();
+
+            // When
+            gameService.deleteAll();
 
             // Then
-            assertThat(rawData)
-                    .containsExactly("gameId", "29/08/2022", "10:30", court, teamA.id(), teamB.id(), "", "", "");
+            assertThat(httpTransport.getLowLevelHttpRequest().getUrl())
+                    .isEqualTo(TARGET_URL + ":batchClearByDataFilter");
         }
 
     }

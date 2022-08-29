@@ -21,12 +21,12 @@ public class TeamsController {
 
     @GetMapping("/teams")
     public List<Team> getTeams() {
-        return teamService.getTeams();
+        return teamService.readAll();
     }
 
     @GetMapping("/teams/{id}")
     public Team getTeam(@PathVariable String id) {
-        return teamService.getTeam(id)
+        return teamService.search(id)
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Unable to find resource"));
     }
 
