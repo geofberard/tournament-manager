@@ -51,7 +51,7 @@ class TeamServiceTest {
 
             // Then
             verify(sheetConfig,times(1)).getTeamRange();
-            verify(sheetService,times(1)).createData(eq(teamRange),any());
+            verify(sheetService,times(1)).create(eq(teamRange),any());
         }
 
         @Test
@@ -76,21 +76,21 @@ class TeamServiceTest {
             // Given
             String teamRange = "TeamRange";
             when(sheetConfig.getTeamRange()).thenReturn(teamRange);
-            when(sheetService.readData(any())).thenReturn(Stream.of(rawData()));
+            when(sheetService.readAll(any())).thenReturn(Stream.of(rawData()));
 
             // When
             teamService.getTeams();
 
             // Then
             verify(sheetConfig,times(1)).getTeamRange();
-            verify(sheetService,times(1)).readData(eq(teamRange));
+            verify(sheetService,times(1)).readAll(eq(teamRange));
         }
 
         @Test
         void should_use_mapper_on_each_elements() {
             // Given
             when(sheetConfig.getTeamRange()).thenReturn("TeamRange");
-            when(sheetService.readData(any())).thenReturn(Stream.of(RAW_TEAM_1, RAW_TEAM_2));
+            when(sheetService.readAll(any())).thenReturn(Stream.of(RAW_TEAM_1, RAW_TEAM_2));
 
             // When
             teamService.getTeams();
@@ -110,7 +110,7 @@ class TeamServiceTest {
         void should_return_team_if_present() {
             // Given
             when(sheetConfig.getTeamRange()).thenReturn("TeamRange");
-            when(sheetService.readData(any())).thenReturn(Stream.of(RAW_TEAM_1, RAW_TEAM_2));
+            when(sheetService.readAll(any())).thenReturn(Stream.of(RAW_TEAM_1, RAW_TEAM_2));
 
             // When
             Optional<Team> team = teamService.getTeam("team2");
@@ -125,7 +125,7 @@ class TeamServiceTest {
         void should_return_empty_if_absent() {
             // Given
             when(sheetConfig.getTeamRange()).thenReturn("TeamRange");
-            when(sheetService.readData(any())).thenReturn(Stream.of());
+            when(sheetService.readAll(any())).thenReturn(Stream.of());
 
             // When
             Optional<Team> team = teamService.getTeam("team2");

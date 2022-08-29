@@ -25,12 +25,12 @@ public class GameService {
     private SpreadsheetConfig spreadsheetConfig;
 
     public boolean addGame(Game game) {
-        return sheetService.createData(spreadsheetConfig.getGameRange(), toRawData(game));
+        return sheetService.create(spreadsheetConfig.getGameRange(), toRawData(game));
     }
 
     public List<Game> getGames() {
         return sheetService
-                .readData(spreadsheetConfig.getGameRange())
+                .readAll(spreadsheetConfig.getGameRange())
                 .map(this::toGame)
                 .collect(toList());
     }
@@ -39,6 +39,10 @@ public class GameService {
         return getGames().stream()
                 .filter(game -> game.hasContestant(team))
                 .collect(toList());
+    }
+
+    public boolean deleteAll() {
+        return sheetService.deleteAll(spreadsheetConfig.getGameRange());
     }
 
     @VisibleForTesting

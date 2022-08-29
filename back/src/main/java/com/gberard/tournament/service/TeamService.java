@@ -22,12 +22,12 @@ public class TeamService {
     private SpreadsheetConfig spreadsheetConfig;
 
     public boolean addTeam(Team team) {
-        return sheetService.createData(spreadsheetConfig.getTeamRange(), toRawData(team));
+        return sheetService.create(spreadsheetConfig.getTeamRange(), toRawData(team));
     }
 
     public List<Team> getTeams(){
         return sheetService
-                .readData(spreadsheetConfig.getTeamRange())
+                .readAll(spreadsheetConfig.getTeamRange())
                 .map(this::toTeam)
                 .collect(toList());
     }
@@ -36,6 +36,10 @@ public class TeamService {
         return getTeams().stream()
                 .filter(team -> team.id().equals(teamId))
                 .findFirst();
+    }
+
+    public boolean deleteAll() {
+        return sheetService.deleteAll(spreadsheetConfig.getTeamRange());
     }
 
     @VisibleForTesting

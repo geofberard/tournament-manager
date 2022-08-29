@@ -31,8 +31,13 @@ public class BackofficeSandboxApplication {
 
     @EventListener(ApplicationReadyEvent.class)
     public void doSomethingAfterStartup() {
-        teamService.addTeam(new Team("yeah","DepartYeah"));
+        teamService.deleteAll();
+        gameService.deleteAll();
+        teamService.addTeam(new Team("TeamA","TeamA"));
+        teamService.addTeam(new Team("TeamB","TeamB"));
+        teamService.addTeam(new Team("TeamC","TeamC"));
         gameService.addGame(Game.builder()
+                .id("game1")
                 .time(LocalDateTime.of(2022, AUGUST,29,10,30))
                 .court("test")
                 .teamA(new Team("TeamA",""))
@@ -42,13 +47,15 @@ public class BackofficeSandboxApplication {
                 .scoreB(14)
                 .build());
         gameService.addGame(Game.builder()
+                .id("game2")
                 .time(LocalDateTime.of(2022, AUGUST,29,10,30))
                 .court("test")
                 .teamA(new Team("TeamA",""))
                 .teamB(new Team("TeamB",""))
                 .build());
-        System.out.println(teamService.getTeam("yeah"));
+        System.out.println(teamService.getTeam("TeamA"));
         System.out.println("Done");
+        System.exit(1);
     }
 
 }

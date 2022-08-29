@@ -149,20 +149,20 @@ class GameServiceTest {
             // Given
             String gameRange = "GameRange";
             when(sheetConfig.getGameRange()).thenReturn(gameRange);
-            when(sheetService.readData(any())).thenReturn(Stream.of());
+            when(sheetService.readAll(any())).thenReturn(Stream.of());
 
             // When
             gameService.getGames();
 
             // Then
             verify(sheetConfig, times(1)).getGameRange();
-            verify(sheetService, times(1)).readData(eq(gameRange));
+            verify(sheetService, times(1)).readAll(eq(gameRange));
         }
 
         @Test
         void should_use_mapper_on_each_elements() {
             // Given
-            when(sheetService.readData(any())).thenReturn(Stream.of(RAW_GAME_1, RAW_GAME_2, RAW_GAME_3));
+            when(sheetService.readAll(any())).thenReturn(Stream.of(RAW_GAME_1, RAW_GAME_2, RAW_GAME_3));
             mockTeamService(teamA, teamB, teamC);
 
             // When
@@ -184,7 +184,7 @@ class GameServiceTest {
         @Test
         void should_filter_properly() {
             // Given
-            when(sheetService.readData(any())).thenReturn(Stream.of(RAW_GAME_1, RAW_GAME_4, RAW_GAME_5));
+            when(sheetService.readAll(any())).thenReturn(Stream.of(RAW_GAME_1, RAW_GAME_4, RAW_GAME_5));
             mockTeamService(teamA, teamB, teamC);
 
             // When

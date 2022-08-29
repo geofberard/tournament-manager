@@ -4,6 +4,8 @@ import com.gberard.tournament.config.SpreadsheetConfig;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.api.services.sheets.v4.Sheets;
+import com.google.api.services.sheets.v4.model.BatchClearValuesByDataFilterRequest;
+import com.google.api.services.sheets.v4.model.DataFilter;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +22,8 @@ import static java.util.Collections.emptyList;
 @Slf4j
 @Component
 public class SheetService {
-    private static final String APPLICATION_NAME = "Google Sheets API Java Quickstart";
     public static final String USER_ENTERED = "USER_ENTERED";
-
+    private static final String APPLICATION_NAME = "Google Sheets API Java Quickstart";
     public final Cache<String, List<List<Object>>> spreadSheetCache =
             Caffeine.newBuilder()
                     .expireAfterAccess(30, TimeUnit.SECONDS)
@@ -34,15 +35,15 @@ public class SheetService {
     @Autowired
     private GoogleApiService googleApiService;
 
-    public boolean createData(String range, List<Object> data) {
+    public boolean create(String range, List<Object> data) {
         try {
-            ValueRange valueRange = new ValueRange().setValues(List.of(data));
+            var valueRange = new ValueRange().setValues(List.of(data));
 
             var response = getService().spreadsheets().values()
                     .append(spreadsheetConfig.getId(), range, valueRange)
                     .setValueInputOption(USER_ENTERED)
                     .execute();
-            
+
             log.info("Creating new data " + response.toString());
             return true;
         } catch (Exception e) {
@@ -51,7 +52,7 @@ public class SheetService {
         return false;
     }
 
-    public Stream<List<Object>> readData(String range) {
+    public Stream<List<Object>> readAll(String range) {
         return spreadSheetCache.get(range, newRange -> readSpreadSheet(newRange))
                 .stream();
     }
@@ -72,6 +73,24 @@ public class SheetService {
             e.printStackTrace();
         }
         return emptyList();
+    }
+
+    public boolean deleteAll(String range) {
+        try {
+            var dataFilter = new DataFilter().setA1Range(range);
+
+            var clearRequest = new BatchClearValuesByDataFilterRequest().setDataFilters(List.of(dataFilter));
+
+            var response = getService().spreadsheets().values()
+                    .batchClearByDataFilter(spreadsheetConfig.getId(), clearRequest)
+                    .execute();
+
+            log.info("Deleting all data in " + response.toString());
+            return true;
+        } catch (Exception e) {
+            log.error("Error while deleting all data", e);
+        }
+        return false;
     }
 
     private Sheets getService() throws GeneralSecurityException, IOException {

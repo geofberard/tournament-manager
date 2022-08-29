@@ -31,7 +31,7 @@ class SheetServiceTest {
     private static String RANGE = "range";
     private static String SPREADSHEET_ID = "spreadsheetId";
     public static final String TARGET_URL =
-            "https://sheets.googleapis.com/v4/spreadsheets/" + SPREADSHEET_ID + "/values/" + RANGE;
+            "https://sheets.googleapis.com/v4/spreadsheets/" + SPREADSHEET_ID + "/values";
 
     @InjectMocks
     private SheetService sheetService;
@@ -52,8 +52,8 @@ class SheetServiceTest {
     }
 
     @Nested
-    @DisplayName("createData()")
-    class CreateData {
+    @DisplayName("create()")
+    class Create {
 
         @Test
         void shoud_use_google_api_to_call_spreadsheet_url() throws GeneralSecurityException, IOException {
@@ -74,11 +74,11 @@ class SheetServiceTest {
             when(googleApiService.getHttpTransport()).thenReturn(httpTransport);
 
             // When
-            sheetService.createData(RANGE, List.of("A","B","C"));
+            sheetService.create(RANGE, List.of("A","B","C"));
 
             // Then
             assertThat(httpTransport.getLowLevelHttpRequest().getUrl())
-                    .isEqualTo(TARGET_URL + ":append?valueInputOption=USER_ENTERED");
+                    .isEqualTo(TARGET_URL + "/" + RANGE +  ":append?valueInputOption=USER_ENTERED");
             assertThat(httpTransport.getLowLevelHttpRequest().getContentAsString())
                     .contains("{\"values\":[[\"A\",\"B\",\"C\"]]}");
         }
@@ -86,8 +86,8 @@ class SheetServiceTest {
     }
 
     @Nested
-    @DisplayName("readData()")
-    class ReadData {
+    @DisplayName("readAll()")
+    class ReadAll {
 
         @Test
         void shoud_use_google_api_to_call_spreadsheet_url() throws GeneralSecurityException, IOException {
@@ -104,11 +104,39 @@ class SheetServiceTest {
             when(googleApiService.getHttpTransport()).thenReturn(httpTransport);
 
             // When
-            sheetService.readData(RANGE);
+            sheetService.readAll(RANGE);
+
+            // Then
+            assertThat(httpTransport.getLowLevelHttpRequest().getUrl()).isEqualTo(TARGET_URL + "/" + RANGE);
+        }
+
+    }
+
+    @Nested
+    @DisplayName("DeleteAll()")
+    class DeleteAll {
+
+        @Test
+        void shoud_use_google_api_to_call_spreadsheet_url() throws GeneralSecurityException, IOException {
+            // Given
+            var resp = new MockLowLevelHttpResponse()
+                    .setStatusCode(200)
+                    .setContentType(Json.MEDIA_TYPE)
+                    .setContent("{\"clearedRanges\":[\"Teams!A2:B19\"]," +
+                            "\"spreadsheetId\":\"1uAzFMh90-uowmsHHIYz1QmLnOOVm7XIbLuytxDfj9j0\"}");
+
+            var httpTransport = new MockHttpTransport.Builder()
+                    .setLowLevelHttpResponse(resp)
+                    .build();
+
+            when(googleApiService.getHttpTransport()).thenReturn(httpTransport);
+
+            // When
+            sheetService.deleteAll(RANGE);
 
             // Then
             assertThat(httpTransport.getLowLevelHttpRequest().getUrl())
-                    .isEqualTo(TARGET_URL);
+                    .isEqualTo(TARGET_URL + ":batchClearByDataFilter");
         }
 
     }
