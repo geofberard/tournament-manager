@@ -1,4 +1,4 @@
-package com.gberard.tournament.service;
+package com.gberard.tournament.repository;
 
 import com.gberard.tournament.data.Game;
 import com.gberard.tournament.data.Team;
@@ -25,21 +25,21 @@ import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
-class GameServiceMapperTest {
+class GameRepositoryMapperTest {
 
     @Spy
     @InjectMocks
-    private GameService gameService;
+    private GameRepository gameService;
 
     @Mock
-    private TeamService teamService;
+    private TeamRepository teamRepository;
 
     private void mockTeamService(Team... teams) {
         if (teams.length == 0) {
-            when(teamService.search(any())).thenReturn(Optional.of(teamA));
+            when(teamRepository.search(any())).thenReturn(Optional.of(teamA));
         } else {
             Arrays.stream(teams)
-                    .forEach(team -> when(teamService.search(eq(team.id()))).thenReturn(Optional.of(team)));
+                    .forEach(team -> when(teamRepository.search(eq(team.id()))).thenReturn(Optional.of(team)));
         }
     }
 
@@ -58,9 +58,9 @@ class GameServiceMapperTest {
             Game game = gameService.fromRawData(rawGame);
 
             // Then
-            verify(teamService, times(1)).search(eq(teamA.id()));
-            verify(teamService, times(1)).search(eq(teamB.id()));
-            verify(teamService, times(1)).search(eq(teamC.id()));
+            verify(teamRepository, times(1)).search(eq(teamA.id()));
+            verify(teamRepository, times(1)).search(eq(teamB.id()));
+            verify(teamRepository, times(1)).search(eq(teamC.id()));
         }
 
         @Test

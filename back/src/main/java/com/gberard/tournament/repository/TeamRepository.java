@@ -1,21 +1,21 @@
-package com.gberard.tournament.service;
+package com.gberard.tournament.repository;
 
 import com.gberard.tournament.data.Team;
 import com.google.common.annotations.VisibleForTesting;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
 import static com.gberard.tournament.data.DataUtils.getValue;
 
-@Component
-public class TeamService extends SheetService<Team> {
+@Repository
+public class TeamRepository extends SheetRepository<Team> {
 
     @VisibleForTesting
     protected static final String RANGE = "Teams!A2:B";
 
-    public TeamService() {
+    public TeamRepository() {
         super(RANGE);
     }
 

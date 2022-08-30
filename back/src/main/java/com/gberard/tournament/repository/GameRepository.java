@@ -1,26 +1,26 @@
-package com.gberard.tournament.service;
+package com.gberard.tournament.repository;
 
 import com.gberard.tournament.data.Game;
 import com.gberard.tournament.data.Team;
 import com.google.common.annotations.VisibleForTesting;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 import static com.gberard.tournament.data.DataUtils.*;
 import static java.util.stream.Collectors.toList;
 
-@Component
-public class GameService extends SheetService<Game> {
+@Repository
+public class GameRepository extends SheetRepository<Game> {
 
     @VisibleForTesting
     protected static final String RANGE = "Games!A2:H";
 
     @Autowired
-    TeamService teamService;
+    TeamRepository teamService;
 
-    protected GameService() {
+    protected GameRepository() {
         super(RANGE);
     }
 

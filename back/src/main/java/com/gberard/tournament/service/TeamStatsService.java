@@ -1,6 +1,8 @@
 package com.gberard.tournament.service;
 
 import com.gberard.tournament.data.*;
+import com.gberard.tournament.repository.GameRepository;
+import com.gberard.tournament.repository.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,10 +15,10 @@ import static java.util.stream.Collectors.toList;
 public class TeamStatsService {
 
     @Autowired
-    TeamService teamService;
+    TeamRepository teamService;
 
     @Autowired
-    GameService gameService;
+    GameRepository gameService;
 
     public List<TeamStats> getTeamsStats() {
         return teamService.readAll().stream()

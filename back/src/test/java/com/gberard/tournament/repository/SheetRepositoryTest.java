@@ -1,6 +1,7 @@
-package com.gberard.tournament.service;
+package com.gberard.tournament.repository;
 
 import com.gberard.tournament.config.SpreadsheetConfig;
+import com.gberard.tournament.service.GoogleApiService;
 import com.google.api.client.json.Json;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.testing.http.MockHttpTransport;
@@ -19,7 +20,7 @@ import java.util.Optional;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class SheetServiceTest {
+class SheetRepositoryTest {
 
     protected static String SPREADSHEET_ID = "spreadsheetId";
     protected static final String TARGET_URL =

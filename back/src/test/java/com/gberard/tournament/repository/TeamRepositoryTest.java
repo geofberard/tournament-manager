@@ -1,4 +1,4 @@
-package com.gberard.tournament.service;
+package com.gberard.tournament.repository;
 
 import com.gberard.tournament.data.Team;
 import com.google.api.client.testing.http.MockHttpTransport;
@@ -14,19 +14,19 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.gberard.tournament.data._TestUtils.*;
-import static com.gberard.tournament.service.TeamService.RANGE;
+import static com.gberard.tournament.repository.TeamRepository.RANGE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class TeamServiceTest extends SheetServiceTest{
+class TeamRepositoryTest extends SheetRepositoryTest {
 
     public static final List<Object> RAW_TEAM_1 = rawData("teamA", "TeamA");
     public static final List<Object> RAW_TEAM_2 = rawData("teamB", "TeamB");
 
     @Spy
     @InjectMocks
-    private TeamService teamService = new TeamService();
+    private TeamRepository teamService = new TeamRepository();
 
     @Nested
     @DisplayName("create()")

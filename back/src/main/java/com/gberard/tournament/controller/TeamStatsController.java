@@ -2,7 +2,7 @@ package com.gberard.tournament.controller;
 
 import com.gberard.tournament.data.Team;
 import com.gberard.tournament.data.TeamStats;
-import com.gberard.tournament.service.TeamService;
+import com.gberard.tournament.repository.TeamRepository;
 import com.gberard.tournament.service.TeamStatsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +22,7 @@ public class TeamStatsController {
     public TeamStatsService teamStatsService;
 
     @Autowired
-    public TeamService teamService;
+    public TeamRepository teamService;
 
     @GetMapping("/teams-stats")
     public List<TeamStats> getTeamsStats() {

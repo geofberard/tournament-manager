@@ -1,4 +1,4 @@
-package com.gberard.tournament.service;
+package com.gberard.tournament.repository;
 
 import com.gberard.tournament.data.Game;
 import com.gberard.tournament.data.Team;
@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.gberard.tournament.data._TestUtils.*;
-import static com.gberard.tournament.service.GameService.RANGE;
+import static com.gberard.tournament.repository.GameRepository.RANGE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -25,7 +25,7 @@ import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
-class GameServiceTest extends SheetServiceTest {
+class GameRepositoryTest extends SheetRepositoryTest {
 
     private static final List<Object> RAW_GAME_1 =
             rawData("game1", "29/08/2022", "10:30", "court", "teamA", "teamB", "teamC", "25", "14");
@@ -38,10 +38,10 @@ class GameServiceTest extends SheetServiceTest {
 
     @Spy
     @InjectMocks
-    private GameService gameService;
+    private GameRepository gameRepository;
 
     @Mock
-    private TeamService teamService;
+    private TeamRepository teamService;
 
     private void mockTeamService(Team... teams) {
         if (teams.length == 0) {
@@ -62,7 +62,7 @@ class GameServiceTest extends SheetServiceTest {
             MockHttpTransport httpTransport = mockServerResponse();
 
             // When
-            gameService.create(game1);
+            gameRepository.create(game1);
 
             // Then
             assertThat(httpTransport.getLowLevelHttpRequest().getUrl())
@@ -75,10 +75,10 @@ class GameServiceTest extends SheetServiceTest {
             mockServerResponse();
 
             // When
-            gameService.create(game1);
+            gameRepository.create(game1);
 
             // Then
-            verify(gameService,times(1)).toRawData(eq(game1));
+            verify(gameRepository,times(1)).toRawData(eq(game1));
         }
 
         @Test
@@ -87,7 +87,7 @@ class GameServiceTest extends SheetServiceTest {
             MockHttpTransport httpTransport = mockServerResponse();
 
             // When
-            gameService.create(game1);
+            gameRepository.create(game1);
 
             // Then
             assertThat(httpTransport.getLowLevelHttpRequest().getContentAsString())
@@ -101,7 +101,7 @@ class GameServiceTest extends SheetServiceTest {
             MockHttpTransport httpTransport = mockServerResponse();
 
             // When
-            gameService.create(game2);
+            gameRepository.create(game2);
 
             // Then
             assertThat(httpTransport.getLowLevelHttpRequest().getContentAsString())
@@ -121,7 +121,7 @@ class GameServiceTest extends SheetServiceTest {
             MockHttpTransport httpTransport = mockServerResponse();
 
             // When
-            gameService.readAll();
+            gameRepository.readAll();
 
             // Then
             assertThat(httpTransport.getLowLevelHttpRequest().getUrl()).isEqualTo(TARGET_URL + "/" + RANGE);
@@ -134,11 +134,11 @@ class GameServiceTest extends SheetServiceTest {
             mockTeamService(teamA, teamB, teamC);
 
             // When
-            gameService.readAll();
+            gameRepository.readAll();
 
             // Then
-            verify(gameService,times(1)).fromRawData(eq(RAW_GAME_1));
-            verify(gameService,times(1)).fromRawData(eq(RAW_GAME_2));
+            verify(gameRepository,times(1)).fromRawData(eq(RAW_GAME_1));
+            verify(gameRepository,times(1)).fromRawData(eq(RAW_GAME_2));
         }
 
         @Test
@@ -148,7 +148,7 @@ class GameServiceTest extends SheetServiceTest {
             mockTeamService(teamA, teamB, teamC);
 
             // When
-            List<Game> teams = gameService.readAll();
+            List<Game> teams = gameRepository.readAll();
 
             // Then
             assertThat(teams).hasSize(2);
@@ -169,7 +169,7 @@ class GameServiceTest extends SheetServiceTest {
             mockTeamService(teamA, teamB, teamC);
 
             // When
-            List<Game> gamesFor = gameService.searchFor(teamB);
+            List<Game> gamesFor = gameRepository.searchFor(teamB);
 
             // Then
             assertThat(gamesFor).map(Game::id).containsExactly("game1", "game4");
@@ -187,7 +187,7 @@ class GameServiceTest extends SheetServiceTest {
             MockHttpTransport httpTransport = mockServerResponse();
 
             // When
-            gameService.deleteAll();
+            gameRepository.deleteAll();
 
             // Then
             assertThat(httpTransport.getLowLevelHttpRequest().getUrl())

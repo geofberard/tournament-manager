@@ -1,6 +1,7 @@
-package com.gberard.tournament.service;
+package com.gberard.tournament.repository;
 
 import com.gberard.tournament.config.SpreadsheetConfig;
+import com.gberard.tournament.service.GoogleApiService;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.BatchClearValuesByDataFilterRequest;
 import com.google.api.services.sheets.v4.model.DataFilter;
@@ -17,7 +18,7 @@ import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 
 @Slf4j
-public abstract class SheetService<T> {
+public abstract class SheetRepository<T> {
     public static final String USER_ENTERED = "USER_ENTERED";
     private static final String APPLICATION_NAME = "Google Sheets API Java Quickstart";
 
@@ -29,7 +30,7 @@ public abstract class SheetService<T> {
 
     private final String range;
 
-    protected SheetService(String range) {
+    protected SheetRepository(String range) {
         this.range = range;
     }
 

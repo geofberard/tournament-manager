@@ -1,4 +1,4 @@
-package com.gberard.tournament.service;
+package com.gberard.tournament.repository;
 
 import com.gberard.tournament.data.Team;
 import org.junit.jupiter.api.DisplayName;
@@ -16,11 +16,11 @@ import static com.gberard.tournament.data._TestUtils.teamA;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
-class TeamServiceMapperTest {
+class TeamRepositoryMapperTest {
 
     @Spy
     @InjectMocks
-    private TeamService teamService = new TeamService();
+    private TeamRepository teamService = new TeamRepository();
 
     @Nested
     @DisplayName("fromRawData()")

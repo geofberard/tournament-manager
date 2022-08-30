@@ -2,16 +2,13 @@ package com.gberard.tournament;
 
 import com.gberard.tournament.data.Game;
 import com.gberard.tournament.data.Team;
-import com.gberard.tournament.service.GameService;
-import com.gberard.tournament.service.TeamService;
+import com.gberard.tournament.repository.GameRepository;
+import com.gberard.tournament.repository.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.event.EventListener;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.time.LocalDateTime;
 
@@ -21,10 +18,10 @@ import static java.time.Month.AUGUST;
 //@SpringBootApplication
 public class BackofficeSandboxApplication {
     @Autowired
-    private TeamService teamService;
+    private TeamRepository teamService;
 
     @Autowired
-    private GameService gameService;
+    private GameRepository gameService;
 
     public static void main(String[] args) {
         SpringApplication.run(BackofficeSandboxApplication.class, args);

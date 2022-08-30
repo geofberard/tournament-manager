@@ -3,6 +3,8 @@ package com.gberard.tournament.service;
 import com.gberard.tournament.data.Game;
 import com.gberard.tournament.data.Team;
 import com.gberard.tournament.data.TeamStats;
+import com.gberard.tournament.repository.GameRepository;
+import com.gberard.tournament.repository.TeamRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -30,10 +32,10 @@ class TeamStatsServiceTest {
     private TeamStatsService teamStatsService = new TeamStatsService();
 
     @Mock
-    private TeamService teamService;
+    private TeamRepository teamService;
 
     @Mock
-    private GameService gameService;
+    private GameRepository gameService;
 
     List<Team> teams = List.of(teamA, teamB, teamC, teamD);
 
