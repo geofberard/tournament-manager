@@ -10,7 +10,7 @@ const teamC = { id: "teamC", name: "TeamC" };
 const games: Game[] = [
     new Game({
         id: "gameId",
-        time: new Date("2022-08-19 15:00"),
+        time: expect.any(Date),
         court: "court",
         teamA: teamA,
         teamB: teamB,
@@ -20,7 +20,7 @@ const games: Game[] = [
     }),
     new Game({
         id: "gameId",
-        time: new Date("2022-08-19 16:00"),
+        time: expect.any(Date),
         court: "court",
         teamA: teamA,
         teamB: teamB,
@@ -30,7 +30,7 @@ const games: Game[] = [
     }),
     new Game({
         id: "gameId",
-        time: new Date("2022-08-19 17:00"),
+        time: expect.any(Date),
         court: "court",
         teamA: teamA,
         teamB: teamB,

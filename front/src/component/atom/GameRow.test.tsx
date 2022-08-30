@@ -10,7 +10,7 @@ const teamC = { id: "teamC", name: "TeamC" };
 
 const game = new Game({
     id: "gameId",
-    time: new Date(),
+    time: expect.any(Date),
     court: "court",
     teamA: teamA,
     teamB: teamB,
@@ -20,7 +20,7 @@ const game = new Game({
 })
 const gameNotPlayed = new Game({
     id: "gameId",
-    time: new Date(),
+    time: expect.any(Date),
     court: "court",
     teamA: teamA,
     teamB: teamB,
@@ -28,7 +28,7 @@ const gameNotPlayed = new Game({
 })
 const gameDeuce = new Game({
     id: "gameId",
-    time: new Date(),
+    time: expect.any(Date),
     court: "court",
     teamA: teamA,
     teamB: teamB,

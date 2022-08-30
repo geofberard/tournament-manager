@@ -3,6 +3,7 @@ import { mockFunctionReturn, testSnapshot } from "../../test/TestUtils";
 import { WelcomePageTeam } from "./WelcomePageTeam";
 import {useGames} from "../hook/useGames";
 import Game from "../../data/Game";
+import { createRenderer } from "react-test-renderer/shallow";
 
 jest.mock("../hook/useGames", () => ({
     useGames: jest.fn(),
@@ -15,7 +16,7 @@ const teamC = { id: "teamC", name: "TeamC" };
 const games: Game[] = [
     new Game({
         id: "gameId",
-        time: new Date("2022-08-19 15:00"),
+        time: expect.any(Date),
         court: "court",
         teamA: teamA,
         teamB: teamB,
@@ -25,7 +26,7 @@ const games: Game[] = [
     }),
     new Game({
         id: "gameId",
-        time: new Date("2022-08-19 16:00"),
+        time: expect.any(Date),
         court: "court",
         teamA: teamA,
         teamB: teamB,
@@ -35,7 +36,7 @@ const games: Game[] = [
     }),
     new Game({
         id: "gameId",
-        time: new Date("2022-08-19 17:00"),
+        time: expect.any(Date),
         court: "court",
         teamA: teamA,
         teamB: teamB,
@@ -47,5 +48,22 @@ const games: Game[] = [
 ];
 
 mockFunctionReturn(useGames, games);
-
 testSnapshot(<WelcomePageTeam />);
+
+
+// describe("initializing", () => {
+//     it("should match last snapshot", () => {
+//         // Given
+//         const renderer = createRenderer();
+
+//         // When
+//         const result = renderer.render(<WelcomePageTeam />);
+
+//         // Then
+//         expect(result).toMatchSnapshot();
+//     });
+// });
+
+// {
+//     time: expect.any(Date)
+// }
