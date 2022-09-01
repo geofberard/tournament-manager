@@ -15,7 +15,7 @@ import static java.util.stream.Collectors.toList;
 public class GameRepository extends SheetRepository<Game> {
 
     @VisibleForTesting
-    protected static final String RANGE = "Games!A2:H";
+    protected static final String RANGE = "Games!A2:I";
 
     @Autowired
     TeamRepository teamService;

@@ -1,11 +1,9 @@
 package com.gberard.tournament.data;
 
 import lombok.Builder;
-import org.apache.commons.codec.digest.DigestUtils;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.OptionalInt;
 
 import static com.gberard.tournament.data.GameTeamStatus.*;
 
@@ -18,7 +16,7 @@ public record Game(
         Optional<Team> referee,
         Optional<Integer> scoreA,
         Optional<Integer> scoreB
-) {
+) implements Identified{
     public boolean isFinished () {
         return scoreA.isPresent() && scoreB.isPresent();
     }
