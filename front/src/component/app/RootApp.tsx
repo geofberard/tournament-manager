@@ -4,6 +4,8 @@ import * as React from "react";
 import { FC } from "react";
 import { CurrentTeamProvider } from "../hook/CurrentTeamContext";
 import { TeamLogin } from "../page/TeamLogin";
+import { WelcomePageTeam } from "../page/WelcomePageTeam";
+import * as TeamService from "../../service/TeamService";
 
 const defaultTheme = createTheme();
 const theme = createTheme(defaultTheme, {
@@ -34,15 +36,25 @@ const theme = createTheme(defaultTheme, {
             fontSize: "2rem",
             fontWeight: 900,
         },
+        h3: {
+            fontSize: "1.3rem",
+            fontWeight: 900,
+            alignSelf: "center",
+            // [defaultTheme.breakpoints.up("md")]: {
+            //     fontSize: "1.7rem",
+            // },
+        },
     },
 });
+
+const currentTeam = TeamService.getCurrentTeam();
 
 export const RootApp: FC = () => {
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
             <CurrentTeamProvider>
-                <TeamLogin />
+                {currentTeam ? <WelcomePageTeam /> : <TeamLogin />}
             </CurrentTeamProvider>
         </ThemeProvider>
     );

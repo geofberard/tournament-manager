@@ -1,0 +1,227 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should match last snapshot 1`] = `
+<ForwardRef(Grid)
+  container={true}
+  direction="column"
+  flexGrow={1}
+  item={true}
+  md={7}
+  sx={
+    Object {
+      "paddingLeft": Object {
+        "md": "15px",
+        "xs": "0",
+      },
+      "paddingRight": Object {
+        "md": "15px",
+        "xs": "0",
+      },
+    }
+  }
+>
+  <ForwardRef(Grid)
+    item={true}
+    sx={
+      Object {
+        "borderBottom": [Function],
+        "margin": "0 auto",
+        "marginBottom": "5px",
+        "maxWidth": "300px",
+        "paddingBottom": Object {
+          "md": "10px",
+          "xs": "0",
+        },
+        "paddingTop": "10px",
+      }
+    }
+  >
+    <ForwardRef(Typography)
+      variant="h3"
+    >
+      Classement
+    </ForwardRef(Typography)>
+  </ForwardRef(Grid)>
+  <ForwardRef(TableContainer)
+    style={
+      Object {
+        "borderRadius": "15px",
+      }
+    }
+  >
+    <ForwardRef(Table)>
+      <ForwardRef(TableHead)>
+        <ForwardRef(TableRow)>
+          <Styled(ForwardRef(TableCell))
+            align="center"
+          >
+            #
+          </Styled(ForwardRef(TableCell))>
+          <Styled(ForwardRef(TableCell))
+            align="center"
+          >
+            Equipes
+          </Styled(ForwardRef(TableCell))>
+          <Styled(ForwardRef(TableCell))
+            align="center"
+          >
+            P
+          </Styled(ForwardRef(TableCell))>
+          <Styled(ForwardRef(TableCell))
+            align="center"
+          >
+            W
+          </Styled(ForwardRef(TableCell))>
+          <Styled(ForwardRef(TableCell))
+            align="center"
+          >
+            L
+          </Styled(ForwardRef(TableCell))>
+          <Styled(ForwardRef(TableCell))
+            align="center"
+          >
+            Pts
+          </Styled(ForwardRef(TableCell))>
+        </ForwardRef(TableRow)>
+      </ForwardRef(TableHead)>
+      <ForwardRef(TableBody)>
+        <ForwardRef(TableRow)
+          selected={true}
+          sx={
+            Object {
+              "&:last-child td, &:last-child th": Object {
+                "border": 0,
+              },
+            }
+          }
+        >
+          <ForwardRef(TableCell)
+            align="center"
+            component="th"
+            scope="row"
+          >
+            <ForwardRef(Badge)
+              badgeContent={1}
+            />
+          </ForwardRef(TableCell)>
+          <ForwardRef(TableCell)
+            align="center"
+          >
+            Team1
+          </ForwardRef(TableCell)>
+          <ForwardRef(TableCell)
+            align="center"
+          >
+            0
+          </ForwardRef(TableCell)>
+          <ForwardRef(TableCell)
+            align="center"
+          >
+            0
+          </ForwardRef(TableCell)>
+          <ForwardRef(TableCell)
+            align="center"
+          >
+            0
+          </ForwardRef(TableCell)>
+          <ForwardRef(TableCell)
+            align="center"
+          >
+            0 pts
+          </ForwardRef(TableCell)>
+        </ForwardRef(TableRow)>
+        <ForwardRef(TableRow)
+          selected={false}
+          sx={
+            Object {
+              "&:last-child td, &:last-child th": Object {
+                "border": 0,
+              },
+            }
+          }
+        >
+          <ForwardRef(TableCell)
+            align="center"
+            component="th"
+            scope="row"
+          >
+            <ForwardRef(Badge)
+              badgeContent={2}
+            />
+          </ForwardRef(TableCell)>
+          <ForwardRef(TableCell)
+            align="center"
+          >
+            Team2
+          </ForwardRef(TableCell)>
+          <ForwardRef(TableCell)
+            align="center"
+          >
+            0
+          </ForwardRef(TableCell)>
+          <ForwardRef(TableCell)
+            align="center"
+          >
+            0
+          </ForwardRef(TableCell)>
+          <ForwardRef(TableCell)
+            align="center"
+          >
+            0
+          </ForwardRef(TableCell)>
+          <ForwardRef(TableCell)
+            align="center"
+          >
+            0 pts
+          </ForwardRef(TableCell)>
+        </ForwardRef(TableRow)>
+        <ForwardRef(TableRow)
+          selected={false}
+          sx={
+            Object {
+              "&:last-child td, &:last-child th": Object {
+                "border": 0,
+              },
+            }
+          }
+        >
+          <ForwardRef(TableCell)
+            align="center"
+            component="th"
+            scope="row"
+          >
+            <ForwardRef(Badge)
+              badgeContent={3}
+            />
+          </ForwardRef(TableCell)>
+          <ForwardRef(TableCell)
+            align="center"
+          >
+            Team3
+          </ForwardRef(TableCell)>
+          <ForwardRef(TableCell)
+            align="center"
+          >
+            0
+          </ForwardRef(TableCell)>
+          <ForwardRef(TableCell)
+            align="center"
+          >
+            0
+          </ForwardRef(TableCell)>
+          <ForwardRef(TableCell)
+            align="center"
+          >
+            0
+          </ForwardRef(TableCell)>
+          <ForwardRef(TableCell)
+            align="center"
+          >
+            0 pts
+          </ForwardRef(TableCell)>
+        </ForwardRef(TableRow)>
+      </ForwardRef(TableBody)>
+    </ForwardRef(Table)>
+  </ForwardRef(TableContainer)>
+</ForwardRef(Grid)>
+`;
