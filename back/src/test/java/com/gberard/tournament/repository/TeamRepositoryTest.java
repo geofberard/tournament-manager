@@ -1,73 +1,59 @@
 package com.gberard.tournament.repository;
 
 import com.gberard.tournament.data.Team;
-import com.google.api.client.testing.http.MockLowLevelHttpRequest;
-import org.junit.jupiter.api.*;
+import com.gberard.tournament.service.SpreadsheetCRUDService;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
 
 import static com.gberard.tournament.data._TestUtils.*;
-import static com.gberard.tournament.repository.SheetRepositoryTest.MockedApiCall.mockedApiCall;
 import static com.gberard.tournament.repository.TeamRepository.RANGE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class TeamRepositoryTest extends SheetRepositoryTest {
+class TeamRepositoryTest {
 
-    public static final String URL_VALUES_GET = API_SHEETS_VALUES + "/" + RANGE;
-
-    public static final List<Object> RAW_TEAM_1 = rawData("teamA", "TeamA");
-    public static final List<Object> RAW_TEAM_2 = rawData("teamB", "TeamB");
+    public static final List<Object> RAW_TEAM_A = rawData("teamA", "TeamA");
+    public static final List<Object> RAW_TEAM_B = rawData("teamB", "TeamB");
 
     @Spy
     @InjectMocks
     private TeamRepository teamRepository = new TeamRepository();
 
+    @Mock
+    protected SpreadsheetCRUDService spreadsheetCRUDService;
+
     @Nested
     @DisplayName("create()")
     class Create {
 
-        private List<MockLowLevelHttpRequest> requests;
-
-        @BeforeEach
-        void prepare_http_transport() throws Exception {
-            requests = mockHttpTransport();
-        }
-
         @Test
-        void shoud_call_spreadsheet_url() throws Exception {
+        void shoud_use_crud_service() {
             // When
             teamRepository.create(teamA);
 
             // Then
-            assertThat(requests).map(MockLowLevelHttpRequest::getUrl).first()
-                    .isEqualTo(URL_VALUES_GET + ":append?valueInputOption=USER_ENTERED");
+            verify(spreadsheetCRUDService, times(1))
+                    .appendCells(eq(RANGE), eq(List.of(RAW_TEAM_A)));
         }
 
         @Test
-        void shoud_use_toRawData_mapper() throws Exception {
+        void shoud_use_toRawData_mapper() {
             // When
             teamRepository.create(teamA);
 
             // Then
             verify(teamRepository, times(1)).toRawData(eq(teamA));
-        }
-
-        @Test
-        void shoud_send_serialized_team() throws Exception {
-            // When
-            teamRepository.create(teamA);
-
-            // Then
-            assertThat(requests.get(0).getContentAsString())
-                    .contains("{\"values\":[[\"teamA\",\"TeamA\"]]}");
         }
 
     }
@@ -77,34 +63,31 @@ class TeamRepositoryTest extends SheetRepositoryTest {
     class ReadAll {
 
         @Test
-        void shoud_call_spreadsheet_url() throws Exception {
+        void shoud_use_crud_service() {
+            // When
+            teamRepository.readAll();
+
+            // Then
+            verify(spreadsheetCRUDService, times(1)).readCells(eq(RANGE));
+        }
+
+        @Test
+        void shoud_use_fromRawData_mapper() {
             // Given
-            var requests = mockHttpTransport();
+            when(spreadsheetCRUDService.readCells(eq(RANGE))).thenReturn(List.of(RAW_TEAM_A, RAW_TEAM_B));
 
             // When
             teamRepository.readAll();
 
             // Then
-            assertThat(requests).map(MockLowLevelHttpRequest::getUrl).element(0).isEqualTo(URL_VALUES_GET);
+            verify(teamRepository, times(1)).fromRawData(eq(RAW_TEAM_A));
+            verify(teamRepository, times(1)).fromRawData(eq(RAW_TEAM_B));
         }
 
         @Test
-        void shoud_use_fromRawData_mapper() throws Exception {
+        void shoud_return_expected_teams() {
             // Given
-            mockHttpTransport(mockedApiCall(GET, URL_VALUES_GET, buildValuesGetResponse(RAW_TEAM_1, RAW_TEAM_2)));
-
-            // When
-            teamRepository.readAll();
-
-            // Then
-            verify(teamRepository, times(1)).fromRawData(eq(RAW_TEAM_1));
-            verify(teamRepository, times(1)).fromRawData(eq(RAW_TEAM_2));
-        }
-
-        @Test
-        void shoud_return_deserialized_team() throws Exception {
-            // Given
-            mockHttpTransport(mockedApiCall(GET, URL_VALUES_GET, buildValuesGetResponse(RAW_TEAM_1, RAW_TEAM_2)));
+            when(spreadsheetCRUDService.readCells(eq(RANGE))).thenReturn(List.of(RAW_TEAM_A, RAW_TEAM_B));
 
             // When
             List<Team> teams = teamRepository.readAll();
@@ -122,9 +105,9 @@ class TeamRepositoryTest extends SheetRepositoryTest {
     class Search {
 
         @Test
-        void should_return_team_if_present() throws Exception {
+        void should_return_team_if_present() {
             // Given
-            mockHttpTransport(mockedApiCall(GET, URL_VALUES_GET, buildValuesGetResponse(RAW_TEAM_1, RAW_TEAM_2)));
+            when(spreadsheetCRUDService.readCells(eq(RANGE))).thenReturn(List.of(RAW_TEAM_A, RAW_TEAM_B));
 
             // When
             Optional<Team> team = teamRepository.search("teamB");
@@ -136,9 +119,9 @@ class TeamRepositoryTest extends SheetRepositoryTest {
         }
 
         @Test
-        void should_return_empty_if_absent() throws Exception {
+        void should_return_empty_if_absent() {
             // Given
-            mockHttpTransport(mockedApiCall(GET, URL_VALUES_GET, buildValuesGetResponse(RAW_TEAM_1)));
+            when(spreadsheetCRUDService.readCells(eq(RANGE))).thenReturn(List.of(RAW_TEAM_A, RAW_TEAM_B));
 
             // When
             Optional<Team> team = teamRepository.search("team2");
@@ -152,51 +135,30 @@ class TeamRepositoryTest extends SheetRepositoryTest {
     @DisplayName("delete()")
     class Delete {
 
-        private List<MockLowLevelHttpRequest> requests;
-
-        @BeforeEach
-        void prepare_http_transport() throws Exception {
-            requests = mockHttpTransport(
-                    mockedApiCall(PUT, API_SHEETS_VALUES + "/Teams!L1" + "?valueInputOption=USER_ENTERED", "{}"),
-                    mockedApiCall(GET, API_SHEETS_VALUES + "/Teams!L1", buildValuesGetResponse(List.of(10))),
-                    mockedApiCall(POST, API_SHEETS_VALUES + ":batchClearByDataFilter ", "{}"),
-                    mockedApiCall(GET, API_SHEETS + "?ranges=Teams", buildSheetIdResponse()),
-                    mockedApiCall(POST, API_SHEETS + ":batchUpdate", "{}")
-            );
-        }
-
         @Test
-        void shoud_call_spreadsheet_url() {
+        void shoud_use_crud_service() {
+            // Given
+            when(spreadsheetCRUDService.findRowIndex(any(), any())).thenReturn(OptionalInt.of(10));
+
             // When
             teamRepository.delete(teamA);
 
             // Then
-            assertThat(requests).map(MockLowLevelHttpRequest::getUrl)
-                    .containsExactlyInAnyOrder(
-                            API_SHEETS_VALUES + "/Teams!L1" + "?valueInputOption=USER_ENTERED",
-                            API_SHEETS_VALUES + "/Teams!L1",
-                            API_SHEETS_VALUES + ":batchClearByDataFilter",
-                            API_SHEETS + "?ranges=Teams",
-                            API_SHEETS + ":batchUpdate"
-                    );
+            verify(spreadsheetCRUDService, times(1)).findRowIndex(eq("Teams"), eq(teamA.id()));
+            verify(spreadsheetCRUDService, times(1)).deleteRaws(eq("Teams"), eq(10), eq(1));
         }
 
         @Test
-        void shoud_delete_row_with_use_given_index() throws IOException {
+        void shoud_not_delete_without_row_index() {
+            // Given
+            when(spreadsheetCRUDService.findRowIndex(any(), any())).thenReturn(OptionalInt.empty());
+
             // When
             teamRepository.delete(teamA);
 
             // Then
-            verify(teamRepository, times(1)).deleteRaws(eq(10), eq(1));
-        }
-
-        @Test
-        void shoud_delete_search_for_element() throws IOException {
-            // When
-            teamRepository.delete(teamA);
-
-            // Then
-            verify(teamRepository, times(1)).searchElementLine(eq(teamA));
+            verify(spreadsheetCRUDService, never()).deleteRaws(any(), anyInt());
+            verify(spreadsheetCRUDService, never()).deleteRaws(any(), anyInt(), anyInt());
         }
 
     }
@@ -205,42 +167,47 @@ class TeamRepositoryTest extends SheetRepositoryTest {
     @DisplayName("deleteAll()")
     class DeleteAll {
 
-        private List<MockLowLevelHttpRequest> requests;
-
-        @BeforeEach
-        void prepare_http_transport() throws Exception {
-            requests = mockHttpTransport(
-                    mockedApiCall(GET, API_SHEETS + "?ranges=Teams", buildSheetIdResponse()),
-                    mockedApiCall(POST, API_SHEETS + ":batchUpdate", "{}")
-            );
-        }
-
         @Test
-        void shoud_call_spreadsheet_url() {
+        void shoud_use_crud_service() {
             // When
             teamRepository.deleteAll();
 
             // Then
-            assertThat(requests).map(MockLowLevelHttpRequest::getUrl)
-                    .containsExactlyInAnyOrder(API_SHEETS + "?ranges=Teams", API_SHEETS + ":batchUpdate");
+            verify(spreadsheetCRUDService, times(1)).deleteRaws(eq("Teams"), eq(1));
         }
 
+    }
+
+    @Nested
+    @DisplayName("fromRawData()")
+    class FromRawData {
+
         @Test
-        void shoud_delete_row_with_use_given_sheetId() throws IOException {
+        void should_map_to_team() {
+            // Given
+            List<Object> RAW_TEAM_1 = rawData("team1", "Team1");
+
             // When
-            teamRepository.deleteAll();
+            Team team = teamRepository.fromRawData(RAW_TEAM_1);
 
             // Then
-            assertThat(requests.get(1).getContentAsString()).contains("\"sheetId\":"+SHEET_ID);
+            assertThat(team.id()).isEqualTo("team1");
+            assertThat(team.name()).isEqualTo("Team1");
         }
 
+    }
+
+    @Nested
+    @DisplayName("toRawData()")
+    class ToRawData {
+
         @Test
-        void shoud_delete_row_with_use_given_index() throws IOException {
+        void should_map_to_team() {
             // When
-            teamRepository.deleteAll();
+            List<Object> objects = teamRepository.toRawData(teamA);
 
             // Then
-            verify(teamRepository, times(1)).deleteRaws(eq(1));
+            assertThat(objects).containsExactlyInAnyOrder(teamA.id(),teamA.name());
         }
 
     }

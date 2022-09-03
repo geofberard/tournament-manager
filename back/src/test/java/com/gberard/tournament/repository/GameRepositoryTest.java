@@ -2,8 +2,7 @@ package com.gberard.tournament.repository;
 
 import com.gberard.tournament.data.Game;
 import com.gberard.tournament.data.Team;
-import com.google.api.client.testing.http.MockLowLevelHttpRequest;
-import org.junit.jupiter.api.BeforeEach;
+import com.gberard.tournament.service.SpreadsheetCRUDService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -13,14 +12,15 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
 
 import static com.gberard.tournament.data._TestUtils.*;
 import static com.gberard.tournament.repository.GameRepository.RANGE;
-import static com.gberard.tournament.repository.SheetRepositoryTest.MockedApiCall.mockedApiCall;
+import static java.time.Month.AUGUST;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -28,9 +28,7 @@ import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
-class GameRepositoryTest extends SheetRepositoryTest {
-
-    public static final String URL_VALUES = API_SHEETS_VALUES + "/" + RANGE;
+class GameRepositoryTest {
 
     private static final List<Object> RAW_GAME_1 =
             rawData("game1", "29/08/2022", "10:30", "court", "teamA", "teamB", "teamC", "25", "14");
@@ -47,14 +45,17 @@ class GameRepositoryTest extends SheetRepositoryTest {
     private GameRepository gameRepository;
 
     @Mock
-    private TeamRepository teamService;
+    protected SpreadsheetCRUDService spreadsheetCRUDService;
+
+    @Mock
+    private TeamRepository teamRepository;
 
     private void mockTeamService(Team... teams) {
         if (teams.length == 0) {
-            when(teamService.search(any())).thenReturn(Optional.of(teamA));
+            when(teamRepository.search(any())).thenReturn(Optional.of(teamA));
         } else {
             Arrays.stream(teams)
-                    .forEach(team -> when(teamService.search(eq(team.id()))).thenReturn(Optional.of(team)));
+                    .forEach(team -> when(teamRepository.search(eq(team.id()))).thenReturn(Optional.of(team)));
         }
     }
 
@@ -62,52 +63,23 @@ class GameRepositoryTest extends SheetRepositoryTest {
     @DisplayName("create()")
     class Create {
 
-        private List<MockLowLevelHttpRequest> requests;
-
-        @BeforeEach
-        void prepare_http_transport() throws Exception {
-            requests = mockHttpTransport();
-        }
-
         @Test
-        void shoud_call_spreadsheet_url() throws Exception {
+        void shoud_use_crud_service() {
             // When
             gameRepository.create(game1);
 
             // Then
-            assertThat(requests).map(MockLowLevelHttpRequest::getUrl).first()
-                    .isEqualTo(URL_VALUES + ":append?valueInputOption=USER_ENTERED");
+            verify(spreadsheetCRUDService, times(1))
+                    .appendCells(eq(RANGE), eq(List.of(RAW_GAME_1)));
         }
 
         @Test
-        void shoud_use_toRawData_mapper() throws Exception {
+        void shoud_use_toRawData_mapper() {
             // When
             gameRepository.create(game1);
 
             // Then
             verify(gameRepository, times(1)).toRawData(eq(game1));
-        }
-
-        @Test
-        void shoud_send_serialized_completed_game() throws Exception {
-            // When
-            gameRepository.create(game1);
-
-            // Then
-            assertThat(requests.get(0).getContentAsString())
-                    .contains("{\"values\":[[\"game1\",\"29/08/2022\",\"10:30\",\"court\",\"teamA\",\"teamB\"," +
-                            "\"teamC\",\"25\",\"14\"]]}");
-        }
-
-        @Test
-        void shoud_send_serialized_partial_game() throws Exception {
-            // When
-            gameRepository.create(game2);
-
-            // Then
-            assertThat(requests.get(0).getContentAsString())
-                    .contains("{\"values\":[[\"game2\",\"29/08/2022\",\"11:30\",\"court\",\"teamC\",\"teamB\"," +
-                            "\"\",\"\",\"\"]]}");
         }
 
     }
@@ -117,21 +89,18 @@ class GameRepositoryTest extends SheetRepositoryTest {
     class ReadAll {
 
         @Test
-        void shoud_call_spreadsheet_url() throws Exception {
-            // Given
-            var requests = mockHttpTransport();
-
+        void shoud_use_crud_service() {
             // When
             gameRepository.readAll();
 
             // Then
-            assertThat(requests).map(MockLowLevelHttpRequest::getUrl).element(0).isEqualTo(URL_VALUES);
+            verify(spreadsheetCRUDService, times(1)).readCells(eq(RANGE));
         }
 
         @Test
-        void shoud_use_fromRawData_mapper() throws Exception {
+        void shoud_use_fromRawData_mapper() {
             // Given
-            mockHttpTransport(mockedApiCall(GET, URL_VALUES, buildValuesGetResponse(RAW_GAME_1, RAW_GAME_2)));
+            when(spreadsheetCRUDService.readCells(eq(RANGE))).thenReturn(List.of(RAW_GAME_1, RAW_GAME_2));
             mockTeamService(teamA, teamB, teamC);
 
             // When
@@ -143,9 +112,9 @@ class GameRepositoryTest extends SheetRepositoryTest {
         }
 
         @Test
-        void shoud_return_deserialized_game() throws Exception {
+        void shoud_return_deserialized_game() {
             // Given
-            mockHttpTransport(mockedApiCall(GET, URL_VALUES, buildValuesGetResponse(RAW_GAME_1, RAW_GAME_2)));
+            when(spreadsheetCRUDService.readCells(eq(RANGE))).thenReturn(List.of(RAW_GAME_1, RAW_GAME_2));
             mockTeamService(teamA, teamB, teamC);
 
             // When
@@ -164,11 +133,9 @@ class GameRepositoryTest extends SheetRepositoryTest {
     class SearchFor {
 
         @Test
-        void should_filter_properly() throws Exception {
+        void should_filter_properly() {
             // Given
-            mockHttpTransport(
-                    mockedApiCall(GET, URL_VALUES, buildValuesGetResponse(RAW_GAME_1, RAW_GAME_3, RAW_GAME_4))
-            );
+            when(spreadsheetCRUDService.readCells(eq(RANGE))).thenReturn(List.of(RAW_GAME_1, RAW_GAME_3, RAW_GAME_4));
             mockTeamService(teamA, teamB, teamC);
 
             // When
@@ -184,51 +151,30 @@ class GameRepositoryTest extends SheetRepositoryTest {
     @DisplayName("delete()")
     class Delete {
 
-        private List<MockLowLevelHttpRequest> requests;
-
-        @BeforeEach
-        void prepare_http_transport() throws Exception {
-            requests = mockHttpTransport(
-                    mockedApiCall(PUT, API_SHEETS_VALUES + "/Games!L1" + "?valueInputOption=USER_ENTERED", "{}"),
-                    mockedApiCall(GET, API_SHEETS_VALUES + "/Games!L1", buildValuesGetResponse(List.of(10))),
-                    mockedApiCall(POST, API_SHEETS_VALUES + ":batchClearByDataFilter ", "{}"),
-                    mockedApiCall(GET, API_SHEETS + "?ranges=Games", buildSheetIdResponse()),
-                    mockedApiCall(POST, API_SHEETS + ":batchUpdate", "{}")
-            );
-        }
-
         @Test
-        void shoud_call_spreadsheet_url() {
+        void shoud_use_crud_service() {
+            // Given
+            when(spreadsheetCRUDService.findRowIndex(any(), any())).thenReturn(OptionalInt.of(10));
+
             // When
             gameRepository.delete(game1);
 
             // Then
-            assertThat(requests).map(MockLowLevelHttpRequest::getUrl)
-                    .containsExactlyInAnyOrder(
-                            API_SHEETS_VALUES + "/Games!L1" + "?valueInputOption=USER_ENTERED",
-                            API_SHEETS_VALUES + "/Games!L1",
-                            API_SHEETS_VALUES + ":batchClearByDataFilter",
-                            API_SHEETS + "?ranges=Games",
-                            API_SHEETS + ":batchUpdate"
-                    );
+            verify(spreadsheetCRUDService, times(1)).findRowIndex(eq("Games"), eq(game1.id()));
+            verify(spreadsheetCRUDService, times(1)).deleteRaws(eq("Games"), eq(10), eq(1));
         }
 
         @Test
-        void shoud_delete_row_with_use_given_index() throws IOException {
+        void shoud_not_delete_without_row_index() {
+            // Given
+            when(spreadsheetCRUDService.findRowIndex(any(), any())).thenReturn(OptionalInt.empty());
+
             // When
             gameRepository.delete(game1);
 
             // Then
-            verify(gameRepository, times(1)).deleteRaws(eq(10), eq(1));
-        }
-
-        @Test
-        void shoud_delete_search_for_element() throws IOException {
-            // When
-            gameRepository.delete(game1);
-
-            // Then
-            verify(gameRepository, times(1)).searchElementLine(eq(game1));
+            verify(spreadsheetCRUDService, never()).deleteRaws(any(), anyInt());
+            verify(spreadsheetCRUDService, never()).deleteRaws(any(), anyInt(), anyInt());
         }
 
     }
@@ -237,42 +183,134 @@ class GameRepositoryTest extends SheetRepositoryTest {
     @DisplayName("deleteAll()")
     class DeleteAll {
 
-        private List<MockLowLevelHttpRequest> requests;
-
-        @BeforeEach
-        void prepare_http_transport() throws Exception {
-            requests = mockHttpTransport(
-                    mockedApiCall(GET, API_SHEETS + "?ranges=Games", buildSheetIdResponse()),
-                    mockedApiCall(POST, API_SHEETS + ":batchUpdate", "{}")
-            );
-        }
-
         @Test
-        void shoud_call_spreadsheet_url() {
+        void shoud_use_crud_service() {
             // When
             gameRepository.deleteAll();
 
             // Then
-            assertThat(requests).map(MockLowLevelHttpRequest::getUrl)
-                    .containsExactlyInAnyOrder(API_SHEETS + "?ranges=Games", API_SHEETS + ":batchUpdate");
+            verify(spreadsheetCRUDService, times(1)).deleteRaws(eq("Games"), eq(1));
+        }
+
+    }
+
+
+    @Nested
+    @DisplayName("fromRawData()")
+    class FromRawData {
+
+        @Test
+        void should_use_teamService() {
+            // Given
+            List<Object> rawGame =
+                    rawData("game1", "23/08/2022", "10:00", "Court1", "teamA", "teamB", "teamC", "25", "16");
+            mockTeamService(teamA, teamB, teamC);
+
+            // When
+            Game game = gameRepository.fromRawData(rawGame);
+
+            // Then
+            verify(teamRepository, times(1)).search(eq(teamA.id()));
+            verify(teamRepository, times(1)).search(eq(teamB.id()));
+            verify(teamRepository, times(1)).search(eq(teamC.id()));
         }
 
         @Test
-        void shoud_delete_row_with_use_given_sheetId() throws IOException {
+        void should_map_game_completed() {
+            // Given
+            List<Object> rawGame =
+                    rawData("game1", "23/08/2022", "10:00", "Court1", "teamA", "teamB", "teamC", "25", "16");
+            mockTeamService(teamA, teamB, teamC);
+
             // When
-            gameRepository.deleteAll();
+            Game game = gameRepository.fromRawData(rawGame);
 
             // Then
-            assertThat(requests.get(1).getContentAsString()).contains("\"sheetId\":"+SHEET_ID);
+            assertThat(game.id()).isEqualTo("game1");
+            assertThat(game.time()).isEqualTo(LocalDateTime.of(2022, 8, 23, 10, 0));
+            assertThat(game.court()).isEqualTo("Court1");
+            assertThat(game.teamA()).isEqualTo(teamA);
+            assertThat(game.teamB()).isEqualTo(teamB);
+            assertThat(game.referee()).isNotEmpty().hasValue(teamC);
+            assertThat(game.scoreA()).isNotEmpty().hasValue(25);
+            assertThat(game.scoreB()).isNotEmpty().hasValue(16);
         }
 
         @Test
-        void shoud_delete_row_with_use_given_index() throws IOException {
+        void should_map_game_scoreless() {
+            // Given
+            List<Object> rawGame = rawData("game2", "23/08/2022", "11:00", "Court1", "teamA", "teamB", "teamC");
+            mockTeamService(teamA, teamB);
+
             // When
-            gameRepository.deleteAll();
+            Game game = gameRepository.fromRawData(rawGame);
 
             // Then
-            verify(gameRepository, times(1)).deleteRaws(eq(1));
+            assertThat(game.scoreA()).isEmpty();
+            assertThat(game.scoreB()).isEmpty();
+        }
+
+        @Test
+        void should_map_game_score_empty() {
+            // Given
+            List<Object> rawGame = rawData("game4", "23/08/2022", "13:00", "Court1", "teamA", "teamC", "", "", "");
+            mockTeamService(teamA, teamC);
+
+            // When
+            Game game = gameRepository.fromRawData(rawGame);
+
+            // Then
+            assertThat(game.scoreA()).isEmpty();
+            assertThat(game.scoreB()).isEmpty();
+        }
+
+        @Test
+        void should_map_game_referee_empty() {
+            // Given
+            List<Object> rawGame = rawData("game5", "23/08/2022", "14:00", "Court1", "teamA", "teamB", "");
+            mockTeamService(teamA, teamB);
+
+            // When
+            Game game = gameRepository.fromRawData(rawGame);
+
+            // Then
+            assertThat(game.referee()).isEmpty();
+        }
+
+    }
+
+    @Nested
+    @DisplayName("toRawData()")
+    class ToRawData {
+
+        @Test
+        void should_handle_full_game() {
+            // Given
+            List<Object> rawData = gameRepository.toRawData(game1);
+
+            // Then
+            assertThat(rawData).containsExactly("game1", "29/08/2022", "10:30", game1.court(), teamA.id(), teamB.id(),
+                    teamC.id(), "25", "14");
+        }
+
+        @Test
+        void should_handle_partiel_game() {
+            // Given
+            String court = "court";
+            Game game = Game.builder()
+                    .id("gameId")
+                    .time(LocalDateTime.of(2022, AUGUST, 29, 10, 30))
+                    .court(court)
+                    .teamA(teamA)
+                    .teamB(teamB)
+                    .build();
+
+            // Given
+            List<Object> rawData = gameRepository.toRawData(game);
+
+            // Then
+            assertThat(rawData)
+                    .containsExactly("gameId", "29/08/2022", "10:30", court, teamA.id(), teamB.id(), "", "", "");
         }
 
     }
