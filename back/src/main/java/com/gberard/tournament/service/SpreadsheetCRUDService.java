@@ -75,6 +75,24 @@ public class SpreadsheetCRUDService {
         return emptyList();
     }
 
+    public boolean updateCells(String range, List<List<Object>> cells) {
+        try {
+            ValueRange valueRange = new ValueRange()
+                    .setValues(cells);
+
+            getService().spreadsheets().values()
+                    .update(spreadsheetConfig.getId(), range, valueRange)
+                    .setValueInputOption(USER_ENTERED)
+                    .execute();
+
+            log.info("Updating element - " + range + " : " + cells);
+            return true;
+        } catch (Exception e) {
+            log.error("Updating element - Error for " + range + " : " + cells, e);
+        }
+        return false;
+    }
+
     public boolean deleteCells(String range) {
         try {
             var dataFilter = new DataFilter().setA1Range(range);
@@ -95,17 +113,8 @@ public class SpreadsheetCRUDService {
 
     public OptionalInt findRowIndex(String range, String elementId) {
         try {
-            ValueRange valueRange = new ValueRange();
-            valueRange.setValues(List.of(
-                    List.of("=MATCH(\"" + elementId + "\"; " + range + "; 0) - 1")
-            ));
-
             String researcherRange = range.substring(0, range.indexOf("!")) + "!" + SEARCH_CELL;
-
-            getService().spreadsheets().values()
-                    .update(spreadsheetConfig.getId(), researcherRange, valueRange)
-                    .setValueInputOption(USER_ENTERED)
-                    .execute();
+            updateCells(researcherRange, List.of(List.of("=MATCH(\"" + elementId + "\"; " + range + "; 0)")));
 
             String line = readCells(researcherRange).get(0).get(0).toString();
 

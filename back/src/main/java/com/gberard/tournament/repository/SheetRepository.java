@@ -37,8 +37,20 @@ public abstract class SheetRepository<T extends Identified> {
                 .collect(toList());
     }
 
+    public boolean update(T element) {
+        OptionalInt line = spreadsheetCRUDService.findRowIndex(getIdRange(), element.id());
+
+        if (line.isEmpty()) {
+            log.info("Updating element - cannot find element " + element);
+            return false;
+        }
+
+        log.info("Updating element - " + this.range + " : " + element);
+        return spreadsheetCRUDService.updateCells(tab + "!A" + line.getAsInt(), List.of(toRawData(element)));
+    }
+
     public boolean delete(T element) {
-        OptionalInt line = spreadsheetCRUDService.findRowIndex(tab, element.id());
+        OptionalInt line = spreadsheetCRUDService.findRowIndex(getIdRange(), element.id());
 
         if (line.isEmpty()) {
             log.info("Deleting element - cannot find element " + element);
@@ -46,7 +58,7 @@ public abstract class SheetRepository<T extends Identified> {
         }
 
         log.info("Deleting element - " + range + " : " + element);
-        return spreadsheetCRUDService.deleteRaws(tab, line.getAsInt(), 1);
+        return spreadsheetCRUDService.deleteRaws(tab, line.getAsInt() - 1, 1);
     }
 
     public boolean deleteAll() {
@@ -59,4 +71,8 @@ public abstract class SheetRepository<T extends Identified> {
 
     @VisibleForTesting
     protected abstract List<Object> toRawData(T element);
+
+    private String getIdRange() {
+        return tab + "!A:A";
+    }
 }

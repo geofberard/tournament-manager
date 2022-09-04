@@ -204,18 +204,33 @@ class SpreadsheetCRUDServiceTest {
     }
 
     @Nested
+    @DisplayName("updateCells()")
+    class UpdateCells {
+
+        @Test
+        public void should_call_spreadsheet_url() throws Exception {
+            // Given
+            List<MockLowLevelHttpRequest> requests = mockHttpTransport();
+
+            // When
+            spreadsheetCRUDService.updateCells(RANGE, MOCKED_DATE);
+
+            // Then
+            assertThat(requests).map(MockLowLevelHttpRequest::getUrl)
+                    .containsExactly(API_SHEETS_VALUES_RANGE + "?valueInputOption=USER_ENTERED");
+        }
+
+    }
+
+    @Nested
     @DisplayName("deleteCells()")
     class DeleteCells {
 
-        private List<MockLowLevelHttpRequest> requests;
-
-        @BeforeEach
-        public void prepare_http_transport() throws Exception {
-            requests = mockHttpTransport();
-        }
-
         @Test
-        public void should_call_spreadsheet_url() {
+        public void should_call_spreadsheet_url() throws Exception {
+            // Given
+            List<MockLowLevelHttpRequest> requests = mockHttpTransport();
+
             // When
             spreadsheetCRUDService.deleteCells(RANGE);
 
@@ -227,8 +242,8 @@ class SpreadsheetCRUDServiceTest {
     }
 
     @Nested
-    @DisplayName("findRawIndex()")
-    class FindRawIndex {
+    @DisplayName("findRowIndex()")
+    class FindRowIndex {
 
         private List<MockLowLevelHttpRequest> requests;
 

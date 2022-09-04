@@ -89,20 +89,21 @@ public class BackofficeSandboxApplication {
     @EventListener(ApplicationReadyEvent.class)
     public void doSomethingAfterStartup() {
         teamService.deleteAll();
-//        gameService.deleteAll();
-//        teams.forEach(teamService::create);
-//        games.forEach(gameService::create);
-//        gameService.delete(games.get(30));
+        gameService.deleteAll();
+        teams.forEach(teamService::create);
+        games.forEach(gameService::create);
+        gameService.delete(games.get(12));
+        gameService.update(buildGame("Game12", 11, 40, "Terrain7", Team1, 14, Team4, 28));
         System.out.println("Done");
         System.exit(1);
     }
 
-    private static Game buildGame(String game1, int hour, int minute, String terrain1, Team Team1, int scoreA, Team Team2,
+    private static Game buildGame(String game1, int hour, int minute, String terrain, Team Team1, int scoreA, Team Team2,
                            int scoreB) {
         return Game.builder()
                 .id(game1)
                 .time(toDate(hour, minute))
-                .court(terrain1)
+                .court(terrain)
                 .teamA(Team1)
                 .teamB(Team2)
                 .scoreA(scoreA)

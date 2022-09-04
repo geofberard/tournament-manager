@@ -25,13 +25,11 @@ class TeamRepositoryTest {
 
     public static final List<Object> RAW_TEAM_A = rawData("teamA", "TeamA");
     public static final List<Object> RAW_TEAM_B = rawData("teamB", "TeamB");
-
+    @Mock
+    protected SpreadsheetCRUDService spreadsheetCRUDService;
     @Spy
     @InjectMocks
     private TeamRepository teamRepository = new TeamRepository();
-
-    @Mock
-    protected SpreadsheetCRUDService spreadsheetCRUDService;
 
     @Nested
     @DisplayName("create()")
@@ -132,8 +130,8 @@ class TeamRepositoryTest {
     }
 
     @Nested
-    @DisplayName("delete()")
-    class Delete {
+    @DisplayName("update()")
+    class Update {
 
         @Test
         void shoud_use_crud_service() {
@@ -141,10 +139,56 @@ class TeamRepositoryTest {
             when(spreadsheetCRUDService.findRowIndex(any(), any())).thenReturn(OptionalInt.of(10));
 
             // When
+            teamRepository.update(teamA);
+
+            // Then
+            verify(spreadsheetCRUDService, times(1))
+                    .findRowIndex(eq("Teams!A:A"), eq(teamA.id()));
+            verify(spreadsheetCRUDService, times(1))
+                    .updateCells(eq("Teams!A10"), eq(List.of(RAW_TEAM_A)));
+        }
+
+        @Test
+        void shoud_use_toRawData_mapper() {
+            // Given
+            when(spreadsheetCRUDService.findRowIndex(any(), any())).thenReturn(OptionalInt.of(10));
+
+            // When
+            teamRepository.update(teamA);
+
+            // Then
+            verify(teamRepository, times(1)).toRawData(eq(teamA));
+        }
+
+        @Test
+        void shoud_not_delete_without_row_index() {
+            // Given
+            when(spreadsheetCRUDService.findRowIndex(any(), any())).thenReturn(OptionalInt.empty());
+
+            // When
+            teamRepository.update(teamA);
+
+            // Then
+            verify(spreadsheetCRUDService, never()).updateCells(any(), any());
+        }
+
+    }
+
+
+    @Nested
+    @DisplayName("delete()")
+    class Delete {
+
+        @Test
+        void shoud_use_crud_service() {
+            // Given
+            when(spreadsheetCRUDService.findRowIndex(any(), any())).thenReturn(OptionalInt.of(11));
+
+            // When
             teamRepository.delete(teamA);
 
             // Then
-            verify(spreadsheetCRUDService, times(1)).findRowIndex(eq("Teams"), eq(teamA.id()));
+            verify(spreadsheetCRUDService, times(1)).findRowIndex(eq("Teams!A:A"), eq(teamA.id()));
             verify(spreadsheetCRUDService, times(1)).deleteRaws(eq("Teams"), eq(10), eq(1));
         }
 
@@ -207,7 +251,7 @@ class TeamRepositoryTest {
             List<Object> objects = teamRepository.toRawData(teamA);
 
             // Then
-            assertThat(objects).containsExactlyInAnyOrder(teamA.id(),teamA.name());
+            assertThat(objects).containsExactlyInAnyOrder(teamA.id(), teamA.name());
         }
 
     }

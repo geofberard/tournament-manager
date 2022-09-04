@@ -148,8 +148,8 @@ class GameRepositoryTest {
     }
 
     @Nested
-    @DisplayName("delete()")
-    class Delete {
+    @DisplayName("update()")
+    class Update {
 
         @Test
         void shoud_use_crud_service() {
@@ -157,10 +157,55 @@ class GameRepositoryTest {
             when(spreadsheetCRUDService.findRowIndex(any(), any())).thenReturn(OptionalInt.of(10));
 
             // When
+            gameRepository.update(game1);
+
+            // Then
+            verify(spreadsheetCRUDService, times(1))
+                    .findRowIndex(eq("Games!A:A"), eq(game1.id()));
+            verify(spreadsheetCRUDService, times(1))
+                    .updateCells(eq("Games!A10"), eq(List.of(RAW_GAME_1)));
+        }
+
+        @Test
+        void shoud_use_toRawData_mapper() {
+            // Given
+            when(spreadsheetCRUDService.findRowIndex(any(), any())).thenReturn(OptionalInt.of(10));
+
+            // When
+            gameRepository.update(game1);
+
+            // Then
+            verify(gameRepository, times(1)).toRawData(eq(game1));
+        }
+
+        @Test
+        void shoud_not_delete_without_row_index() {
+            // Given
+            when(spreadsheetCRUDService.findRowIndex(any(), any())).thenReturn(OptionalInt.empty());
+
+            // When
+            gameRepository.update(game1);
+
+            // Then
+            verify(spreadsheetCRUDService, never()).updateCells(any(), any());
+        }
+
+    }
+
+    @Nested
+    @DisplayName("delete()")
+    class Delete {
+
+        @Test
+        void shoud_use_crud_service() {
+            // Given
+            when(spreadsheetCRUDService.findRowIndex(any(), any())).thenReturn(OptionalInt.of(11));
+
+            // When
             gameRepository.delete(game1);
 
             // Then
-            verify(spreadsheetCRUDService, times(1)).findRowIndex(eq("Games"), eq(game1.id()));
+            verify(spreadsheetCRUDService, times(1)).findRowIndex(eq("Games!A:A"), eq(game1.id()));
             verify(spreadsheetCRUDService, times(1)).deleteRaws(eq("Games"), eq(10), eq(1));
         }
 
