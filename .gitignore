@@ -1,7 +1,7 @@
 **/target/
 .mvn
 node_modules
-back/src/main/resources/com/gberard/tournament/credentials.json
+back/src/main/resources/com/gberard/tournament/*.json
 front/dist/bundle.*
 
 ### STS ###
