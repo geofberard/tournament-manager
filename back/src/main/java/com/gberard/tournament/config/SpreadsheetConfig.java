@@ -8,8 +8,6 @@ import org.springframework.context.annotation.Configuration;
 public class SpreadsheetConfig {
 
     private String id;
-    private String teamRange;
-    private String gameRange;
 
     public String getId() {
         return id;
@@ -19,19 +17,4 @@ public class SpreadsheetConfig {
         this.id = spreadsheetId;
     }
 
-    public String getTeamRange() {
-        return teamRange;
-    }
-
-    public void setTeamRange(String teamRange) {
-        this.teamRange = teamRange;
-    }
-
-    public String getGameRange() {
-        return gameRange;
-    }
-
-    public void setGameRange(String gameRange) {
-        this.gameRange = gameRange;
-    }
 }

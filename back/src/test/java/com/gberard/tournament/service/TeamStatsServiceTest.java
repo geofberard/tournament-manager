@@ -3,6 +3,8 @@ package com.gberard.tournament.service;
 import com.gberard.tournament.data.Game;
 import com.gberard.tournament.data.Team;
 import com.gberard.tournament.data.TeamStats;
+import com.gberard.tournament.repository.GameRepository;
+import com.gberard.tournament.repository.TeamRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -30,10 +32,10 @@ class TeamStatsServiceTest {
     private TeamStatsService teamStatsService = new TeamStatsService();
 
     @Mock
-    private TeamService teamService;
+    private TeamRepository teamService;
 
     @Mock
-    private GameService gameService;
+    private GameRepository gameService;
 
     List<Team> teams = List.of(teamA, teamB, teamC, teamD);
 
@@ -63,7 +65,7 @@ class TeamStatsServiceTest {
         @MethodSource("getExpectedStats")
         void should_return_team_stats(TeamStats expected) {
             // Given
-            when(gameService.getGames()).thenReturn(games);
+            when(gameService.readAll()).thenReturn(games);
 
             // When
             TeamStats stats = teamStatsService.getTeamStats(expected.team());
@@ -80,8 +82,8 @@ class TeamStatsServiceTest {
         @Test
         void should_return_teams_stats() {
             // Given
-            when(teamService.getTeams()).thenReturn(teams);
-            when(gameService.getGames()).thenReturn(games);
+            when(teamService.readAll()).thenReturn(teams);
+            when(gameService.readAll()).thenReturn(games);
 
             // When
             List<TeamStats> teamsStats = teamStatsService.getTeamsStats();

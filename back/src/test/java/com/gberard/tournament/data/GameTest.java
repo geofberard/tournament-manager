@@ -21,9 +21,9 @@ class GameTest {
 
         @Test
         void should_no_be_finished() {
-            assertThat(gameBuilder().createGame().isFinished()).isFalse();
-            assertThat(gameBuilder().setScoreA(10).createGame().isFinished()).isFalse();
-            assertThat(gameBuilder().setScoreB(20).createGame().isFinished()).isFalse();
+            assertThat(gameBuilder().build().isFinished()).isFalse();
+            assertThat(gameBuilder().scoreA(10).build().isFinished()).isFalse();
+            assertThat(gameBuilder().scoreB(20).build().isFinished()).isFalse();
         }
 
         @Test
@@ -42,16 +42,16 @@ class GameTest {
         public static Stream<Arguments> notPlayedScenario() {
             return Stream.of(
                     Arguments.of("no score", gameBuilder()),
-                    Arguments.of("only scoreA", gameBuilder().setScoreA(10)),
-                    Arguments.of("only scoreB", gameBuilder().setScoreB(20))
+                    Arguments.of("only scoreA", gameBuilder().scoreA(10)),
+                    Arguments.of("only scoreB", gameBuilder().scoreB(20))
             );
         }
 
         @ParameterizedTest
         @MethodSource("notPlayedScenario")
-        void should_handle_status_not_played(String scenario, GameBuilder builder) {
+        void should_handle_status_not_played(String scenario, Game.GameBuilder builder) {
             // When
-            Game game = builder.createGame();
+            Game game = builder.build();
 
             // Then
             assertThat(game.getTeamStatus(teamA)).isEqualTo(NOT_PLAYED);
@@ -114,7 +114,7 @@ class GameTest {
         @Test
         void should_return_empty_for_team_if_not_set() {
             // Given
-            Game game = gameBuilder().createGame();
+            Game game = gameBuilder().build();
 
             // Then
             assertThat(game.getPointsFor(teamA)).isEmpty();
@@ -142,7 +142,7 @@ class GameTest {
         @Test
         void should_return_empty_for_team_if_not_set() {
             // Given
-            Game game = gameBuilder().createGame();
+            Game game = gameBuilder().build();
 
             // Then
             assertThat(game.getPointsAgainst(teamA)).isEmpty();
