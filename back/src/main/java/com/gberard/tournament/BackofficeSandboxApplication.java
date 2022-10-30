@@ -1,8 +1,9 @@
 package com.gberard.tournament;
 
-import com.gberard.tournament.data.Game;
+import com.gberard.tournament.data.game.Game;
 import com.gberard.tournament.data.contestant.Contestant;
 import com.gberard.tournament.data.contestant.Team;
+import com.gberard.tournament.data.game.score.GameScore;
 import com.gberard.tournament.repository.GameRepository;
 import com.gberard.tournament.repository.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,9 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 //Remove comments before usage
 //@SpringBootApplication
@@ -104,10 +107,8 @@ public class BackofficeSandboxApplication {
                 .id(game1)
                 .time(toDate(hour, minute))
                 .court(terrain)
-                .contestantA(contestant1)
-                .contestantB(contestant2)
-                .scoreA(scoreA)
-                .scoreB(scoreB)
+                .contestants(List.of(contestant1, contestant2))
+                .score(new GameScore(Map.of(contestant1.id(), scoreA, contestant2.id(), scoreB)))
                 .build();
     }
 

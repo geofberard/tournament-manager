@@ -1,6 +1,6 @@
 package com.gberard.tournament.repository;
 
-import com.gberard.tournament.data.Game;
+import com.gberard.tournament.data.game.Game;
 import com.gberard.tournament.data.contestant.Contestant;
 import com.gberard.tournament.service.SpreadsheetCRUDService;
 import org.junit.jupiter.api.DisplayName;
@@ -31,13 +31,13 @@ import static org.mockito.Mockito.*;
 class GameRepositoryTest {
 
     private static final List<Object> RAW_GAME_1 =
-            rawData("game1", "29/08/2022", "10:30", "court", "teamA", "teamB", "teamC", "25", "14");
+            rawData("game1", "29/08/2022", "10:30", "court", "teamA;teamB", "teamC", "25-14");
     private static final List<Object> RAW_GAME_2 =
-            rawData("game2", "29/08/2022", "11:30", "court", "teamC", "teamB");
+            rawData("game2", "29/08/2022", "11:30", "court", "teamC;teamB");
     private static final List<Object> RAW_GAME_3 =
-            rawData("game3", "29/08/2022", "13:30", "court", "teamA", "teamC", "", "", "");
+            rawData("game3", "29/08/2022", "13:30", "court", "teamA;teamC", "", "");
     private static final List<Object> RAW_GAME_4 =
-            rawData("game4", "29/08/2022", "14:30", "court", "teamA", "teamB", "");
+            rawData("game4", "29/08/2022", "14:30", "court", "teamA;teamB", "");
 
 
     @Spy
@@ -248,7 +248,7 @@ class GameRepositoryTest {
         void should_use_teamService() {
             // Given
             List<Object> rawGame =
-                    rawData("game1", "23/08/2022", "10:00", "Court1", "teamA", "teamB", "teamC", "25", "16");
+                    rawData("game1", "23/08/2022", "10:00", "Court1", "teamA;teamB", "teamC", "25-16");
             mockTeamService(teamA, teamB, teamC);
 
             // When
@@ -264,7 +264,7 @@ class GameRepositoryTest {
         void should_map_game_completed() {
             // Given
             List<Object> rawGame =
-                    rawData("game1", "23/08/2022", "10:00", "Court1", "teamA", "teamB", "teamC", "25", "16");
+                    rawData("game1", "23/08/2022", "10:00", "Court1", "teamA;teamB", "teamC", "25-16");
             mockTeamService(teamA, teamB, teamC);
 
             // When
@@ -274,45 +274,43 @@ class GameRepositoryTest {
             assertThat(game.id()).isEqualTo("game1");
             assertThat(game.time()).isEqualTo(LocalDateTime.of(2022, 8, 23, 10, 0));
             assertThat(game.court()).isEqualTo("Court1");
-            assertThat(game.contestantA()).isEqualTo(teamA);
-            assertThat(game.contestantB()).isEqualTo(teamB);
+            assertThat(game.contestants()).containsExactly(teamA, teamB);
             assertThat(game.referee()).isNotEmpty().hasValue(teamC);
-            assertThat(game.scoreA()).isNotEmpty().hasValue(25);
-            assertThat(game.scoreB()).isNotEmpty().hasValue(16);
+            assertThat(game.score()).isNotEmpty();
+            assertThat(game.getPointsFor(teamA)).isNotEmpty().hasValue(25);
+            assertThat(game.getPointsFor(teamB)).isNotEmpty().hasValue(16);
         }
 
         @Test
         void should_map_game_scoreless() {
             // Given
-            List<Object> rawGame = rawData("game2", "23/08/2022", "11:00", "Court1", "teamA", "teamB", "teamC");
+            List<Object> rawGame = rawData("game2", "23/08/2022", "11:00", "Court1", "teamA;teamB", "teamC");
             mockTeamService(teamA, teamB);
 
             // When
             Game game = gameRepository.fromRawData(rawGame);
 
             // Then
-            assertThat(game.scoreA()).isEmpty();
-            assertThat(game.scoreB()).isEmpty();
+            assertThat(game.score()).isEmpty();
         }
 
         @Test
         void should_map_game_score_empty() {
             // Given
-            List<Object> rawGame = rawData("game4", "23/08/2022", "13:00", "Court1", "teamA", "teamC", "", "", "");
+            List<Object> rawGame = rawData("game4", "23/08/2022", "13:00", "Court1", "teamA;teamC", "", "", "");
             mockTeamService(teamA, teamC);
 
             // When
             Game game = gameRepository.fromRawData(rawGame);
 
             // Then
-            assertThat(game.scoreA()).isEmpty();
-            assertThat(game.scoreB()).isEmpty();
+            assertThat(game.score()).isEmpty();
         }
 
         @Test
         void should_map_game_referee_empty() {
             // Given
-            List<Object> rawGame = rawData("game5", "23/08/2022", "14:00", "Court1", "teamA", "teamB", "");
+            List<Object> rawGame = rawData("game5", "23/08/2022", "14:00", "Court1", "teamA;teamB", "");
             mockTeamService(teamA, teamB);
 
             // When
@@ -334,8 +332,8 @@ class GameRepositoryTest {
             List<Object> rawData = gameRepository.toRawData(game1);
 
             // Then
-            assertThat(rawData).containsExactly("game1", "29/08/2022", "10:30", game1.court(), teamA.id(), teamB.id(),
-                    teamC.id(), "25", "14");
+            assertThat(rawData).containsExactly("game1", "29/08/2022", "10:30", game1.court(),
+                    teamA.id()+";"+teamB.id(), teamC.id(), "25-14");
         }
 
         @Test
@@ -346,8 +344,7 @@ class GameRepositoryTest {
                     .id("gameId")
                     .time(LocalDateTime.of(2022, AUGUST, 29, 10, 30))
                     .court(court)
-                    .contestantA(teamA)
-                    .contestantB(teamB)
+                    .contestants(List.of(teamA,teamB))
                     .build();
 
             // Given
@@ -355,7 +352,7 @@ class GameRepositoryTest {
 
             // Then
             assertThat(rawData)
-                    .containsExactly("gameId", "29/08/2022", "10:30", court, teamA.id(), teamB.id(), "", "", "");
+                    .containsExactly("gameId", "29/08/2022", "10:30", court, teamA.id()+";"+teamB.id(), "", "");
         }
 
     }

@@ -12,6 +12,13 @@ import java.util.OptionalInt;
 @Slf4j
 public class DataUtils {
 
+    public static String GROUP_SEPARATOR = ";";
+    public static String SCORE_SEPARATOR = "-";
+
+    public static List<String> split(String arg, String separator) {
+        return List.of(arg.split(separator));
+    }
+
     private static DateTimeFormatter DATE_FORMATER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private static DateTimeFormatter TIME_FORMATER = DateTimeFormatter.ofPattern("kk:mm");
 

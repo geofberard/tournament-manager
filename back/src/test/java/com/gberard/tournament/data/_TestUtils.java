@@ -2,9 +2,13 @@ package com.gberard.tournament.data;
 
 import com.gberard.tournament.data.contestant.Contestant;
 import com.gberard.tournament.data.contestant.Team;
+import com.gberard.tournament.data.game.Game;
+import com.gberard.tournament.data.game.score.GameScore;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static java.time.Month.AUGUST;
 
@@ -20,36 +24,34 @@ public class _TestUtils {
             .id("game1")
             .time(LocalDateTime.of(2022, AUGUST, 29, 10, 30))
             .court("court")
-            .contestantA(teamA)
-            .contestantB(teamB)
+            .contestants(List.of(teamA,teamB))
             .referee(teamC)
-            .scoreA(25)
-            .scoreB(14)
+            .score(buildGameScore(teamA.id(), 25,teamB.id(), 14))
             .build();
 
     public static Game game2 = Game.builder()
             .id("game2")
             .time(LocalDateTime.of(2022, AUGUST, 29, 11, 30))
             .court("court")
-            .contestantA(teamC)
-            .contestantB(teamB)
+            .contestants(List.of(teamC,teamB))
             .build();
 
     public static Game.GameBuilder gameBuilder() {
         return Game.builder()
                 .time(LocalDateTime.now())
                 .court("court")
-                .contestantA(teamA)
-                .contestantB(teamB);
+                .contestants(List.of(teamA,teamB));
     }
 
     public static Game buildGame(Contestant contestantA, int scoreA, Contestant contestantB, int scoreB) {
         return gameBuilder()
-                .contestantA(contestantA)
-                .scoreA(scoreA)
-                .contestantB(contestantB)
-                .scoreB(scoreB)
+                .contestants(List.of(contestantA,contestantB))
+                .score(buildGameScore(contestantA.id(), scoreA, contestantB.id(), scoreB))
                 .build();
+    }
+
+    public static GameScore buildGameScore(String contestantIdA, int scoreA, String contestantIdB, int scoreB)  {
+        return new GameScore(Map.of(contestantIdA,scoreA,contestantIdB,scoreB));
     }
 
     public static List<Object> rawData(Object...values) {

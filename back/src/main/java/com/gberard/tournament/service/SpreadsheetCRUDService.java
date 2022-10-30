@@ -2,6 +2,8 @@ package com.gberard.tournament.service;
 
 import com.gberard.tournament.config.SpreadsheetConfig;
 import com.gberard.tournament.data.DataUtils;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.*;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +14,7 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.OptionalInt;
+import java.util.concurrent.TimeUnit;
 
 import static java.util.Collections.emptyList;
 
@@ -22,6 +25,7 @@ public class SpreadsheetCRUDService {
     public static final String USER_ENTERED = "USER_ENTERED";
     public static final String SEARCH_CELL = "L1";
     private static final String APPLICATION_NAME = "Google Sheets API CRUD";
+
     @Autowired
     private GoogleApiService googleApiService;
 
@@ -55,7 +59,16 @@ public class SpreadsheetCRUDService {
         return false;
     }
 
+    public final Cache<String, List<List<Object>>> spreadSheetCache =
+            Caffeine.newBuilder()
+                    .expireAfterAccess(30, TimeUnit.SECONDS)
+                    .build();
+
     public List<List<Object>> readCells(String range) {
+        return spreadSheetCache.get(range, newRange -> readCellsUncached(range));
+    }
+
+    private List<List<Object>> readCellsUncached(String range) {
         try {
             var response = getService().spreadsheets().values()
                     .get(spreadsheetConfig.getId(), range)

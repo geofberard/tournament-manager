@@ -1,6 +1,7 @@
-package com.gberard.tournament.data;
+package com.gberard.tournament.data.game;
 
 import com.gberard.tournament.data.contestant.Contestant;
+import com.gberard.tournament.data.game.Game;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -10,7 +11,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
-import static com.gberard.tournament.data.GameTeamStatus.*;
+import static com.gberard.tournament.data.game.ContestantResult.*;
 import static com.gberard.tournament.data._TestUtils.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -23,8 +24,6 @@ class GameTest {
         @Test
         void should_no_be_finished() {
             assertThat(gameBuilder().build().isFinished()).isFalse();
-            assertThat(gameBuilder().scoreA(10).build().isFinished()).isFalse();
-            assertThat(gameBuilder().scoreB(20).build().isFinished()).isFalse();
         }
 
         @Test
@@ -40,23 +39,14 @@ class GameTest {
     @DisplayName("getTeamStatus()")
     class GetContestantStatusTest {
 
-        public static Stream<Arguments> notPlayedScenario() {
-            return Stream.of(
-                    Arguments.of("no score", gameBuilder()),
-                    Arguments.of("only scoreA", gameBuilder().scoreA(10)),
-                    Arguments.of("only scoreB", gameBuilder().scoreB(20))
-            );
-        }
-
-        @ParameterizedTest
-        @MethodSource("notPlayedScenario")
-        void should_handle_status_not_played(String scenario, Game.GameBuilder builder) {
+        @Test
+        void should_handle_status_not_played() {
             // When
-            Game game = builder.build();
+            Game game = gameBuilder().build();
 
             // Then
-            assertThat(game.getTeamStatus(teamA)).isEqualTo(NOT_PLAYED);
-            assertThat(game.getTeamStatus(teamB)).isEqualTo(NOT_PLAYED);
+            assertThat(game.getTeamStatus(teamA)).isEmpty();
+            assertThat(game.getTeamStatus(teamB)).isEmpty();
         }
 
         @Test
@@ -65,8 +55,8 @@ class GameTest {
             Game game = buildGame(teamA, 10, teamB, 10);
 
             // Then
-            assertThat(game.getTeamStatus(teamA)).isEqualTo(DRAWN);
-            assertThat(game.getTeamStatus(teamB)).isEqualTo(DRAWN);
+            assertThat(game.getTeamStatus(teamA).get()).isEqualTo(DRAWN);
+            assertThat(game.getTeamStatus(teamB).get()).isEqualTo(DRAWN);
         }
 
         public static Stream<Arguments> wonScenario() {
@@ -79,7 +69,7 @@ class GameTest {
         @ParameterizedTest
         @MethodSource("wonScenario")
         void should_handle_status_won(String scenario, Game game, Contestant winner) {
-            assertThat(game.getTeamStatus(winner)).isEqualTo(WIN);
+            assertThat(game.getTeamStatus(winner).get()).isEqualTo(WIN);
         }
 
         public static Stream<Arguments> lostScenario() {
@@ -92,7 +82,7 @@ class GameTest {
         @ParameterizedTest
         @MethodSource("lostScenario")
         void should_handle_status_lost(String scenario, Game game, Contestant winner) {
-            assertThat(game.getTeamStatus(winner)).isEqualTo(WIN);
+            assertThat(game.getTeamStatus(winner).get()).isEqualTo(WIN);
         }
     }
 
@@ -107,9 +97,11 @@ class GameTest {
 
             // Then
             assertThat(game.getPointsFor(teamA)).isPresent();
-            assertThat(game.getPointsFor(teamA)).isEqualTo(game.scoreA());
+            assertThat(game.getPointsFor(teamA).get())
+                    .isEqualTo(game.score().get().getPointFor(teamA.id()));
             assertThat(game.getPointsFor(teamB)).isPresent();
-            assertThat(game.getPointsFor(teamB)).isEqualTo(game.scoreB());
+            assertThat(game.getPointsFor(teamB).get())
+                    .isEqualTo(game.score().get().getPointFor(teamB.id()));
         }
 
         @Test
@@ -135,9 +127,11 @@ class GameTest {
 
             // Then
             assertThat(game.getPointsAgainst(teamA)).isPresent();
-            assertThat(game.getPointsAgainst(teamA)).isEqualTo(game.scoreB());
+            assertThat(game.getPointsAgainst(teamA).get())
+                    .isEqualTo(game.score().get().getPointFor(teamB.id()));
             assertThat(game.getPointsAgainst(teamB)).isPresent();
-            assertThat(game.getPointsAgainst(teamB)).isEqualTo(game.scoreA());
+            assertThat(game.getPointsAgainst(teamB).get())
+                    .isEqualTo(game.score().get().getPointFor(teamA.id()));
         }
 
         @Test

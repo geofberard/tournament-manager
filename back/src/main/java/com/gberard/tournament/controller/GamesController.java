@@ -1,6 +1,6 @@
 package com.gberard.tournament.controller;
 
-import com.gberard.tournament.data.Game;
+import com.gberard.tournament.data.game.Game;
 import com.gberard.tournament.data.contestant.Contestant;
 import com.gberard.tournament.repository.GameRepository;
 import com.gberard.tournament.repository.TeamRepository;

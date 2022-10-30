@@ -1,6 +1,6 @@
 package com.gberard.tournament.service;
 
-import com.gberard.tournament.data.Game;
+import com.gberard.tournament.data.game.Game;
 import com.gberard.tournament.data.contestant.Contestant;
 import com.gberard.tournament.data.stats.ContestantStats;
 import com.gberard.tournament.repository.GameRepository;
