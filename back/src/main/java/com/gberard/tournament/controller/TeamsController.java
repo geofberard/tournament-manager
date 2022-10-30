@@ -1,6 +1,6 @@
 package com.gberard.tournament.controller;
 
-import com.gberard.tournament.data.Team;
+import com.gberard.tournament.data.contestant.Contestant;
 import com.gberard.tournament.repository.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,12 +19,12 @@ public class TeamsController {
     public TeamRepository teamService;
 
     @GetMapping("/teams")
-    public List<Team> getTeams() {
+    public List<Contestant> getTeams() {
         return teamService.readAll();
     }
 
     @GetMapping("/teams/{id}")
-    public Team getTeam(@PathVariable String id) {
+    public Contestant getTeam(@PathVariable String id) {
         return teamService.search(id)
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Unable to find resource"));
     }

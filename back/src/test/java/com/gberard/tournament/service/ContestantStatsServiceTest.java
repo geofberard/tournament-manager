@@ -1,8 +1,8 @@
 package com.gberard.tournament.service;
 
 import com.gberard.tournament.data.Game;
-import com.gberard.tournament.data.Team;
-import com.gberard.tournament.data.TeamStats;
+import com.gberard.tournament.data.contestant.Contestant;
+import com.gberard.tournament.data.stats.ContestantStats;
 import com.gberard.tournament.repository.GameRepository;
 import com.gberard.tournament.repository.TeamRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -26,7 +26,7 @@ import static org.junit.jupiter.params.provider.Arguments.of;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class TeamStatsServiceTest {
+class ContestantStatsServiceTest {
 
     @InjectMocks
     private TeamStatsService teamStatsService = new TeamStatsService();
@@ -37,7 +37,7 @@ class TeamStatsServiceTest {
     @Mock
     private GameRepository gameService;
 
-    List<Team> teams = List.of(teamA, teamB, teamC, teamD);
+    List<Contestant> contestants = List.of(teamA, teamB, teamC, teamD);
 
     List<Game> games = List.of(
             buildGame(teamA, 25, teamB, 15),
@@ -49,26 +49,26 @@ class TeamStatsServiceTest {
 
     @Nested
     @DisplayName("getTeamStats()")
-    class GetTeamStats {
+    class GetContestantStats {
 
         public static Stream<Arguments> getExpectedStats() {
             return Stream.of(
-                    of(new TeamStats(teamA, 2, 2, 0, 0, 6, 43, 29, 14)),
-                    of(new TeamStats(teamB, 3, 1, 1, 1, 4, 47, 54, -7)),
-                    of(new TeamStats(teamC, 3, 1, 0, 2, 3, 53, 50, 3)),
-                    of(new TeamStats(teamD, 2, 0, 1, 1, 1, 20, 30, -10)),
-                    of(new TeamStats(teamE, 0, 0, 0, 0, 0, 0, 0, 0))
+                    of(new ContestantStats(teamA, 2, 2, 0, 0, 6, 43, 29, 14)),
+                    of(new ContestantStats(teamB, 3, 1, 1, 1, 4, 47, 54, -7)),
+                    of(new ContestantStats(teamC, 3, 1, 0, 2, 3, 53, 50, 3)),
+                    of(new ContestantStats(teamD, 2, 0, 1, 1, 1, 20, 30, -10)),
+                    of(new ContestantStats(teamE, 0, 0, 0, 0, 0, 0, 0, 0))
             );
         }
 
         @ParameterizedTest
         @MethodSource("getExpectedStats")
-        void should_return_team_stats(TeamStats expected) {
+        void should_return_team_stats(ContestantStats expected) {
             // Given
             when(gameService.readAll()).thenReturn(games);
 
             // When
-            TeamStats stats = teamStatsService.getTeamStats(expected.team());
+            ContestantStats stats = teamStatsService.getTeamStats(expected.contestant());
 
             // Then
             assertThat(stats).isEqualTo(expected);
@@ -82,16 +82,16 @@ class TeamStatsServiceTest {
         @Test
         void should_return_teams_stats() {
             // Given
-            when(teamService.readAll()).thenReturn(teams);
+            when(teamService.readAll()).thenReturn(contestants);
             when(gameService.readAll()).thenReturn(games);
 
             // When
-            List<TeamStats> teamsStats = teamStatsService.getTeamsStats();
+            List<ContestantStats> teamsStats = teamStatsService.getTeamsStats();
 
             // Then
-            assertThat(teamsStats).hasSize(teams.size());
-            assertThat(teamsStats.stream().map(TeamStats::team).collect(toList()))
-                    .containsAll(teams);
+            assertThat(teamsStats).hasSize(contestants.size());
+            assertThat(teamsStats.stream().map(ContestantStats::contestant).collect(toList()))
+                    .containsAll(contestants);
         }
     }
 }

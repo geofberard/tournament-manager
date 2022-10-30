@@ -1,7 +1,7 @@
 package com.gberard.tournament.repository;
 
 import com.gberard.tournament.data.Game;
-import com.gberard.tournament.data.Team;
+import com.gberard.tournament.data.contestant.Contestant;
 import com.gberard.tournament.service.SpreadsheetCRUDService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -50,11 +50,11 @@ class GameRepositoryTest {
     @Mock
     private TeamRepository teamRepository;
 
-    private void mockTeamService(Team... teams) {
-        if (teams.length == 0) {
+    private void mockTeamService(Contestant... contestants) {
+        if (contestants.length == 0) {
             when(teamRepository.search(any())).thenReturn(Optional.of(teamA));
         } else {
-            Arrays.stream(teams)
+            Arrays.stream(contestants)
                     .forEach(team -> when(teamRepository.search(eq(team.id()))).thenReturn(Optional.of(team)));
         }
     }
@@ -274,8 +274,8 @@ class GameRepositoryTest {
             assertThat(game.id()).isEqualTo("game1");
             assertThat(game.time()).isEqualTo(LocalDateTime.of(2022, 8, 23, 10, 0));
             assertThat(game.court()).isEqualTo("Court1");
-            assertThat(game.teamA()).isEqualTo(teamA);
-            assertThat(game.teamB()).isEqualTo(teamB);
+            assertThat(game.contestantA()).isEqualTo(teamA);
+            assertThat(game.contestantB()).isEqualTo(teamB);
             assertThat(game.referee()).isNotEmpty().hasValue(teamC);
             assertThat(game.scoreA()).isNotEmpty().hasValue(25);
             assertThat(game.scoreB()).isNotEmpty().hasValue(16);
@@ -346,8 +346,8 @@ class GameRepositoryTest {
                     .id("gameId")
                     .time(LocalDateTime.of(2022, AUGUST, 29, 10, 30))
                     .court(court)
-                    .teamA(teamA)
-                    .teamB(teamB)
+                    .contestantA(teamA)
+                    .contestantB(teamB)
                     .build();
 
             // Given

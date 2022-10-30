@@ -1,5 +1,6 @@
 package com.gberard.tournament.data;
 
+import com.gberard.tournament.data.contestant.Contestant;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -37,7 +38,7 @@ class GameTest {
 
     @Nested
     @DisplayName("getTeamStatus()")
-    class GetTeamStatusTest {
+    class GetContestantStatusTest {
 
         public static Stream<Arguments> notPlayedScenario() {
             return Stream.of(
@@ -77,7 +78,7 @@ class GameTest {
 
         @ParameterizedTest
         @MethodSource("wonScenario")
-        void should_handle_status_won(String scenario, Game game, Team winner) {
+        void should_handle_status_won(String scenario, Game game, Contestant winner) {
             assertThat(game.getTeamStatus(winner)).isEqualTo(WIN);
         }
 
@@ -90,7 +91,7 @@ class GameTest {
 
         @ParameterizedTest
         @MethodSource("lostScenario")
-        void should_handle_status_lost(String scenario, Game game, Team winner) {
+        void should_handle_status_lost(String scenario, Game game, Contestant winner) {
             assertThat(game.getTeamStatus(winner)).isEqualTo(WIN);
         }
     }

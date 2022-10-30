@@ -1,5 +1,6 @@
 package com.gberard.tournament.data;
 
+import com.gberard.tournament.data.contestant.Contestant;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
@@ -11,9 +12,9 @@ public record Game(
         String id,
         LocalDateTime time,
         String court,
-        Team teamA,
-        Team teamB,
-        Optional<Team> referee,
+        Contestant contestantA,
+        Contestant contestantB,
+        Optional<Contestant> referee,
         Optional<Integer> scoreA,
         Optional<Integer> scoreB
 ) implements Identified{
@@ -21,9 +22,9 @@ public record Game(
         return scoreA.isPresent() && scoreB.isPresent();
     }
 
-    public GameTeamStatus getTeamStatus(Team team) {
-        if (!hasContestant(team)) {
-            throw new IllegalStateException("Team " + team.id() + " has to played game " + this.id);
+    public GameTeamStatus getTeamStatus(Contestant contestant) {
+        if (!hasContestant(contestant)) {
+            throw new IllegalStateException("Team " + contestant.id() + " has to played game " + this.id);
         }
 
         if (!isFinished()) {
@@ -34,25 +35,25 @@ public record Game(
             return DRAWN;
         }
 
-        return getPointsFor(team).get() > getPointsAgainst(team).get() ? WIN : LOST;
+        return getPointsFor(contestant).get() > getPointsAgainst(contestant).get() ? WIN : LOST;
     }
 
-    public boolean hasContestant(Team team) {
-        return teamA.equals(team) || teamB.equals(team);
+    public boolean hasContestant(Contestant contestant) {
+        return contestantA.equals(contestant) || contestantB.equals(contestant);
     }
 
-    public Optional<Integer> getPointsFor(Team team) {
-        if (!hasContestant(team)) {
-            throw new IllegalStateException("Team " + team.id() + " has to played game " + this.id);
+    public Optional<Integer> getPointsFor(Contestant contestant) {
+        if (!hasContestant(contestant)) {
+            throw new IllegalStateException("Team " + contestant.id() + " has to played game " + this.id);
         }
-        return (teamA.equals(team) ? scoreA : scoreB);
+        return (contestantA.equals(contestant) ? scoreA : scoreB);
     }
 
-    public Optional<Integer> getPointsAgainst(Team team) {
-        if (!hasContestant(team)) {
-            throw new IllegalStateException("Team " + team.id() + "has to played game " + this.id);
+    public Optional<Integer> getPointsAgainst(Contestant contestant) {
+        if (!hasContestant(contestant)) {
+            throw new IllegalStateException("Team " + contestant.id() + "has to played game " + this.id);
         }
-        return (teamA.equals(team) ? scoreB : scoreA);
+        return (contestantA.equals(contestant) ? scoreB : scoreA);
     }
 
     @Builder
@@ -60,13 +61,13 @@ public record Game(
             String id,
             LocalDateTime time,
             String court,
-            Team teamA,
-            Team teamB,
-            Team referee,
+            Contestant contestantA,
+            Contestant contestantB,
+            Contestant referee,
             Integer scoreA,
             Integer scoreB
     ) {
-        return new Game(id, time, court, teamA, teamB,
+        return new Game(id, time, court, contestantA, contestantB,
                 Optional.ofNullable(referee), Optional.ofNullable(scoreA), Optional.ofNullable(scoreB));
     }
 }

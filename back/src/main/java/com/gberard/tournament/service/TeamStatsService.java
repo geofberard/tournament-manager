@@ -1,6 +1,9 @@
 package com.gberard.tournament.service;
 
 import com.gberard.tournament.data.*;
+import com.gberard.tournament.data.contestant.Contestant;
+import com.gberard.tournament.data.stats.ContestantStats;
+import com.gberard.tournament.data.stats.ContestantStatsAccumulator;
 import com.gberard.tournament.repository.GameRepository;
 import com.gberard.tournament.repository.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,26 +23,26 @@ public class TeamStatsService {
     @Autowired
     GameRepository gameService;
 
-    public List<TeamStats> getTeamsStats() {
+    public List<ContestantStats> getTeamsStats() {
         return teamService.readAll().stream()
                 .map(this::getTeamStats)
                 .collect(toList());
     }
 
-    public TeamStats getTeamStats(Team team) {
+    public ContestantStats getTeamStats(Contestant contestant) {
         return gameService.readAll().stream()
-                .filter(game -> game.hasContestant(team))
+                .filter(game -> game.hasContestant(contestant))
                 .reduce(
-                        new TeamStatsAccumulator(team),
-                        (reducer, game) -> updateStatsWith(reducer, game, team),
-                        TeamStatsAccumulator::merge
+                        new ContestantStatsAccumulator(contestant),
+                        (reducer, game) -> updateStatsWith(reducer, game, contestant),
+                        ContestantStatsAccumulator::merge
                 ).createTeamStatistic();
     }
 
-    private static TeamStatsAccumulator updateStatsWith(TeamStatsAccumulator reducer, Game game, Team team) {
-        GameTeamStatus teamResult = game.getTeamStatus(team);
-        int pointsFor = game.getPointsFor(team).orElse(0);
-        int pointsAgainst = game.getPointsAgainst(team).orElse(0);
+    private static ContestantStatsAccumulator updateStatsWith(ContestantStatsAccumulator reducer, Game game, Contestant contestant) {
+        GameTeamStatus teamResult = game.getTeamStatus(contestant);
+        int pointsFor = game.getPointsFor(contestant).orElse(0);
+        int pointsAgainst = game.getPointsAgainst(contestant).orElse(0);
         return reducer.addPlayed(teamResult != NOT_PLAYED ? 1 : 0)
                 .addWon(teamResult == WIN ? 1 : 0)
                 .addLost(teamResult == LOST ? 1 : 0)

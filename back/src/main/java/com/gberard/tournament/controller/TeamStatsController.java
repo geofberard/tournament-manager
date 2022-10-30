@@ -1,7 +1,7 @@
 package com.gberard.tournament.controller;
 
-import com.gberard.tournament.data.Team;
-import com.gberard.tournament.data.TeamStats;
+import com.gberard.tournament.data.contestant.Contestant;
+import com.gberard.tournament.data.stats.ContestantStats;
 import com.gberard.tournament.repository.TeamRepository;
 import com.gberard.tournament.service.TeamStatsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,13 +25,13 @@ public class TeamStatsController {
     public TeamRepository teamService;
 
     @GetMapping("/teams-stats")
-    public List<TeamStats> getTeamsStats() {
+    public List<ContestantStats> getTeamsStats() {
         return teamStatsService.getTeamsStats();
     }
 
     @GetMapping("/team-stats/{teamId}")
-    public TeamStats getTeam(@PathVariable String teamId) {
-        Optional<Team> team = teamService.search(teamId);
+    public ContestantStats getTeam(@PathVariable String teamId) {
+        Optional<Contestant> team = teamService.search(teamId);
         if(team.isEmpty()) {
             throw  new ResponseStatusException(NOT_FOUND, "Team not found");
         }

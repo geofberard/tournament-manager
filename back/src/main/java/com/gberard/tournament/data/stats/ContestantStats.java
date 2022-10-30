@@ -1,7 +1,9 @@
-package com.gberard.tournament.data;
+package com.gberard.tournament.data.stats;
 
-public record TeamStats(
-        Team team,
+import com.gberard.tournament.data.contestant.Contestant;
+
+public record ContestantStats(
+        Contestant contestant,
         int played,
         int won,
         int drawn,

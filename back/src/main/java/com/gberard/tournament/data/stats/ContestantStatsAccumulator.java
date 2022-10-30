@@ -1,7 +1,9 @@
-package com.gberard.tournament.data;
+package com.gberard.tournament.data.stats;
 
-public class TeamStatsAccumulator {
-    private Team team;
+import com.gberard.tournament.data.contestant.Contestant;
+
+public class ContestantStatsAccumulator {
+    private Contestant contestant;
     private int played = 0;
     private int won = 0;
     private int drawn = 0;
@@ -11,56 +13,56 @@ public class TeamStatsAccumulator {
     private int pointsAgainst = 0;
     private int pointsDiff = 0;
 
-    public TeamStatsAccumulator(Team team) {
-        this.team = team;
+    public ContestantStatsAccumulator(Contestant contestant) {
+        this.contestant = contestant;
     }
 
-    public TeamStatsAccumulator addPlayed(int played) {
+    public ContestantStatsAccumulator addPlayed(int played) {
         this.played += played;
         return this;
     }
 
-    public TeamStatsAccumulator addWon(int won) {
+    public ContestantStatsAccumulator addWon(int won) {
         this.won += won;
         return this;
     }
 
-    public TeamStatsAccumulator addDrawn(int drawn) {
+    public ContestantStatsAccumulator addDrawn(int drawn) {
         this.drawn += drawn;
         return this;
     }
 
-    public TeamStatsAccumulator addLost(int lost) {
+    public ContestantStatsAccumulator addLost(int lost) {
         this.lost += lost;
         return this;
     }
 
-    public TeamStatsAccumulator addScore(int score) {
+    public ContestantStatsAccumulator addScore(int score) {
         this.score += score;
         return this;
     }
 
-    public TeamStatsAccumulator addPointsFor(int pointsFor) {
+    public ContestantStatsAccumulator addPointsFor(int pointsFor) {
         this.pointsFor += pointsFor;
         return this;
     }
 
-    public TeamStatsAccumulator addPointsAgainst(int pointsAgainst) {
+    public ContestantStatsAccumulator addPointsAgainst(int pointsAgainst) {
         this.pointsAgainst += pointsAgainst;
         return this;
     }
 
-    public TeamStatsAccumulator addPointsDiff(int pointsDiff) {
+    public ContestantStatsAccumulator addPointsDiff(int pointsDiff) {
         this.pointsDiff += pointsDiff;
         return this;
     }
 
-    public TeamStats createTeamStatistic() {
-        return new TeamStats(team, played, won, drawn, lost, score, pointsFor, pointsAgainst, pointsDiff);
+    public ContestantStats createTeamStatistic() {
+        return new ContestantStats(contestant, played, won, drawn, lost, score, pointsFor, pointsAgainst, pointsDiff);
     }
 
-    public static TeamStatsAccumulator merge(TeamStatsAccumulator statA, TeamStatsAccumulator statB) {
-        if(!statA.team.equals(statB.team)) {
+    public static ContestantStatsAccumulator merge(ContestantStatsAccumulator statA, ContestantStatsAccumulator statB) {
+        if(!statA.contestant.equals(statB.contestant)) {
             throw new IllegalStateException("Impossible to merge stats from different teams");
         }
         return statA.addPlayed(statB.played)

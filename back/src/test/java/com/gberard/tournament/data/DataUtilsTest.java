@@ -95,7 +95,7 @@ class DataUtilsTest {
 
     @Nested
     @DisplayName("parseInteger()")
-    class GetTeamStatusTest {
+    class GetContestantStatusTest {
 
 
         @Test

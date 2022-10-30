@@ -1,7 +1,7 @@
 package com.gberard.tournament.controller;
 
 import com.gberard.tournament.data.Game;
-import com.gberard.tournament.data.Team;
+import com.gberard.tournament.data.contestant.Contestant;
 import com.gberard.tournament.repository.GameRepository;
 import com.gberard.tournament.repository.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ public class GamesController {
     @GetMapping("/games")
     public List<Game> getTeams(@RequestParam Optional<String> teamId) {
         if(teamId.isPresent()) {
-            Optional<Team> team = teamService.search(teamId.get());
+            Optional<Contestant> team = teamService.search(teamId.get());
             return team.isEmpty() ? List.of() :  gameService.searchFor(team.get());
         }
         return gameService.readAll();
