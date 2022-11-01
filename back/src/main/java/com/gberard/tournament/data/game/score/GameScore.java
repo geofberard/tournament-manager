@@ -1,8 +1,11 @@
 package com.gberard.tournament.data.game.score;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.gberard.tournament.data.game.ContestantResult;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
 
 import java.util.List;
 import java.util.Map;
@@ -10,9 +13,12 @@ import java.util.Map;
 import static com.gberard.tournament.data.game.ContestantResult.*;
 
 @EqualsAndHashCode
+@ToString
 @JsonSerialize(using = GameScoreSerializer.class)
+@JsonDeserialize(using = GameScoreDeserializer.class)
 public class GameScore implements Score {
 
+    @Getter
     Map<String, Integer> result;
 
     @EqualsAndHashCode.Exclude

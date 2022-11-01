@@ -1,0 +1,171 @@
+package com.gberard.tournament.data.game.score;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gberard.tournament.data.contestant.Contestant;
+import com.gberard.tournament.data.game.Game;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Stream;
+
+import static com.gberard.tournament.data._TestUtils.*;
+import static com.gberard.tournament.data._TestUtils.teamB;
+import static com.gberard.tournament.data.game.ContestantResult.*;
+import static java.util.List.of;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
+
+class SetScoreTest {
+
+    @Nested
+    @DisplayName("getPointsFor()")
+    class GetPointsFor {
+
+        @Test
+        void should_return_score_for_team() {
+            // Given
+            SetScore score = buildSetScore(teamA, of(18,25,12), teamB, of(12,14,25));
+
+            // Then
+            assertThat(score.getPointFor(teamA.id())).isEqualTo(55);
+            assertThat(score.getPointFor(teamB.id())).isEqualTo(51);
+        }
+
+    }
+
+    @Nested
+    @DisplayName("getPointsAgainst()")
+    class GetPointsAgainst {
+
+        @Test
+        void should_return_score_against_team() {
+            // Given
+            SetScore score = buildSetScore(teamA, of(18,25,12), teamB, of(12,14,25));
+
+            // Then
+            assertThat(score.getPointAgainst(teamA.id())).isEqualTo(51);
+            assertThat(score.getPointAgainst(teamB.id())).isEqualTo(55);
+        }
+
+    }
+
+    @Nested
+    @DisplayName("getContestantStatus()")
+    class GetContestantStatusTest {
+
+        public static Stream<Arguments> drawnScenario() {
+            return Stream.of(
+                    Arguments.of("Perfect Tie", buildSetScore(teamA, of(18, 12), teamB, of(12, 25))),
+                    Arguments.of("Drawn sets", buildSetScore(teamA, of(15, 15), teamB, of(15, 15))),
+                    Arguments.of("Hybrid", buildSetScore(teamA, of(18, 12, 15), teamB, of(12, 25, 15)))
+            );
+        }
+
+        @ParameterizedTest
+        @MethodSource("drawnScenario")
+        void should_handle_status_drawn(String scenario, Score score) {
+            // Then
+            assertThat(score.getTeamStatus(teamA.id())).isEqualTo(DRAWN);
+            assertThat(score.getTeamStatus(teamB.id())).isEqualTo(DRAWN);
+        }
+
+        public static Stream<Arguments> wonScenario() {
+            return Stream.of(
+                    Arguments.of("A win", buildSetScore(teamA, of(18,25,12), teamB, of(12,14,12)), teamA),
+                    Arguments.of("A win with drawn", buildSetScore(teamA, of(18,25,12), teamB, of(12,14,25)), teamA),
+                    Arguments.of("B win", buildSetScore(teamA, of(18,25,12), teamB, of(25,14,25)), teamB)
+            );
+        }
+
+        @ParameterizedTest
+        @MethodSource("wonScenario")
+        void should_handle_status_won(String scenario, Score score, Contestant winner) {
+            assertThat(score.getTeamStatus(winner.id())).isEqualTo(WIN);
+        }
+
+        public static Stream<Arguments> lostScenario() {
+            return Stream.of(
+                    Arguments.of("A win", buildSetScore(teamA, of(18,25,12), teamB, of(12,14,12)), teamB),
+                    Arguments.of("A win with drawn", buildSetScore(teamA, of(18,25,12), teamB, of(12,14,25)), teamB),
+                    Arguments.of("B win", buildSetScore(teamA, of(18,25,12), teamB, of(25,14,25)), teamA)
+            );
+        }
+
+        @ParameterizedTest
+        @MethodSource("lostScenario")
+        void should_handle_status_lost(String scenario, Score score, Contestant loser) {
+            assertThat(score.getTeamStatus(loser.id())).isEqualTo(LOST);
+        }
+    }
+
+    @Nested
+    @DisplayName("serialization")
+    class serializationTest {
+
+        public static final SetScore SET_SCORE = buildSetScore(teamA, of(18,25,12), teamB, of(12,14,25));
+
+        @Test
+        void should_serialize_properly() throws JsonProcessingException {
+            // When
+            String serialized = new ObjectMapper().writeValueAsString(SET_SCORE);
+
+            // Then
+            String[] gameSplit = serialized.split("\\},\\{");
+            assertThat(gameSplit).hasSize(3);
+            assertThat(gameSplit[0]).contains("\"teamA\":18");
+            assertThat(gameSplit[0]).contains("\"teamB\":12");
+            assertThat(gameSplit[1]).contains("\"teamA\":25");
+            assertThat(gameSplit[1]).contains("\"teamB\":14");
+            assertThat(gameSplit[2]).contains("\"teamA\":12");
+            assertThat(gameSplit[2]).contains("\"teamB\":25");
+            System.out.println(serialized);
+        }
+
+        public static Stream<Arguments> serializedScenario() {
+            return Stream.of(
+                    Arguments.of("[{\"teamB\":12,\"teamA\":18},{\"teamB\":14,\"teamA\":25},{\"teamB\":25,\"teamA\":12}]"),
+                    Arguments.of("[{\"teamA\":18,\"teamB\":12},{\"teamB\":14,\"teamA\":25},{\"teamA\":12,\"teamB\":25}]")
+            );
+        }
+
+        @ParameterizedTest
+        @MethodSource("serializedScenario")
+        void should_deserialize_properly(String serialized) throws JsonProcessingException {
+            // When
+            SetScore score = new ObjectMapper().readValue(serialized, SetScore.class);
+
+            // Then
+            assertThat(score.getResult().get(0).getPointFor(teamA.id())).isEqualTo(18);
+            assertThat(score.getResult().get(0).getPointFor(teamB.id())).isEqualTo(12);
+            assertThat(score.getResult().get(1).getPointFor(teamA.id())).isEqualTo(25);
+            assertThat(score.getResult().get(1).getPointFor(teamB.id())).isEqualTo(14);
+            assertThat(score.getResult().get(2).getPointFor(teamA.id())).isEqualTo(12);
+            assertThat(score.getResult().get(2).getPointFor(teamB.id())).isEqualTo(25);
+            assertThat(score).isEqualTo(SET_SCORE);
+        }
+
+        @Test
+        void should_serialize_and_deserialize_properly() throws JsonProcessingException {
+            // Given
+            String serialized = new ObjectMapper().writeValueAsString(SET_SCORE);
+
+            // When
+            SetScore score = new ObjectMapper().readValue(serialized, SetScore.class);
+
+            // Then
+            assertThat(score).isEqualTo(SET_SCORE);
+        }
+
+
+    }
+    
+}
