@@ -1,0 +1,24 @@
+{
+  "id": "oneRound",
+  "time": "2022-01-01T12:12:00",
+  "court": "court1",
+  "contestants": [
+    {
+      "id": "teamA",
+      "name": "TeamA"
+    },
+    {
+      "id": "teamB",
+      "name": "TeamB"
+    }
+  ],
+  "referee": {
+    "id": "teamC",
+    "name": "TeamC"
+  },
+  "scoreType": "GameScore",
+  "score": {
+    "teamA": 10,
+    "teamB": 25
+  }
+}

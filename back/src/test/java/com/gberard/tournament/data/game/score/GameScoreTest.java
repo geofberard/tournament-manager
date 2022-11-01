@@ -149,10 +149,7 @@ class GameScoreTest {
         }
 
         public static Stream<Arguments> serializedScenario() {
-            return Stream.of(
-                    Arguments.of("{\"teamA\":10,\"teamB\":9}"),
-                    Arguments.of("{\"teamB\":9,\"teamA\":10}")
-            );
+            return Stream.of("{\"teamA\":10,\"teamB\":9}","{\"teamB\":9,\"teamA\":10}").map(Arguments::of);
         }
 
         @ParameterizedTest

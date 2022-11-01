@@ -1,17 +1,19 @@
 package com.gberard.tournament.data.game;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.gberard.tournament.data.Identified;
 import com.gberard.tournament.data.contestant.Contestant;
-import com.gberard.tournament.data.game.score.Score;
+import com.gberard.tournament.data.game.score.*;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static com.gberard.tournament.data.game.ContestantResult.*;
-
+@JsonSerialize(using = GameSerializer.class)
+@JsonDeserialize(using = GameDeserializer.class)
 public record Game(
         String id,
         LocalDateTime time,

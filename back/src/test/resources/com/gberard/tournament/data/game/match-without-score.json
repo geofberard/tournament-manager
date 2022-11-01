@@ -1,0 +1,15 @@
+{
+  "id": "noScore",
+  "time": "2022-01-01T12:12:00",
+  "court": "court1",
+  "contestants": [
+    {
+      "id": "teamA",
+      "name": "TeamA"
+    },
+    {
+      "id": "teamB",
+      "name": "TeamB"
+    }
+  ]
+}
