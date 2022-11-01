@@ -42,9 +42,9 @@ public class TeamStatsService {
     }
 
     private static ContestantStatsAccumulator updateStatsWith(ContestantStatsAccumulator reducer, Game game, Contestant contestant) {
-        Optional<ContestantResult> teamResult = game.getTeamStatus(contestant);
-        int pointsFor = game.getPointsFor(contestant).orElse(0);
-        int pointsAgainst = game.getPointsAgainst(contestant).orElse(0);
+        Optional<ContestantResult> teamResult = game.score().map(score -> score.getTeamStatus(contestant));
+        int pointsFor = game.score().map(score -> score.getPointFor(contestant)).orElse(0);
+        int pointsAgainst = game.score().map(score -> score.getPointAgainst(contestant)).orElse(0);
         return reducer.addPlayed(game.isFinished() ? 1 : 0)
                 .addWon(teamResult.map(value -> value == WIN ? 1 : 0).orElse(0))
                 .addLost(teamResult.map(value -> value == LOST ? 1 : 0).orElse(0))

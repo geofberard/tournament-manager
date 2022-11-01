@@ -36,113 +36,21 @@ class GameTest {
     }
 
     @Nested
-    @DisplayName("getTeamStatus()")
-    class GetContestantStatusTest {
+    @DisplayName("getScore()")
+    class GetScoreTest {
 
         @Test
-        void should_handle_status_not_played() {
-            // When
-            Game game = gameBuilder().build();
-
-            // Then
-            assertThat(game.getTeamStatus(teamA)).isEmpty();
-            assertThat(game.getTeamStatus(teamB)).isEmpty();
+        void should_have_no_score_not_played() {
+            assertThat(gameBuilder().build().score()).isEmpty();
         }
 
         @Test
-        void should_handle_status_drawn() {
-            // When
-            Game game = buildGame(teamA, 10, teamB, 10);
-
-            // Then
-            assertThat(game.getTeamStatus(teamA).get()).isEqualTo(DRAWN);
-            assertThat(game.getTeamStatus(teamB).get()).isEqualTo(DRAWN);
-        }
-
-        public static Stream<Arguments> wonScenario() {
-            return Stream.of(
-                    Arguments.of("A win", buildGame(teamA, 10, teamB, 9), teamA),
-                    Arguments.of("B win", buildGame(teamA, 14, teamB, 25), teamB)
-            );
-        }
-
-        @ParameterizedTest
-        @MethodSource("wonScenario")
-        void should_handle_status_won(String scenario, Game game, Contestant winner) {
-            assertThat(game.getTeamStatus(winner).get()).isEqualTo(WIN);
-        }
-
-        public static Stream<Arguments> lostScenario() {
-            return Stream.of(
-                    Arguments.of("A win", buildGame(teamA, 10, teamB, 9), teamA),
-                    Arguments.of("B win", buildGame(teamA, 15, teamB, 25), teamB)
-            );
-        }
-
-        @ParameterizedTest
-        @MethodSource("lostScenario")
-        void should_handle_status_lost(String scenario, Game game, Contestant winner) {
-            assertThat(game.getTeamStatus(winner).get()).isEqualTo(WIN);
-        }
-    }
-
-    @Nested
-    @DisplayName("getPointsFor()")
-    class GetPointsFor {
-
-        @Test
-        void should_return_score_for_team_if_set() {
-            // Given
-            Game game = buildGame(teamA, 18, teamB, 12);
-
-            // Then
-            assertThat(game.getPointsFor(teamA)).isPresent();
-            assertThat(game.getPointsFor(teamA).get())
-                    .isEqualTo(game.score().get().getPointFor(teamA.id()));
-            assertThat(game.getPointsFor(teamB)).isPresent();
-            assertThat(game.getPointsFor(teamB).get())
-                    .isEqualTo(game.score().get().getPointFor(teamB.id()));
-        }
-
-        @Test
-        void should_return_empty_for_team_if_not_set() {
-            // Given
-            Game game = gameBuilder().build();
-
-            // Then
-            assertThat(game.getPointsFor(teamA)).isEmpty();
-            assertThat(game.getPointsFor(teamB)).isEmpty();
+        void should_have_score_when_played() {
+            assertThat(buildGame(teamA, 10, teamB, 9).score()).isPresent();
+            assertThat(buildGame(teamA, 12, teamB, 12).score()).isPresent();
+            assertThat(buildGame(teamA, 15, teamB, 24).score()).isPresent();
         }
 
     }
 
-    @Nested
-    @DisplayName("getPointsAgainst()")
-    class GetPointsAgainst {
-
-        @Test
-        void should_return_score_for_team_if_set() {
-            // Given
-            Game game = buildGame(teamA, 18, teamB, 12);
-
-            // Then
-            assertThat(game.getPointsAgainst(teamA)).isPresent();
-            assertThat(game.getPointsAgainst(teamA).get())
-                    .isEqualTo(game.score().get().getPointFor(teamB.id()));
-            assertThat(game.getPointsAgainst(teamB)).isPresent();
-            assertThat(game.getPointsAgainst(teamB).get())
-                    .isEqualTo(game.score().get().getPointFor(teamA.id()));
-        }
-
-        @Test
-        void should_return_empty_for_team_if_not_set() {
-            // Given
-            Game game = gameBuilder().build();
-
-            // Then
-            assertThat(game.getPointsAgainst(teamA)).isEmpty();
-            assertThat(game.getPointsAgainst(teamB)).isEmpty();
-        }
-
-    }
 }

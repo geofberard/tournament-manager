@@ -277,8 +277,8 @@ class GameRepositoryTest {
             assertThat(game.contestants()).containsExactly(teamA, teamB);
             assertThat(game.referee()).isNotEmpty().hasValue(teamC);
             assertThat(game.score()).isNotEmpty();
-            assertThat(game.getPointsFor(teamA)).isNotEmpty().hasValue(25);
-            assertThat(game.getPointsFor(teamB)).isNotEmpty().hasValue(16);
+            assertThat(game.score().get().getPointFor(teamA)).isEqualTo(25);
+            assertThat(game.score().get().getPointFor(teamB)).isEqualTo(16);
         }
 
         @Test

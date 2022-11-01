@@ -115,7 +115,6 @@ public class GameRepository extends SheetRepository<Game> {
 
     private String toRawGameScore(GameScore score, List<Contestant> contestants) {
         return contestants.stream()
-                        .map(Contestant::id)
                         .map(score::getPointFor)
                         .map(points -> Integer.toString(points))
                         .collect(joining(SCORE_SEPARATOR));

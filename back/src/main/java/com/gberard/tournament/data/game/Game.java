@@ -25,32 +25,8 @@ public record Game(
         return score.isPresent();
     }
 
-    public Optional<ContestantResult> getTeamStatus(Contestant contestant) {
-        if (!hasContestant(contestant)) {
-            throw new IllegalStateException("Team " + contestant.id() + " has to played game " + this.id);
-        }
-
-        return !isFinished() ? Optional.empty() : Optional.of(score.get().getTeamStatus(contestant.id()));
-    }
-
     public boolean hasContestant(Contestant contestant) {
         return contestants.contains(contestant);
-    }
-
-    public Optional<Integer> getPointsFor(Contestant contestant) {
-        if (!hasContestant(contestant)) {
-            throw new IllegalStateException("Team " + contestant.id() + " has to played game " + this.id);
-        }
-
-        return score.map(score -> score.getPointFor(contestant.id()));
-    }
-
-    public Optional<Integer> getPointsAgainst(Contestant contestant) {
-        if (!hasContestant(contestant)) {
-            throw new IllegalStateException("Team " + contestant.id() + "has to played game " + this.id);
-        }
-
-        return score.map(score -> score.getPointAgainst(contestant.id()));
     }
 
     @Builder
