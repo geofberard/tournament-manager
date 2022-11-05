@@ -13,12 +13,13 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
 import static com.gberard.tournament.data._TestUtils.*;
+import static com.gberard.tournament.data.game.score.GameScore.createGameScore;
+import static com.gberard.tournament.data.game.score.SetScore.createSetScore;
 import static java.nio.file.Files.readString;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,7 +31,7 @@ class GameTest {
 
         @Test
         void should_no_be_finished() {
-            assertThat(gameBuilder().build().isFinished()).isFalse();
+            assertThat(game2.isFinished()).isFalse();
         }
 
         @Test
@@ -48,7 +49,7 @@ class GameTest {
 
         @Test
         void should_have_no_score_not_played() {
-            assertThat(gameBuilder().build().score()).isEmpty();
+            assertThat(game2.score()).isEmpty();
         }
 
         @Test
@@ -78,7 +79,7 @@ class GameTest {
                 .contestants(List.of(teamA, teamB))
                 .court("court1")
                 .referee(teamC)
-                .score(buildGameScore(teamA, 10, teamB, 25))
+                .score(createGameScore(teamA, 10, teamB, 25))
                 .build();
 
         static final Game GAME_WITH_MANY_ROUND = Game.builder()
@@ -87,7 +88,7 @@ class GameTest {
                 .contestants(List.of(teamA, teamB))
                 .court("court1")
                 .referee(teamC)
-                .score(buildSetScore(teamA, List.of(10, 25, 16), teamB, List.of(25, 218, 25)))
+                .score(createSetScore(teamA, List.of(10, 25, 16), teamB, List.of(25, 218, 25)))
                 .build();
 
         static final Map<Game, String> serializedGames = Map.of(

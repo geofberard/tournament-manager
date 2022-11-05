@@ -2,7 +2,9 @@ package com.gberard.tournament.data.game.score;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.gberard.tournament.data.contestant.Contestant;
 import com.gberard.tournament.data.game.ContestantResult;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -58,4 +60,15 @@ public class SetScore implements Score {
         return nbWonSets > nbLostSets ? WIN : LOST;
     }
 
+    @Builder
+    public static SetScore createSetScore(Contestant contestA, List<Integer> scoreA, Contestant contestB, List<Integer> scoreB) {
+        if (scoreA.size() != scoreB.size()) {
+            throw new IllegalStateException("Teams cannot have different number of scores");
+        }
+
+        return new SetScore(IntStream.range(0, scoreA.size())
+                .mapToObj(index -> Map.of(contestA.id(), scoreA.get(index), contestB.id(), scoreB.get(index)))
+                .map(GameScore::new)
+                .toList());
+    }
 }

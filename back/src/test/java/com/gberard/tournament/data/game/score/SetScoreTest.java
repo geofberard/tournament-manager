@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 
 import static com.gberard.tournament.data._TestUtils.*;
 import static com.gberard.tournament.data.game.ContestantResult.*;
+import static com.gberard.tournament.data.game.score.SetScore.createSetScore;
 import static java.util.List.of;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,7 +27,7 @@ class SetScoreTest {
         @Test
         void should_return_score_for_team() {
             // Given
-            SetScore score = buildSetScore(teamA, of(18,25,12), teamB, of(12,14,25));
+            SetScore score = createSetScore(teamA, of(18, 25, 12), teamB, of(12, 14, 25));
 
             // Then
             assertThat(score.getPointFor(teamA)).isEqualTo(55);
@@ -42,7 +43,7 @@ class SetScoreTest {
         @Test
         void should_return_score_against_team() {
             // Given
-            SetScore score = buildSetScore(teamA, of(18,25,12), teamB, of(12,14,25));
+            SetScore score = createSetScore(teamA, of(18, 25, 12), teamB, of(12, 14, 25));
 
             // Then
             assertThat(score.getPointAgainst(teamA)).isEqualTo(51);
@@ -57,9 +58,9 @@ class SetScoreTest {
 
         public static Stream<Arguments> drawnScenario() {
             return Stream.of(
-                    Arguments.of("Perfect Tie", buildSetScore(teamA, of(18, 12), teamB, of(12, 25))),
-                    Arguments.of("Drawn sets", buildSetScore(teamA, of(15, 15), teamB, of(15, 15))),
-                    Arguments.of("Hybrid", buildSetScore(teamA, of(18, 12, 15), teamB, of(12, 25, 15)))
+                    Arguments.of("Perfect Tie", createSetScore(teamA, of(18, 12), teamB, of(12, 25))),
+                    Arguments.of("Drawn sets", createSetScore(teamA, of(15, 15), teamB, of(15, 15))),
+                    Arguments.of("Hybrid", createSetScore(teamA, of(18, 12, 15), teamB, of(12, 25, 15)))
             );
         }
 
@@ -73,9 +74,9 @@ class SetScoreTest {
 
         public static Stream<Arguments> wonScenario() {
             return Stream.of(
-                    Arguments.of("A win", buildSetScore(teamA, of(18,25,12), teamB, of(12,14,12)), teamA),
-                    Arguments.of("A win with drawn", buildSetScore(teamA, of(18,25,12), teamB, of(12,14,25)), teamA),
-                    Arguments.of("B win", buildSetScore(teamA, of(18,25,12), teamB, of(25,14,25)), teamB)
+                    Arguments.of("A win", createSetScore(teamA, of(18, 25, 12), teamB, of(12, 14, 12)), teamA),
+                    Arguments.of("A win with drawn", createSetScore(teamA, of(18, 25, 12), teamB, of(12, 14, 25)), teamA),
+                    Arguments.of("B win", createSetScore(teamA, of(18, 25, 12), teamB, of(25, 14, 25)), teamB)
             );
         }
 
@@ -87,9 +88,9 @@ class SetScoreTest {
 
         public static Stream<Arguments> lostScenario() {
             return Stream.of(
-                    Arguments.of("A win", buildSetScore(teamA, of(18,25,12), teamB, of(12,14,12)), teamB),
-                    Arguments.of("A win with drawn", buildSetScore(teamA, of(18,25,12), teamB, of(12,14,25)), teamB),
-                    Arguments.of("B win", buildSetScore(teamA, of(18,25,12), teamB, of(25,14,25)), teamA)
+                    Arguments.of("A win", createSetScore(teamA, of(18, 25, 12), teamB, of(12, 14, 12)), teamB),
+                    Arguments.of("A win with drawn", createSetScore(teamA, of(18, 25, 12), teamB, of(12, 14, 25)), teamB),
+                    Arguments.of("B win", createSetScore(teamA, of(18, 25, 12), teamB, of(25, 14, 25)), teamA)
             );
         }
 
@@ -104,7 +105,7 @@ class SetScoreTest {
     @DisplayName("serialization")
     class serializationTest {
 
-        public static final SetScore SET_SCORE = buildSetScore(teamA, of(18,25,12), teamB, of(12,14,25));
+        public static final SetScore SET_SCORE = createSetScore(teamA, of(18, 25, 12), teamB, of(12, 14, 25));
 
         @Test
         void should_serialize_properly() throws JsonProcessingException {

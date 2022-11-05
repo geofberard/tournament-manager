@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.gberard.tournament.data.contestant.Contestant;
 import com.gberard.tournament.data.game.ContestantResult;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -67,6 +68,11 @@ public class GameScore implements Score {
 
     public boolean hasContestant(String contestantId) {
         return opponents.keySet().contains(contestantId);
+    }
+
+    @Builder
+    public static GameScore createGameScore(Contestant contestA, int scoreA, Contestant contestB, int scoreB) {
+        return new GameScore(Map.of(contestA.id(), scoreA, contestB.id(), scoreB));
     }
 
 }

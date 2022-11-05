@@ -3,15 +3,11 @@ package com.gberard.tournament.data;
 import com.gberard.tournament.data.contestant.Contestant;
 import com.gberard.tournament.data.contestant.Team;
 import com.gberard.tournament.data.game.Game;
-import com.gberard.tournament.data.game.score.GameScore;
-import com.gberard.tournament.data.game.score.SetScore;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.IntStream;
 
+import static com.gberard.tournament.data.game.score.GameScore.createGameScore;
 import static java.time.Month.AUGUST;
 
 public class _TestUtils {
@@ -28,7 +24,7 @@ public class _TestUtils {
             .court("court")
             .contestants(List.of(teamA, teamB))
             .referee(teamC)
-            .score(buildGameScore(teamA, 25, teamB, 14))
+            .score(createGameScore(teamA, 25, teamB, 14))
             .build();
 
     public static Game game2 = Game.builder()
@@ -38,33 +34,14 @@ public class _TestUtils {
             .contestants(List.of(teamC, teamB))
             .build();
 
-    public static Game.GameBuilder gameBuilder() {
+    public static Game buildGame(Contestant contestantA, int scoreA, Contestant contestantB, int scoreB) {
         return Game.builder()
                 .time(LocalDateTime.now())
                 .court("court")
-                .contestants(List.of(teamA, teamB));
-    }
-
-    public static Game buildGame(Contestant contestantA, int scoreA, Contestant contestantB, int scoreB) {
-        return gameBuilder()
+                .contestants(List.of(teamA, teamB))
                 .contestants(List.of(contestantA, contestantB))
-                .score(buildGameScore(contestantA, scoreA, contestantB, scoreB))
+                .score(createGameScore(contestantA, scoreA, contestantB, scoreB))
                 .build();
-    }
-
-    public static GameScore buildGameScore(Contestant contestA, int scoreA, Contestant contestB, int scoreB) {
-        return new GameScore(Map.of(contestA.id(), scoreA, contestB.id(), scoreB));
-    }
-
-    public static SetScore buildSetScore(Contestant contestA, List<Integer> scoreA, Contestant contestB, List<Integer> scoreB) {
-        if (scoreA.size() != scoreB.size()) {
-            throw new IllegalStateException("Teams cannot have different number of scores");
-        }
-
-        return new SetScore(IntStream.range(0, scoreA.size())
-                .mapToObj(index -> Map.of(contestA.id(), scoreA.get(index), contestB.id(), scoreB.get(index)))
-                .map(GameScore::new)
-                .toList());
     }
 
     public static List<Object> rawData(Object... values) {

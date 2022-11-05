@@ -9,14 +9,14 @@ import com.gberard.tournament.repository.GameRepository;
 import com.gberard.tournament.repository.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
+import static com.gberard.tournament.data.game.score.GameScore.createGameScore;
+import static com.gberard.tournament.data.game.score.SetScore.createSetScore;
 
 //Remove comments before usage
 //@SpringBootApplication
@@ -114,18 +114,14 @@ public class BackofficeSandboxApplication {
     }
 
     private static SetScore randomSetScore(Contestant contestant1, Contestant contestant2) {
-        return new SetScore(List.of(
-                randomGameScore(contestant1,contestant2),
-                randomGameScore(contestant1,contestant2),
-                randomGameScore(contestant1,contestant2)
-        ));
+        return createSetScore(
+                contestant1, List.of(randomScore(),randomScore(),randomScore()),
+                contestant2, List.of(randomScore(),randomScore(),randomScore())
+        );
     }
 
-    private static GameScore randomGameScore(Contestant contestant1, Contestant contestant2) {
-        return new GameScore(Map.of(
-                contestant1.id(), (int) Math.round(Math.random() * 25),
-                contestant2.id(), (int) Math.round(Math.random() * 25)
-        ));
+    private static int randomScore() {
+        return (int) Math.round(Math.random() * 25);
     }
 
 }
