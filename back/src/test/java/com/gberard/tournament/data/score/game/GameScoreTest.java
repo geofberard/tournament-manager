@@ -1,8 +1,10 @@
-package com.gberard.tournament.data.game.score;
+package com.gberard.tournament.data.score.game;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gberard.tournament.data.contestant.Contestant;
+import com.gberard.tournament.data.score.Score;
+import com.gberard.tournament.data.score.game.GameScore;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -13,8 +15,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.stream.Stream;
 
 import static com.gberard.tournament.data._TestUtils.*;
-import static com.gberard.tournament.data.game.ContestantResult.*;
-import static com.gberard.tournament.data.game.score.GameScore.createGameScore;
+import static com.gberard.tournament.data.contestant.ContestantResult.*;
+import static com.gberard.tournament.data.score.game.GameScore.createGameScore;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 

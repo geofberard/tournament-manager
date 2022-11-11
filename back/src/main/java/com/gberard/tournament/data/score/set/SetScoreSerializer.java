@@ -1,8 +1,9 @@
-package com.gberard.tournament.data.game.score;
+package com.gberard.tournament.data.score.set;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import com.gberard.tournament.data.score.game.GameScore;
 
 import java.io.IOException;
 

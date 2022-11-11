@@ -2,7 +2,7 @@ package com.gberard.tournament.service;
 
 import com.gberard.tournament.data.contestant.Contestant;
 import com.gberard.tournament.data.game.Game;
-import com.gberard.tournament.data.game.ContestantResult;
+import com.gberard.tournament.data.contestant.ContestantResult;
 import com.gberard.tournament.data.stats.ContestantStats;
 import com.gberard.tournament.data.stats.ContestantStatsAccumulator;
 import com.gberard.tournament.repository.GameRepository;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Optional;
 
-import static com.gberard.tournament.data.game.ContestantResult.*;
+import static com.gberard.tournament.data.contestant.ContestantResult.*;
 import static java.util.stream.Collectors.toList;
 
 @Component

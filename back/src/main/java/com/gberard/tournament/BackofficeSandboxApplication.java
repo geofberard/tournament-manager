@@ -3,8 +3,7 @@ package com.gberard.tournament;
 import com.gberard.tournament.data.game.Game;
 import com.gberard.tournament.data.contestant.Contestant;
 import com.gberard.tournament.data.contestant.Team;
-import com.gberard.tournament.data.game.score.GameScore;
-import com.gberard.tournament.data.game.score.SetScore;
+import com.gberard.tournament.data.score.set.SetScore;
 import com.gberard.tournament.repository.GameRepository;
 import com.gberard.tournament.repository.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +14,7 @@ import org.springframework.context.event.EventListener;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.gberard.tournament.data.game.score.GameScore.createGameScore;
-import static com.gberard.tournament.data.game.score.SetScore.createSetScore;
+import static com.gberard.tournament.data.score.set.SetScore.createSetScore;
 
 //Remove comments before usage
 //@SpringBootApplication

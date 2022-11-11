@@ -2,9 +2,9 @@ package com.gberard.tournament.repository;
 
 import com.gberard.tournament.data.game.Game;
 import com.gberard.tournament.data.contestant.Contestant;
-import com.gberard.tournament.data.game.score.GameScore;
-import com.gberard.tournament.data.game.score.Score;
-import com.gberard.tournament.data.game.score.SetScore;
+import com.gberard.tournament.data.score.game.GameScore;
+import com.gberard.tournament.data.score.Score;
+import com.gberard.tournament.data.score.set.SetScore;
 import com.google.common.annotations.VisibleForTesting;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.gberard.tournament.data.DataUtils.*;
+import static com.gberard.tournament.data.score.ScoreUtils.*;
 import static java.util.stream.Collectors.*;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
@@ -52,7 +53,9 @@ public class GameRepository extends SheetRepository<Game> {
                 .contestants(contestants);
 
         teamService.search(getValue(value, 5)).ifPresent(gameBuilder::referee);
-        fromRawScore(getValue(value, 6), contestants).ifPresent(gameBuilder::score);
+
+        String scoreType = getValue(value, 6);
+        scoreFromJson(getValue(value, 7), scoreType).ifPresent(gameBuilder::score);
 
         return gameBuilder.build();
     }
@@ -97,33 +100,9 @@ public class GameRepository extends SheetRepository<Game> {
                         .map(Contestant::id)
                         .collect(joining(GROUP_SEPARATOR)),
                 game.referee().map(Contestant::id).orElse(""),
-                game.score().map(score -> fromRawScore(score, game.contestants())).orElse("")
+                game.score().map(score -> getScoreType(score)).orElse(""),
+                game.score().map(score -> scoreToJson(score).orElse("")).orElse("")
         );
-    }
-
-    private String fromRawScore(Score score, List<Contestant> contestants) {
-        if(score instanceof GameScore) {
-            return toRawGameScore((GameScore) score, contestants);
-        }
-
-        if(score instanceof SetScore) {
-            return toRawSetScore((SetScore) score, contestants);
-        }
-
-        throw new IllegalStateException("Unsupported Score Implementation : " + score.getClass());
-    }
-
-    private String toRawGameScore(GameScore score, List<Contestant> contestants) {
-        return contestants.stream()
-                        .map(score::getPointFor)
-                        .map(points -> Integer.toString(points))
-                        .collect(joining(SCORE_SEPARATOR));
-    }
-
-    private String toRawSetScore(SetScore score, List<Contestant> contestants) {
-        return score.getResult().stream()
-                .map(game -> toRawGameScore(game, contestants))
-                .collect(joining(GROUP_SEPARATOR));
     }
 
 }

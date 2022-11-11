@@ -1,15 +1,12 @@
-package com.gberard.tournament.data.game.score;
+package com.gberard.tournament.data.score.set;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.gberard.tournament.data.score.game.GameScore;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 
 public class SetScoreDeserializer extends StdDeserializer<SetScore> {
 

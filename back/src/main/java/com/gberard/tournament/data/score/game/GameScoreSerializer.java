@@ -1,4 +1,4 @@
-package com.gberard.tournament.data.game.score;
+package com.gberard.tournament.data.score.game;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;

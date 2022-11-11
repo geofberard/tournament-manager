@@ -18,8 +18,8 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static com.gberard.tournament.data._TestUtils.*;
-import static com.gberard.tournament.data.game.score.GameScore.createGameScore;
-import static com.gberard.tournament.data.game.score.SetScore.createSetScore;
+import static com.gberard.tournament.data.score.game.GameScore.createGameScore;
+import static com.gberard.tournament.data.score.set.SetScore.createSetScore;
 import static java.nio.file.Files.readString;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -115,7 +115,6 @@ class GameTest {
             assertThat(serialized).contains("\"referee\":");
             assertThat(serialized).contains("\"scoreType\":");
             assertThat(serialized).contains("\"score\":");
-            System.out.println(serialized);
         }
 
         @Test
@@ -131,7 +130,6 @@ class GameTest {
             assertThat(serialized).doesNotContain("\"referee\":");
             assertThat(serialized).doesNotContain("\"scoreType\":");
             assertThat(serialized).doesNotContain("\"score\":");
-            System.out.println(serialized);
         }
 
         public static Stream<Arguments> allGameScenario() {

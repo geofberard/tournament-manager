@@ -1,4 +1,4 @@
-package com.gberard.tournament.data.game;
+package com.gberard.tournament.data.contestant;
 
 public enum ContestantResult {
     WIN(3),

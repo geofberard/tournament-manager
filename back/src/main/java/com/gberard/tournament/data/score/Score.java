@@ -1,8 +1,7 @@
-package com.gberard.tournament.data.game.score;
+package com.gberard.tournament.data.score;
 
 import com.gberard.tournament.data.contestant.Contestant;
-import com.gberard.tournament.data.game.ContestantResult;
-import org.springframework.stereotype.Component;
+import com.gberard.tournament.data.contestant.ContestantResult;
 
 public interface Score {
 

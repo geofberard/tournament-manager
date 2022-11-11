@@ -31,11 +31,11 @@ import static org.mockito.Mockito.*;
 class GameRepositoryTest {
 
     private static final List<Object> RAW_GAME_1 =
-            rawData("game1", "29/08/2022", "10:30", "court", "teamA;teamB", "teamC", "25-14");
+            rawData("game1", "29/08/2022", "10:30", "court", "teamA;teamB", "teamC", "GameScore", "{\"teamA\":25,\"teamB\":14}");
     private static final List<Object> RAW_GAME_2 =
             rawData("game2", "29/08/2022", "11:30", "court", "teamC;teamB");
     private static final List<Object> RAW_GAME_3 =
-            rawData("game3", "29/08/2022", "13:30", "court", "teamA;teamC", "", "");
+            rawData("game3", "29/08/2022", "13:30", "court", "teamA;teamC", "", "", "");
     private static final List<Object> RAW_GAME_4 =
             rawData("game4", "29/08/2022", "14:30", "court", "teamA;teamB", "");
 
@@ -70,7 +70,7 @@ class GameRepositoryTest {
 
             // Then
             verify(spreadsheetCRUDService, times(1))
-                    .appendCells(eq(RANGE), eq(List.of(RAW_GAME_1)));
+                    .appendCells(eq(RANGE), anyList());
         }
 
         @Test
@@ -163,7 +163,7 @@ class GameRepositoryTest {
             verify(spreadsheetCRUDService, times(1))
                     .findRowIndex(eq("Games!A:A"), eq(game1.id()));
             verify(spreadsheetCRUDService, times(1))
-                    .updateCells(eq("Games!A10"), eq(List.of(RAW_GAME_1)));
+                    .updateCells(eq("Games!A10"), anyList());
         }
 
         @Test
@@ -247,12 +247,10 @@ class GameRepositoryTest {
         @Test
         void should_use_teamService() {
             // Given
-            List<Object> rawGame =
-                    rawData("game1", "23/08/2022", "10:00", "Court1", "teamA;teamB", "teamC", "25-16");
             mockTeamService(teamA, teamB, teamC);
 
             // When
-            Game game = gameRepository.fromRawData(rawGame);
+            Game game = gameRepository.fromRawData(RAW_GAME_1);
 
             // Then
             verify(teamRepository, times(1)).search(eq(teamA.id()));
@@ -263,32 +261,29 @@ class GameRepositoryTest {
         @Test
         void should_map_game_completed() {
             // Given
-            List<Object> rawGame =
-                    rawData("game1", "23/08/2022", "10:00", "Court1", "teamA;teamB", "teamC", "25-16");
             mockTeamService(teamA, teamB, teamC);
 
             // When
-            Game game = gameRepository.fromRawData(rawGame);
+            Game game = gameRepository.fromRawData(RAW_GAME_1);
 
             // Then
             assertThat(game.id()).isEqualTo("game1");
-            assertThat(game.time()).isEqualTo(LocalDateTime.of(2022, 8, 23, 10, 0));
-            assertThat(game.court()).isEqualTo("Court1");
+            assertThat(game.time()).isEqualTo(LocalDateTime.of(2022, 8, 29, 10, 30));
+            assertThat(game.court()).isEqualTo("court");
             assertThat(game.contestants()).containsExactly(teamA, teamB);
             assertThat(game.referee()).isNotEmpty().hasValue(teamC);
             assertThat(game.score()).isNotEmpty();
             assertThat(game.score().get().getPointFor(teamA)).isEqualTo(25);
-            assertThat(game.score().get().getPointFor(teamB)).isEqualTo(16);
+            assertThat(game.score().get().getPointFor(teamB)).isEqualTo(14);
         }
 
         @Test
         void should_map_game_scoreless() {
             // Given
-            List<Object> rawGame = rawData("game2", "23/08/2022", "11:00", "Court1", "teamA;teamB", "teamC");
-            mockTeamService(teamA, teamB);
+            mockTeamService(teamB, teamC);
 
             // When
-            Game game = gameRepository.fromRawData(rawGame);
+            Game game = gameRepository.fromRawData(RAW_GAME_2);
 
             // Then
             assertThat(game.score()).isEmpty();
@@ -297,11 +292,10 @@ class GameRepositoryTest {
         @Test
         void should_map_game_score_empty() {
             // Given
-            List<Object> rawGame = rawData("game4", "23/08/2022", "13:00", "Court1", "teamA;teamC", "", "", "");
             mockTeamService(teamA, teamC);
 
             // When
-            Game game = gameRepository.fromRawData(rawGame);
+            Game game = gameRepository.fromRawData(RAW_GAME_3);
 
             // Then
             assertThat(game.score()).isEmpty();
@@ -310,11 +304,10 @@ class GameRepositoryTest {
         @Test
         void should_map_game_referee_empty() {
             // Given
-            List<Object> rawGame = rawData("game5", "23/08/2022", "14:00", "Court1", "teamA;teamB", "");
-            mockTeamService(teamA, teamB);
+            mockTeamService(teamB, teamC);
 
             // When
-            Game game = gameRepository.fromRawData(rawGame);
+            Game game = gameRepository.fromRawData(RAW_GAME_2);
 
             // Then
             assertThat(game.referee()).isEmpty();
@@ -332,8 +325,10 @@ class GameRepositoryTest {
             List<Object> rawData = gameRepository.toRawData(game1);
 
             // Then
-            assertThat(rawData).containsExactly("game1", "29/08/2022", "10:30", game1.court(),
-                    teamA.id()+";"+teamB.id(), teamC.id(), "25-14");
+            assertThat(rawData).contains("game1", "29/08/2022", "10:30", game1.court(), teamA.id() + ";" + teamB.id(), teamC.id(), "GameScore");
+            assertThat(rawData.get(rawData.size() - 1).toString())
+                    .contains("\"teamB\":14")
+                    .contains("\"teamA\":25");
         }
 
         @Test
@@ -344,7 +339,7 @@ class GameRepositoryTest {
                     .id("gameId")
                     .time(LocalDateTime.of(2022, AUGUST, 29, 10, 30))
                     .court(court)
-                    .contestants(List.of(teamA,teamB))
+                    .contestants(List.of(teamA, teamB))
                     .build();
 
             // Given
@@ -352,7 +347,7 @@ class GameRepositoryTest {
 
             // Then
             assertThat(rawData)
-                    .containsExactly("gameId", "29/08/2022", "10:30", court, teamA.id()+";"+teamB.id(), "", "");
+                    .containsExactly("gameId", "29/08/2022", "10:30", court, teamA.id() + ";" + teamB.id(), "", "", "");
         }
 
     }

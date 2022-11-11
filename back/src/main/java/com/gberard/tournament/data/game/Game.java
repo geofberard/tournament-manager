@@ -1,11 +1,10 @@
 package com.gberard.tournament.data.game;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.gberard.tournament.data.Identified;
 import com.gberard.tournament.data.contestant.Contestant;
-import com.gberard.tournament.data.game.score.*;
+import com.gberard.tournament.data.score.*;
 import lombok.Builder;
 
 import java.time.LocalDateTime;

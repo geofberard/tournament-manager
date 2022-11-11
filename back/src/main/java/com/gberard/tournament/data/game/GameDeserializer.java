@@ -1,32 +1,28 @@
 package com.gberard.tournament.data.game;
 
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import com.gberard.tournament.data.contestant.Contestant;
 import com.gberard.tournament.data.contestant.Team;
-import com.gberard.tournament.data.game.score.GameScore;
-import com.gberard.tournament.data.game.score.Score;
-import com.gberard.tournament.data.game.score.ScoreType;
-import com.gberard.tournament.data.game.score.SetScore;
+import com.gberard.tournament.data.score.*;
+import com.gberard.tournament.data.score.game.GameScore;
+import com.gberard.tournament.data.score.set.SetScore;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
-import static com.gberard.tournament.data.DataUtils.getValue;
-import static com.gberard.tournament.data.DataUtils.parseDateTime;
+import static com.gberard.tournament.data.score.ScoreUtils.scoreFromJson;
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
+@Slf4j
 public class GameDeserializer extends StdDeserializer<Game> {
+
+    private static Set<Class<? extends Score>> supportedScore = Set.of(GameScore.class, SetScore.class);
 
     public GameDeserializer() {
         this(null);
@@ -52,18 +48,16 @@ public class GameDeserializer extends StdDeserializer<Game> {
                                 mapper.getTypeFactory().constructCollectionType(List.class, Team.class)
                         ));
 
-        if(node.has("referee")) {
+        if (node.has("referee")) {
             builder.referee(mapper.readValue(node.get("referee").toString(), Team.class));
         }
 
-        if(node.has("scoreType")) {
-            ScoreType scoreType = mapper.readValue(node.get("scoreType").toString(), ScoreType.class);
-            switch (scoreType) {
-                case GameScore -> builder.score(mapper.readValue(node.get("score").toString(), GameScore.class));
-                case SetScore -> builder.score(mapper.readValue(node.get("score").toString(), SetScore.class));
-            }
+        if (node.has("scoreType") && node.has("score")) {
+            scoreFromJson(node.get("score").toString(), node.get("scoreType").asText())
+                    .ifPresent(score -> builder.score(score));
         }
 
         return builder.build();
     }
+
 }

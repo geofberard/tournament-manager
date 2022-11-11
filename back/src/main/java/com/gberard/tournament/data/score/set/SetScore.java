@@ -1,9 +1,11 @@
-package com.gberard.tournament.data.game.score;
+package com.gberard.tournament.data.score.set;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.gberard.tournament.data.contestant.Contestant;
-import com.gberard.tournament.data.game.ContestantResult;
+import com.gberard.tournament.data.contestant.ContestantResult;
+import com.gberard.tournament.data.score.Score;
+import com.gberard.tournament.data.score.game.GameScore;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -13,9 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
-import static com.gberard.tournament.data.game.ContestantResult.*;
+import static com.gberard.tournament.data.contestant.ContestantResult.*;
 
-// To Test
 @EqualsAndHashCode
 @ToString
 @JsonSerialize(using = SetScoreSerializer.class)
