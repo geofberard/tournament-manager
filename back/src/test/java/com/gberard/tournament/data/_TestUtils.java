@@ -50,4 +50,27 @@ public class _TestUtils {
         return List.of(values);
     }
 
+    public static TestScore testScore = new TestScore("test");
+
+    public static String testScoreJson = "{\"value\":\"test\"}";
+
+    public record TestScore(String value) implements Score {
+
+        @Override
+        public int getPointFor(String contestantId) {
+            return 0;
+        }
+
+        @Override
+        public int getPointAgainst(String contestantId) {
+            return 0;
+        }
+
+        @Override
+        public ContestantResult getTeamStatus(String contestantId) {
+            return null;
+        }
+
+    }
+
 }

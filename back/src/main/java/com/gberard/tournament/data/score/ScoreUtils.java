@@ -4,16 +4,26 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gberard.tournament.data.score.onelevel.OneLevelScore;
 import com.gberard.tournament.data.score.twolevel.TwoLevelScore;
+import com.google.common.annotations.VisibleForTesting;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
 @Slf4j
 public abstract class ScoreUtils {
 
-    private static Set<Class<? extends Score>> supportedScore = Set.of(OneLevelScore.class, TwoLevelScore.class);
+    private static final Set<Class<? extends Score>> supportedScore =
+            new HashSet<>(Arrays.asList(OneLevelScore.class, TwoLevelScore.class));
+
     private static ObjectMapper mapper = new ObjectMapper();
+
+    @VisibleForTesting
+    public static void addSupportedScore(Class<? extends Score> scoreClass) {
+        supportedScore.add(scoreClass);
+    }
 
     public static String getScoreType(Score score) {
         return score.getClass().getSimpleName();

@@ -1,0 +1,34 @@
+{
+  "id": "threeRounds",
+  "time": "2022-01-01T12:12:00",
+  "court": "court1",
+  "contestants": [
+    {
+      "id": "teamA",
+      "name": "TeamA"
+    },
+    {
+      "id": "teamB",
+      "name": "TeamB"
+    }
+  ],
+  "referee": {
+    "id": "teamC",
+    "name": "TeamC"
+  },
+  "scoreType": "TwoLevelScore",
+  "score": [
+    {
+      "teamA": 10,
+      "teamB": 25
+    },
+    {
+      "teamA": 25,
+      "teamB": 218
+    },
+    {
+      "teamA": 16,
+      "teamB": 25
+    }
+  ]
+}

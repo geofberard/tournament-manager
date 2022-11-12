@@ -16,9 +16,8 @@
     "id": "teamC",
     "name": "TeamC"
   },
-  "scoreType": "GameScore",
+  "scoreType": "TestScore",
   "score": {
-    "teamA": 10,
-    "teamB": 25
+    "value": "test"
   }
 }
