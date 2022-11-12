@@ -2,9 +2,9 @@ package com.gberard.tournament.repository;
 
 import com.gberard.tournament.data.game.Game;
 import com.gberard.tournament.data.contestant.Contestant;
-import com.gberard.tournament.data.score.game.GameScore;
+import com.gberard.tournament.data.score.onelevel.OneLevelScore;
 import com.gberard.tournament.data.score.Score;
-import com.gberard.tournament.data.score.set.SetScore;
+import com.gberard.tournament.data.score.twolevel.TwoLevelScore;
 import com.google.common.annotations.VisibleForTesting;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -76,15 +76,15 @@ public class GameRepository extends SheetRepository<Game> {
         throw new IllegalStateException("Unsupported Score Implementation : " + value);
     }
 
-    private GameScore fromRawGameScore(String value, List<Contestant> contestants) {
+    private OneLevelScore fromRawGameScore(String value, List<Contestant> contestants) {
         List<String> ids = contestants.stream().map(Contestant::id).toList();
         List<Integer> points = split(value, SCORE_SEPARATOR).stream().map(Integer::parseInt).toList();
 
-        return new GameScore(range(0, contestants.size()).boxed().collect(toMap(ids::get, points::get)));
+        return new OneLevelScore(range(0, contestants.size()).boxed().collect(toMap(ids::get, points::get)));
     }
 
-    private SetScore fromRawSetScore(String value, List<Contestant> contestants) {
-        return new SetScore(Arrays.stream(value.split(GROUP_SEPARATOR))
+    private TwoLevelScore fromRawSetScore(String value, List<Contestant> contestants) {
+        return new TwoLevelScore(Arrays.stream(value.split(GROUP_SEPARATOR))
                 .map(element -> fromRawGameScore(element, contestants))
                 .toList());
     }

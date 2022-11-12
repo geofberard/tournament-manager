@@ -1,4 +1,4 @@
-package com.gberard.tournament.data.score.game;
+package com.gberard.tournament.data.score.onelevel;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -17,9 +17,9 @@ import static com.gberard.tournament.data.contestant.ContestantResult.*;
 
 @EqualsAndHashCode
 @ToString
-@JsonSerialize(using = GameScoreSerializer.class)
-@JsonDeserialize(using = GameScoreDeserializer.class)
-public class GameScore implements Score {
+@JsonSerialize(using = OneLevelScoreSerializer.class)
+@JsonDeserialize(using = OneLevelScoreDeserializer.class)
+public class OneLevelScore implements Score {
 
     @Getter
     Map<String, Integer> result;
@@ -27,7 +27,7 @@ public class GameScore implements Score {
     @EqualsAndHashCode.Exclude
     private Map<String, String> opponents;
 
-    public GameScore(Map<String, Integer> score) {
+    public OneLevelScore(Map<String, Integer> score) {
         this.result = score;
         List<String> contestantIds = List.copyOf(score.keySet());
         this.opponents = Map.of(
@@ -72,8 +72,8 @@ public class GameScore implements Score {
     }
 
     @Builder
-    public static GameScore createGameScore(Contestant contestA, int scoreA, Contestant contestB, int scoreB) {
-        return new GameScore(Map.of(contestA.id(), scoreA, contestB.id(), scoreB));
+    public static OneLevelScore createGameScore(Contestant contestA, int scoreA, Contestant contestB, int scoreB) {
+        return new OneLevelScore(Map.of(contestA.id(), scoreA, contestB.id(), scoreB));
     }
 
 }

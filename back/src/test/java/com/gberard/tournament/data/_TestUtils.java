@@ -1,13 +1,15 @@
 package com.gberard.tournament.data;
 
 import com.gberard.tournament.data.contestant.Contestant;
+import com.gberard.tournament.data.contestant.ContestantResult;
 import com.gberard.tournament.data.contestant.Team;
 import com.gberard.tournament.data.game.Game;
+import com.gberard.tournament.data.score.Score;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.gberard.tournament.data.score.game.GameScore.createGameScore;
+import static com.gberard.tournament.data.score.onelevel.OneLevelScore.createGameScore;
 import static java.time.Month.AUGUST;
 
 public class _TestUtils {

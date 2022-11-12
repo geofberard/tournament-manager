@@ -18,8 +18,8 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static com.gberard.tournament.data._TestUtils.*;
-import static com.gberard.tournament.data.score.game.GameScore.createGameScore;
-import static com.gberard.tournament.data.score.set.SetScore.createSetScore;
+import static com.gberard.tournament.data.score.onelevel.OneLevelScore.createGameScore;
+import static com.gberard.tournament.data.score.twolevel.TwoLevelScore.createSetScore;
 import static java.nio.file.Files.readString;
 import static org.assertj.core.api.Assertions.assertThat;
 

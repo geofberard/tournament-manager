@@ -31,7 +31,7 @@ import static org.mockito.Mockito.*;
 class GameRepositoryTest {
 
     private static final List<Object> RAW_GAME_1 =
-            rawData("game1", "29/08/2022", "10:30", "court", "teamA;teamB", "teamC", "GameScore", "{\"teamA\":25,\"teamB\":14}");
+            rawData("game1", "29/08/2022", "10:30", "court", "teamA;teamB", "teamC", "OneLevelScore", "{\"teamA\":25,\"teamB\":14}");
     private static final List<Object> RAW_GAME_2 =
             rawData("game2", "29/08/2022", "11:30", "court", "teamC;teamB");
     private static final List<Object> RAW_GAME_3 =
@@ -325,7 +325,7 @@ class GameRepositoryTest {
             List<Object> rawData = gameRepository.toRawData(game1);
 
             // Then
-            assertThat(rawData).contains("game1", "29/08/2022", "10:30", game1.court(), teamA.id() + ";" + teamB.id(), teamC.id(), "GameScore");
+            assertThat(rawData).contains("game1", "29/08/2022", "10:30", game1.court(), teamA.id() + ";" + teamB.id(), teamC.id(), "OneLevelScore");
             assertThat(rawData.get(rawData.size() - 1).toString())
                     .contains("\"teamB\":14")
                     .contains("\"teamA\":25");

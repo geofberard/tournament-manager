@@ -2,8 +2,8 @@ package com.gberard.tournament.data.score;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gberard.tournament.data.score.game.GameScore;
-import com.gberard.tournament.data.score.set.SetScore;
+import com.gberard.tournament.data.score.onelevel.OneLevelScore;
+import com.gberard.tournament.data.score.twolevel.TwoLevelScore;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Optional;
@@ -12,7 +12,7 @@ import java.util.Set;
 @Slf4j
 public abstract class ScoreUtils {
 
-    private static Set<Class<? extends Score>> supportedScore = Set.of(GameScore.class, SetScore.class);
+    private static Set<Class<? extends Score>> supportedScore = Set.of(OneLevelScore.class, TwoLevelScore.class);
     private static ObjectMapper mapper = new ObjectMapper();
 
     public static String getScoreType(Score score) {

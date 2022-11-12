@@ -1,10 +1,9 @@
-package com.gberard.tournament.data.score.set;
+package com.gberard.tournament.data.score.twolevel;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gberard.tournament.data.contestant.Contestant;
 import com.gberard.tournament.data.score.Score;
-import com.gberard.tournament.data.score.set.SetScore;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -16,11 +15,11 @@ import java.util.stream.Stream;
 
 import static com.gberard.tournament.data._TestUtils.*;
 import static com.gberard.tournament.data.contestant.ContestantResult.*;
-import static com.gberard.tournament.data.score.set.SetScore.createSetScore;
+import static com.gberard.tournament.data.score.twolevel.TwoLevelScore.createSetScore;
 import static java.util.List.of;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class SetScoreTest {
+class TwoLevelScoreTest {
 
     @Nested
     @DisplayName("getPointsFor()")
@@ -29,7 +28,7 @@ class SetScoreTest {
         @Test
         void should_return_score_for_team() {
             // Given
-            SetScore score = createSetScore(teamA, of(18, 25, 12), teamB, of(12, 14, 25));
+            TwoLevelScore score = createSetScore(teamA, of(18, 25, 12), teamB, of(12, 14, 25));
 
             // Then
             assertThat(score.getPointFor(teamA)).isEqualTo(55);
@@ -45,7 +44,7 @@ class SetScoreTest {
         @Test
         void should_return_score_against_team() {
             // Given
-            SetScore score = createSetScore(teamA, of(18, 25, 12), teamB, of(12, 14, 25));
+            TwoLevelScore score = createSetScore(teamA, of(18, 25, 12), teamB, of(12, 14, 25));
 
             // Then
             assertThat(score.getPointAgainst(teamA)).isEqualTo(51);
@@ -107,7 +106,7 @@ class SetScoreTest {
     @DisplayName("serialization")
     class serializationTest {
 
-        public static final SetScore SET_SCORE = createSetScore(teamA, of(18, 25, 12), teamB, of(12, 14, 25));
+        public static final TwoLevelScore SET_SCORE = createSetScore(teamA, of(18, 25, 12), teamB, of(12, 14, 25));
 
         @Test
         void should_serialize_properly() throws JsonProcessingException {
@@ -137,7 +136,7 @@ class SetScoreTest {
         @MethodSource("serializedScenario")
         void should_deserialize_properly(String serialized) throws JsonProcessingException {
             // When
-            SetScore score = new ObjectMapper().readValue(serialized, SetScore.class);
+            TwoLevelScore score = new ObjectMapper().readValue(serialized, TwoLevelScore.class);
 
             // Then
             assertThat(score.getResult().get(0).getPointFor(teamA)).isEqualTo(18);
@@ -155,7 +154,7 @@ class SetScoreTest {
             String serialized = new ObjectMapper().writeValueAsString(SET_SCORE);
 
             // When
-            SetScore score = new ObjectMapper().readValue(serialized, SetScore.class);
+            TwoLevelScore score = new ObjectMapper().readValue(serialized, TwoLevelScore.class);
 
             // Then
             assertThat(score).isEqualTo(SET_SCORE);

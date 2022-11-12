@@ -1,15 +1,14 @@
 package com.gberard.tournament.data.game;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.gberard.tournament.data.contestant.Team;
 import com.gberard.tournament.data.score.*;
-import com.gberard.tournament.data.score.game.GameScore;
-import com.gberard.tournament.data.score.set.SetScore;
+import com.gberard.tournament.data.score.onelevel.OneLevelScore;
+import com.gberard.tournament.data.score.twolevel.TwoLevelScore;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -22,7 +21,7 @@ import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 @Slf4j
 public class GameDeserializer extends StdDeserializer<Game> {
 
-    private static Set<Class<? extends Score>> supportedScore = Set.of(GameScore.class, SetScore.class);
+    private static Set<Class<? extends Score>> supportedScore = Set.of(OneLevelScore.class, TwoLevelScore.class);
 
     public GameDeserializer() {
         this(null);

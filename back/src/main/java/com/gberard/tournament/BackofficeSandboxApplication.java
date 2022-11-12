@@ -3,7 +3,7 @@ package com.gberard.tournament;
 import com.gberard.tournament.data.game.Game;
 import com.gberard.tournament.data.contestant.Contestant;
 import com.gberard.tournament.data.contestant.Team;
-import com.gberard.tournament.data.score.set.SetScore;
+import com.gberard.tournament.data.score.twolevel.TwoLevelScore;
 import com.gberard.tournament.repository.GameRepository;
 import com.gberard.tournament.repository.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,7 @@ import org.springframework.context.event.EventListener;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.gberard.tournament.data.score.set.SetScore.createSetScore;
+import static com.gberard.tournament.data.score.twolevel.TwoLevelScore.createSetScore;
 
 //Remove comments before usage
 //@SpringBootApplication
@@ -111,7 +111,7 @@ public class BackofficeSandboxApplication {
                 .build();
     }
 
-    private static SetScore randomSetScore(Contestant contestant1, Contestant contestant2) {
+    private static TwoLevelScore randomSetScore(Contestant contestant1, Contestant contestant2) {
         return createSetScore(
                 contestant1, List.of(randomScore(),randomScore(),randomScore()),
                 contestant2, List.of(randomScore(),randomScore(),randomScore())

@@ -1,11 +1,11 @@
-package com.gberard.tournament.data.score.set;
+package com.gberard.tournament.data.score.twolevel;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.gberard.tournament.data.contestant.Contestant;
 import com.gberard.tournament.data.contestant.ContestantResult;
 import com.gberard.tournament.data.score.Score;
-import com.gberard.tournament.data.score.game.GameScore;
+import com.gberard.tournament.data.score.onelevel.OneLevelScore;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -19,14 +19,14 @@ import static com.gberard.tournament.data.contestant.ContestantResult.*;
 
 @EqualsAndHashCode
 @ToString
-@JsonSerialize(using = SetScoreSerializer.class)
-@JsonDeserialize(using = SetScoreDeserializer.class)
-public class SetScore implements Score {
+@JsonSerialize(using = TwoLevelScoreSerializer.class)
+@JsonDeserialize(using = TwoLevelScoreDeserializer.class)
+public class TwoLevelScore implements Score {
 
     @Getter
-    private List<GameScore> result;
+    private List<OneLevelScore> result;
 
-    public SetScore(List<GameScore> result) {
+    public TwoLevelScore(List<OneLevelScore> result) {
         this.result = result;
     }
 
@@ -62,14 +62,14 @@ public class SetScore implements Score {
     }
 
     @Builder
-    public static SetScore createSetScore(Contestant contestA, List<Integer> scoreA, Contestant contestB, List<Integer> scoreB) {
+    public static TwoLevelScore createSetScore(Contestant contestA, List<Integer> scoreA, Contestant contestB, List<Integer> scoreB) {
         if (scoreA.size() != scoreB.size()) {
             throw new IllegalStateException("Teams cannot have different number of scores");
         }
 
-        return new SetScore(IntStream.range(0, scoreA.size())
+        return new TwoLevelScore(IntStream.range(0, scoreA.size())
                 .mapToObj(index -> Map.of(contestA.id(), scoreA.get(index), contestB.id(), scoreB.get(index)))
-                .map(GameScore::new)
+                .map(OneLevelScore::new)
                 .toList());
     }
 }

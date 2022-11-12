@@ -1,10 +1,9 @@
-package com.gberard.tournament.data.score.game;
+package com.gberard.tournament.data.score.onelevel;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gberard.tournament.data.contestant.Contestant;
 import com.gberard.tournament.data.score.Score;
-import com.gberard.tournament.data.score.game.GameScore;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -16,11 +15,11 @@ import java.util.stream.Stream;
 
 import static com.gberard.tournament.data._TestUtils.*;
 import static com.gberard.tournament.data.contestant.ContestantResult.*;
-import static com.gberard.tournament.data.score.game.GameScore.createGameScore;
+import static com.gberard.tournament.data.score.onelevel.OneLevelScore.createGameScore;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class GameScoreTest {
+class OneLevelScoreTest {
 
     @Nested
     @DisplayName("getPointsFor()")
@@ -29,7 +28,7 @@ class GameScoreTest {
         @Test
         void should_return_score_for_team() {
             // Given
-            GameScore score = createGameScore(teamA, 18, teamB, 12);
+            OneLevelScore score = createGameScore(teamA, 18, teamB, 12);
 
             // Then
             assertThat(score.getPointFor(teamA)).isEqualTo(18);
@@ -39,7 +38,7 @@ class GameScoreTest {
         @Test
         void should_throw_exception_on_unknown_contestant() {
             // Given
-            GameScore score = createGameScore(teamA, 18, teamB, 12);
+            OneLevelScore score = createGameScore(teamA, 18, teamB, 12);
 
             // Then
             IllegalStateException exception = assertThrows(
@@ -58,7 +57,7 @@ class GameScoreTest {
         @Test
         void should_return_score_against_team() {
             // Given
-            GameScore score = createGameScore(teamA, 18, teamB, 12);
+            OneLevelScore score = createGameScore(teamA, 18, teamB, 12);
 
             // Then
             assertThat(score.getPointAgainst(teamA)).isEqualTo(12);
@@ -68,7 +67,7 @@ class GameScoreTest {
         @Test
         void should_throw_exception_on_unknown_contestant() {
             // Given
-            GameScore score = createGameScore(teamA, 18, teamB, 12);
+            OneLevelScore score = createGameScore(teamA, 18, teamB, 12);
 
             // Then
             IllegalStateException exception = assertThrows(
@@ -87,7 +86,7 @@ class GameScoreTest {
         @Test
         void should_handle_status_drawn() {
             // Given
-            GameScore score = createGameScore(teamA, 10, teamB, 10);
+            OneLevelScore score = createGameScore(teamA, 10, teamB, 10);
 
             // Then
             assertThat(score.getTeamStatus(teamA)).isEqualTo(DRAWN);
@@ -123,7 +122,7 @@ class GameScoreTest {
         @Test
         void should_throw_exception_on_unknown_contestant() {
             // Given
-            GameScore score = createGameScore(teamA, 18, teamB, 12);
+            OneLevelScore score = createGameScore(teamA, 18, teamB, 12);
 
             // Then
             IllegalStateException exception = assertThrows(
@@ -138,7 +137,7 @@ class GameScoreTest {
     @DisplayName("serialization")
     class serializationTest {
 
-        public static final GameScore GAME_SCORE = createGameScore(teamA, 10, teamB, 9);
+        public static final OneLevelScore GAME_SCORE = createGameScore(teamA, 10, teamB, 9);
 
         @Test
         void should_serialize_properly() throws JsonProcessingException {
@@ -158,7 +157,7 @@ class GameScoreTest {
         @MethodSource("serializedScenario")
         void should_deserialize_properly(String serialized) throws JsonProcessingException {
             // When
-            GameScore score = new ObjectMapper().readValue(serialized, GameScore.class);
+            OneLevelScore score = new ObjectMapper().readValue(serialized, OneLevelScore.class);
 
             // Then
             assertThat(score.getPointFor(teamA)).isEqualTo(10);
@@ -172,7 +171,7 @@ class GameScoreTest {
             String serialized = new ObjectMapper().writeValueAsString(GAME_SCORE);
 
             // When
-            GameScore score = new ObjectMapper().readValue(serialized, GameScore.class);
+            OneLevelScore score = new ObjectMapper().readValue(serialized, OneLevelScore.class);
 
             // Then
             assertThat(score).isEqualTo(GAME_SCORE);

@@ -1,4 +1,4 @@
-package com.gberard.tournament.data.score.game;
+package com.gberard.tournament.data.score.onelevel;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -6,18 +6,18 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 import java.io.IOException;
 
-public class GameScoreSerializer extends StdSerializer<GameScore> {
+public class OneLevelScoreSerializer extends StdSerializer<OneLevelScore> {
 
-    public GameScoreSerializer() {
+    public OneLevelScoreSerializer() {
         this(null);
     }
 
-    public GameScoreSerializer(Class<GameScore> score) {
+    public OneLevelScoreSerializer(Class<OneLevelScore> score) {
         super(score);
     }
 
     @Override
-    public void serialize(GameScore score, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+    public void serialize(OneLevelScore score, JsonGenerator jgen, SerializerProvider provider) throws IOException {
 
         jgen.writeStartObject();
 
