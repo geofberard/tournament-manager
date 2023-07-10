@@ -2,14 +2,7 @@ package com.gberard.tournament.data;
 
 import java.util.Map;
 
-public class DepthOneScore implements Score {
-
-    Map<String, Integer> result;
-
-    public DepthOneScore(Map<String, Integer> result) {
-        this.result = result;
-    }
-
+public record DepthOneScore(Map<String, Integer> result) implements Score {
     @Override
     public String getSummary() {
         return null;

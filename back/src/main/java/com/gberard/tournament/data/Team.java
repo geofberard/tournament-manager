@@ -4,7 +4,7 @@ import java.util.List;
 
 public record Team(String id, String name, List<Player> players) implements Contestant {
     @Override
-    public String label() {
+    public String getLabel() {
         return name;
     }
 }

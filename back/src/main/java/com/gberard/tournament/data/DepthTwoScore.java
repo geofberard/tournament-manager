@@ -2,14 +2,7 @@ package com.gberard.tournament.data;
 
 import java.util.List;
 
-public class DepthTwoScore implements Score {
-
-    List<DepthOneScore> result;
-
-    public DepthTwoScore(List<DepthOneScore> result) {
-        this.result = result;
-    }
-
+public record DepthTwoScore(List<DepthOneScore> result) implements Score {
     @Override
     public String getSummary() {
         return null;
