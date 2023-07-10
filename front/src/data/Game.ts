@@ -1,4 +1,7 @@
-import { Team } from "./Team";
+import { Contestant } from "./Contestant";
+import { Identified } from "./Identified";
+import { ScoreType } from "./ScoreType";
+import { Score } from "./Score";
 
 export enum Result {
     WON = "WON",
@@ -7,39 +10,40 @@ export enum Result {
     NOT_PLAYED = "NOT_PLAYED",
 }
 
-export default class Game {
+export default class Game implements Identified {
 
     id: string;
     time: Date;
     court: string;
-    teamA: Team;
-    teamB: Team;
-    referee?: Team;
-    scoreA?: number;
-    scoreB?: number;
+    contestants: Contestant[];
+    referee?: Contestant;
+    isFinished: boolean;
+    scoreType: ScoreType;
+    score?: Score;
 
-    public constructor(init?:Partial<Game>) {
-        Object.assign(this, init);
-    }
 
-    isFinished: () => boolean = () => !(this.scoreB == undefined || this.scoreA == undefined);
+    // public constructor(init?:Partial<Game>) {
+    //     Object.assign(this, init);
+    // }
 
-    getResultGameByTeam = (team: Team): Result => {
-        if(!this.isFinished()){
-            return Result.NOT_PLAYED;
-        }
+    // isFinished: () => boolean = () => !(this.scoreB == undefined || this.scoreA == undefined);
 
-        if(this.scoreA === this.scoreB) {
-            return Result.DEUCE;
-        } 
+    // getResultGameByTeam = (team: Team): Result => {
+    //     if(!this.isFinished()){
+    //         return Result.NOT_PLAYED;
+    //     }
 
-        if(this.scoreA > this.scoreB) {
-            return (this.teamA === team) ? Result.WON : Result.LOST
-        } 
+    //     if(this.scoreA === this.scoreB) {
+    //         return Result.DEUCE;
+    //     } 
 
-        return (this.teamB === team) ? Result.WON : Result.LOST;
+    //     if(this.scoreA > this.scoreB) {
+    //         return (this.teamA === team) ? Result.WON : Result.LOST
+    //     } 
 
-    };
+    //     return (this.teamB === team) ? Result.WON : Result.LOST;
+
+    // };
 
 }
 
