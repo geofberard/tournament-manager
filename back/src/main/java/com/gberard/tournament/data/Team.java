@@ -1,4 +1,10 @@
 package com.gberard.tournament.data;
 
-public record Team (String id, String name) implements Identified {
+import java.util.List;
+
+public record Team(String id, String name, List<Player> players) implements Contestant {
+    @Override
+    public String label() {
+        return name;
+    }
 }

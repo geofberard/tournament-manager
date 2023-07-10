@@ -1,7 +1,7 @@
 package com.gberard.tournament.data;
 
 public class TeamStatsAccumulator {
-    private Team team;
+    private TeamV1 team;
     private int played = 0;
     private int won = 0;
     private int drawn = 0;
@@ -11,7 +11,7 @@ public class TeamStatsAccumulator {
     private int pointsAgainst = 0;
     private int pointsDiff = 0;
 
-    public TeamStatsAccumulator(Team team) {
+    public TeamStatsAccumulator(TeamV1 team) {
         this.team = team;
     }
 
@@ -55,8 +55,8 @@ public class TeamStatsAccumulator {
         return this;
     }
 
-    public TeamStats createTeamStatistic() {
-        return new TeamStats(team, played, won, drawn, lost, score, pointsFor, pointsAgainst, pointsDiff);
+    public TeamStatsV1 createTeamStatistic() {
+        return new TeamStatsV1(team, played, won, drawn, lost, score, pointsFor, pointsAgainst, pointsDiff);
     }
 
     public static TeamStatsAccumulator merge(TeamStatsAccumulator statA, TeamStatsAccumulator statB) {

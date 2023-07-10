@@ -1,20 +1,18 @@
 package com.gberard.tournament.data;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class TeamStatsAccumulatorTest {
 
-    private Team team = new Team("teamId","teamName");
+    private TeamV1 team = new TeamV1("teamId","teamName");
 
     @Test
     void should_have_no_initial_count() {
         // When
-        TeamStats stats = new TeamStatsAccumulator(team).createTeamStatistic();
+        TeamStatsV1 stats = new TeamStatsAccumulator(team).createTeamStatistic();
 
         // Then
         assertThat(stats.played()).as("played").isEqualTo(0);
@@ -30,7 +28,7 @@ class TeamStatsAccumulatorTest {
     @Test
     void should_increment_counter() {
         // When
-        TeamStats stats = new TeamStatsAccumulator(team)
+        TeamStatsV1 stats = new TeamStatsAccumulator(team)
                 .addPlayed(1)
                 .addWon(2)
                 .addDrawn(3)
@@ -55,7 +53,7 @@ class TeamStatsAccumulatorTest {
     @Test
     void should_manage_multiple_increment() {
         // When
-        TeamStats stats = new TeamStatsAccumulator(team)
+        TeamStatsV1 stats = new TeamStatsAccumulator(team)
                 .addPlayed(1)
                 .addWon(2)
                 .addDrawn(3)
@@ -109,7 +107,7 @@ class TeamStatsAccumulatorTest {
                 .addPointsDiff(8);
 
         // When
-        TeamStats stats = TeamStatsAccumulator.merge(accumulator1, accumulator2).createTeamStatistic();
+        TeamStatsV1 stats = TeamStatsAccumulator.merge(accumulator1, accumulator2).createTeamStatistic();
 
         // Then
         assertThat(stats.played()).as("played").isEqualTo(2);
@@ -126,7 +124,7 @@ class TeamStatsAccumulatorTest {
     void should_thow_error_when_mergind_different_teams() {
         // Given
         TeamStatsAccumulator accumulator1 = new TeamStatsAccumulator(team);
-        TeamStatsAccumulator accumulator2 = new TeamStatsAccumulator(new Team("error","error"));
+        TeamStatsAccumulator accumulator2 = new TeamStatsAccumulator(new TeamV1("error","error"));
 
         // When
         IllegalStateException exception = assertThrows(

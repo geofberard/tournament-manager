@@ -20,13 +20,13 @@ public class TeamStatsService {
     @Autowired
     GameRepository gameService;
 
-    public List<TeamStats> getTeamsStats() {
+    public List<TeamStatsV1> getTeamsStats() {
         return teamService.readAll().stream()
                 .map(this::getTeamStats)
                 .collect(toList());
     }
 
-    public TeamStats getTeamStats(Team team) {
+    public TeamStatsV1 getTeamStats(TeamV1 team) {
         return gameService.readAll().stream()
                 .filter(game -> game.hasContestant(team))
                 .reduce(
@@ -36,7 +36,7 @@ public class TeamStatsService {
                 ).createTeamStatistic();
     }
 
-    private static TeamStatsAccumulator updateStatsWith(TeamStatsAccumulator reducer, Game game, Team team) {
+    private static TeamStatsAccumulator updateStatsWith(TeamStatsAccumulator reducer, GameV1 game, TeamV1 team) {
         GameTeamStatus teamResult = game.getTeamStatus(team);
         int pointsFor = game.getPointsFor(team).orElse(0);
         int pointsAgainst = game.getPointsAgainst(team).orElse(0);

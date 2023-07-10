@@ -1,6 +1,6 @@
 package com.gberard.tournament.repository;
 
-import com.gberard.tournament.data.Team;
+import com.gberard.tournament.data.TeamV1;
 import com.gberard.tournament.service.SpreadsheetCRUDService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -88,7 +88,7 @@ class TeamRepositoryTest {
             when(spreadsheetCRUDService.readCells(eq(RANGE))).thenReturn(List.of(RAW_TEAM_A, RAW_TEAM_B));
 
             // When
-            List<Team> teams = teamRepository.readAll();
+            List<TeamV1> teams = teamRepository.readAll();
 
             // Then
             assertThat(teams).hasSize(2);
@@ -108,7 +108,7 @@ class TeamRepositoryTest {
             when(spreadsheetCRUDService.readCells(eq(RANGE))).thenReturn(List.of(RAW_TEAM_A, RAW_TEAM_B));
 
             // When
-            Optional<Team> team = teamRepository.search("teamB");
+            Optional<TeamV1> team = teamRepository.search("teamB");
 
             // Then
             assertThat(team.isPresent()).isTrue();
@@ -122,7 +122,7 @@ class TeamRepositoryTest {
             when(spreadsheetCRUDService.readCells(eq(RANGE))).thenReturn(List.of(RAW_TEAM_A, RAW_TEAM_B));
 
             // When
-            Optional<Team> team = teamRepository.search("team2");
+            Optional<TeamV1> team = teamRepository.search("team2");
 
             // Then
             assertThat(team.isPresent()).isFalse();
@@ -232,7 +232,7 @@ class TeamRepositoryTest {
             List<Object> RAW_TEAM_1 = rawData("team1", "Team1");
 
             // When
-            Team team = teamRepository.fromRawData(RAW_TEAM_1);
+            TeamV1 team = teamRepository.fromRawData(RAW_TEAM_1);
 
             // Then
             assertThat(team.id()).isEqualTo("team1");
