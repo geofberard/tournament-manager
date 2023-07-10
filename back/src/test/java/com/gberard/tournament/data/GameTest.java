@@ -49,9 +49,9 @@ class GameTest {
 
         @ParameterizedTest
         @MethodSource("notPlayedScenario")
-        void should_handle_status_not_played(String scenario, Game.GameBuilder builder) {
+        void should_handle_status_not_played(String scenario, GameV1.GameV1Builder builder) {
             // When
-            Game game = builder.build();
+            GameV1 game = builder.build();
 
             // Then
             assertThat(game.getTeamStatus(teamA)).isEqualTo(NOT_PLAYED);
@@ -61,7 +61,7 @@ class GameTest {
         @Test
         void should_handle_status_drawn() {
             // When
-            Game game = buildGame(teamA, 10, teamB, 10);
+            GameV1 game = buildGame(teamA, 10, teamB, 10);
 
             // Then
             assertThat(game.getTeamStatus(teamA)).isEqualTo(DRAWN);
@@ -77,7 +77,7 @@ class GameTest {
 
         @ParameterizedTest
         @MethodSource("wonScenario")
-        void should_handle_status_won(String scenario, Game game, Team winner) {
+        void should_handle_status_won(String scenario, GameV1 game, TeamV1 winner) {
             assertThat(game.getTeamStatus(winner)).isEqualTo(WIN);
         }
 
@@ -90,7 +90,7 @@ class GameTest {
 
         @ParameterizedTest
         @MethodSource("lostScenario")
-        void should_handle_status_lost(String scenario, Game game, Team winner) {
+        void should_handle_status_lost(String scenario, GameV1 game, TeamV1 winner) {
             assertThat(game.getTeamStatus(winner)).isEqualTo(WIN);
         }
     }
@@ -102,7 +102,7 @@ class GameTest {
         @Test
         void should_return_score_for_team_if_set() {
             // Given
-            Game game = buildGame(teamA, 18, teamB, 12);
+            GameV1 game = buildGame(teamA, 18, teamB, 12);
 
             // Then
             assertThat(game.getPointsFor(teamA)).isPresent();
@@ -114,7 +114,7 @@ class GameTest {
         @Test
         void should_return_empty_for_team_if_not_set() {
             // Given
-            Game game = gameBuilder().build();
+            GameV1 game = gameBuilder().build();
 
             // Then
             assertThat(game.getPointsFor(teamA)).isEmpty();
@@ -130,7 +130,7 @@ class GameTest {
         @Test
         void should_return_score_for_team_if_set() {
             // Given
-            Game game = buildGame(teamA, 18, teamB, 12);
+            GameV1 game = buildGame(teamA, 18, teamB, 12);
 
             // Then
             assertThat(game.getPointsAgainst(teamA)).isPresent();
@@ -142,7 +142,7 @@ class GameTest {
         @Test
         void should_return_empty_for_team_if_not_set() {
             // Given
-            Game game = gameBuilder().build();
+            GameV1 game = gameBuilder().build();
 
             // Then
             assertThat(game.getPointsAgainst(teamA)).isEmpty();

@@ -1,7 +1,7 @@
 package com.gberard.tournament.repository;
 
-import com.gberard.tournament.data.Game;
-import com.gberard.tournament.data.Team;
+import com.gberard.tournament.data.GameV1;
+import com.gberard.tournament.data.TeamV1;
 import com.gberard.tournament.service.SpreadsheetCRUDService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -50,7 +50,7 @@ class GameRepositoryTest {
     @Mock
     private TeamRepository teamRepository;
 
-    private void mockTeamService(Team... teams) {
+    private void mockTeamService(TeamV1... teams) {
         if (teams.length == 0) {
             when(teamRepository.search(any())).thenReturn(Optional.of(teamA));
         } else {
@@ -118,7 +118,7 @@ class GameRepositoryTest {
             mockTeamService(teamA, teamB, teamC);
 
             // When
-            List<Game> teams = gameRepository.readAll();
+            List<GameV1> teams = gameRepository.readAll();
 
             // Then
             assertThat(teams).hasSize(2);
@@ -139,10 +139,10 @@ class GameRepositoryTest {
             mockTeamService(teamA, teamB, teamC);
 
             // When
-            List<Game> gamesFor = gameRepository.searchFor(teamB);
+            List<GameV1> gamesFor = gameRepository.searchFor(teamB);
 
             // Then
-            assertThat(gamesFor).map(Game::id).containsExactly("game1", "game4");
+            assertThat(gamesFor).map(GameV1::id).containsExactly("game1", "game4");
         }
 
     }
@@ -252,7 +252,7 @@ class GameRepositoryTest {
             mockTeamService(teamA, teamB, teamC);
 
             // When
-            Game game = gameRepository.fromRawData(rawGame);
+            GameV1 game = gameRepository.fromRawData(rawGame);
 
             // Then
             verify(teamRepository, times(1)).search(eq(teamA.id()));
@@ -268,7 +268,7 @@ class GameRepositoryTest {
             mockTeamService(teamA, teamB, teamC);
 
             // When
-            Game game = gameRepository.fromRawData(rawGame);
+            GameV1 game = gameRepository.fromRawData(rawGame);
 
             // Then
             assertThat(game.id()).isEqualTo("game1");
@@ -288,7 +288,7 @@ class GameRepositoryTest {
             mockTeamService(teamA, teamB);
 
             // When
-            Game game = gameRepository.fromRawData(rawGame);
+            GameV1 game = gameRepository.fromRawData(rawGame);
 
             // Then
             assertThat(game.scoreA()).isEmpty();
@@ -302,7 +302,7 @@ class GameRepositoryTest {
             mockTeamService(teamA, teamC);
 
             // When
-            Game game = gameRepository.fromRawData(rawGame);
+            GameV1 game = gameRepository.fromRawData(rawGame);
 
             // Then
             assertThat(game.scoreA()).isEmpty();
@@ -316,7 +316,7 @@ class GameRepositoryTest {
             mockTeamService(teamA, teamB);
 
             // When
-            Game game = gameRepository.fromRawData(rawGame);
+            GameV1 game = gameRepository.fromRawData(rawGame);
 
             // Then
             assertThat(game.referee()).isEmpty();
@@ -342,7 +342,7 @@ class GameRepositoryTest {
         void should_handle_partiel_game() {
             // Given
             String court = "court";
-            Game game = Game.builder()
+            GameV1 game = GameV1.builder()
                     .id("gameId")
                     .time(LocalDateTime.of(2022, AUGUST, 29, 10, 30))
                     .court(court)

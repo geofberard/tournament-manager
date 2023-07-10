@@ -1,8 +1,8 @@
 package com.gberard.tournament.service;
 
-import com.gberard.tournament.data.Game;
-import com.gberard.tournament.data.Team;
-import com.gberard.tournament.data.TeamStats;
+import com.gberard.tournament.data.GameV1;
+import com.gberard.tournament.data.TeamV1;
+import com.gberard.tournament.data.TeamStatsV1;
 import com.gberard.tournament.repository.GameRepository;
 import com.gberard.tournament.repository.TeamRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -37,9 +37,9 @@ class TeamStatsServiceTest {
     @Mock
     private GameRepository gameService;
 
-    List<Team> teams = List.of(teamA, teamB, teamC, teamD);
+    List<TeamV1> teams = List.of(teamA, teamB, teamC, teamD);
 
-    List<Game> games = List.of(
+    List<GameV1> games = List.of(
             buildGame(teamA, 25, teamB, 15),
             buildGame(teamA, 18, teamC, 14),
             buildGame(teamB, 22, teamC, 19),
@@ -53,22 +53,22 @@ class TeamStatsServiceTest {
 
         public static Stream<Arguments> getExpectedStats() {
             return Stream.of(
-                    of(new TeamStats(teamA, 2, 2, 0, 0, 6, 43, 29, 14)),
-                    of(new TeamStats(teamB, 3, 1, 1, 1, 4, 47, 54, -7)),
-                    of(new TeamStats(teamC, 3, 1, 0, 2, 3, 53, 50, 3)),
-                    of(new TeamStats(teamD, 2, 0, 1, 1, 1, 20, 30, -10)),
-                    of(new TeamStats(teamE, 0, 0, 0, 0, 0, 0, 0, 0))
+                    of(new TeamStatsV1(teamA, 2, 2, 0, 0, 6, 43, 29, 14)),
+                    of(new TeamStatsV1(teamB, 3, 1, 1, 1, 4, 47, 54, -7)),
+                    of(new TeamStatsV1(teamC, 3, 1, 0, 2, 3, 53, 50, 3)),
+                    of(new TeamStatsV1(teamD, 2, 0, 1, 1, 1, 20, 30, -10)),
+                    of(new TeamStatsV1(teamE, 0, 0, 0, 0, 0, 0, 0, 0))
             );
         }
 
         @ParameterizedTest
         @MethodSource("getExpectedStats")
-        void should_return_team_stats(TeamStats expected) {
+        void should_return_team_stats(TeamStatsV1 expected) {
             // Given
             when(gameService.readAll()).thenReturn(games);
 
             // When
-            TeamStats stats = teamStatsService.getTeamStats(expected.team());
+            TeamStatsV1 stats = teamStatsService.getTeamStats(expected.team());
 
             // Then
             assertThat(stats).isEqualTo(expected);
@@ -86,11 +86,11 @@ class TeamStatsServiceTest {
             when(gameService.readAll()).thenReturn(games);
 
             // When
-            List<TeamStats> teamsStats = teamStatsService.getTeamsStats();
+            List<TeamStatsV1> teamsStats = teamStatsService.getTeamsStats();
 
             // Then
             assertThat(teamsStats).hasSize(teams.size());
-            assertThat(teamsStats.stream().map(TeamStats::team).collect(toList()))
+            assertThat(teamsStats.stream().map(TeamStatsV1::team).collect(toList()))
                     .containsAll(teams);
         }
     }
