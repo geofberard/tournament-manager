@@ -1,16 +1,16 @@
-import { Team } from "../data/Team";
-import { getCookie, setCookie } from "./CookieService";
-import { getCurrentTeam, setCurrentTeam, TEAM_CNAME } from "./TeamService";
+import {Team} from "../data/Team";
+import {getCookie, setCookie} from "./CookieService";
+import {getCurrentTeam, setCurrentTeam, TEAM_CNAME} from "./TeamService";
 
 jest.mock("./CookieService", () => ({
     getCookie: jest.fn(),
     setCookie: jest.fn(),
 }));
 
-const TEAMS = [
-    { id: "id1", name: "name1" },
-    { id: "id2", name: "name2" },
-    { id: "id3", name: "name3" },
+const TEAMS: Team[] = [
+    {id: "id1", name: "name1", players: [], label: "team label 1"},
+    {id: "id2", name: "name2", players: [], label: "team label 2"},
+    {id: "id3", name: "name3", players: [], label: "team label 3"},
 ];
 
 global.fetch = jest.fn(() =>

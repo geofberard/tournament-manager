@@ -2,6 +2,7 @@ import { Contestant } from "./Contestant";
 import { Identified } from "./Identified";
 import { ScoreType } from "./ScoreType";
 import { Score } from "./Score";
+import {Team} from "./Team";
 
 export enum Result {
     WON = "WON",
@@ -22,28 +23,29 @@ export default class Game implements Identified {
     score?: Score;
 
 
-    // public constructor(init?:Partial<Game>) {
-    //     Object.assign(this, init);
-    // }
+    public constructor(init?:Partial<Game>) {
+        Object.assign(this, init);
+    }
 
     // isFinished: () => boolean = () => !(this.scoreB == undefined || this.scoreA == undefined);
 
-    // getResultGameByTeam = (team: Team): Result => {
-    //     if(!this.isFinished()){
-    //         return Result.NOT_PLAYED;
-    //     }
+    getResultGameByTeam = (contestant: Contestant): Result => {
+        if(!this.isFinished){
+            return Result.NOT_PLAYED;
+        }
+        return Result.NOT_PLAYED;
 
-    //     if(this.scoreA === this.scoreB) {
-    //         return Result.DEUCE;
-    //     } 
-
-    //     if(this.scoreA > this.scoreB) {
-    //         return (this.teamA === team) ? Result.WON : Result.LOST
-    //     } 
-
-    //     return (this.teamB === team) ? Result.WON : Result.LOST;
-
-    // };
+        // @Patator : to be reimplemented depending on the type of score
+        // if(this.scoreA === this.scoreB) {
+        //     return Result.DEUCE;
+        // }
+        //
+        // if(this.scoreA > this.scoreB) {
+        //     return (this.teamA === team) ? Result.WON : Result.LOST
+        // }
+        //
+        // return (this.teamB === team) ? Result.WON : Result.LOST;
+    };
 
 }
 
