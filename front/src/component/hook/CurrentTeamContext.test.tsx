@@ -14,7 +14,7 @@ const wrapper: FC<React.PropsWithChildren> = ({ children }) => (
     <CurrentTeamProvider>{children}</CurrentTeamProvider>
 );
 
-const MOCKED_TEAM: Team = { id: "currentTeam", name: "currentTeam" };
+const MOCKED_TEAM: Team = { id: "currentTeam", name: "currentTeam", label: "currentTeam label", players: []};
 
 function mockGetCookie(team: Team = undefined) {
     const getCookieMocked = getCurrentTeam as jest.MockedFunction<typeof getCurrentTeam>;

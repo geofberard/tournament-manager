@@ -7,9 +7,9 @@ import { useTeams } from "../hook/useTeams";
 import { TeamSelector } from "./TeamSelector";
 
 const teamsMocked: Team[] = [
-    { id: "team1", name: "Team1" },
-    { id: "team2", name: "Team2" },
-    { id: "team3", name: "Team3" },
+    { id: "teamA", name: "TeamA", label: "TeamA label", players: []},
+    { id: "teamB", name: "TeamB", label: "TeamB label", players: []},
+    { id: "teamC", name: "TeamC", label: "TeamC label", players: []},
 ];
 
 jest.mock("../hook/CurrentTeamContext", () => ({

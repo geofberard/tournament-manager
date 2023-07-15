@@ -4,47 +4,49 @@ import { WelcomePageTeam } from "./WelcomePageTeam";
 import {useGames} from "../hook/useGames";
 import Game from "../../data/Game";
 import { createRenderer } from "react-test-renderer/shallow";
+import { Team } from "../../data/Team";
+import { Score } from "../../data/Score";
+import { ScoreType } from "../../data/ScoreType";
 
 jest.mock("../hook/useGames", () => ({
     useGames: jest.fn(),
 }));
 
-const teamA = { id: "teamA", name: "TeamA" };
-const teamB = { id: "teamB", name: "TeamB" };
-const teamC = { id: "teamC", name: "TeamC" };
+const teamA: Team = { id: "teamA", name: "TeamA", label: "TeamA label", players: []};
+const teamB: Team = { id: "teamB", name: "TeamB", label: "TeamB label", players: []};
+const teamC: Team = { id: "teamC", name: "TeamC", label: "TeamC label", players: []};
+const scoreGame1: Score = {summary: "3-0"};
+const scoreGame2: Score = {summary: "1-3"};
+const scoreGame3: Score = {summary: "0-0"};
 
 const games: Game[] = [
     new Game({
         id: "gameId",
         time: expect.any(Date),
         court: "court",
-        teamA: teamA,
-        teamB: teamB,
+        contestants: [teamA, teamB],
         referee: teamC,
-        scoreA: 25,
-        scoreB: 14,
+        scoreType: ScoreType.DEPTH_ONE, 
+        score: scoreGame1,
     }),
     new Game({
         id: "gameId",
         time: expect.any(Date),
         court: "court",
-        teamA: teamA,
-        teamB: teamB,
+        contestants: [teamA, teamB],
         referee: teamC,
-        scoreA: 14,
-        scoreB: 25,
+        scoreType: ScoreType.DEPTH_ONE, 
+        score: scoreGame2,
     }),
     new Game({
         id: "gameId",
         time: expect.any(Date),
         court: "court",
-        teamA: teamA,
-        teamB: teamB,
+        contestants: [teamA, teamB],
         referee: teamC,
-        scoreA: 22,
-        scoreB: 22,
+        scoreType: ScoreType.DEPTH_ONE, 
+        score: scoreGame3,
     })
-    
 ];
 
 mockFunctionReturn(useGames, games);

@@ -6,8 +6,8 @@ import { API_TEAMS } from "../../service/TeamService";
 import { useTeams } from "./useTeams";
 
 const MOCKED_TEAMS: Team[] = [
-    { id: "team1", name: "Team1" },
-    { id: "team2", name: "Team2" },
+    { id: "team1", name: "team1", label: "team1 label", players: []},
+    { id: "team2", name: "team2", label: "team2 label", players: []},
 ];
 
 jest.mock("swr", () => ({
