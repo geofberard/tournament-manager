@@ -4,6 +4,7 @@ import com.gberard.tournament.data.GameV1;
 import com.gberard.tournament.data.TeamV1;
 import com.gberard.tournament.repository.GameRepository;
 import com.gberard.tournament.repository.TeamRepository;
+import com.gberard.tournament.repository.TeamV1Repository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -72,7 +73,7 @@ public class BackofficeSandboxApplication {
     );
 
     @Autowired
-    private TeamRepository teamService;
+    private TeamV1Repository teamService;
 
     @Autowired
     private GameRepository gameService;

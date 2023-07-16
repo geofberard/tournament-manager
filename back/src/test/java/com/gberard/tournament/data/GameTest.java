@@ -28,9 +28,9 @@ class GameTest {
 
         @Test
         void should_be_finished() {
-            assertThat(buildGame(teamA, 10, teamB, 9).isFinished()).isTrue();
-            assertThat(buildGame(teamA, 12, teamB, 12).isFinished()).isTrue();
-            assertThat(buildGame(teamA, 15, teamB, 24).isFinished()).isTrue();
+            assertThat(buildGame(oldTeamA, 10, oldTeamB, 9).isFinished()).isTrue();
+            assertThat(buildGame(oldTeamA, 12, oldTeamB, 12).isFinished()).isTrue();
+            assertThat(buildGame(oldTeamA, 15, oldTeamB, 24).isFinished()).isTrue();
         }
 
     }
@@ -54,24 +54,24 @@ class GameTest {
             GameV1 game = builder.build();
 
             // Then
-            assertThat(game.getTeamStatus(teamA)).isEqualTo(NOT_PLAYED);
-            assertThat(game.getTeamStatus(teamB)).isEqualTo(NOT_PLAYED);
+            assertThat(game.getTeamStatus(oldTeamA)).isEqualTo(NOT_PLAYED);
+            assertThat(game.getTeamStatus(oldTeamB)).isEqualTo(NOT_PLAYED);
         }
 
         @Test
         void should_handle_status_drawn() {
             // When
-            GameV1 game = buildGame(teamA, 10, teamB, 10);
+            GameV1 game = buildGame(oldTeamA, 10, oldTeamB, 10);
 
             // Then
-            assertThat(game.getTeamStatus(teamA)).isEqualTo(DRAWN);
-            assertThat(game.getTeamStatus(teamB)).isEqualTo(DRAWN);
+            assertThat(game.getTeamStatus(oldTeamA)).isEqualTo(DRAWN);
+            assertThat(game.getTeamStatus(oldTeamB)).isEqualTo(DRAWN);
         }
 
         public static Stream<Arguments> wonScenario() {
             return Stream.of(
-                    Arguments.of("A win", buildGame(teamA, 10, teamB, 9), teamA),
-                    Arguments.of("B win", buildGame(teamA, 14, teamB, 25), teamB)
+                    Arguments.of("A win", buildGame(oldTeamA, 10, oldTeamB, 9), oldTeamA),
+                    Arguments.of("B win", buildGame(oldTeamA, 14, oldTeamB, 25), oldTeamB)
             );
         }
 
@@ -83,8 +83,8 @@ class GameTest {
 
         public static Stream<Arguments> lostScenario() {
             return Stream.of(
-                    Arguments.of("A win", buildGame(teamA, 10, teamB, 9), teamA),
-                    Arguments.of("B win", buildGame(teamA, 15, teamB, 25), teamB)
+                    Arguments.of("A win", buildGame(oldTeamA, 10, oldTeamB, 9), oldTeamA),
+                    Arguments.of("B win", buildGame(oldTeamA, 15, oldTeamB, 25), oldTeamB)
             );
         }
 
@@ -102,13 +102,13 @@ class GameTest {
         @Test
         void should_return_score_for_team_if_set() {
             // Given
-            GameV1 game = buildGame(teamA, 18, teamB, 12);
+            GameV1 game = buildGame(oldTeamA, 18, oldTeamB, 12);
 
             // Then
-            assertThat(game.getPointsFor(teamA)).isPresent();
-            assertThat(game.getPointsFor(teamA)).isEqualTo(game.scoreA());
-            assertThat(game.getPointsFor(teamB)).isPresent();
-            assertThat(game.getPointsFor(teamB)).isEqualTo(game.scoreB());
+            assertThat(game.getPointsFor(oldTeamA)).isPresent();
+            assertThat(game.getPointsFor(oldTeamA)).isEqualTo(game.scoreA());
+            assertThat(game.getPointsFor(oldTeamB)).isPresent();
+            assertThat(game.getPointsFor(oldTeamB)).isEqualTo(game.scoreB());
         }
 
         @Test
@@ -117,8 +117,8 @@ class GameTest {
             GameV1 game = gameBuilder().build();
 
             // Then
-            assertThat(game.getPointsFor(teamA)).isEmpty();
-            assertThat(game.getPointsFor(teamB)).isEmpty();
+            assertThat(game.getPointsFor(oldTeamA)).isEmpty();
+            assertThat(game.getPointsFor(oldTeamB)).isEmpty();
         }
 
     }
@@ -130,13 +130,13 @@ class GameTest {
         @Test
         void should_return_score_for_team_if_set() {
             // Given
-            GameV1 game = buildGame(teamA, 18, teamB, 12);
+            GameV1 game = buildGame(oldTeamA, 18, oldTeamB, 12);
 
             // Then
-            assertThat(game.getPointsAgainst(teamA)).isPresent();
-            assertThat(game.getPointsAgainst(teamA)).isEqualTo(game.scoreB());
-            assertThat(game.getPointsAgainst(teamB)).isPresent();
-            assertThat(game.getPointsAgainst(teamB)).isEqualTo(game.scoreA());
+            assertThat(game.getPointsAgainst(oldTeamA)).isPresent();
+            assertThat(game.getPointsAgainst(oldTeamA)).isEqualTo(game.scoreB());
+            assertThat(game.getPointsAgainst(oldTeamB)).isPresent();
+            assertThat(game.getPointsAgainst(oldTeamB)).isEqualTo(game.scoreA());
         }
 
         @Test
@@ -145,8 +145,8 @@ class GameTest {
             GameV1 game = gameBuilder().build();
 
             // Then
-            assertThat(game.getPointsAgainst(teamA)).isEmpty();
-            assertThat(game.getPointsAgainst(teamB)).isEmpty();
+            assertThat(game.getPointsAgainst(oldTeamA)).isEmpty();
+            assertThat(game.getPointsAgainst(oldTeamB)).isEmpty();
         }
 
     }

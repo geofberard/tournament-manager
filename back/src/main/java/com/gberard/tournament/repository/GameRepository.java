@@ -18,7 +18,7 @@ public class GameRepository extends SheetRepository<GameV1> {
     protected static final String RANGE = "Games!A2:I";
 
     @Autowired
-    TeamRepository teamService;
+    TeamV1Repository teamService;
 
     protected GameRepository() {
         super(RANGE);

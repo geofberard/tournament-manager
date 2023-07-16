@@ -5,6 +5,7 @@ import com.gberard.tournament.data.TeamV1;
 import com.gberard.tournament.data.TeamStatsV1;
 import com.gberard.tournament.repository.GameRepository;
 import com.gberard.tournament.repository.TeamRepository;
+import com.gberard.tournament.repository.TeamV1Repository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -32,19 +33,19 @@ class TeamStatsServiceTest {
     private TeamStatsService teamStatsService = new TeamStatsService();
 
     @Mock
-    private TeamRepository teamService;
+    private TeamV1Repository teamService;
 
     @Mock
     private GameRepository gameService;
 
-    List<TeamV1> teams = List.of(teamA, teamB, teamC, teamD);
+    List<TeamV1> teams = List.of(oldTeamA, oldTeamB, oldTeamC, oldTeamD);
 
     List<GameV1> games = List.of(
-            buildGame(teamA, 25, teamB, 15),
-            buildGame(teamA, 18, teamC, 14),
-            buildGame(teamB, 22, teamC, 19),
-            buildGame(teamD, 10, teamC, 20),
-            buildGame(teamD, 10, teamB, 10)
+            buildGame(oldTeamA, 25, oldTeamB, 15),
+            buildGame(oldTeamA, 18, oldTeamC, 14),
+            buildGame(oldTeamB, 22, oldTeamC, 19),
+            buildGame(oldTeamD, 10, oldTeamC, 20),
+            buildGame(oldTeamD, 10, oldTeamB, 10)
     );
 
     @Nested
@@ -53,11 +54,11 @@ class TeamStatsServiceTest {
 
         public static Stream<Arguments> getExpectedStats() {
             return Stream.of(
-                    of(new TeamStatsV1(teamA, 2, 2, 0, 0, 6, 43, 29, 14)),
-                    of(new TeamStatsV1(teamB, 3, 1, 1, 1, 4, 47, 54, -7)),
-                    of(new TeamStatsV1(teamC, 3, 1, 0, 2, 3, 53, 50, 3)),
-                    of(new TeamStatsV1(teamD, 2, 0, 1, 1, 1, 20, 30, -10)),
-                    of(new TeamStatsV1(teamE, 0, 0, 0, 0, 0, 0, 0, 0))
+                    of(new TeamStatsV1(oldTeamA, 2, 2, 0, 0, 6, 43, 29, 14)),
+                    of(new TeamStatsV1(oldTeamB, 3, 1, 1, 1, 4, 47, 54, -7)),
+                    of(new TeamStatsV1(oldTeamC, 3, 1, 0, 2, 3, 53, 50, 3)),
+                    of(new TeamStatsV1(oldTeamD, 2, 0, 1, 1, 1, 20, 30, -10)),
+                    of(new TeamStatsV1(oldTeamE, 0, 0, 0, 0, 0, 0, 0, 0))
             );
         }
 

@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.gberard.tournament.controller.TeamsController.*;
+import static com.gberard.tournament.controller.GamesController.*;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @RestController

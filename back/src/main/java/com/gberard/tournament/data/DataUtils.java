@@ -6,12 +6,17 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.OptionalInt;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.joining;
 
 @Slf4j
 public class DataUtils {
 
+    public static final String LIST_SEPARATOR = ";";
     private static DateTimeFormatter DATE_FORMATER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private static DateTimeFormatter TIME_FORMATER = DateTimeFormatter.ofPattern("kk:mm");
 
@@ -28,18 +33,26 @@ public class DataUtils {
     }
 
     public static OptionalInt parseInteger(String value) {
-        if(value.isEmpty()) {
+        if (value.isEmpty()) {
             return OptionalInt.empty();
         }
         try {
             return OptionalInt.of(Integer.parseInt(value));
         } catch (final NumberFormatException e) {
-            log.error("Unable to parse \"" + value +"\" into integer");
+            log.error("Unable to parse \"" + value + "\" into integer");
         }
         return OptionalInt.empty();
     }
 
     public static String getValue(List<Object> value, int index) {
         return value.size() > index ? value.get(index).toString() : "";
+    }
+
+    public static List<String> getListValue(List<Object> value, int index) {
+        return Arrays.stream(getValue(value, index).split(LIST_SEPARATOR)).toList();
+    }
+
+    public static String toListValue(List<String> elements) {
+        return elements.stream().collect(joining(LIST_SEPARATOR));
     }
 }

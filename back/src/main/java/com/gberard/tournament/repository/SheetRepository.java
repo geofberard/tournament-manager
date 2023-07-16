@@ -1,12 +1,14 @@
 package com.gberard.tournament.repository;
 
 import com.gberard.tournament.data.Identified;
+import com.gberard.tournament.data.TeamV1;
 import com.gberard.tournament.service.SpreadsheetCRUDService;
 import com.google.common.annotations.VisibleForTesting;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.OptionalInt;
 
 import static java.util.stream.Collectors.toList;
@@ -64,6 +66,12 @@ public abstract class SheetRepository<T extends Identified> {
     public boolean deleteAll() {
         log.info("Deleting all - " + range);
         return spreadsheetCRUDService.deleteRaws(tab,1);
+    }
+
+    public Optional<T> search(String id) {
+        return readAll().stream()
+                .filter(t -> t.id().equals(id))
+                .findFirst();
     }
 
     @VisibleForTesting
