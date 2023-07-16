@@ -2,6 +2,7 @@ package com.gberard.tournament.service;
 
 import com.gberard.tournament.data.*;
 import com.gberard.tournament.repository.GameRepository;
+import com.gberard.tournament.repository.GameV1Repository;
 import com.gberard.tournament.repository.TeamRepository;
 import com.gberard.tournament.repository.TeamV1Repository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ public class TeamStatsService {
     TeamV1Repository teamService;
 
     @Autowired
-    GameRepository gameService;
+    GameV1Repository gameService;
 
     public List<TeamStatsV1> getTeamsStats() {
         return teamService.readAll().stream()

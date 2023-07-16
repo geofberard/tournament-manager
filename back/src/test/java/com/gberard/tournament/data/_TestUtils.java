@@ -1,52 +1,20 @@
 package com.gberard.tournament.data;
 
+import org.assertj.core.api.ListAssert;
+
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import static java.time.Month.AUGUST;
 
 public class _TestUtils {
-
-    public static Player playerA = createPlayer("A");
-    public static Player playerB = createPlayer("B");
-    public static Player playerC = createPlayer("C");
-    public static Player playerD = createPlayer("D");
-    public static Player playerE = createPlayer("E");
-
-    public static Player createPlayer(String id) {
-        return new Player("player"+ id, "playerFirstname" + id, "playerLastname" + id);
-    }
-
-    public static Team teamA = new Team("teamA", "TeamA", List.of());
-    public static Team teamB = new Team("teamB", "TeamB", List.of());
-    public static Team teamC = new Team("teamC", "TeamC", List.of());
-    public static Team teamD = new Team("teamD", "TeamD", List.of());
-    public static Team teamE = new Team("teamE", "TeamE", List.of());
 
     public static TeamV1 oldTeamA = new TeamV1("teamA", "TeamA");
     public static TeamV1 oldTeamB = new TeamV1("teamB", "TeamB");
     public static TeamV1 oldTeamC = new TeamV1("teamC", "TeamC");
     public static TeamV1 oldTeamD = new TeamV1("teamD", "TeamD");
     public static TeamV1 oldTeamE = new TeamV1("teamE", "TeamE");
-
-    public static GameV1 game1 = GameV1.builder()
-            .id("game1")
-            .time(LocalDateTime.of(2022, AUGUST, 29, 10, 30))
-            .court("court")
-            .teamA(oldTeamA)
-            .teamB(oldTeamB)
-            .referee(oldTeamC)
-            .scoreA(25)
-            .scoreB(14)
-            .build();
-
-    public static GameV1 game2 = GameV1.builder()
-            .id("game2")
-            .time(LocalDateTime.of(2022, AUGUST, 29, 11, 30))
-            .court("court")
-            .teamA(oldTeamC)
-            .teamB(oldTeamB)
-            .build();
 
     public static GameV1.GameV1Builder gameBuilder() {
         return GameV1.builder()
@@ -65,8 +33,29 @@ public class _TestUtils {
                 .build();
     }
 
+    public static DepthOneScore buildDepthOneScore(String teamA, Integer scoreA, String teamB, Integer scoreB) {
+        return new DepthOneScore(Map.of(teamA, scoreA, teamB, scoreB));
+    }
+
+    public static DepthTwoScore buildDepthTwoScore(String teamA, Integer scoreA1, Integer scoreA2,
+                                                   String teamB, Integer scoreB1, Integer scoreB2) {
+        return new DepthTwoScore(List.of(
+                new DepthOneScore(Map.of(teamA, scoreA1, teamB, scoreB1)),
+                new DepthOneScore(Map.of(teamA, scoreA2, teamB, scoreB2))
+        ));
+    }
+
     public static List<Object> rawData(Object...values) {
         return List.of(values);
+    }
+
+    public static ListAssert<Integer> assertThatScore(Score score, String contestentId) {
+        return switch (score) {
+            case DepthOneScore s -> new ListAssert<>(List.of((s.result().get(contestentId))));
+            case DepthTwoScore s -> new ListAssert<>(s.result().stream()
+                    .map(depthOne -> depthOne.result().get(contestentId)));
+            default -> throw new IllegalStateException("Unsuported score class : " + score.getClass());
+        };
     }
 
 }

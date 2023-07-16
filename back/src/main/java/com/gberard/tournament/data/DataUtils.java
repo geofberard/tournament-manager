@@ -8,8 +8,9 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.OptionalInt;
-import java.util.stream.Collectors;
+import java.util.function.Function;
 
 import static java.util.stream.Collectors.joining;
 
@@ -17,6 +18,8 @@ import static java.util.stream.Collectors.joining;
 public class DataUtils {
 
     public static final String LIST_SEPARATOR = ";";
+    public static final String SCORE_SEPARATOR = "-";
+
     private static DateTimeFormatter DATE_FORMATER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private static DateTimeFormatter TIME_FORMATER = DateTimeFormatter.ofPattern("kk:mm");
 
@@ -48,8 +51,39 @@ public class DataUtils {
         return value.size() > index ? value.get(index).toString() : "";
     }
 
-    public static List<String> getListValue(List<Object> value, int index) {
-        return Arrays.stream(getValue(value, index).split(LIST_SEPARATOR)).toList();
+    public static <T> Optional<T> getValue(List<Object> value, int index, Function<String,T> mapper) {
+        var serialized = getValue(value, index);
+        if(serialized.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(mapper.apply(serialized));
+    }
+
+    public static Optional<String> getStringValue(List<Object> value, int index) {
+        return getValue(value, index, Function.identity());
+    }
+
+    public static Optional<Boolean> getBooleanValue(List<Object> value, int index) {
+        return getValue(value, index, Boolean::parseBoolean);
+    }
+
+    public static Optional<List<String>> getListValue(List<Object> value, int index) {
+        return getValue(value, index, serialized -> Arrays.stream(serialized.split(LIST_SEPARATOR)).toList());
+    }
+
+    public static <T extends Enum<T>> Optional<T> getEnumValue(List<Object> value, int index, Class<T> enumClass) {
+        return getValue(value, index, serialized -> Enum.valueOf(enumClass, serialized));
+    }
+
+    public static Optional<LocalDateTime> getDateTimeValue(List<Object> value, int indexDate, int indexTime) {
+        var date = getStringValue(value, indexDate);
+        var time = getStringValue(value, indexTime);
+
+        if(date.isEmpty() || time.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(parseDateTime(date.get(), time.get()));
     }
 
     public static String toListValue(List<String> elements) {

@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
 
+import static com.gberard.tournament.data.DataUtils.toListValue;
 import static com.gberard.tournament.data._TestUtils.*;
 import static com.gberard.tournament.repository.TeamRepository.RANGE;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -258,7 +259,7 @@ class TeamRepositoryTest {
             List<Object> objects = teamRepository.toRawData(TEAM_A);
 
             // Then
-            assertThat(objects).containsExactlyInAnyOrder(TEAM_A.id(), TEAM_A.name(), DataUtils.toListValue(TEAM_A.playerIds()));
+            assertThat(objects).containsExactlyInAnyOrder(TEAM_A.id(), TEAM_A.name(), toListValue(TEAM_A.playerIds()));
         }
 
     }

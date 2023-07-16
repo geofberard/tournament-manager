@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+import static com.gberard.tournament.data.DataUtils.getStringValue;
 import static com.gberard.tournament.data.DataUtils.getValue;
 
 @Repository
@@ -21,7 +22,11 @@ public class PlayerRepository extends SheetRepository<Player> {
 
     @Override
     protected Player fromRawData(List<Object> rawData) {
-        return new Player(getValue(rawData, 0), getValue(rawData, 1), getValue(rawData, 2));
+        return new Player(
+                getStringValue(rawData, 0).get(),
+                getStringValue(rawData, 1).get(),
+                getStringValue(rawData, 2).get()
+        );
     }
 
     @Override

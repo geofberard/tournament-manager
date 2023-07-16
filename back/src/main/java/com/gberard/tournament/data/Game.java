@@ -6,17 +6,29 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static com.gberard.tournament.data.GameTeamStatus.*;
-
 public record Game(
         String id,
         LocalDateTime time,
         String court,
-        List<Contestant> contestants,
-        Optional<Contestant> referee,
+        List<String> contestantIds,
+        Optional<String> refereeId,
         Boolean isFinished,
         ScoreType scoreType,
         Optional<Score> score
-) implements Identified{
+) implements Identified {
 
+    @Builder
+    public static Game createGame(
+            String id,
+            LocalDateTime time,
+            String court,
+            List<String> contestantIds,
+            String refereeId,
+            Boolean isFinished,
+            ScoreType scoreType,
+            Score score
+    ) {
+        return new Game(id, time, court, contestantIds, Optional.ofNullable(refereeId), isFinished, scoreType,
+                Optional.ofNullable(score));
+    }
 }

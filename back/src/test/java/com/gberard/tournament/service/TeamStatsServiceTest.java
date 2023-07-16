@@ -4,6 +4,7 @@ import com.gberard.tournament.data.GameV1;
 import com.gberard.tournament.data.TeamV1;
 import com.gberard.tournament.data.TeamStatsV1;
 import com.gberard.tournament.repository.GameRepository;
+import com.gberard.tournament.repository.GameV1Repository;
 import com.gberard.tournament.repository.TeamRepository;
 import com.gberard.tournament.repository.TeamV1Repository;
 import org.junit.jupiter.api.DisplayName;
@@ -36,7 +37,7 @@ class TeamStatsServiceTest {
     private TeamV1Repository teamService;
 
     @Mock
-    private GameRepository gameService;
+    private GameV1Repository gameService;
 
     List<TeamV1> teams = List.of(oldTeamA, oldTeamB, oldTeamC, oldTeamD);
 

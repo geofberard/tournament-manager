@@ -1,8 +1,10 @@
 package com.gberard.tournament.repository;
 
-import com.gberard.tournament.data.GameV1;
-import com.gberard.tournament.data.TeamV1;
+import com.gberard.tournament.data.DepthOneScore;
+import com.gberard.tournament.data.DepthTwoScore;
+import com.gberard.tournament.data.Game;
 import com.gberard.tournament.service.SpreadsheetCRUDService;
+import com.google.api.client.googleapis.testing.TestUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -13,11 +15,11 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.OptionalInt;
 
+import static com.gberard.tournament.data.ScoreType.DepthOne;
+import static com.gberard.tournament.data.ScoreType.DepthTwo;
 import static com.gberard.tournament.data._TestUtils.*;
 import static com.gberard.tournament.repository.GameRepository.RANGE;
 import static java.time.Month.AUGUST;
@@ -31,14 +33,42 @@ import static org.mockito.Mockito.*;
 class GameRepositoryTest {
 
     private static final List<Object> RAW_GAME_1 =
-            rawData("game1", "29/08/2022", "10:30", "court", "teamA", "teamB", "teamC", "25", "14");
+            rawData("game1", "29/08/2022", "10:30", "court", "teamA;teamB", "teamC", "true", "DepthOne", "25-12");
     private static final List<Object> RAW_GAME_2 =
-            rawData("game2", "29/08/2022", "11:30", "court", "teamC", "teamB");
+            rawData("game2", "29/08/2022", "11:30", "court", "teamA;teamC", "teamB", "true", "DepthTwo", "25-12;14-25");
     private static final List<Object> RAW_GAME_3 =
-            rawData("game3", "29/08/2022", "13:30", "court", "teamA", "teamC", "", "", "");
-    private static final List<Object> RAW_GAME_4 =
-            rawData("game4", "29/08/2022", "14:30", "court", "teamA", "teamB", "");
+            rawData("game3", "29/08/2022", "12:30", "court", "teamC;teamB", "", "false", "DepthOne");
 
+    public static Game GAME_1 = Game.builder()
+            .id("game1")
+            .time(LocalDateTime.of(2022, AUGUST, 29, 10, 30))
+            .court("court")
+            .contestantIds(List.of("teamA", "teamB"))
+            .refereeId("teamC")
+            .isFinished(true)
+            .scoreType(DepthOne)
+            .score(buildDepthOneScore("teamA", 25, "teamB", 12))
+            .build();
+
+    public static Game GAME_2 = Game.builder()
+            .id("game2")
+            .time(LocalDateTime.of(2022, AUGUST, 29, 11, 30))
+            .court("court")
+            .contestantIds(List.of("teamA", "teamC"))
+            .refereeId("teamB")
+            .isFinished(true)
+            .scoreType(DepthTwo)
+            .score(buildDepthTwoScore("teamA", 25, 14, "teamC", 12, 25))
+            .build();
+
+    public static Game GAME_3 = Game.builder()
+            .id("game3")
+            .time(LocalDateTime.of(2022, AUGUST, 29, 12, 30))
+            .court("court")
+            .contestantIds(List.of("teamC", "teamB"))
+            .isFinished(false)
+            .scoreType(DepthOne)
+            .build();
 
     @Spy
     @InjectMocks
@@ -47,18 +77,6 @@ class GameRepositoryTest {
     @Mock
     protected SpreadsheetCRUDService spreadsheetCRUDService;
 
-    @Mock
-    private TeamV1Repository teamRepository;
-
-    private void mockTeamService(TeamV1... teams) {
-        if (teams.length == 0) {
-            when(teamRepository.search(any())).thenReturn(Optional.of(oldTeamA));
-        } else {
-            Arrays.stream(teams)
-                    .forEach(team -> when(teamRepository.search(eq(team.id()))).thenReturn(Optional.of(team)));
-        }
-    }
-
     @Nested
     @DisplayName("create()")
     class Create {
@@ -66,20 +84,20 @@ class GameRepositoryTest {
         @Test
         void shoud_use_crud_service() {
             // When
-            gameRepository.create(game1);
+            gameRepository.create(GAME_1);
 
             // Then
             verify(spreadsheetCRUDService, times(1))
-                    .appendCells(eq(RANGE), eq(List.of(RAW_GAME_1)));
+                    .appendCells(eq(RANGE), any());
         }
 
         @Test
         void shoud_use_toRawData_mapper() {
             // When
-            gameRepository.create(game1);
+            gameRepository.create(GAME_1);
 
             // Then
-            verify(gameRepository, times(1)).toRawData(eq(game1));
+            verify(gameRepository, times(1)).toRawData(eq(GAME_1));
         }
 
     }
@@ -100,30 +118,28 @@ class GameRepositoryTest {
         @Test
         void shoud_use_fromRawData_mapper() {
             // Given
-            when(spreadsheetCRUDService.readCells(eq(RANGE))).thenReturn(List.of(RAW_GAME_1, RAW_GAME_2));
-            mockTeamService(oldTeamA, oldTeamB, oldTeamC);
+            when(spreadsheetCRUDService.readCells(eq(RANGE))).thenReturn(List.of(RAW_GAME_1, RAW_GAME_3));
 
             // When
             gameRepository.readAll();
 
             // Then
             verify(gameRepository, times(1)).fromRawData(eq(RAW_GAME_1));
-            verify(gameRepository, times(1)).fromRawData(eq(RAW_GAME_2));
+            verify(gameRepository, times(1)).fromRawData(eq(RAW_GAME_3));
         }
 
         @Test
         void shoud_return_deserialized_game() {
             // Given
-            when(spreadsheetCRUDService.readCells(eq(RANGE))).thenReturn(List.of(RAW_GAME_1, RAW_GAME_2));
-            mockTeamService(oldTeamA, oldTeamB, oldTeamC);
+            when(spreadsheetCRUDService.readCells(eq(RANGE))).thenReturn(List.of(RAW_GAME_1, RAW_GAME_3));
 
             // When
-            List<GameV1> teams = gameRepository.readAll();
+            List<Game> teams = gameRepository.readAll();
 
             // Then
             assertThat(teams).hasSize(2);
-            assertThat(teams.get(0)).isEqualTo(game1);
-            assertThat(teams.get(1)).isEqualTo(game2);
+            assertThat(teams.get(0)).isEqualTo(GAME_1);
+            assertThat(teams.get(1)).isEqualTo(GAME_3);
         }
 
     }
@@ -135,14 +151,13 @@ class GameRepositoryTest {
         @Test
         void should_filter_properly() {
             // Given
-            when(spreadsheetCRUDService.readCells(eq(RANGE))).thenReturn(List.of(RAW_GAME_1, RAW_GAME_3, RAW_GAME_4));
-            mockTeamService(oldTeamA, oldTeamB, oldTeamC);
+            when(spreadsheetCRUDService.readCells(eq(RANGE))).thenReturn(List.of(RAW_GAME_1, RAW_GAME_2, RAW_GAME_3));
 
             // When
-            List<GameV1> gamesFor = gameRepository.searchFor(oldTeamB);
+            List<Game> gamesFor = gameRepository.searchFor("teamB");
 
             // Then
-            assertThat(gamesFor).map(GameV1::id).containsExactly("game1", "game4");
+            assertThat(gamesFor).map(Game::id).containsExactly("game1", "game3");
         }
 
     }
@@ -157,13 +172,13 @@ class GameRepositoryTest {
             when(spreadsheetCRUDService.findRowIndex(any(), any())).thenReturn(OptionalInt.of(10));
 
             // When
-            gameRepository.update(game1);
+            gameRepository.update(GAME_1);
 
             // Then
             verify(spreadsheetCRUDService, times(1))
-                    .findRowIndex(eq("Games!A:A"), eq(game1.id()));
+                    .findRowIndex(eq("Games!A:A"), eq(GAME_1.id()));
             verify(spreadsheetCRUDService, times(1))
-                    .updateCells(eq("Games!A10"), eq(List.of(RAW_GAME_1)));
+                    .updateCells(eq("Games!A10"), any());
         }
 
         @Test
@@ -172,10 +187,10 @@ class GameRepositoryTest {
             when(spreadsheetCRUDService.findRowIndex(any(), any())).thenReturn(OptionalInt.of(10));
 
             // When
-            gameRepository.update(game1);
+            gameRepository.update(GAME_1);
 
             // Then
-            verify(gameRepository, times(1)).toRawData(eq(game1));
+            verify(gameRepository, times(1)).toRawData(eq(GAME_1));
         }
 
         @Test
@@ -184,7 +199,7 @@ class GameRepositoryTest {
             when(spreadsheetCRUDService.findRowIndex(any(), any())).thenReturn(OptionalInt.empty());
 
             // When
-            gameRepository.update(game1);
+            gameRepository.update(GAME_1);
 
             // Then
             verify(spreadsheetCRUDService, never()).updateCells(any(), any());
@@ -202,10 +217,10 @@ class GameRepositoryTest {
             when(spreadsheetCRUDService.findRowIndex(any(), any())).thenReturn(OptionalInt.of(11));
 
             // When
-            gameRepository.delete(game1);
+            gameRepository.delete(GAME_1);
 
             // Then
-            verify(spreadsheetCRUDService, times(1)).findRowIndex(eq("Games!A:A"), eq(game1.id()));
+            verify(spreadsheetCRUDService, times(1)).findRowIndex(eq("Games!A:A"), eq(GAME_1.id()));
             verify(spreadsheetCRUDService, times(1)).deleteRaws(eq("Games"), eq(10), eq(1));
         }
 
@@ -215,7 +230,7 @@ class GameRepositoryTest {
             when(spreadsheetCRUDService.findRowIndex(any(), any())).thenReturn(OptionalInt.empty());
 
             // When
-            gameRepository.delete(game1);
+            gameRepository.delete(GAME_1);
 
             // Then
             verify(spreadsheetCRUDService, never()).deleteRaws(any(), anyInt());
@@ -245,81 +260,68 @@ class GameRepositoryTest {
     class FromRawData {
 
         @Test
-        void should_use_teamService() {
-            // Given
-            List<Object> rawGame =
-                    rawData("game1", "23/08/2022", "10:00", "Court1", "teamA", "teamB", "teamC", "25", "16");
-            mockTeamService(oldTeamA, oldTeamB, oldTeamC);
-
+        void should_map_game_completed_depth_one() {
             // When
-            GameV1 game = gameRepository.fromRawData(rawGame);
-
-            // Then
-            verify(teamRepository, times(1)).search(eq(oldTeamA.id()));
-            verify(teamRepository, times(1)).search(eq(oldTeamB.id()));
-            verify(teamRepository, times(1)).search(eq(oldTeamC.id()));
-        }
-
-        @Test
-        void should_map_game_completed() {
-            // Given
-            List<Object> rawGame =
-                    rawData("game1", "23/08/2022", "10:00", "Court1", "teamA", "teamB", "teamC", "25", "16");
-            mockTeamService(oldTeamA, oldTeamB, oldTeamC);
-
-            // When
-            GameV1 game = gameRepository.fromRawData(rawGame);
+            Game game = gameRepository.fromRawData(RAW_GAME_1);
 
             // Then
             assertThat(game.id()).isEqualTo("game1");
-            assertThat(game.time()).isEqualTo(LocalDateTime.of(2022, 8, 23, 10, 0));
-            assertThat(game.court()).isEqualTo("Court1");
-            assertThat(game.teamA()).isEqualTo(oldTeamA);
-            assertThat(game.teamB()).isEqualTo(oldTeamB);
-            assertThat(game.referee()).isNotEmpty().hasValue(oldTeamC);
-            assertThat(game.scoreA()).isNotEmpty().hasValue(25);
-            assertThat(game.scoreB()).isNotEmpty().hasValue(16);
+            assertThat(game.time()).isEqualTo(LocalDateTime.of(2022, 8, 29, 10, 30));
+            assertThat(game.court()).isEqualTo("court");
+            assertThat(game.contestantIds()).containsExactly("teamA","teamB");
+            assertThat(game.refereeId()).isNotEmpty().hasValue("teamC");
+            assertThat(game.scoreType()).isEqualTo(DepthOne);
+            assertThat(game.isFinished()).isTrue();
+            assertThat(game.score()).isNotEmpty().get().isOfAnyClassIn(DepthOneScore.class);
+            assertThatScore(game.score().get(), "teamA").containsExactly(25);
+            assertThatScore(game.score().get(), "teamB").containsExactly(12);
+        }
+
+        @Test
+        void should_map_game_completed_depth_two() {
+            // When
+            Game game = gameRepository.fromRawData(RAW_GAME_2);
+
+            // Then
+            assertThat(game.id()).isEqualTo("game2");
+            assertThat(game.time()).isEqualTo(LocalDateTime.of(2022, 8, 29, 11, 30));
+            assertThat(game.court()).isEqualTo("court");
+            assertThat(game.contestantIds()).containsExactly("teamA","teamC");
+            assertThat(game.refereeId()).isNotEmpty().hasValue("teamB");
+            assertThat(game.scoreType()).isEqualTo(DepthTwo);
+            assertThat(game.isFinished()).isTrue();
+            assertThat(game.score()).isNotEmpty().get().isOfAnyClassIn(DepthTwoScore.class);
+            assertThatScore(game.score().get(), "teamA").containsExactly(25, 14);
+            assertThatScore(game.score().get(), "teamC").containsExactly(12, 25);
         }
 
         @Test
         void should_map_game_scoreless() {
-            // Given
-            List<Object> rawGame = rawData("game2", "23/08/2022", "11:00", "Court1", "teamA", "teamB", "teamC");
-            mockTeamService(oldTeamA, oldTeamB);
-
             // When
-            GameV1 game = gameRepository.fromRawData(rawGame);
+            Game game = gameRepository.fromRawData(RAW_GAME_3);
 
             // Then
-            assertThat(game.scoreA()).isEmpty();
-            assertThat(game.scoreB()).isEmpty();
+            assertThat(game.id()).isEqualTo("game3");
+            assertThat(game.time()).isEqualTo(LocalDateTime.of(2022, 8, 29, 12, 30));
+            assertThat(game.court()).isEqualTo("court");
+            assertThat(game.contestantIds()).containsExactly("teamC","teamB");
+            assertThat(game.refereeId()).isEmpty();
+            assertThat(game.isFinished()).isFalse();
+            assertThat(game.scoreType()).isEqualTo(DepthOne);
+            assertThat(game.score()).isEmpty();
         }
 
         @Test
         void should_map_game_score_empty() {
             // Given
-            List<Object> rawGame = rawData("game4", "23/08/2022", "13:00", "Court1", "teamA", "teamC", "", "", "");
-            mockTeamService(oldTeamA, oldTeamC);
+            List<Object> rawGame =
+                    rawData("game4", "23/08/2022", "13:00", "Court1", "teamA;teamC", "", "false", "DepthOne");
 
             // When
-            GameV1 game = gameRepository.fromRawData(rawGame);
+            Game game = gameRepository.fromRawData(rawGame);
 
             // Then
-            assertThat(game.scoreA()).isEmpty();
-            assertThat(game.scoreB()).isEmpty();
-        }
-
-        @Test
-        void should_map_game_referee_empty() {
-            // Given
-            List<Object> rawGame = rawData("game5", "23/08/2022", "14:00", "Court1", "teamA", "teamB", "");
-            mockTeamService(oldTeamA, oldTeamB);
-
-            // When
-            GameV1 game = gameRepository.fromRawData(rawGame);
-
-            // Then
-            assertThat(game.referee()).isEmpty();
+            assertThat(game.score()).isEmpty();
         }
 
     }
@@ -329,33 +331,34 @@ class GameRepositoryTest {
     class ToRawData {
 
         @Test
-        void should_handle_full_game() {
+        void should_handle_full_game_dept_one() {
             // Given
-            List<Object> rawData = gameRepository.toRawData(game1);
+            List<Object> rawData = gameRepository.toRawData(GAME_1);
 
             // Then
-            assertThat(rawData).containsExactly("game1", "29/08/2022", "10:30", game1.court(), oldTeamA.id(), oldTeamB.id(),
-                    oldTeamC.id(), "25", "14");
+            assertThat(rawData).containsExactly("game1", "29/08/2022", "10:30", "court", "teamA;teamB",
+                    "teamC", "true", "DepthOne", "25-12");
+        }
+
+        @Test
+        void should_handle_full_game_dept_two() {
+            // Given
+            List<Object> rawData = gameRepository.toRawData(GAME_2);
+
+            // Then
+            assertThat(rawData).containsExactly("game2", "29/08/2022", "11:30", "court", "teamA;teamC",
+                    "teamB", "true", "DepthTwo", "25-12;14-25");
         }
 
         @Test
         void should_handle_partiel_game() {
             // Given
-            String court = "court";
-            GameV1 game = GameV1.builder()
-                    .id("gameId")
-                    .time(LocalDateTime.of(2022, AUGUST, 29, 10, 30))
-                    .court(court)
-                    .teamA(oldTeamA)
-                    .teamB(oldTeamB)
-                    .build();
-
-            // Given
-            List<Object> rawData = gameRepository.toRawData(game);
+            List<Object> rawData = gameRepository.toRawData(GAME_3);
 
             // Then
             assertThat(rawData)
-                    .containsExactly("gameId", "29/08/2022", "10:30", court, oldTeamA.id(), oldTeamB.id(), "", "", "");
+                    .containsExactly("game3", "29/08/2022", "12:30", "court", "teamC;teamB",
+                            "", "false", "DepthOne", "");
         }
 
     }

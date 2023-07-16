@@ -1,12 +1,10 @@
 package com.gberard.tournament.repository;
 
 import com.gberard.tournament.data.Team;
-import com.gberard.tournament.data.TeamV1;
 import com.google.common.annotations.VisibleForTesting;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 import static com.gberard.tournament.data.DataUtils.*;
 
@@ -22,7 +20,11 @@ public class TeamRepository extends SheetRepository<Team> {
 
     @Override
     protected Team fromRawData(List<Object> rawData) {
-        return new Team(getValue(rawData,0), getValue(rawData,1), getListValue(rawData, 2));
+        return new Team(
+                getStringValue(rawData,0).get(),
+                getStringValue(rawData,1).get(),
+                getListValue(rawData, 2).get()
+        );
     }
 
     @Override
