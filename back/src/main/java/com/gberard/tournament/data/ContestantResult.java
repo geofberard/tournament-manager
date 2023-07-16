@@ -1,14 +1,13 @@
 package com.gberard.tournament.data;
 
-public enum GameTeamStatus {
+public enum ContestantResult {
     WIN(3),
     DRAWN(1),
-    LOST(0),
-    NOT_PLAYED(0);
+    LOST(0);
 
     private final int points;
 
-    GameTeamStatus(int points) {
+    ContestantResult(int points) {
         this.points = points;
     }
 

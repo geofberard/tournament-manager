@@ -5,7 +5,7 @@ import lombok.Builder;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static com.gberard.tournament.data.GameTeamStatus.*;
+import static com.gberard.tournament.data.GameContestantStatus.*;
 
 public record GameV1(
         String id,
@@ -21,7 +21,7 @@ public record GameV1(
         return scoreA.isPresent() && scoreB.isPresent();
     }
 
-    public GameTeamStatus getTeamStatus(TeamV1 team) {
+    public GameContestantStatus getTeamStatus(TeamV1 team) {
         if (!hasContestant(team)) {
             throw new IllegalStateException("Team " + team.id() + " has to played game " + this.id);
         }

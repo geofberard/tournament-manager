@@ -6,6 +6,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static com.gberard.tournament.data.GameContestantStatus.*;
+import static com.gberard.tournament.data.GameContestantStatus.LOST;
+
 public record Game(
         String id,
         LocalDateTime time,

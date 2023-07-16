@@ -9,7 +9,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
-import static com.gberard.tournament.data.GameTeamStatus.*;
+import static com.gberard.tournament.data.GameContestantStatus.*;
 import static com.gberard.tournament.data._TestUtils.*;
 import static org.assertj.core.api.Assertions.assertThat;
 

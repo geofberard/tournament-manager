@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
+import static com.gberard.tournament.data.ScoreType.DepthOne;
 import static java.time.Month.AUGUST;
 
 public class _TestUtils {
@@ -33,6 +34,32 @@ public class _TestUtils {
                 .build();
     }
 
+
+    public static Game buildGame(String teamA, Integer scoreA, String teamB, Integer scoreB) {
+        return Game.builder()
+                .id("gameId")
+                .time(LocalDateTime.of(2022, AUGUST, 29, 10, 30))
+                .court("court")
+                .contestantIds(List.of(teamA, teamB))
+                .isFinished(true)
+                .scoreType(DepthOne)
+                .score(buildDepthOneScore(teamA, scoreA, teamB, scoreB))
+                .build();
+    }
+
+    public static Game buildGame(String teamA, Integer scoreA1, Integer scoreA2,
+                                 String teamB, Integer scoreB1, Integer scoreB2) {
+        return Game.builder()
+                .id("gameId")
+                .time(LocalDateTime.of(2022, AUGUST, 29, 10, 30))
+                .court("court")
+                .contestantIds(List.of(teamA, teamB))
+                .isFinished(true)
+                .scoreType(DepthOne)
+                .score(buildDepthTwoScore(teamA, scoreA1, scoreA2, teamB, scoreB1, scoreB2))
+                .build();
+    }
+
     public static DepthOneScore buildDepthOneScore(String teamA, Integer scoreA, String teamB, Integer scoreB) {
         return new DepthOneScore(Map.of(teamA, scoreA, teamB, scoreB));
     }
@@ -45,7 +72,7 @@ public class _TestUtils {
         ));
     }
 
-    public static List<Object> rawData(Object...values) {
+    public static List<Object> rawData(Object... values) {
         return List.of(values);
     }
 
