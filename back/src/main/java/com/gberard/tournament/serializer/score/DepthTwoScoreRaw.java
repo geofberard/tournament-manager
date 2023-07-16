@@ -1,11 +1,13 @@
-package com.gberard.tournament.data;
+package com.gberard.tournament.serializer.score;
+
+import com.gberard.tournament.data.score.DepthTwoScore;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static com.gberard.tournament.data.DataUtils.LIST_SEPARATOR;
 import static java.util.stream.Collectors.joining;
-
+//@PATATOR
 public final class DepthTwoScoreRaw {
 
     public static DepthTwoScore deserialize(String value, List<String> contestantIds) {

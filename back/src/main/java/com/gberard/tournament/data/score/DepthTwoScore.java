@@ -1,9 +1,11 @@
-package com.gberard.tournament.data;
+package com.gberard.tournament.data.score;
+
+import com.gberard.tournament.data.stats.ContestantResult;
 
 import java.util.List;
 
-import static com.gberard.tournament.data.ContestantResult.*;
-
+import static com.gberard.tournament.data.stats.ContestantResult.*;
+//@PATATOR
 public record DepthTwoScore(List<DepthOneScore> result) implements Score {
     @Override
     public String getSummary() {

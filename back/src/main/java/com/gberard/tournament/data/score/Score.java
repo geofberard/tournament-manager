@@ -1,4 +1,6 @@
-package com.gberard.tournament.data;
+package com.gberard.tournament.data.score;
+
+import com.gberard.tournament.data.stats.ContestantResult;
 
 public interface Score {
     String getSummary();

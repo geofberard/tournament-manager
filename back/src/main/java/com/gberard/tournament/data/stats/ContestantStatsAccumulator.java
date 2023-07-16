@@ -1,4 +1,4 @@
-package com.gberard.tournament.data;
+package com.gberard.tournament.data.stats;
 
 public class ContestantStatsAccumulator {
     private String contestantId;
@@ -55,7 +55,7 @@ public class ContestantStatsAccumulator {
         return this;
     }
 
-    public ContestantStats createTeamStatistic() {
+    public ContestantStats create() {
         return new ContestantStats(contestantId, played, won, drawn, lost, score, pointsFor, pointsAgainst, pointsDiff);
     }
 

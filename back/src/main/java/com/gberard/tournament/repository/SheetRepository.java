@@ -1,7 +1,6 @@
 package com.gberard.tournament.repository;
 
-import com.gberard.tournament.data.Identified;
-import com.gberard.tournament.data.TeamV1;
+import com.gberard.tournament.data.client.Identified;
 import com.gberard.tournament.service.SpreadsheetCRUDService;
 import com.google.common.annotations.VisibleForTesting;
 import lombok.extern.slf4j.Slf4j;

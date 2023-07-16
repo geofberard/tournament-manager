@@ -1,9 +1,11 @@
 package com.gberard.tournament;
 
-import com.gberard.tournament.data.*;
+import com.gberard.tournament.data.client.Game;
+import com.gberard.tournament.data.client.Team;
+import com.gberard.tournament.data.score.DepthOneScore;
+import com.gberard.tournament.data.score.ScoreType;
 import com.gberard.tournament.repository.GameRepository;
 import com.gberard.tournament.repository.TeamRepository;
-import com.gberard.tournament.repository.TeamV1Repository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;

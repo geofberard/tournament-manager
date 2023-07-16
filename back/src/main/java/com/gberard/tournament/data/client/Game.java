@@ -1,13 +1,12 @@
-package com.gberard.tournament.data;
+package com.gberard.tournament.data.client;
 
+import com.gberard.tournament.data.score.Score;
+import com.gberard.tournament.data.score.ScoreType;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-
-import static com.gberard.tournament.data.GameContestantStatus.*;
-import static com.gberard.tournament.data.GameContestantStatus.LOST;
 
 public record Game(
         String id,

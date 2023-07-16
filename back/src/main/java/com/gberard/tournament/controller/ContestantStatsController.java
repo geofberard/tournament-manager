@@ -1,30 +1,28 @@
 package com.gberard.tournament.controller;
 
-import com.gberard.tournament.data.*;
-import com.gberard.tournament.repository.TeamRepository;
-import com.gberard.tournament.service.TeamStatsService;
+import com.gberard.tournament.data.stats.ContestantStats;
+import com.gberard.tournament.service.ContestantStatsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
-public class TeamStatsController {
+public class ContestantStatsController {
 
     @Autowired
-    public TeamStatsService teamStatsService;
+    public ContestantStatsService teamStatsService;
 
-    @GetMapping("/teams-stats")
+    @GetMapping("/contestant-stats")
     public List<ContestantStats> getTeamsStats() {
         return teamStatsService.getTeamsStats();
     }
 
-    @GetMapping("/team-stats/{teamId}")
-    public ContestantStats getTeamStats(@PathVariable String teamId) {
-        return teamStatsService.getTeamStats(teamId);
+    @GetMapping("/contestant-stats/{contestantId}")
+    public ContestantStats getTeamStats(@PathVariable String contestantId) {
+        return teamStatsService.getTeamStats(contestantId);
     }
 
 }

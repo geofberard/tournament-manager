@@ -1,7 +1,7 @@
-package com.gberard.tournament.data;
+package com.gberard.tournament.data.stats;
 
-public record TeamStatsV1(
-        TeamV1 team,
+public record ContestantStats(
+        String contestantId,
         int played,
         int won,
         int drawn,

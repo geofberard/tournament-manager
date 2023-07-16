@@ -1,6 +1,9 @@
 package com.gberard.tournament.service;
 
-import com.gberard.tournament.data.*;
+import com.gberard.tournament.data.client.Game;
+import com.gberard.tournament.data.client.Team;
+import com.gberard.tournament.data.stats.ContestantStats;
+import com.gberard.tournament.data.stats.ContestantStatsAccumulator;
 import com.gberard.tournament.repository.GameRepository;
 import com.gberard.tournament.repository.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,11 +11,11 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-import static com.gberard.tournament.data.ContestantResult.*;
+import static com.gberard.tournament.data.stats.ContestantResult.*;
 import static java.util.stream.Collectors.toList;
 
 @Component
-public class TeamStatsService {
+public class ContestantStatsService {
 
     @Autowired
     TeamRepository teamService;
@@ -35,7 +38,7 @@ public class TeamStatsService {
                         new ContestantStatsAccumulator(contestantId),
                         (reducer, game) -> updateStatsWith(reducer, game, contestantId),
                         ContestantStatsAccumulator::merge
-                ).createTeamStatistic();
+                ).create();
     }
 
     private static ContestantStatsAccumulator updateStatsWith(ContestantStatsAccumulator reducer, Game game, String contestantId) {

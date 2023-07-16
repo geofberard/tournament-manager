@@ -1,8 +1,8 @@
 package com.gberard.tournament.service;
 
-import com.gberard.tournament.data.ContestantStats;
-import com.gberard.tournament.data.Game;
-import com.gberard.tournament.data.Team;
+import com.gberard.tournament.data.stats.ContestantStats;
+import com.gberard.tournament.data.client.Game;
+import com.gberard.tournament.data.client.Team;
 import com.gberard.tournament.repository.GameRepository;
 import com.gberard.tournament.repository.TeamRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -19,20 +19,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static com.gberard.tournament.data._TestUtils.buildGame;
+import static com.gberard.tournament.TestUtils.*;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.of;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class TeamStatsServiceTest {
-
-    private static String TEAM_A = "teamA";
-    private static String TEAM_B = "teamB";
-    private static String TEAM_C = "teamC";
-    private static String TEAM_D = "teamD";
-    private static String TEAM_E = "teamE";
+class ContestantStatsServiceTest {
 
     List<String> teams = List.of(TEAM_A, TEAM_B, TEAM_C, TEAM_D);
 
@@ -45,7 +39,7 @@ class TeamStatsServiceTest {
     );
 
     @InjectMocks
-    private TeamStatsService teamStatsService = new TeamStatsService();
+    private ContestantStatsService teamStatsService = new ContestantStatsService();
 
     @Mock
     private GameRepository gameService;

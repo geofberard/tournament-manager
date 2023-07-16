@@ -1,6 +1,6 @@
 package com.gberard.tournament.repository;
 
-import com.gberard.tournament.data.Team;
+import com.gberard.tournament.data.client.Team;
 import com.google.common.annotations.VisibleForTesting;
 import org.springframework.stereotype.Repository;
 
@@ -23,7 +23,7 @@ public class TeamRepository extends SheetRepository<Team> {
         return new Team(
                 getStringValue(rawData,0).get(),
                 getStringValue(rawData,1).get(),
-                getListValue(rawData, 2).get()
+                getListValue(rawData, 2).orElse(List.of())
         );
     }
 

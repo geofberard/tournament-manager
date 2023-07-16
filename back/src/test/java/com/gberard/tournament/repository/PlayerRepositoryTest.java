@@ -1,6 +1,6 @@
 package com.gberard.tournament.repository;
 
-import com.gberard.tournament.data.Player;
+import com.gberard.tournament.data.client.Player;
 import com.gberard.tournament.service.SpreadsheetCRUDService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
 
-import static com.gberard.tournament.data._TestUtils.rawData;
+import static com.gberard.tournament.TestUtils.rawData;
 import static com.gberard.tournament.repository.PlayerRepository.RANGE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;

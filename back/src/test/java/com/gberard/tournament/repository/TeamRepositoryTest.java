@@ -1,7 +1,6 @@
 package com.gberard.tournament.repository;
 
-import com.gberard.tournament.data.DataUtils;
-import com.gberard.tournament.data.Team;
+import com.gberard.tournament.data.client.Team;
 import com.gberard.tournament.service.SpreadsheetCRUDService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -17,7 +16,7 @@ import java.util.Optional;
 import java.util.OptionalInt;
 
 import static com.gberard.tournament.data.DataUtils.toListValue;
-import static com.gberard.tournament.data._TestUtils.*;
+import static com.gberard.tournament.TestUtils.*;
 import static com.gberard.tournament.repository.TeamRepository.RANGE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -30,7 +29,6 @@ class TeamRepositoryTest {
 
     public static final Team TEAM_A = new Team("teamA", "TeamA", List.of("playerA", "playerB"));
     public static final Team TEAM_B = new Team("teamB", "TeamB", List.of("playerC", "playerD"));
-
 
     @Mock
     protected SpreadsheetCRUDService spreadsheetCRUDService;
@@ -237,7 +235,7 @@ class TeamRepositoryTest {
         @Test
         void should_map_to_team() {
             // Given
-            List<Object> RAW_TEAM_1 = rawData("team1", "Team1");
+            List<Object> RAW_TEAM_1 = rawData("team1", "Team1", "");
 
             // When
             Team team = teamRepository.fromRawData(RAW_TEAM_1);

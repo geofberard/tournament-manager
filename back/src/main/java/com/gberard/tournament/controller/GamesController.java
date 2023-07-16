@@ -1,6 +1,6 @@
 package com.gberard.tournament.controller;
 
-import com.gberard.tournament.data.Game;
+import com.gberard.tournament.data.client.Game;
 import com.gberard.tournament.repository.GameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

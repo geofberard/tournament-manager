@@ -1,18 +1,20 @@
-package com.gberard.tournament.data;
+package com.gberard.tournament.data.stats;
 
+import com.gberard.tournament.data.stats.ContestantStats;
+import com.gberard.tournament.data.stats.ContestantStatsAccumulator;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-class TeamStatsAccumulatorTest {
+class ContestantStatsAccumulatorTest {
 
-    private TeamV1 team = new TeamV1("teamId","teamName");
+    private String teamId = "teamId";
 
     @Test
     void should_have_no_initial_count() {
         // When
-        TeamStatsV1 stats = new TeamStatsAccumulator(team).createTeamStatistic();
+        ContestantStats stats = new ContestantStatsAccumulator(teamId).create();
 
         // Then
         assertThat(stats.played()).as("played").isEqualTo(0);
@@ -28,7 +30,7 @@ class TeamStatsAccumulatorTest {
     @Test
     void should_increment_counter() {
         // When
-        TeamStatsV1 stats = new TeamStatsAccumulator(team)
+        ContestantStats stats = new ContestantStatsAccumulator(teamId)
                 .addPlayed(1)
                 .addWon(2)
                 .addDrawn(3)
@@ -37,7 +39,7 @@ class TeamStatsAccumulatorTest {
                 .addPointsFor(6)
                 .addPointsAgainst(7)
                 .addPointsDiff(8)
-                .createTeamStatistic();
+                .create();
 
         // Then
         assertThat(stats.played()).as("played").isEqualTo(1);
@@ -53,7 +55,7 @@ class TeamStatsAccumulatorTest {
     @Test
     void should_manage_multiple_increment() {
         // When
-        TeamStatsV1 stats = new TeamStatsAccumulator(team)
+        ContestantStats stats = new ContestantStatsAccumulator(teamId)
                 .addPlayed(1)
                 .addWon(2)
                 .addDrawn(3)
@@ -70,7 +72,7 @@ class TeamStatsAccumulatorTest {
                 .addPointsFor(6)
                 .addPointsAgainst(7)
                 .addPointsDiff(8)
-                .createTeamStatistic();
+                .create();
 
         // Then
         assertThat(stats.played()).as("played").isEqualTo(2);
@@ -86,7 +88,7 @@ class TeamStatsAccumulatorTest {
     @Test
     void should_manage_merge() {
         // Given
-        TeamStatsAccumulator accumulator1 = new TeamStatsAccumulator(team)
+        ContestantStatsAccumulator accumulator1 = new ContestantStatsAccumulator(teamId)
                 .addPlayed(1)
                 .addWon(2)
                 .addDrawn(3)
@@ -96,7 +98,7 @@ class TeamStatsAccumulatorTest {
                 .addPointsAgainst(7)
                 .addPointsDiff(8);
 
-        TeamStatsAccumulator accumulator2 = new TeamStatsAccumulator(team)
+        ContestantStatsAccumulator accumulator2 = new ContestantStatsAccumulator(teamId)
                 .addPlayed(1)
                 .addWon(2)
                 .addDrawn(3)
@@ -107,7 +109,7 @@ class TeamStatsAccumulatorTest {
                 .addPointsDiff(8);
 
         // When
-        TeamStatsV1 stats = TeamStatsAccumulator.merge(accumulator1, accumulator2).createTeamStatistic();
+        ContestantStats stats = ContestantStatsAccumulator.merge(accumulator1, accumulator2).create();
 
         // Then
         assertThat(stats.played()).as("played").isEqualTo(2);
@@ -123,13 +125,13 @@ class TeamStatsAccumulatorTest {
     @Test
     void should_thow_error_when_mergind_different_teams() {
         // Given
-        TeamStatsAccumulator accumulator1 = new TeamStatsAccumulator(team);
-        TeamStatsAccumulator accumulator2 = new TeamStatsAccumulator(new TeamV1("error","error"));
+        ContestantStatsAccumulator accumulator1 = new ContestantStatsAccumulator(teamId);
+        ContestantStatsAccumulator accumulator2 = new ContestantStatsAccumulator("error");
 
         // When
         IllegalStateException exception = assertThrows(
                 IllegalStateException.class,
-                () -> TeamStatsAccumulator.merge(accumulator1, accumulator2),
+                () -> ContestantStatsAccumulator.merge(accumulator1, accumulator2),
                 "Expected merge() to throw, but it didn't"
         );
     }

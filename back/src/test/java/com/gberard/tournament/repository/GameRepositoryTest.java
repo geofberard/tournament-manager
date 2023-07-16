@@ -1,10 +1,9 @@
 package com.gberard.tournament.repository;
 
-import com.gberard.tournament.data.DepthOneScore;
-import com.gberard.tournament.data.DepthTwoScore;
-import com.gberard.tournament.data.Game;
+import com.gberard.tournament.data.score.DepthOneScore;
+import com.gberard.tournament.data.score.DepthTwoScore;
+import com.gberard.tournament.data.client.Game;
 import com.gberard.tournament.service.SpreadsheetCRUDService;
-import com.google.api.client.googleapis.testing.TestUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -18,9 +17,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.OptionalInt;
 
-import static com.gberard.tournament.data.ScoreType.DepthOne;
-import static com.gberard.tournament.data.ScoreType.DepthTwo;
-import static com.gberard.tournament.data._TestUtils.*;
+import static com.gberard.tournament.data.score.ScoreType.DepthOne;
+import static com.gberard.tournament.data.score.ScoreType.DepthTwo;
+import static com.gberard.tournament.TestUtils.*;
 import static com.gberard.tournament.repository.GameRepository.RANGE;
 import static java.time.Month.AUGUST;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,41 +33,46 @@ class GameRepositoryTest {
 
     private static final List<Object> RAW_GAME_1 =
             rawData("game1", "29/08/2022", "10:30", "court", "teamA;teamB", "teamC", "true", "DepthOne", "25-12");
+
     private static final List<Object> RAW_GAME_2 =
             rawData("game2", "29/08/2022", "11:30", "court", "teamA;teamC", "teamB", "true", "DepthTwo", "25-12;14-25");
+
     private static final List<Object> RAW_GAME_3 =
             rawData("game3", "29/08/2022", "12:30", "court", "teamC;teamB", "", "false", "DepthOne");
 
-    public static Game GAME_1 = Game.builder()
+
+
+    private static final Game GAME_1 = Game.builder()
             .id("game1")
             .time(LocalDateTime.of(2022, AUGUST, 29, 10, 30))
             .court("court")
-            .contestantIds(List.of("teamA", "teamB"))
-            .refereeId("teamC")
+            .contestantIds(List.of(TEAM_A, TEAM_B))
+            .refereeId(TEAM_C)
             .isFinished(true)
             .scoreType(DepthOne)
-            .score(buildDepthOneScore("teamA", 25, "teamB", 12))
+            .score(buildDepthOneScore(TEAM_A, 25, TEAM_B, 12))
             .build();
 
-    public static Game GAME_2 = Game.builder()
+    private static final Game GAME_2 = Game.builder()
             .id("game2")
             .time(LocalDateTime.of(2022, AUGUST, 29, 11, 30))
             .court("court")
-            .contestantIds(List.of("teamA", "teamC"))
-            .refereeId("teamB")
+            .contestantIds(List.of(TEAM_A, TEAM_C))
+            .refereeId(TEAM_B)
             .isFinished(true)
             .scoreType(DepthTwo)
-            .score(buildDepthTwoScore("teamA", 25, 14, "teamC", 12, 25))
+            .score(buildDepthTwoScore(TEAM_A, 25, 14, TEAM_C, 12, 25))
             .build();
 
-    public static Game GAME_3 = Game.builder()
+    private static final Game GAME_3 = Game.builder()
             .id("game3")
             .time(LocalDateTime.of(2022, AUGUST, 29, 12, 30))
             .court("court")
-            .contestantIds(List.of("teamC", "teamB"))
+            .contestantIds(List.of(TEAM_C, TEAM_B))
             .isFinished(false)
             .scoreType(DepthOne)
             .build();
+
 
     @Spy
     @InjectMocks

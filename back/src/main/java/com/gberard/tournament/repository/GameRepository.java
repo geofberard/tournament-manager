@@ -1,16 +1,23 @@
 package com.gberard.tournament.repository;
 
-import com.gberard.tournament.data.*;
+import com.gberard.tournament.data.client.Game;
+import com.gberard.tournament.data.score.DepthOneScore;
+import com.gberard.tournament.data.score.DepthTwoScore;
+import com.gberard.tournament.data.score.Score;
+import com.gberard.tournament.data.score.ScoreType;
+import com.gberard.tournament.serializer.score.DepthOneScoreRaw;
+import com.gberard.tournament.serializer.score.DepthTwoScoreRaw;
 import com.google.common.annotations.VisibleForTesting;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Function;
 
 import static com.gberard.tournament.data.DataUtils.*;
 import static com.gberard.tournament.data.DataUtils.getEnumValue;
+import static com.gberard.tournament.serializer.score.ScoreRaw.getScoreDeserializer;
+import static com.gberard.tournament.serializer.score.ScoreRaw.getScoreSerializer;
 import static java.util.stream.Collectors.toList;
 
 @Repository
@@ -20,7 +27,7 @@ public class GameRepository extends SheetRepository<Game> {
     protected static final String RANGE = "Games!A2:I";
 
     @Autowired
-    TeamV1Repository teamService;
+    TeamRepository teamService;
 
     protected GameRepository() {
         super(RANGE);
@@ -64,22 +71,6 @@ public class GameRepository extends SheetRepository<Game> {
                 game.scoreType().toString(),
                 game.score().map(getScoreSerializer(game)).orElse("")
         );
-    }
-
-    private static Function<String, Score> getScoreDeserializer(List<String> contestentIds, ScoreType type) {
-        return switch (type) {
-            case DepthOne -> score -> DepthOneScoreRaw.deserialize(score, contestentIds);
-            case DepthTwo -> score -> DepthTwoScoreRaw.deserialize(score, contestentIds);
-            default -> throw new IllegalStateException("Unsuported score type : " + type);
-        };
-    }
-
-    private static Function<Score, String> getScoreSerializer(Game game) {
-        return switch (game.scoreType()) {
-            case DepthOne -> score -> DepthOneScoreRaw.serialize((DepthOneScore) score, game.contestantIds());
-            case DepthTwo -> score -> DepthTwoScoreRaw.serialize((DepthTwoScore) score, game.contestantIds());
-            default -> throw new IllegalStateException("Unsuported score type : " + game.scoreType());
-        };
     }
 
 }

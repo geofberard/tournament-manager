@@ -1,11 +1,10 @@
 package com.gberard.tournament.repository;
 
-import com.gberard.tournament.data.Player;
+import com.gberard.tournament.data.client.Player;
 import com.google.common.annotations.VisibleForTesting;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 import static com.gberard.tournament.data.DataUtils.getStringValue;
 import static com.gberard.tournament.data.DataUtils.getValue;

@@ -1,9 +1,11 @@
-package com.gberard.tournament.data;
+package com.gberard.tournament.data.score;
+
+import com.gberard.tournament.data.stats.ContestantResult;
 
 import java.util.Map;
 
-import static com.gberard.tournament.data.ContestantResult.*;
-
+import static com.gberard.tournament.data.stats.ContestantResult.*;
+//@PATATOR
 public record DepthOneScore(Map<String, Integer> result) implements Score {
     @Override
     public String getSummary() {
@@ -21,7 +23,7 @@ public record DepthOneScore(Map<String, Integer> result) implements Score {
         checkContestant(contestantId);
         return result.keySet().stream()
                 .filter(key -> !key.equals(contestantId))
-                .mapToInt(key -> result.get(key))
+                .mapToInt(result::get)
                 .sum();
     }
 
