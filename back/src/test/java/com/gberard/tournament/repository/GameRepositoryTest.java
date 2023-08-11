@@ -22,6 +22,7 @@ import static com.gberard.tournament.data.score.ScoreType.DepthTwo;
 import static com.gberard.tournament.TestUtils.*;
 import static com.gberard.tournament.repository.GameRepository.RANGE;
 import static java.time.Month.AUGUST;
+import static java.util.List.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -46,7 +47,7 @@ class GameRepositoryTest {
             .id("game1")
             .time(LocalDateTime.of(2022, AUGUST, 29, 10, 30))
             .court("court")
-            .contestantIds(List.of(TEAM_A, TEAM_B))
+            .contestantIds(of(TEAM_A, TEAM_B))
             .refereeId(TEAM_C)
             .isFinished(true)
             .scoreType(DepthOne)
@@ -57,18 +58,18 @@ class GameRepositoryTest {
             .id("game2")
             .time(LocalDateTime.of(2022, AUGUST, 29, 11, 30))
             .court("court")
-            .contestantIds(List.of(TEAM_A, TEAM_C))
+            .contestantIds(of(TEAM_A, TEAM_C))
             .refereeId(TEAM_B)
             .isFinished(true)
             .scoreType(DepthTwo)
-            .score(buildDepthTwoScore(TEAM_A, 25, 14, TEAM_C, 12, 25))
+            .score(buildDepthTwoScore(TEAM_A, of(25, 14), TEAM_C, of(12, 25)))
             .build();
 
     private static final Game GAME_3 = Game.builder()
             .id("game3")
             .time(LocalDateTime.of(2022, AUGUST, 29, 12, 30))
             .court("court")
-            .contestantIds(List.of(TEAM_C, TEAM_B))
+            .contestantIds(of(TEAM_C, TEAM_B))
             .isFinished(false)
             .scoreType(DepthOne)
             .build();
@@ -122,7 +123,7 @@ class GameRepositoryTest {
         @Test
         void shoud_use_fromRawData_mapper() {
             // Given
-            when(spreadsheetCRUDService.readCells(eq(RANGE))).thenReturn(List.of(RAW_GAME_1, RAW_GAME_3));
+            when(spreadsheetCRUDService.readCells(eq(RANGE))).thenReturn(of(RAW_GAME_1, RAW_GAME_3));
 
             // When
             gameRepository.readAll();
@@ -135,7 +136,7 @@ class GameRepositoryTest {
         @Test
         void shoud_return_deserialized_game() {
             // Given
-            when(spreadsheetCRUDService.readCells(eq(RANGE))).thenReturn(List.of(RAW_GAME_1, RAW_GAME_3));
+            when(spreadsheetCRUDService.readCells(eq(RANGE))).thenReturn(of(RAW_GAME_1, RAW_GAME_3));
 
             // When
             List<Game> teams = gameRepository.readAll();
@@ -155,7 +156,7 @@ class GameRepositoryTest {
         @Test
         void should_filter_properly() {
             // Given
-            when(spreadsheetCRUDService.readCells(eq(RANGE))).thenReturn(List.of(RAW_GAME_1, RAW_GAME_2, RAW_GAME_3));
+            when(spreadsheetCRUDService.readCells(eq(RANGE))).thenReturn(of(RAW_GAME_1, RAW_GAME_2, RAW_GAME_3));
 
             // When
             List<Game> gamesFor = gameRepository.searchFor("teamB");

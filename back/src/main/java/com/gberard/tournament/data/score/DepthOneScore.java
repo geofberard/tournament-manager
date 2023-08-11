@@ -5,12 +5,8 @@ import com.gberard.tournament.data.stats.ContestantResult;
 import java.util.Map;
 
 import static com.gberard.tournament.data.stats.ContestantResult.*;
-//@PATATOR
+
 public record DepthOneScore(Map<String, Integer> result) implements Score {
-    @Override
-    public String getSummary() {
-        return null;
-    }
 
     @Override
     public int getPointFor(String contestantId) {

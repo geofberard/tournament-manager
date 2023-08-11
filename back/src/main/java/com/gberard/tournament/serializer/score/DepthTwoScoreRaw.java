@@ -1,28 +1,25 @@
 package com.gberard.tournament.serializer.score;
 
 import com.gberard.tournament.data.score.DepthTwoScore;
+import com.gberard.tournament.serializer.ListRaw;
 
-import java.util.Arrays;
 import java.util.List;
 
-import static com.gberard.tournament.data.DataUtils.LIST_SEPARATOR;
-import static java.util.stream.Collectors.joining;
-//@PATATOR
 public final class DepthTwoScoreRaw {
 
     public static DepthTwoScore deserialize(String value, List<String> contestantIds) {
-        return new DepthTwoScore(Arrays.stream(value.split(LIST_SEPARATOR))
+        return new DepthTwoScore(ListRaw.deserialize(value).stream()
                 .map(depthOne -> DepthOneScoreRaw.deserialize(depthOne, contestantIds))
                 .toList());
     }
 
     public static String serialize(DepthTwoScore score, List<String> contestantIds) {
-        return score.result().stream()
-                .map(depthOne -> {
-                    System.out.println(depthOne);
-                    return DepthOneScoreRaw.serialize(depthOne, contestantIds);
-                })
-                .collect(joining(LIST_SEPARATOR));
+        return ListRaw.serialize(
+                score.result().stream()
+                        .map(depthOne -> {
+                            System.out.println(depthOne);
+                            return DepthOneScoreRaw.serialize(depthOne, contestantIds);
+                        }).toList());
     }
 
 }

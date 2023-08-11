@@ -1,6 +1,7 @@
 package com.gberard.tournament.repository;
 
 import com.gberard.tournament.data.client.Team;
+import com.gberard.tournament.serializer.ListRaw;
 import com.gberard.tournament.service.SpreadsheetCRUDService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -15,8 +16,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
 
-import static com.gberard.tournament.data.DataUtils.toListValue;
-import static com.gberard.tournament.TestUtils.*;
+import static com.gberard.tournament.TestUtils.rawData;
 import static com.gberard.tournament.repository.TeamRepository.RANGE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -257,7 +257,8 @@ class TeamRepositoryTest {
             List<Object> objects = teamRepository.toRawData(TEAM_A);
 
             // Then
-            assertThat(objects).containsExactlyInAnyOrder(TEAM_A.id(), TEAM_A.name(), toListValue(TEAM_A.playerIds()));
+            assertThat(objects)
+                    .containsExactlyInAnyOrder(TEAM_A.id(), TEAM_A.name(), ListRaw.serialize(TEAM_A.playerIds()));
         }
 
     }

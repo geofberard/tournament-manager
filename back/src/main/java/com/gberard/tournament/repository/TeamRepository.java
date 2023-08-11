@@ -1,12 +1,13 @@
 package com.gberard.tournament.repository;
 
 import com.gberard.tournament.data.client.Team;
+import com.gberard.tournament.serializer.ListRaw;
 import com.google.common.annotations.VisibleForTesting;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static com.gberard.tournament.data.DataUtils.*;
+import static com.gberard.tournament.serializer.RawUtils.*;
 
 @Repository
 public class TeamRepository extends SheetRepository<Team> {
@@ -23,13 +24,13 @@ public class TeamRepository extends SheetRepository<Team> {
         return new Team(
                 getStringValue(rawData,0).get(),
                 getStringValue(rawData,1).get(),
-                getListValue(rawData, 2).orElse(List.of())
+                getValue(rawData, 2, ListRaw::deserialize).orElse(List.of())
         );
     }
 
     @Override
     protected List<Object> toRawData(Team team) {
-        return List.of(team.id(),team.name(), toListValue(team.playerIds()));
+        return List.of(team.id(),team.name(), ListRaw.serialize(team.playerIds()));
     }
 
 }

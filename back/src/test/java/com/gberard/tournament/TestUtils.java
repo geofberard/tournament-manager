@@ -9,6 +9,7 @@ import org.assertj.core.api.ListAssert;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 import static com.gberard.tournament.data.score.ScoreType.DepthOne;
 import static java.time.Month.AUGUST;
@@ -25,7 +26,7 @@ public class TestUtils {
         return Game.builder()
                 .id("gameId")
                 .time(LocalDateTime.of(2022, AUGUST, 29, 10, 30))
-                .contestantIds(List.of(TEAM_A,TEAM_B))
+                .contestantIds(List.of(TEAM_A, TEAM_B))
                 .court("court")
                 .isFinished(true)
                 .scoreType(DepthOne);
@@ -43,12 +44,13 @@ public class TestUtils {
         return new DepthOneScore(Map.of(teamA, scoreA, teamB, scoreB));
     }
 
-    public static DepthTwoScore buildDepthTwoScore(String teamA, Integer scoreA1, Integer scoreA2,
-                                                   String teamB, Integer scoreB1, Integer scoreB2) {
-        return new DepthTwoScore(List.of(
-                new DepthOneScore(Map.of(teamA, scoreA1, teamB, scoreB1)),
-                new DepthOneScore(Map.of(teamA, scoreA2, teamB, scoreB2))
-        ));
+    public static DepthTwoScore buildDepthTwoScore(String teamA, List<Integer> scoresA,
+                                                   String teamB, List<Integer> scoresB) {
+
+        return new DepthTwoScore(IntStream.range(0,scoresA.size())
+                .mapToObj(index -> new DepthOneScore(Map.of(teamA, scoresA.get(index), teamB, scoresB.get(index))))
+                .toList()
+        );
     }
 
     public static List<Object> rawData(Object... values) {

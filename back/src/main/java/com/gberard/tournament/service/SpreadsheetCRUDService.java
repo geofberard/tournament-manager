@@ -1,7 +1,7 @@
 package com.gberard.tournament.service;
 
 import com.gberard.tournament.config.SpreadsheetConfig;
-import com.gberard.tournament.data.DataUtils;
+import com.gberard.tournament.serializer.RawUtils;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.*;
 import lombok.extern.slf4j.Slf4j;
@@ -117,12 +117,12 @@ public class SpreadsheetCRUDService {
             String researcherRange = range.substring(0, range.indexOf("!")) + "!" + SEARCH_CELL;
             updateCells(researcherRange, List.of(List.of("=MATCH(\"" + elementId + "\"; " + range + "; 0)")));
 
-            String line = readCells(researcherRange).get(0).get(0).toString();
+            List<Object> cells = readCells(researcherRange).get(0);
 
             deleteCells(researcherRange);
 
-            log.info("Searching element line - " + range + " : " + elementId + " : " + line);
-            return DataUtils.parseInteger(line);
+            log.info("Searching element line - " + range + " : " + elementId + " : " + cells);
+            return RawUtils.getIntValue(cells, 0);
         } catch (Exception e) {
             log.error("Searching element line - Error for " + range + " : " + elementId, e);
         }

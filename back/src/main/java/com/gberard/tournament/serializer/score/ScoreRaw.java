@@ -8,7 +8,7 @@ import com.gberard.tournament.data.score.ScoreType;
 
 import java.util.List;
 import java.util.function.Function;
-//@PATATOR
+
 public final class ScoreRaw {
 
     public static Function<String, Score> getScoreDeserializer(List<String> contestentIds, ScoreType type) {

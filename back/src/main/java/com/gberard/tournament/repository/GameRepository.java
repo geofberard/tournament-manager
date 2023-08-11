@@ -1,21 +1,18 @@
 package com.gberard.tournament.repository;
 
 import com.gberard.tournament.data.client.Game;
-import com.gberard.tournament.data.score.DepthOneScore;
-import com.gberard.tournament.data.score.DepthTwoScore;
-import com.gberard.tournament.data.score.Score;
 import com.gberard.tournament.data.score.ScoreType;
-import com.gberard.tournament.serializer.score.DepthOneScoreRaw;
-import com.gberard.tournament.serializer.score.DepthTwoScoreRaw;
+import com.gberard.tournament.serializer.DateRaw;
+import com.gberard.tournament.serializer.ListRaw;
+import com.gberard.tournament.serializer.TimeRaw;
 import com.google.common.annotations.VisibleForTesting;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.function.Function;
 
-import static com.gberard.tournament.data.DataUtils.*;
-import static com.gberard.tournament.data.DataUtils.getEnumValue;
+import static com.gberard.tournament.serializer.RawUtils.*;
+import static com.gberard.tournament.serializer.RawUtils.getEnumValue;
 import static com.gberard.tournament.serializer.score.ScoreRaw.getScoreDeserializer;
 import static com.gberard.tournament.serializer.score.ScoreRaw.getScoreSerializer;
 import static java.util.stream.Collectors.toList;
@@ -42,7 +39,7 @@ public class GameRepository extends SheetRepository<Game> {
     @Override
     protected Game fromRawData(List<Object> value) {
         var gameBuilder = Game.builder();
-        var contestantIds = getListValue(value, 4);
+        var contestantIds = getValue(value, 4, ListRaw::deserialize);
         var scoreType = getEnumValue(value, 7, ScoreType.class);
 
         getStringValue(value, 0).ifPresent(gameBuilder::id);
@@ -62,10 +59,10 @@ public class GameRepository extends SheetRepository<Game> {
     protected List<Object> toRawData(Game game) {
         return List.of(
                 game.id(),
-                formatDate(game.time()),
-                formatTime(game.time()),
+                DateRaw.serialize(game.time().toLocalDate()),
+                TimeRaw.serialize(game.time().toLocalTime()),
                 game.court(),
-                toListValue(game.contestantIds()),
+                ListRaw.serialize(game.contestantIds()),
                 game.refereeId().orElse(""),
                 game.isFinished().toString(),
                 game.scoreType().toString(),

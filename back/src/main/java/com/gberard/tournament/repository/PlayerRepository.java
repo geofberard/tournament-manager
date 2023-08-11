@@ -6,8 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static com.gberard.tournament.data.DataUtils.getStringValue;
-import static com.gberard.tournament.data.DataUtils.getValue;
+import static com.gberard.tournament.serializer.RawUtils.getStringValue;
 
 @Repository
 public class PlayerRepository extends SheetRepository<Player> {

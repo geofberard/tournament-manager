@@ -5,12 +5,13 @@ import com.gberard.tournament.data.score.DepthOneScore;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.gberard.tournament.data.DataUtils.SCORE_SEPARATOR;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.IntStream.range;
-//@PATATOR
+
 public final class DepthOneScoreRaw {
+
+    public static final String SCORE_SEPARATOR = "-";
 
     public static DepthOneScore deserialize(String value, List<String> contestantIds) {
         List<Integer> points = Arrays.stream(value.split(SCORE_SEPARATOR)).map(Integer::parseInt).toList();
