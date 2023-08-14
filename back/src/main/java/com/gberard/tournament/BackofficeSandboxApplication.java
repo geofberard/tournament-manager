@@ -1,7 +1,9 @@
 package com.gberard.tournament;
 
-import com.gberard.tournament.data.GameV1;
-import com.gberard.tournament.data.TeamV1;
+import com.gberard.tournament.data.client.Game;
+import com.gberard.tournament.data.client.Team;
+import com.gberard.tournament.data.score.DepthOneScore;
+import com.gberard.tournament.data.score.ScoreType;
 import com.gberard.tournament.repository.GameRepository;
 import com.gberard.tournament.repository.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,22 +13,23 @@ import org.springframework.context.event.EventListener;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 //Remove comments before usage
 //@SpringBootApplication
 public class BackofficeSandboxApplication {
 
 
-    private static TeamV1 Team1 = new TeamV1("Team1", "Les Viking");
-    private static TeamV1 Team2 = new TeamV1("Team2", "Les Pilou-Pilou");
-    private static TeamV1 Team3 = new TeamV1("Team3", "Les Baby Sharkies");
-    private static TeamV1 Team4 = new TeamV1("Team4", "Les Mercenaires");
-    private static TeamV1 Team5 = new TeamV1("Team5", "Les 4 Fantastiques");
-    private static TeamV1 Team6 = new TeamV1("Team6", "L'équipe en carton");
-    private static TeamV1 Team7 = new TeamV1("Team7", "Les Volley Fenêtre");
+    private static Team Team1 = new Team("Team1", "Les Viking", List.of());
+    private static Team Team2 = new Team("Team2", "Les Pilou-Pilou", List.of());
+    private static Team Team3 = new Team("Team3", "Les Baby Sharkies", List.of());
+    private static Team Team4 = new Team("Team4", "Les Mercenaires", List.of());
+    private static Team Team5 = new Team("Team5", "Les 4 Fantastiques", List.of());
+    private static Team Team6 = new Team("Team6", "L'équipe en carton", List.of());
+    private static Team Team7 = new Team("Team7", "Les Volley Fenêtre", List.of());
 
-    private static List<TeamV1> teams = List.of(Team1, Team2, Team3, Team4, Team5, Team6, Team7);
-    private static List<GameV1> games = List.of(
+    private static List<Team> teams = List.of(Team1, Team2, Team3, Team4, Team5, Team6, Team7);
+    private static List<Game> games = List.of(
             buildGame("Game1", 11, 00, "Terrain1", Team1, 15, Team2, 23),
             buildGame("Game2", 11, 00, "Terrain2", Team3, 21, Team4, 15),
             buildGame("Game3", 11, 00, "Terrain3", Team5, 11, Team6, 22),
@@ -97,16 +100,15 @@ public class BackofficeSandboxApplication {
         System.exit(1);
     }
 
-    private static GameV1 buildGame(String game1, int hour, int minute, String terrain, TeamV1 Team1, int scoreA, TeamV1 Team2,
+    private static Game buildGame(String game1, int hour, int minute, String terrain, Team Team1, int scoreA, Team Team2,
                                     int scoreB) {
-        return GameV1.builder()
+        return Game.builder()
                 .id(game1)
                 .time(toDate(hour, minute))
                 .court(terrain)
-                .teamA(Team1)
-                .teamB(Team2)
-                .scoreA(scoreA)
-                .scoreB(scoreB)
+                .contestantIds(List.of(Team1.id(), Team2.id()))
+                .scoreType(ScoreType.DepthOne)
+                .score(new DepthOneScore(Map.of(Team1.id(), scoreA, Team2.id(), scoreB)))
                 .build();
     }
 

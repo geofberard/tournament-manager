@@ -1,7 +1,6 @@
 package com.gberard.tournament.repository;
 
-import com.gberard.tournament.data.client.Team;
-import com.gberard.tournament.serializer.ListRaw;
+import com.gberard.tournament.data.client.Player;
 import com.gberard.tournament.service.SpreadsheetCRUDService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -17,25 +16,26 @@ import java.util.Optional;
 import java.util.OptionalInt;
 
 import static com.gberard.tournament.TestUtils.rawData;
-import static com.gberard.tournament.repository.TeamRepository.RANGE;
+import static com.gberard.tournament.repository.PlayerRepository.RANGE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class TeamRepositoryTest {
+class PlayerRepositoryTest {
 
-    public static final List<Object> RAW_TEAM_A = rawData("teamA", "TeamA", "playerA;playerB");
-    public static final List<Object> RAW_TEAM_B = rawData("teamB", "TeamB", "playerC;playerD");
+    public static final List<Object> RAW_PLAYER_A = rawData("playerA", "firstnameA", "lastnameA");
+    public static final List<Object> RAW_PLAYER_B = rawData("playerB", "firstnameB", "lastnameB");
 
-    public static final Team TEAM_A = new Team("teamA", "TeamA", List.of("playerA", "playerB"));
-    public static final Team TEAM_B = new Team("teamB", "TeamB", List.of("playerC", "playerD"));
+    public static final Player PLAYER_A = new Player("playerA", "firstnameA", "lastnameA");
+    public static final Player PLAYER_B = new Player("playerB", "firstnameB", "lastnameB");
+
 
     @Mock
     protected SpreadsheetCRUDService spreadsheetCRUDService;
 
     @Spy
     @InjectMocks
-    private TeamRepository teamRepository = new TeamRepository();
+    private PlayerRepository playerRepository = new PlayerRepository();
 
     @Nested
     @DisplayName("create()")
@@ -44,20 +44,20 @@ class TeamRepositoryTest {
         @Test
         void shoud_use_crud_service() {
             // When
-            teamRepository.create(TEAM_A);
+            playerRepository.create(PLAYER_A);
 
             // Then
             verify(spreadsheetCRUDService, times(1))
-                    .appendCells(eq(RANGE), eq(List.of(RAW_TEAM_A)));
+                    .appendCells(eq(RANGE), eq(List.of(RAW_PLAYER_A)));
         }
 
         @Test
         void shoud_use_toRawData_mapper() {
             // When
-            teamRepository.create(TEAM_A);
+            playerRepository.create(PLAYER_A);
 
             // Then
-            verify(teamRepository, times(1)).toRawData(eq(TEAM_A));
+            verify(playerRepository, times(1)).toRawData(eq(PLAYER_A));
         }
 
     }
@@ -69,7 +69,7 @@ class TeamRepositoryTest {
         @Test
         void shoud_use_crud_service() {
             // When
-            teamRepository.readAll();
+            playerRepository.readAll();
 
             // Then
             verify(spreadsheetCRUDService, times(1)).readCells(eq(RANGE));
@@ -78,28 +78,28 @@ class TeamRepositoryTest {
         @Test
         void shoud_use_fromRawData_mapper() {
             // Given
-            when(spreadsheetCRUDService.readCells(eq(RANGE))).thenReturn(List.of(RAW_TEAM_A, RAW_TEAM_B));
+            when(spreadsheetCRUDService.readCells(eq(RANGE))).thenReturn(List.of(RAW_PLAYER_A, RAW_PLAYER_B));
 
             // When
-            teamRepository.readAll();
+            playerRepository.readAll();
 
             // Then
-            verify(teamRepository, times(1)).fromRawData(eq(RAW_TEAM_A));
-            verify(teamRepository, times(1)).fromRawData(eq(RAW_TEAM_B));
+            verify(playerRepository, times(1)).fromRawData(eq(RAW_PLAYER_A));
+            verify(playerRepository, times(1)).fromRawData(eq(RAW_PLAYER_B));
         }
 
         @Test
         void shoud_return_expected_teams() {
             // Given
-            when(spreadsheetCRUDService.readCells(eq(RANGE))).thenReturn(List.of(RAW_TEAM_A, RAW_TEAM_B));
+            when(spreadsheetCRUDService.readCells(eq(RANGE))).thenReturn(List.of(RAW_PLAYER_A, RAW_PLAYER_B));
 
             // When
-            List<Team> teams = teamRepository.readAll();
+            List<Player> teams = playerRepository.readAll();
 
             // Then
             assertThat(teams).hasSize(2);
-            assertThat(teams.get(0)).isEqualTo(TEAM_A);
-            assertThat(teams.get(1)).isEqualTo(TEAM_B);
+            assertThat(teams.get(0)).isEqualTo(PLAYER_A);
+            assertThat(teams.get(1)).isEqualTo(PLAYER_B);
         }
 
     }
@@ -111,24 +111,25 @@ class TeamRepositoryTest {
         @Test
         void should_return_team_if_present() {
             // Given
-            when(spreadsheetCRUDService.readCells(eq(RANGE))).thenReturn(List.of(RAW_TEAM_A, RAW_TEAM_B));
+            when(spreadsheetCRUDService.readCells(eq(RANGE))).thenReturn(List.of(RAW_PLAYER_A, RAW_PLAYER_B));
 
             // When
-            Optional<Team> team = teamRepository.search("teamB");
+            Optional<Player> team = playerRepository.search("playerB");
 
             // Then
             assertThat(team.isPresent()).isTrue();
-            assertThat(team.get().id()).isEqualTo("teamB");
-            assertThat(team.get().name()).isEqualTo("TeamB");
+            assertThat(team.get().id()).isEqualTo("playerB");
+            assertThat(team.get().firstName()).isEqualTo("firstnameB");
+            assertThat(team.get().lastName()).isEqualTo("lastnameB");
         }
 
         @Test
         void should_return_empty_if_absent() {
             // Given
-            when(spreadsheetCRUDService.readCells(eq(RANGE))).thenReturn(List.of(RAW_TEAM_A, RAW_TEAM_B));
+            when(spreadsheetCRUDService.readCells(eq(RANGE))).thenReturn(List.of(RAW_PLAYER_A, RAW_PLAYER_B));
 
             // When
-            Optional<Team> team = teamRepository.search("team2");
+            Optional<Player> team = playerRepository.search("team2");
 
             // Then
             assertThat(team.isPresent()).isFalse();
@@ -145,13 +146,13 @@ class TeamRepositoryTest {
             when(spreadsheetCRUDService.findRowIndex(any(), any())).thenReturn(OptionalInt.of(10));
 
             // When
-            teamRepository.update(TEAM_A);
+            playerRepository.update(PLAYER_A);
 
             // Then
             verify(spreadsheetCRUDService, times(1))
-                    .findRowIndex(eq("Teams!A:A"), eq(TEAM_A.id()));
+                    .findRowIndex(eq("Players!A:A"), eq(PLAYER_A.id()));
             verify(spreadsheetCRUDService, times(1))
-                    .updateCells(eq("Teams!A10"), eq(List.of(RAW_TEAM_A)));
+                    .updateCells(eq("Players!A10"), eq(List.of(RAW_PLAYER_A)));
         }
 
         @Test
@@ -160,10 +161,10 @@ class TeamRepositoryTest {
             when(spreadsheetCRUDService.findRowIndex(any(), any())).thenReturn(OptionalInt.of(10));
 
             // When
-            teamRepository.update(TEAM_A);
+            playerRepository.update(PLAYER_A);
 
             // Then
-            verify(teamRepository, times(1)).toRawData(eq(TEAM_A));
+            verify(playerRepository, times(1)).toRawData(eq(PLAYER_A));
         }
 
         @Test
@@ -172,7 +173,7 @@ class TeamRepositoryTest {
             when(spreadsheetCRUDService.findRowIndex(any(), any())).thenReturn(OptionalInt.empty());
 
             // When
-            teamRepository.update(TEAM_A);
+            playerRepository.update(PLAYER_A);
 
             // Then
             verify(spreadsheetCRUDService, never()).updateCells(any(), any());
@@ -191,11 +192,11 @@ class TeamRepositoryTest {
             when(spreadsheetCRUDService.findRowIndex(any(), any())).thenReturn(OptionalInt.of(11));
 
             // When
-            teamRepository.delete(TEAM_A);
+            playerRepository.delete(PLAYER_A);
 
             // Then
-            verify(spreadsheetCRUDService, times(1)).findRowIndex(eq("Teams!A:A"), eq(TEAM_A.id()));
-            verify(spreadsheetCRUDService, times(1)).deleteRaws(eq("Teams"), eq(10), eq(1));
+            verify(spreadsheetCRUDService, times(1)).findRowIndex(eq("Players!A:A"), eq(PLAYER_A.id()));
+            verify(spreadsheetCRUDService, times(1)).deleteRaws(eq("Players"), eq(10), eq(1));
         }
 
         @Test
@@ -204,7 +205,7 @@ class TeamRepositoryTest {
             when(spreadsheetCRUDService.findRowIndex(any(), any())).thenReturn(OptionalInt.empty());
 
             // When
-            teamRepository.delete(TEAM_A);
+            playerRepository.delete(PLAYER_A);
 
             // Then
             verify(spreadsheetCRUDService, never()).deleteRaws(any(), anyInt());
@@ -220,10 +221,10 @@ class TeamRepositoryTest {
         @Test
         void shoud_use_crud_service() {
             // When
-            teamRepository.deleteAll();
+            playerRepository.deleteAll();
 
             // Then
-            verify(spreadsheetCRUDService, times(1)).deleteRaws(eq("Teams"), eq(1));
+            verify(spreadsheetCRUDService, times(1)).deleteRaws(eq("Players"), eq(1));
         }
 
     }
@@ -234,15 +235,13 @@ class TeamRepositoryTest {
 
         @Test
         void should_map_to_team() {
-            // Given
-            List<Object> RAW_TEAM_1 = rawData("team1", "Team1", "");
-
             // When
-            Team team = teamRepository.fromRawData(RAW_TEAM_1);
+            Player team = playerRepository.fromRawData(RAW_PLAYER_A);
 
             // Then
-            assertThat(team.id()).isEqualTo("team1");
-            assertThat(team.name()).isEqualTo("Team1");
+            assertThat(team.id()).isEqualTo("playerA");
+            assertThat(team.firstName()).isEqualTo("firstnameA");
+            assertThat(team.lastName()).isEqualTo("lastnameA");
         }
 
     }
@@ -254,11 +253,10 @@ class TeamRepositoryTest {
         @Test
         void should_map_to_team() {
             // When
-            List<Object> objects = teamRepository.toRawData(TEAM_A);
+            List<Object> objects = playerRepository.toRawData(PLAYER_A);
 
             // Then
-            assertThat(objects)
-                    .containsExactlyInAnyOrder(TEAM_A.id(), TEAM_A.name(), ListRaw.serialize(TEAM_A.playerIds()));
+            assertThat(objects).containsExactlyInAnyOrder(RAW_PLAYER_A.toArray());
         }
 
     }

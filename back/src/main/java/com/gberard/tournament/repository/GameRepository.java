@@ -1,18 +1,24 @@
 package com.gberard.tournament.repository;
 
-import com.gberard.tournament.data.GameV1;
-import com.gberard.tournament.data.TeamV1;
+import com.gberard.tournament.data.client.Game;
+import com.gberard.tournament.data.score.ScoreType;
+import com.gberard.tournament.serializer.DateRaw;
+import com.gberard.tournament.serializer.ListRaw;
+import com.gberard.tournament.serializer.TimeRaw;
 import com.google.common.annotations.VisibleForTesting;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static com.gberard.tournament.data.DataUtils.*;
+import static com.gberard.tournament.serializer.RawUtils.*;
+import static com.gberard.tournament.serializer.RawUtils.getEnumValue;
+import static com.gberard.tournament.serializer.score.ScoreRaw.getScoreDeserializer;
+import static com.gberard.tournament.serializer.score.ScoreRaw.getScoreSerializer;
 import static java.util.stream.Collectors.toList;
 
 @Repository
-public class GameRepository extends SheetRepository<GameV1> {
+public class GameRepository extends SheetRepository<Game> {
 
     @VisibleForTesting
     protected static final String RANGE = "Games!A2:I";
@@ -24,38 +30,43 @@ public class GameRepository extends SheetRepository<GameV1> {
         super(RANGE);
     }
 
-    public List<GameV1> searchFor(TeamV1 team) {
+    public List<Game> searchFor(String teamId) {
         return readAll().stream()
-                .filter(game -> game.hasContestant(team))
+                .filter(game -> game.contestantIds().contains(teamId))
                 .collect(toList());
     }
 
     @Override
-    protected GameV1 fromRawData(List<Object> value) {
-        var gameBuilder = GameV1.builder()
-                .id(getValue(value, 0))
-                .time(parseDateTime(getValue(value, 1), getValue(value, 2)))
-                .court(getValue(value, 3));
-        teamService.search(getValue(value, 4)).ifPresent(gameBuilder::teamA);
-        teamService.search(getValue(value, 5)).ifPresent(gameBuilder::teamB);
-        teamService.search(getValue(value, 6)).ifPresent(gameBuilder::referee);
-        parseInteger(getValue(value, 7)).ifPresent(gameBuilder::scoreA);
-        parseInteger(getValue(value, 8)).ifPresent(gameBuilder::scoreB);
+    protected Game fromRawData(List<Object> value) {
+        var gameBuilder = Game.builder();
+        var contestantIds = getValue(value, 4, ListRaw::deserialize);
+        var scoreType = getEnumValue(value, 7, ScoreType.class);
+
+        getStringValue(value, 0).ifPresent(gameBuilder::id);
+        getDateTimeValue(value, 1,2).ifPresent(gameBuilder::time);
+        getStringValue(value, 3).ifPresent(gameBuilder::court);
+        contestantIds.ifPresent(gameBuilder::contestantIds);
+        getStringValue(value, 5).ifPresent(gameBuilder::refereeId);
+        getBooleanValue(value, 6).ifPresent(gameBuilder::isFinished);
+        scoreType.ifPresent(gameBuilder::scoreType);
+        getValue(value, 8, getScoreDeserializer(contestantIds.get(), scoreType.get()))
+                .ifPresent(gameBuilder::score);
+
         return gameBuilder.build();
     }
 
     @Override
-    protected List<Object> toRawData(GameV1 game) {
+    protected List<Object> toRawData(Game game) {
         return List.of(
                 game.id(),
-                formatDate(game.time()),
-                formatTime(game.time()),
+                DateRaw.serialize(game.time().toLocalDate()),
+                TimeRaw.serialize(game.time().toLocalTime()),
                 game.court(),
-                game.teamA().id(),
-                game.teamB().id(),
-                game.referee().map(TeamV1::id).orElse(""),
-                game.scoreA().map(Object::toString).orElse(""),
-                game.scoreB().map(Object::toString).orElse("")
+                ListRaw.serialize(game.contestantIds()),
+                game.refereeId().orElse(""),
+                game.isFinished().toString(),
+                game.scoreType().toString(),
+                game.score().map(getScoreSerializer(game)).orElse("")
         );
     }
 
