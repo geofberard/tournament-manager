@@ -1,6 +1,6 @@
 package com.gberard.tournament.infrastructure.repository;
 
-import com.gberard.tournament.domain.client.Player;
+import com.gberard.tournament.domain.model.Player;
 import com.gberard.tournament.domain.port.output.PlayerRepository;
 import com.google.common.annotations.VisibleForTesting;
 import org.springframework.stereotype.Repository;

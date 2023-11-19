@@ -1,10 +1,8 @@
-package com.gberard.tournament.domain.score;
+package com.gberard.tournament.domain.model.score;
 
-import com.gberard.tournament.domain.stats.ContestantResult;
+import com.gberard.tournament.domain.model.stats.ContestantResult;
 
 import java.util.List;
-
-import static com.gberard.tournament.domain.stats.ContestantResult.*;
 
 public record DepthTwoScore(List<DepthOneScore> result) implements Score {
 
@@ -26,18 +24,18 @@ public record DepthTwoScore(List<DepthOneScore> result) implements Score {
     public ContestantResult getTeamStatus(String contestantId) {
         long nbWonSets = result.stream()
                 .map(depthOne -> depthOne.getTeamStatus(contestantId))
-                .filter(WIN::equals)
+                .filter(ContestantResult.WIN::equals)
                 .count();
 
         long nbLostSets = result.stream()
                 .map(depthOne -> depthOne.getTeamStatus(contestantId))
-                .filter(LOST::equals)
+                .filter(ContestantResult.LOST::equals)
                 .count();
 
         if(nbWonSets == nbLostSets) {
-            return DRAWN;
+            return ContestantResult.DRAWN;
         }
 
-        return nbWonSets > nbLostSets ? WIN : LOST;
+        return nbWonSets > nbLostSets ? ContestantResult.WIN : ContestantResult.LOST;
     }
 }

@@ -1,6 +1,6 @@
 package com.gberard.tournament.infrastructure.repository;
 
-import com.gberard.tournament.domain.client.Identified;
+import com.gberard.tournament.domain.model.Identified;
 import com.gberard.tournament.infrastructure.service.SpreadsheetCRUDService;
 import com.google.common.annotations.VisibleForTesting;
 import lombok.extern.slf4j.Slf4j;

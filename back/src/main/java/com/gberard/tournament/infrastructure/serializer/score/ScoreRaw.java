@@ -1,10 +1,10 @@
 package com.gberard.tournament.infrastructure.serializer.score;
 
-import com.gberard.tournament.domain.client.Game;
-import com.gberard.tournament.domain.score.DepthOneScore;
-import com.gberard.tournament.domain.score.DepthTwoScore;
-import com.gberard.tournament.domain.score.Score;
-import com.gberard.tournament.domain.score.ScoreType;
+import com.gberard.tournament.domain.model.Game;
+import com.gberard.tournament.domain.model.score.DepthOneScore;
+import com.gberard.tournament.domain.model.score.DepthTwoScore;
+import com.gberard.tournament.domain.model.score.Score;
+import com.gberard.tournament.domain.model.score.ScoreType;
 
 import java.util.List;
 import java.util.function.Function;

@@ -1,5 +1,7 @@
-package com.gberard.tournament.domain.stats;
+package com.gberard.tournament.domain.model.stats;
 
+import com.gberard.tournament.domain.model.stats.ContestantStats;
+import com.gberard.tournament.domain.model.stats.ContestantStatsAccumulator;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.*;

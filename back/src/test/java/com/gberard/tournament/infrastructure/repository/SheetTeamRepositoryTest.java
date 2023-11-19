@@ -1,6 +1,6 @@
 package com.gberard.tournament.infrastructure.repository;
 
-import com.gberard.tournament.domain.client.Team;
+import com.gberard.tournament.domain.model.Team;
 import com.gberard.tournament.infrastructure.serializer.ListRaw;
 import com.gberard.tournament.infrastructure.service.SpreadsheetCRUDService;
 import org.junit.jupiter.api.DisplayName;

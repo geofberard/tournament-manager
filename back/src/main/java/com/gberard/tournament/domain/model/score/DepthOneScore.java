@@ -1,10 +1,8 @@
-package com.gberard.tournament.domain.score;
+package com.gberard.tournament.domain.model.score;
 
-import com.gberard.tournament.domain.stats.ContestantResult;
+import com.gberard.tournament.domain.model.stats.ContestantResult;
 
 import java.util.Map;
-
-import static com.gberard.tournament.domain.stats.ContestantResult.*;
 
 public record DepthOneScore(Map<String, Integer> result) implements Score {
 
@@ -28,10 +26,10 @@ public record DepthOneScore(Map<String, Integer> result) implements Score {
         checkContestant(contestantId);
 
         if (getPointFor(contestantId) == getPointAgainst(contestantId)) {
-            return DRAWN;
+            return ContestantResult.DRAWN;
         }
 
-        return getPointFor(contestantId) > getPointAgainst(contestantId) ? WIN : LOST;
+        return getPointFor(contestantId) > getPointAgainst(contestantId) ? ContestantResult.WIN : ContestantResult.LOST;
     }
 
     private void checkContestant(String contestantId) {

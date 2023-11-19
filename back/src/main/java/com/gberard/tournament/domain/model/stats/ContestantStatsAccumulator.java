@@ -1,4 +1,4 @@
-package com.gberard.tournament.domain.stats;
+package com.gberard.tournament.domain.model.stats;
 
 public class ContestantStatsAccumulator {
     private String contestantId;

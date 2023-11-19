@@ -1,8 +1,8 @@
 package com.gberard.tournament.domain.service;
 
-import com.gberard.tournament.domain.stats.ContestantStats;
-import com.gberard.tournament.domain.client.Game;
-import com.gberard.tournament.domain.client.Team;
+import com.gberard.tournament.domain.model.stats.ContestantStats;
+import com.gberard.tournament.domain.model.Game;
+import com.gberard.tournament.domain.model.Team;
 import com.gberard.tournament.infrastructure.repository.SheetGameRepository;
 import com.gberard.tournament.infrastructure.repository.SheetTeamRepository;
 import org.junit.jupiter.api.DisplayName;

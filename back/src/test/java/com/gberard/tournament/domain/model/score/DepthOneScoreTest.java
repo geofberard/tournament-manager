@@ -1,5 +1,7 @@
-package com.gberard.tournament.domain.score;
+package com.gberard.tournament.domain.model.score;
 
+import com.gberard.tournament.domain.model.score.DepthOneScore;
+import com.gberard.tournament.domain.model.score.Score;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -10,7 +12,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.stream.Stream;
 
 import static com.gberard.tournament.TestUtils.*;
-import static com.gberard.tournament.domain.stats.ContestantResult.*;
+import static com.gberard.tournament.domain.model.stats.ContestantResult.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 

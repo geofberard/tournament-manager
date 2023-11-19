@@ -1,8 +1,8 @@
 package com.gberard.tournament.infrastructure.repository;
 
-import com.gberard.tournament.domain.client.Game;
+import com.gberard.tournament.domain.model.Game;
 import com.gberard.tournament.domain.port.output.GameRepository;
-import com.gberard.tournament.domain.score.ScoreType;
+import com.gberard.tournament.domain.model.score.ScoreType;
 import com.gberard.tournament.infrastructure.serializer.DateRaw;
 import com.gberard.tournament.infrastructure.serializer.ListRaw;
 import com.gberard.tournament.infrastructure.serializer.TimeRaw;

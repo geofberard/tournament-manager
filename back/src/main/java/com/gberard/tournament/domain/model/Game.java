@@ -1,7 +1,7 @@
-package com.gberard.tournament.domain.client;
+package com.gberard.tournament.domain.model;
 
-import com.gberard.tournament.domain.score.Score;
-import com.gberard.tournament.domain.score.ScoreType;
+import com.gberard.tournament.domain.model.score.Score;
+import com.gberard.tournament.domain.model.score.ScoreType;
 import lombok.Builder;
 
 import java.time.LocalDateTime;

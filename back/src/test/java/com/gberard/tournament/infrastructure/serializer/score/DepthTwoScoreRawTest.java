@@ -1,13 +1,12 @@
 package com.gberard.tournament.infrastructure.serializer.score;
 
-import com.gberard.tournament.domain.client.Game;
-import com.gberard.tournament.domain.score.DepthTwoScore;
-import com.gberard.tournament.domain.score.Score;
-import com.gberard.tournament.infrastructure.serializer.score.ScoreRaw;
+import com.gberard.tournament.domain.model.Game;
+import com.gberard.tournament.domain.model.score.DepthTwoScore;
+import com.gberard.tournament.domain.model.score.Score;
 import org.junit.jupiter.api.Test;
 
 import static com.gberard.tournament.TestUtils.*;
-import static com.gberard.tournament.domain.score.ScoreType.DepthTwo;
+import static com.gberard.tournament.domain.model.score.ScoreType.DepthTwo;
 import static java.util.List.of;
 import static org.assertj.core.api.Assertions.assertThat;
 

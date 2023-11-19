@@ -1,6 +1,6 @@
 package com.gberard.tournament.infrastructure.serializer.score;
 
-import com.gberard.tournament.domain.score.DepthOneScore;
+import com.gberard.tournament.domain.model.score.DepthOneScore;
 
 import java.util.Arrays;
 import java.util.List;

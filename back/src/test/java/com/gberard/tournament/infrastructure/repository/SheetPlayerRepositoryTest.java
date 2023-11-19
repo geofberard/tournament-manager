@@ -1,6 +1,6 @@
 package com.gberard.tournament.infrastructure.repository;
 
-import com.gberard.tournament.domain.client.Player;
+import com.gberard.tournament.domain.model.Player;
 import com.gberard.tournament.infrastructure.service.SpreadsheetCRUDService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

@@ -1,4 +1,4 @@
-package com.gberard.tournament.domain.client;
+package com.gberard.tournament.domain.model;
 
 import java.util.List;
 

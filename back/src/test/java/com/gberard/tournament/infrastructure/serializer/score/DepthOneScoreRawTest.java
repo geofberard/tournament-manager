@@ -1,12 +1,12 @@
 package com.gberard.tournament.infrastructure.serializer.score;
 
-import com.gberard.tournament.domain.client.Game;
-import com.gberard.tournament.domain.score.DepthOneScore;
-import com.gberard.tournament.domain.score.Score;
+import com.gberard.tournament.domain.model.Game;
+import com.gberard.tournament.domain.model.score.DepthOneScore;
+import com.gberard.tournament.domain.model.score.Score;
 import org.junit.jupiter.api.Test;
 
 import static com.gberard.tournament.TestUtils.*;
-import static com.gberard.tournament.domain.score.ScoreType.DepthOne;
+import static com.gberard.tournament.domain.model.score.ScoreType.DepthOne;
 import static com.gberard.tournament.infrastructure.serializer.score.ScoreRaw.getScoreDeserializer;
 import static com.gberard.tournament.infrastructure.serializer.score.ScoreRaw.getScoreSerializer;
 import static java.util.List.of;

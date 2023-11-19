@@ -1,7 +1,7 @@
 package com.gberard.tournament.infrastructure.serializer.score;
 
 import com.gberard.tournament.infrastructure.serializer.ListRaw;
-import com.gberard.tournament.domain.score.DepthTwoScore;
+import com.gberard.tournament.domain.model.score.DepthTwoScore;
 
 import java.util.List;
 

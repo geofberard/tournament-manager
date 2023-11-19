@@ -1,6 +1,6 @@
 package com.gberard.tournament.domain.port.input;
 
-import com.gberard.tournament.domain.stats.ContestantStats;
+import com.gberard.tournament.domain.model.stats.ContestantStats;
 
 import java.util.List;
 

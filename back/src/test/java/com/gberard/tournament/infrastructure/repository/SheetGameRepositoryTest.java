@@ -1,8 +1,8 @@
 package com.gberard.tournament.infrastructure.repository;
 
-import com.gberard.tournament.domain.score.DepthOneScore;
-import com.gberard.tournament.domain.score.DepthTwoScore;
-import com.gberard.tournament.domain.client.Game;
+import com.gberard.tournament.domain.model.score.DepthOneScore;
+import com.gberard.tournament.domain.model.score.DepthTwoScore;
+import com.gberard.tournament.domain.model.Game;
 import com.gberard.tournament.infrastructure.service.SpreadsheetCRUDService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -17,8 +17,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.OptionalInt;
 
-import static com.gberard.tournament.domain.score.ScoreType.DepthOne;
-import static com.gberard.tournament.domain.score.ScoreType.DepthTwo;
+import static com.gberard.tournament.domain.model.score.ScoreType.DepthOne;
+import static com.gberard.tournament.domain.model.score.ScoreType.DepthTwo;
 import static com.gberard.tournament.TestUtils.*;
 import static com.gberard.tournament.infrastructure.repository.SheetGameRepository.RANGE;
 import static java.time.Month.AUGUST;

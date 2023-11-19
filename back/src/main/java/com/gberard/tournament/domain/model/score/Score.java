@@ -1,6 +1,6 @@
-package com.gberard.tournament.domain.score;
+package com.gberard.tournament.domain.model.score;
 
-import com.gberard.tournament.domain.stats.ContestantResult;
+import com.gberard.tournament.domain.model.stats.ContestantResult;
 
 public interface Score {
 

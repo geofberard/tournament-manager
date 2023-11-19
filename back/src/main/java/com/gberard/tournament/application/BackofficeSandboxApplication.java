@@ -1,9 +1,9 @@
 package com.gberard.tournament.application;
 
-import com.gberard.tournament.domain.client.Game;
-import com.gberard.tournament.domain.client.Team;
-import com.gberard.tournament.domain.score.DepthOneScore;
-import com.gberard.tournament.domain.score.ScoreType;
+import com.gberard.tournament.domain.model.Game;
+import com.gberard.tournament.domain.model.Team;
+import com.gberard.tournament.domain.model.score.DepthOneScore;
+import com.gberard.tournament.domain.model.score.ScoreType;
 import com.gberard.tournament.infrastructure.repository.SheetGameRepository;
 import com.gberard.tournament.infrastructure.repository.SheetTeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;

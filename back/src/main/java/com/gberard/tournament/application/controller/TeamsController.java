@@ -1,6 +1,6 @@
 package com.gberard.tournament.application.controller;
 
-import com.gberard.tournament.domain.client.Team;
+import com.gberard.tournament.domain.model.Team;
 import com.gberard.tournament.infrastructure.repository.SheetTeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

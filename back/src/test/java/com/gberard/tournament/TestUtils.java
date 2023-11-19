@@ -1,9 +1,9 @@
 package com.gberard.tournament;
 
-import com.gberard.tournament.domain.client.Game;
-import com.gberard.tournament.domain.score.DepthOneScore;
-import com.gberard.tournament.domain.score.DepthTwoScore;
-import com.gberard.tournament.domain.score.Score;
+import com.gberard.tournament.domain.model.Game;
+import com.gberard.tournament.domain.model.score.DepthOneScore;
+import com.gberard.tournament.domain.model.score.DepthTwoScore;
+import com.gberard.tournament.domain.model.score.Score;
 import org.assertj.core.api.ListAssert;
 
 import java.time.LocalDateTime;
@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
-import static com.gberard.tournament.domain.score.ScoreType.DepthOne;
+import static com.gberard.tournament.domain.model.score.ScoreType.DepthOne;
 import static java.time.Month.AUGUST;
 
 public class TestUtils {

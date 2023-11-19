@@ -1,6 +1,6 @@
 package com.gberard.tournament.domain.port.output;
 
-import com.gberard.tournament.domain.client.Identified;
+import com.gberard.tournament.domain.model.Identified;
 
 import java.util.List;
 import java.util.Optional;
