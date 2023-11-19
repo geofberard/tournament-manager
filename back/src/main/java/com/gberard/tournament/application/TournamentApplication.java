@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-@SpringBootApplication(scanBasePackages={"com.gberard.tournament.adapter","com.gberard.tournament.application"})
+@SpringBootApplication(scanBasePackages={"com.gberard.tournament.application", "com.gberard.tournament.infrastructure"})
 public class TournamentApplication {
 
     public static void main(String[] args) {

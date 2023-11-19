@@ -4,8 +4,8 @@ import com.gberard.tournament.domain.client.Game;
 import com.gberard.tournament.domain.client.Team;
 import com.gberard.tournament.domain.score.DepthOneScore;
 import com.gberard.tournament.domain.score.ScoreType;
-import com.gberard.tournament.adapter.repository.GameRepository;
-import com.gberard.tournament.adapter.repository.TeamRepository;
+import com.gberard.tournament.infrastructure.repository.SheetGameRepository;
+import com.gberard.tournament.infrastructure.repository.SheetTeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -75,10 +75,10 @@ public class BackofficeSandboxApplication {
     );
 
     @Autowired
-    private TeamRepository teamService;
+    private SheetTeamRepository teamService;
 
     @Autowired
-    private GameRepository gameService;
+    private SheetGameRepository gameService;
 
     public static void main(String[] args) {
         SpringApplication.run(BackofficeSandboxApplication.class, args);

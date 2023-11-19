@@ -1,7 +1,7 @@
 package com.gberard.tournament.application.controller;
 
 import com.gberard.tournament.domain.stats.ContestantStats;
-import com.gberard.tournament.adapter.service.ContestantStatsService;
+import com.gberard.tournament.infrastructure.service.ContestantStatsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

@@ -1,7 +1,7 @@
 package com.gberard.tournament.application.controller;
 
 import com.gberard.tournament.domain.client.Game;
-import com.gberard.tournament.adapter.repository.GameRepository;
+import com.gberard.tournament.infrastructure.repository.SheetGameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,7 +15,7 @@ import java.util.Optional;
 public class GamesController {
 
     @Autowired
-    public GameRepository gameService;
+    public SheetGameRepository gameService;
 
     @GetMapping("/games")
     public List<Game> getGames(@RequestParam Optional<String> teamId) {
