@@ -1,7 +1,8 @@
-package com.gberard.tournament.infrastructure.service;
+package com.gberard.tournament.domain.service;
 
 import com.gberard.tournament.domain.client.Game;
 import com.gberard.tournament.domain.client.Team;
+import com.gberard.tournament.domain.port.input.ContestantStatsUseCase;
 import com.gberard.tournament.domain.stats.ContestantStats;
 import com.gberard.tournament.domain.stats.ContestantStatsAccumulator;
 import com.gberard.tournament.infrastructure.repository.SheetGameRepository;
@@ -15,7 +16,7 @@ import static com.gberard.tournament.domain.stats.ContestantResult.*;
 import static java.util.stream.Collectors.toList;
 
 @Component
-public class ContestantStatsService {
+public class ContestantStatsService implements ContestantStatsUseCase {
 
     @Autowired
     SheetTeamRepository teamService;
@@ -23,14 +24,16 @@ public class ContestantStatsService {
     @Autowired
     SheetGameRepository gameService;
 
-    public List<ContestantStats> getTeamsStats() {
+    @Override
+    public List<ContestantStats> getContestantsStats() {
         return teamService.readAll().stream()
                 .map(Team::id)
-                .map(this::getTeamStats)
+                .map(this::getContestantStats)
                 .collect(toList());
     }
 
-    public ContestantStats getTeamStats(String contestantId) {
+    @Override
+    public ContestantStats getContestantStats(String contestantId) {
         return gameService.readAll().stream()
                 .filter(game -> game.contestantIds().contains(contestantId))
                 .filter(Game::isFinished)

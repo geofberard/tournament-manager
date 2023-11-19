@@ -1,4 +1,4 @@
-package com.gberard.tournament.infrastructure.service;
+package com.gberard.tournament.domain.service;
 
 import com.gberard.tournament.domain.stats.ContestantStats;
 import com.gberard.tournament.domain.client.Game;
@@ -68,7 +68,7 @@ class ContestantStatsServiceTest {
             when(gameService.readAll()).thenReturn(games);
 
             // When
-            ContestantStats stats = teamStatsService.getTeamStats(expected.contestantId());
+            ContestantStats stats = teamStatsService.getContestantStats(expected.contestantId());
 
             // Then
             assertThat(stats).isEqualTo(expected);
@@ -88,7 +88,7 @@ class ContestantStatsServiceTest {
             when(gameService.readAll()).thenReturn(games);
 
             // When
-            List<ContestantStats> teamsStats = teamStatsService.getTeamsStats();
+            List<ContestantStats> teamsStats = teamStatsService.getContestantsStats();
 
             // Then
             assertThat(teamsStats).hasSize(teams.size());
