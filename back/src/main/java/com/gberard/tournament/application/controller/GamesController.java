@@ -1,5 +1,7 @@
 package com.gberard.tournament.application.controller;
 
+import com.gberard.tournament.application.response.GameDTO;
+import com.gberard.tournament.application.response.GameDTOMapper;
 import com.gberard.tournament.domain.model.Game;
 import com.gberard.tournament.infrastructure.repository.SheetGameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,13 +20,19 @@ public class GamesController {
     public SheetGameRepository gameService;
 
     @GetMapping("/games")
-    public List<Game> getGames(@RequestParam Optional<String> teamId) {
-        return teamId.isEmpty() ? gameService.readAll() : gameService.searchFor(teamId.get());
+    public List<GameDTO> getGames(@RequestParam Optional<String> teamId) {
+        List<Game> games = teamId.isEmpty() ? gameService.readAll() : gameService.searchFor(teamId.get());
+
+        return games.stream()
+                .map(GameDTOMapper::toGameDTO)
+                .toList();
     }
 
     @GetMapping("/games/{id}")
-    public Game getGame(@PathVariable String id) {
-        return gameService.search(id).get();
+    public GameDTO getGame(@PathVariable String id) {
+        return gameService.search(id)
+                .map(GameDTOMapper::toGameDTO)
+                .get();
     }
 
 }

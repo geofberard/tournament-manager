@@ -13,7 +13,7 @@ import static com.gberard.tournament.infrastructure.serializer.RawUtils.getStrin
 public class SheetPlayerRepository extends SheetRepository<Player> implements PlayerRepository {
 
     @VisibleForTesting
-    protected static final String RANGE = "Players!A2:B";
+    protected static final String RANGE = "Players!A2:C";
 
     public SheetPlayerRepository() {
         super(RANGE);
