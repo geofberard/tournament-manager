@@ -7,6 +7,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -15,6 +17,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
         "com.gberard.tournament.domain",
         "com.gberard.tournament.infrastructure"
 })
+@EnableJpaRepositories(basePackages = "com.gberard.tournament.infrastructure")
+@EntityScan(basePackages = "com.gberard.tournament.infrastructure")
 public class TournamentApplication {
 
     public static void main(String[] args) {

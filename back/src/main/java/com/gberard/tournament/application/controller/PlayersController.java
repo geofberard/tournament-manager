@@ -2,6 +2,7 @@ package com.gberard.tournament.application.controller;
 
 import com.gberard.tournament.application.response.PlayerDTO;
 import com.gberard.tournament.application.response.PlayerDTOMapper;
+import com.gberard.tournament.domain.port.output.PlayerRepository;
 import com.gberard.tournament.infrastructure.repository.SheetPlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,7 +15,7 @@ import java.util.List;
 public class PlayersController {
 
     @Autowired
-    public SheetPlayerRepository playerService;
+    public PlayerRepository playerService;
 
     @GetMapping("/players")
     public List<PlayerDTO> getPlayers() {
