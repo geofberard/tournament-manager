@@ -1,5 +1,6 @@
 package com.gberard.tournament.application.response;
 
+import com.gberard.tournament.domain.model.Team;
 import com.gberard.tournament.domain.model.score.Score;
 import com.gberard.tournament.domain.model.score.ScoreType;
 
@@ -11,8 +12,8 @@ public record GameDTO(
         String id,
         LocalDateTime time,
         String court,
-        List<String> contestantIds,
-        Optional<String> refereeId,
+        List<Team> contestantIds,
+        Optional<Team> refereeId,
         Boolean isFinished,
         ScoreType scoreType,
         Optional<Score> score

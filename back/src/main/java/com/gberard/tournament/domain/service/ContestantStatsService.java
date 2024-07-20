@@ -35,7 +35,7 @@ public class ContestantStatsService implements ContestantStatsUseCase {
     @Override
     public ContestantStats getContestantStats(String contestantId) {
         return gameService.readAll().stream()
-                .filter(game -> game.contestantIds().contains(contestantId))
+                .filter(game -> game.contestants().stream().anyMatch(team -> team.id() == contestantId))
                 .filter(Game::isFinished)
                 .reduce(
                         new ContestantStatsAccumulator(contestantId),

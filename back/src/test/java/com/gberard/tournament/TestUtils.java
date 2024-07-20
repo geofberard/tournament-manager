@@ -1,6 +1,7 @@
 package com.gberard.tournament;
 
 import com.gberard.tournament.domain.model.Game;
+import com.gberard.tournament.domain.model.Team;
 import com.gberard.tournament.domain.model.score.DepthOneScore;
 import com.gberard.tournament.domain.model.score.DepthTwoScore;
 import com.gberard.tournament.domain.model.score.Score;
@@ -16,39 +17,39 @@ import static java.time.Month.AUGUST;
 
 public class TestUtils {
 
-    public static String TEAM_A = "teamA";
-    public static String TEAM_B = "teamB";
-    public static String TEAM_C = "teamC";
-    public static String TEAM_D = "teamD";
-    public static String TEAM_E = "teamE";
+    public static Team TEAM_A = new Team("teamA", "teamA", List.of());
+    public static Team TEAM_B = new Team("teamB", "teamB", List.of());
+    public static Team TEAM_C = new Team("teamC", "teamC", List.of());
+    public static Team TEAM_D = new Team("teamD", "teamD", List.of());
+    public static Team TEAM_E = new Team("teamE", "teamE", List.of());
 
     public static Game.GameBuilder gameBuilder() {
         return Game.builder()
                 .id("gameId")
                 .time(LocalDateTime.of(2022, AUGUST, 29, 10, 30))
-                .contestantIds(List.of(TEAM_A, TEAM_B))
+                .contestants(List.of(TEAM_A, TEAM_B))
                 .court("court")
                 .isFinished(true)
                 .scoreType(DepthOne);
     }
 
-    public static Game buildGame(String teamA, Integer scoreA, String teamB, Integer scoreB) {
+    public static Game buildGame(Team teamA, Integer scoreA, Team teamB, Integer scoreB) {
         return gameBuilder()
-                .contestantIds(List.of(teamA, teamB))
+                .contestants(List.of(teamA, teamB))
                 .scoreType(DepthOne)
                 .score(buildDepthOneScore(teamA, scoreA, teamB, scoreB))
                 .build();
     }
 
-    public static DepthOneScore buildDepthOneScore(String teamA, Integer scoreA, String teamB, Integer scoreB) {
-        return new DepthOneScore(Map.of(teamA, scoreA, teamB, scoreB));
+    public static DepthOneScore buildDepthOneScore(Team teamA, Integer scoreA, Team teamB, Integer scoreB) {
+        return new DepthOneScore(Map.of(teamA.id(), scoreA, teamB.id(), scoreB));
     }
 
-    public static DepthTwoScore buildDepthTwoScore(String teamA, List<Integer> scoresA,
-                                                   String teamB, List<Integer> scoresB) {
+    public static DepthTwoScore buildDepthTwoScore(Team teamA, List<Integer> scoresA,
+                                                   Team teamB, List<Integer> scoresB) {
 
         return new DepthTwoScore(IntStream.range(0,scoresA.size())
-                .mapToObj(index -> new DepthOneScore(Map.of(teamA, scoresA.get(index), teamB, scoresB.get(index))))
+                .mapToObj(index -> new DepthOneScore(Map.of(teamA.id(), scoresA.get(index), teamB.id(), scoresB.get(index))))
                 .toList()
         );
     }

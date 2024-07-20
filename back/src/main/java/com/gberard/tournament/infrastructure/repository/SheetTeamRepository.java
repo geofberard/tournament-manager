@@ -1,6 +1,8 @@
 package com.gberard.tournament.infrastructure.repository;
 
+import com.gberard.tournament.domain.model.Player;
 import com.gberard.tournament.domain.model.Team;
+import com.gberard.tournament.infrastructure.repository.model.PlayerEntity;
 import com.gberard.tournament.infrastructure.serializer.ListRaw;
 import com.gberard.tournament.domain.port.output.TeamRepository;
 import com.google.common.annotations.VisibleForTesting;
@@ -31,7 +33,7 @@ public class SheetTeamRepository extends SheetRepository<Team> implements TeamRe
 
     @Override
     protected List<Object> toRawData(Team team) {
-        return List.of(team.id(),team.name(), List.of());//ListRaw.serialize(team.playerIds()));
+        return List.of(team.id(),team.name(), ListRaw.serialize(team.players().stream().map(Player::id).toList()));
     }
 
 }

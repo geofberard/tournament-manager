@@ -39,8 +39,8 @@ class DepthTwoScoreRawTest {
 
         // Then
         assertThat(score).isOfAnyClassIn(DepthTwoScore.class);
-        assertThatScore(score, TEAM_A).containsExactly(18, 25, 12);
-        assertThatScore(score, TEAM_B).containsExactly(12, 14, 25);
+        assertThatScore(score, TEAM_A.id()).containsExactly(18, 25, 12);
+        assertThatScore(score, TEAM_B.id()).containsExactly(12, 14, 25);
     }
 
 }

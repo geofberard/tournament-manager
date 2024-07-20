@@ -8,7 +8,7 @@ public class GameDTOMapper {
                 game.id(),
                 game.time(),
                 game.court(),
-                game.contestantIds(),
+                game.contestants(),
                 game.refereeId(),
                 game.isFinished(),
                 game.scoreType(),

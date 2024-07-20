@@ -3,6 +3,7 @@ package com.gberard.tournament.application.controller;
 import com.gberard.tournament.application.response.GameDTO;
 import com.gberard.tournament.application.response.GameDTOMapper;
 import com.gberard.tournament.domain.model.Game;
+import com.gberard.tournament.domain.port.output.GameRepository;
 import com.gberard.tournament.infrastructure.repository.SheetGameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,11 +18,11 @@ import java.util.Optional;
 public class GamesController {
 
     @Autowired
-    public SheetGameRepository gameService;
+    public GameRepository gameService;
 
     @GetMapping("/games")
-    public List<GameDTO> getGames(@RequestParam Optional<String> teamId) {
-        List<Game> games = teamId.isEmpty() ? gameService.readAll() : gameService.searchFor(teamId.get());
+    public List<GameDTO> getGames() {
+        List<Game> games = gameService.readAll();
 
         return games.stream()
                 .map(GameDTOMapper::toGameDTO)

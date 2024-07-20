@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.OptionalInt;
 
 import static com.gberard.tournament.domain.model.score.ScoreType.DepthOne;
@@ -47,7 +48,7 @@ class SheetGameRepositoryTest {
             .id("game1")
             .time(LocalDateTime.of(2022, AUGUST, 29, 10, 30))
             .court("court")
-            .contestantIds(of(TEAM_A, TEAM_B))
+            .contestants(of(TEAM_A, TEAM_B))
             .refereeId(TEAM_C)
             .isFinished(true)
             .scoreType(DepthOne)
@@ -58,7 +59,7 @@ class SheetGameRepositoryTest {
             .id("game2")
             .time(LocalDateTime.of(2022, AUGUST, 29, 11, 30))
             .court("court")
-            .contestantIds(of(TEAM_A, TEAM_C))
+            .contestants(of(TEAM_A, TEAM_C))
             .refereeId(TEAM_B)
             .isFinished(true)
             .scoreType(DepthTwo)
@@ -69,7 +70,7 @@ class SheetGameRepositoryTest {
             .id("game3")
             .time(LocalDateTime.of(2022, AUGUST, 29, 12, 30))
             .court("court")
-            .contestantIds(of(TEAM_C, TEAM_B))
+            .contestants(of(TEAM_C, TEAM_B))
             .isFinished(false)
             .scoreType(DepthOne)
             .build();
@@ -81,6 +82,9 @@ class SheetGameRepositoryTest {
 
     @Mock
     protected SpreadsheetCRUDService spreadsheetCRUDService;
+
+    @Mock
+    protected SheetTeamRepository teamService;
 
     @Nested
     @DisplayName("create()")
@@ -124,6 +128,9 @@ class SheetGameRepositoryTest {
         void shoud_use_fromRawData_mapper() {
             // Given
             when(spreadsheetCRUDService.readCells(eq(RANGE))).thenReturn(of(RAW_GAME_1, RAW_GAME_3));
+            when(teamService.search("teamA")).thenReturn(Optional.of(TEAM_A));
+            when(teamService.search("teamB")).thenReturn(Optional.of(TEAM_B));
+            when(teamService.search("teamC")).thenReturn(Optional.of(TEAM_C));
 
             // When
             sheetGameRepository.readAll();
@@ -137,6 +144,10 @@ class SheetGameRepositoryTest {
         void shoud_return_deserialized_game() {
             // Given
             when(spreadsheetCRUDService.readCells(eq(RANGE))).thenReturn(of(RAW_GAME_1, RAW_GAME_3));
+            when(teamService.search("teamA")).thenReturn(Optional.of(TEAM_A));
+            when(teamService.search("teamB")).thenReturn(Optional.of(TEAM_B));
+            when(teamService.search("teamC")).thenReturn(Optional.of(TEAM_C));
+
 
             // When
             List<Game> teams = sheetGameRepository.readAll();
@@ -155,6 +166,11 @@ class SheetGameRepositoryTest {
 
         @Test
         void should_filter_properly() {
+            // Given
+            when(teamService.search("teamA")).thenReturn(Optional.of(TEAM_A));
+            when(teamService.search("teamB")).thenReturn(Optional.of(TEAM_B));
+            when(teamService.search("teamC")).thenReturn(Optional.of(TEAM_C));
+
             // Given
             when(spreadsheetCRUDService.readCells(eq(RANGE))).thenReturn(of(RAW_GAME_1, RAW_GAME_2, RAW_GAME_3));
 
@@ -266,6 +282,11 @@ class SheetGameRepositoryTest {
 
         @Test
         void should_map_game_completed_depth_one() {
+            // Given
+            when(teamService.search("teamA")).thenReturn(Optional.of(TEAM_A));
+            when(teamService.search("teamB")).thenReturn(Optional.of(TEAM_B));
+            when(teamService.search("teamC")).thenReturn(Optional.of(TEAM_C));
+
             // When
             Game game = sheetGameRepository.fromRawData(RAW_GAME_1);
 
@@ -273,8 +294,8 @@ class SheetGameRepositoryTest {
             assertThat(game.id()).isEqualTo("game1");
             assertThat(game.time()).isEqualTo(LocalDateTime.of(2022, 8, 29, 10, 30));
             assertThat(game.court()).isEqualTo("court");
-            assertThat(game.contestantIds()).containsExactly("teamA","teamB");
-            assertThat(game.refereeId()).isNotEmpty().hasValue("teamC");
+            assertThat(game.contestants()).containsExactly(TEAM_A,TEAM_B);
+            assertThat(game.refereeId()).isNotEmpty().hasValue(TEAM_C);
             assertThat(game.scoreType()).isEqualTo(DepthOne);
             assertThat(game.isFinished()).isTrue();
             assertThat(game.score()).isNotEmpty().get().isOfAnyClassIn(DepthOneScore.class);
@@ -284,6 +305,11 @@ class SheetGameRepositoryTest {
 
         @Test
         void should_map_game_completed_depth_two() {
+            // Given
+            when(teamService.search("teamA")).thenReturn(Optional.of(TEAM_A));
+            when(teamService.search("teamB")).thenReturn(Optional.of(TEAM_B));
+            when(teamService.search("teamC")).thenReturn(Optional.of(TEAM_C));
+
             // When
             Game game = sheetGameRepository.fromRawData(RAW_GAME_2);
 
@@ -291,8 +317,8 @@ class SheetGameRepositoryTest {
             assertThat(game.id()).isEqualTo("game2");
             assertThat(game.time()).isEqualTo(LocalDateTime.of(2022, 8, 29, 11, 30));
             assertThat(game.court()).isEqualTo("court");
-            assertThat(game.contestantIds()).containsExactly("teamA","teamC");
-            assertThat(game.refereeId()).isNotEmpty().hasValue("teamB");
+            assertThat(game.contestants()).containsExactly(TEAM_A,TEAM_C);
+            assertThat(game.refereeId()).isNotEmpty().hasValue(TEAM_B);
             assertThat(game.scoreType()).isEqualTo(DepthTwo);
             assertThat(game.isFinished()).isTrue();
             assertThat(game.score()).isNotEmpty().get().isOfAnyClassIn(DepthTwoScore.class);
@@ -302,6 +328,10 @@ class SheetGameRepositoryTest {
 
         @Test
         void should_map_game_scoreless() {
+            // Given
+            when(teamService.search("teamB")).thenReturn(Optional.of(TEAM_B));
+            when(teamService.search("teamC")).thenReturn(Optional.of(TEAM_C));
+
             // When
             Game game = sheetGameRepository.fromRawData(RAW_GAME_3);
 
@@ -309,7 +339,7 @@ class SheetGameRepositoryTest {
             assertThat(game.id()).isEqualTo("game3");
             assertThat(game.time()).isEqualTo(LocalDateTime.of(2022, 8, 29, 12, 30));
             assertThat(game.court()).isEqualTo("court");
-            assertThat(game.contestantIds()).containsExactly("teamC","teamB");
+            assertThat(game.contestants()).containsExactly(TEAM_C,TEAM_B);
             assertThat(game.refereeId()).isEmpty();
             assertThat(game.isFinished()).isFalse();
             assertThat(game.scoreType()).isEqualTo(DepthOne);
@@ -321,6 +351,8 @@ class SheetGameRepositoryTest {
             // Given
             List<Object> rawGame =
                     rawData("game4", "23/08/2022", "13:00", "Court1", "teamA;teamC", "", "false", "DepthOne");
+            when(teamService.search("teamA")).thenReturn(Optional.of(TEAM_A));
+            when(teamService.search("teamC")).thenReturn(Optional.of(TEAM_C));
 
             // When
             Game game = sheetGameRepository.fromRawData(rawGame);

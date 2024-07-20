@@ -1,6 +1,7 @@
 package com.gberard.tournament.infrastructure.repository;
 
 import com.gberard.tournament.domain.model.Game;
+import com.gberard.tournament.domain.model.Team;
 import com.gberard.tournament.domain.port.output.GameRepository;
 import com.gberard.tournament.domain.model.score.ScoreType;
 import com.gberard.tournament.infrastructure.serializer.DateRaw;
@@ -11,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 
 import static com.gberard.tournament.infrastructure.serializer.RawUtils.*;
 import static com.gberard.tournament.infrastructure.serializer.RawUtils.getEnumValue;
@@ -33,7 +36,7 @@ public class SheetGameRepository extends SheetRepository<Game> implements GameRe
 
     public List<Game> searchFor(String teamId) {
         return readAll().stream()
-                .filter(game -> game.contestantIds().contains(teamId))
+                .filter(game -> game.contestants().stream().anyMatch(team -> team.id() == teamId))
                 .collect(toList());
     }
 
@@ -46,11 +49,15 @@ public class SheetGameRepository extends SheetRepository<Game> implements GameRe
         getStringValue(value, 0).ifPresent(gameBuilder::id);
         getDateTimeValue(value, 1,2).ifPresent(gameBuilder::time);
         getStringValue(value, 3).ifPresent(gameBuilder::court);
-        contestantIds.ifPresent(gameBuilder::contestantIds);
-        getStringValue(value, 5).ifPresent(gameBuilder::refereeId);
+
+
+        var teams = contestantIds.map(ids -> ids.stream().map(id -> teamService.search(id).get()).toList()).orElse(List.of());
+        gameBuilder.contestants(teams);
+
+        getStringValue(value, 5).map(id -> teamService.search(id)).flatMap(Function.identity()).ifPresent(gameBuilder::refereeId);
         getBooleanValue(value, 6).ifPresent(gameBuilder::isFinished);
         scoreType.ifPresent(gameBuilder::scoreType);
-        getValue(value, 8, getScoreDeserializer(contestantIds.get(), scoreType.get()))
+        getValue(value, 8, getScoreDeserializer(teams, scoreType.get()))
                 .ifPresent(gameBuilder::score);
 
         return gameBuilder.build();
@@ -63,8 +70,8 @@ public class SheetGameRepository extends SheetRepository<Game> implements GameRe
                 DateRaw.serialize(game.time().toLocalDate()),
                 TimeRaw.serialize(game.time().toLocalTime()),
                 game.court(),
-                ListRaw.serialize(game.contestantIds()),
-                game.refereeId().orElse(""),
+                ListRaw.serialize(game.contestants().stream().map(Team::id).toList()),
+                game.refereeId().map(Team::id).orElse(""),
                 game.isFinished().toString(),
                 game.scoreType().toString(),
                 game.score().map(getScoreSerializer(game)).orElse("")

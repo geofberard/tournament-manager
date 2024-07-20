@@ -12,8 +12,8 @@ public record Game(
         String id,
         LocalDateTime time,
         String court,
-        List<String> contestantIds,
-        Optional<String> refereeId,
+        List<Team> contestants,
+        Optional<Team> refereeId,
         Boolean isFinished,
         ScoreType scoreType,
         Optional<Score> score
@@ -24,13 +24,13 @@ public record Game(
             String id,
             LocalDateTime time,
             String court,
-            List<String> contestantIds,
-            String refereeId,
+            List<Team> contestants,
+            Team refereeId,
             Boolean isFinished,
             ScoreType scoreType,
             Score score
     ) {
-        return new Game(id, time, court, contestantIds, Optional.ofNullable(refereeId), isFinished, scoreType,
+        return new Game(id, time, court, contestants, Optional.ofNullable(refereeId), isFinished, scoreType,
                 Optional.ofNullable(score));
     }
 }

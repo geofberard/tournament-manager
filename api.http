@@ -1,0 +1,8 @@
+###
+GET 127.0.0.1:8080/api/players
+
+###
+GET 127.0.0.1:8080/api/teams
+
+###
+GET 127.0.0.1:8080/api/games
