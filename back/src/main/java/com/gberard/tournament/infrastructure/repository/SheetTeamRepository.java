@@ -25,13 +25,13 @@ public class SheetTeamRepository extends SheetRepository<Team> implements TeamRe
         return new Team(
                 getStringValue(rawData,0).get(),
                 getStringValue(rawData,1).get(),
-                getValue(rawData, 2, ListRaw::deserialize).orElse(List.of())
+                List.of()//getValue(rawData, 2, ListRaw::deserialize).orElse(List.of())
         );
     }
 
     @Override
     protected List<Object> toRawData(Team team) {
-        return List.of(team.id(),team.name(), ListRaw.serialize(team.playerIds()));
+        return List.of(team.id(),team.name(), List.of());//ListRaw.serialize(team.playerIds()));
     }
 
 }

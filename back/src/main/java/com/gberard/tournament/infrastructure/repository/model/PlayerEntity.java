@@ -12,9 +12,9 @@ public class PlayerEntity {
     @Id
     String id;
 
-    String firstName;
+    String firstname;
 
-    String lastName;
+    String lastname;
 
     @PrePersist
     public void generateUUID() {
@@ -24,14 +24,14 @@ public class PlayerEntity {
     }
 
     public Player toPlayer() {
-        return new Player(id, firstName, lastName);
+        return new Player(id, firstname, lastname);
     }
 
     public static PlayerEntity fromPlayer(Player player) {
         PlayerEntity playerEntity = new PlayerEntity();
         playerEntity.id = player.id();
-        playerEntity.firstName = player.firstName();
-        playerEntity.lastName = player.lastName();
+        playerEntity.firstname = player.firstName();
+        playerEntity.lastname = player.lastName();
         return playerEntity;
     }
 

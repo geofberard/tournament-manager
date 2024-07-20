@@ -2,7 +2,9 @@ package com.gberard.tournament.application.controller;
 
 import com.gberard.tournament.application.response.TeamDTO;
 import com.gberard.tournament.application.response.TeamDTOMapper;
+import com.gberard.tournament.domain.port.output.TeamRepository;
 import com.gberard.tournament.infrastructure.repository.SheetTeamRepository;
+import com.gberard.tournament.infrastructure.repository.model.TeamEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,7 +17,7 @@ import java.util.List;
 public class TeamsController {
 
     @Autowired
-    public SheetTeamRepository teamService;
+    public TeamRepository teamService;
 
     @GetMapping("/teams")
     public List<TeamDTO> getTeams() {
