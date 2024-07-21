@@ -1,14 +1,12 @@
 package com.gberard.tournament.application.response;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.gberard.tournament.domain.model.Player;
 
 public record PlayerDTO(
         String id,
         String firstName,
-        String lastName) implements ContestantDTO {
-
-    @Override
-    public String getDisplayName(){
-        return firstName + " " + lastName;
+        String lastName) {
+    public static PlayerDTO toPlayerDTO(Player player){
+        return new PlayerDTO(player.id(), player.firstName(), player.lastName());
     }
 }

@@ -37,8 +37,8 @@ class DepthOneScoreRawTest {
 
         // Then
         assertThat(score).isOfAnyClassIn(DepthOneScore.class);
-        assertThat(score.getPointFor(TEAM_A.id())).isEqualTo(10);
-        assertThat(score.getPointFor(TEAM_B.id())).isEqualTo(9);
+        assertThat(score.getPointFor(TEAM_A)).isEqualTo(10);
+        assertThat(score.getPointFor(TEAM_B)).isEqualTo(9);
         assertThat(score).isEqualTo(GAME_SCORE);
     }
 

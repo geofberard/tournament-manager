@@ -53,11 +53,11 @@ class ContestantStatsServiceTest {
 
         public static Stream<Arguments> getExpectedStats() {
             return Stream.of(
-                    of(new ContestantStats(TEAM_A.id(), 2, 2, 0, 0, 6, 43, 29, 14)),
-                    of(new ContestantStats(TEAM_B.id(), 3, 1, 1, 1, 4, 47, 54, -7)),
-                    of(new ContestantStats(TEAM_C.id(), 3, 1, 0, 2, 3, 53, 50, 3)),
-                    of(new ContestantStats(TEAM_D.id(), 2, 0, 1, 1, 1, 20, 30, -10)),
-                    of(new ContestantStats(TEAM_E.id(), 0, 0, 0, 0, 0, 0, 0, 0))
+                    of(new ContestantStats(TEAM_A, 2, 2, 0, 0, 6, 43, 29, 14)),
+                    of(new ContestantStats(TEAM_B, 3, 1, 1, 1, 4, 47, 54, -7)),
+                    of(new ContestantStats(TEAM_C, 3, 1, 0, 2, 3, 53, 50, 3)),
+                    of(new ContestantStats(TEAM_D, 2, 0, 1, 1, 1, 20, 30, -10)),
+                    of(new ContestantStats(TEAM_E, 0, 0, 0, 0, 0, 0, 0, 0))
             );
         }
 
@@ -68,7 +68,7 @@ class ContestantStatsServiceTest {
             when(gameService.readAll()).thenReturn(games);
 
             // When
-            ContestantStats stats = teamStatsService.getContestantStats(expected.contestantId());
+            ContestantStats stats = teamStatsService.getContestantStats(expected.contestant());
 
             // Then
             assertThat(stats).isEqualTo(expected);
@@ -92,8 +92,8 @@ class ContestantStatsServiceTest {
 
             // Then
             assertThat(teamsStats).hasSize(teams.size());
-            assertThat(teamsStats.stream().map(ContestantStats::contestantId).collect(toList()))
-                    .containsAll(teams.stream().map(Team::id).toList());
+            assertThat(teamsStats.stream().map(ContestantStats::contestant).collect(toList()))
+                    .containsAll(teams);
         }
     }
 }

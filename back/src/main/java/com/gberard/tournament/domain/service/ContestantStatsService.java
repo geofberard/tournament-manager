@@ -5,6 +5,8 @@ import com.gberard.tournament.domain.model.Team;
 import com.gberard.tournament.domain.port.input.ContestantStatsUseCase;
 import com.gberard.tournament.domain.model.stats.ContestantStats;
 import com.gberard.tournament.domain.model.stats.ContestantStatsAccumulator;
+import com.gberard.tournament.domain.port.output.GameRepository;
+import com.gberard.tournament.domain.port.output.TeamRepository;
 import com.gberard.tournament.infrastructure.repository.SheetGameRepository;
 import com.gberard.tournament.infrastructure.repository.SheetTeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,36 +21,35 @@ import static java.util.stream.Collectors.toList;
 public class ContestantStatsService implements ContestantStatsUseCase {
 
     @Autowired
-    SheetTeamRepository teamService;
+    TeamRepository teamService;
 
     @Autowired
-    SheetGameRepository gameService;
+    GameRepository gameService;
 
     @Override
     public List<ContestantStats> getContestantsStats() {
         return teamService.readAll().stream()
-                .map(Team::id)
                 .map(this::getContestantStats)
                 .collect(toList());
     }
 
     @Override
-    public ContestantStats getContestantStats(String contestantId) {
+    public ContestantStats getContestantStats(Team contestant) {
         return gameService.readAll().stream()
-                .filter(game -> game.contestants().stream().anyMatch(team -> team.id() == contestantId))
+                .filter(game -> game.contestants().stream().anyMatch(team -> team == contestant))
                 .filter(Game::isFinished)
                 .reduce(
-                        new ContestantStatsAccumulator(contestantId),
-                        (reducer, game) -> updateStatsWith(reducer, game, contestantId),
+                        new ContestantStatsAccumulator(contestant),
+                        (reducer, game) -> updateStatsWith(reducer, game, contestant),
                         ContestantStatsAccumulator::merge
                 ).create();
     }
 
-    private static ContestantStatsAccumulator updateStatsWith(ContestantStatsAccumulator reducer, Game game, String contestantId) {
+    private static ContestantStatsAccumulator updateStatsWith(ContestantStatsAccumulator reducer, Game game, Team contestant) {
         game.score().ifPresent(score -> {
-            var contestantResult = score.getTeamStatus(contestantId);
-            var pointsFor = score.getPointFor(contestantId);
-            var pointsAgainst = score.getPointAgainst(contestantId);
+            var contestantResult = score.getTeamStatus(contestant);
+            var pointsFor = score.getPointFor(contestant);
+            var pointsAgainst = score.getPointAgainst(contestant);
             reducer.addPlayed(1)
                     .addWon(contestantResult == WIN ? 1 : 0)
                     .addLost(contestantResult == LOST ? 1 : 0)

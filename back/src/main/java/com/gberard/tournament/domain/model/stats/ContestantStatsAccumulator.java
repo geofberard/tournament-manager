@@ -1,7 +1,9 @@
 package com.gberard.tournament.domain.model.stats;
 
+import com.gberard.tournament.domain.model.Team;
+
 public class ContestantStatsAccumulator {
-    private String contestantId;
+    private Team contestant;
     private int played = 0;
     private int won = 0;
     private int drawn = 0;
@@ -11,8 +13,8 @@ public class ContestantStatsAccumulator {
     private int pointsAgainst = 0;
     private int pointsDiff = 0;
 
-    public ContestantStatsAccumulator(String contestantId) {
-        this.contestantId = contestantId;
+    public ContestantStatsAccumulator(Team contestant) {
+        this.contestant = contestant;
     }
 
     public ContestantStatsAccumulator addPlayed(int played) {
@@ -56,11 +58,11 @@ public class ContestantStatsAccumulator {
     }
 
     public ContestantStats create() {
-        return new ContestantStats(contestantId, played, won, drawn, lost, score, pointsFor, pointsAgainst, pointsDiff);
+        return new ContestantStats(contestant, played, won, drawn, lost, score, pointsFor, pointsAgainst, pointsDiff);
     }
 
     public static ContestantStatsAccumulator merge(ContestantStatsAccumulator statA, ContestantStatsAccumulator statB) {
-        if(!statA.contestantId.equals(statB.contestantId)) {
+        if(!statA.contestant.equals(statB.contestant)) {
             throw new IllegalStateException("Impossible to merge stats from different teams");
         }
         return statA.addPlayed(statB.played)

@@ -1,20 +1,23 @@
 package com.gberard.tournament.domain.model.stats;
 
+import com.gberard.tournament.domain.model.Team;
 import com.gberard.tournament.domain.model.stats.ContestantStats;
 import com.gberard.tournament.domain.model.stats.ContestantStatsAccumulator;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
+import static com.gberard.tournament.TestUtils.TEAM_A;
+import static com.gberard.tournament.TestUtils.TEAM_B;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ContestantStatsAccumulatorTest {
 
-    private String teamId = "teamId";
-
     @Test
     void should_have_no_initial_count() {
         // When
-        ContestantStats stats = new ContestantStatsAccumulator(teamId).create();
+        ContestantStats stats = new ContestantStatsAccumulator(TEAM_A).create();
 
         // Then
         assertThat(stats.played()).as("played").isEqualTo(0);
@@ -30,7 +33,7 @@ class ContestantStatsAccumulatorTest {
     @Test
     void should_increment_counter() {
         // When
-        ContestantStats stats = new ContestantStatsAccumulator(teamId)
+        ContestantStats stats = new ContestantStatsAccumulator(TEAM_A)
                 .addPlayed(1)
                 .addWon(2)
                 .addDrawn(3)
@@ -55,7 +58,7 @@ class ContestantStatsAccumulatorTest {
     @Test
     void should_manage_multiple_increment() {
         // When
-        ContestantStats stats = new ContestantStatsAccumulator(teamId)
+        ContestantStats stats = new ContestantStatsAccumulator(TEAM_A)
                 .addPlayed(1)
                 .addWon(2)
                 .addDrawn(3)
@@ -88,7 +91,7 @@ class ContestantStatsAccumulatorTest {
     @Test
     void should_manage_merge() {
         // Given
-        ContestantStatsAccumulator accumulator1 = new ContestantStatsAccumulator(teamId)
+        ContestantStatsAccumulator accumulator1 = new ContestantStatsAccumulator(TEAM_A)
                 .addPlayed(1)
                 .addWon(2)
                 .addDrawn(3)
@@ -98,7 +101,7 @@ class ContestantStatsAccumulatorTest {
                 .addPointsAgainst(7)
                 .addPointsDiff(8);
 
-        ContestantStatsAccumulator accumulator2 = new ContestantStatsAccumulator(teamId)
+        ContestantStatsAccumulator accumulator2 = new ContestantStatsAccumulator(TEAM_A)
                 .addPlayed(1)
                 .addWon(2)
                 .addDrawn(3)
@@ -125,8 +128,8 @@ class ContestantStatsAccumulatorTest {
     @Test
     void should_thow_error_when_mergind_different_teams() {
         // Given
-        ContestantStatsAccumulator accumulator1 = new ContestantStatsAccumulator(teamId);
-        ContestantStatsAccumulator accumulator2 = new ContestantStatsAccumulator("error");
+        ContestantStatsAccumulator accumulator1 = new ContestantStatsAccumulator(TEAM_A);
+        ContestantStatsAccumulator accumulator2 = new ContestantStatsAccumulator(TEAM_B);
 
         // When
         IllegalStateException exception = assertThrows(

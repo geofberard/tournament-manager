@@ -1,6 +1,8 @@
 package com.gberard.tournament.application.controller;
 
+import com.gberard.tournament.application.response.ContestantStatsDTO;
 import com.gberard.tournament.domain.model.stats.ContestantStats;
+import com.gberard.tournament.domain.port.output.TeamRepository;
 import com.gberard.tournament.domain.service.ContestantStatsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,13 +18,10 @@ public class ContestantStatsController {
     public ContestantStatsService teamStatsService;
 
     @GetMapping("/contestant-stats")
-    public List<ContestantStats> getTeamsStats() {
-        return teamStatsService.getContestantsStats();
-    }
-
-    @GetMapping("/contestant-stats/{contestantId}")
-    public ContestantStats getTeamStats(@PathVariable String contestantId) {
-        return teamStatsService.getContestantStats(contestantId);
+    public List<ContestantStatsDTO> getTeamsStats() {
+        return teamStatsService.getContestantsStats().stream()
+                .map(ContestantStatsDTO::fromContestantStats)
+                .toList();
     }
 
 }

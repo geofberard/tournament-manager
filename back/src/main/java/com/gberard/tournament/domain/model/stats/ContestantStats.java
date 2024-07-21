@@ -1,7 +1,9 @@
 package com.gberard.tournament.domain.model.stats;
 
+import com.gberard.tournament.domain.model.Team;
+
 public record ContestantStats(
-        String contestantId,
+        Team contestant,
         int played,
         int won,
         int drawn,

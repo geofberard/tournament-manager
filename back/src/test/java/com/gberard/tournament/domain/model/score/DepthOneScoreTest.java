@@ -1,5 +1,6 @@
 package com.gberard.tournament.domain.model.score;
 
+import com.gberard.tournament.domain.model.Team;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -26,8 +27,8 @@ class DepthOneScoreTest {
             DepthOneScore score = buildDepthOneScore(TEAM_A, 18, TEAM_B, 12);
 
             // Then
-            assertThat(score.getPointFor(TEAM_A.id())).isEqualTo(18);
-            assertThat(score.getPointFor(TEAM_B.id())).isEqualTo(12);
+            assertThat(score.getPointFor(TEAM_A)).isEqualTo(18);
+            assertThat(score.getPointFor(TEAM_B)).isEqualTo(12);
         }
 
         @Test
@@ -38,7 +39,7 @@ class DepthOneScoreTest {
             // Then
             IllegalStateException exception = assertThrows(
                     IllegalStateException.class,
-                    () -> score.getPointFor(TEAM_C.id()),
+                    () -> score.getPointFor(TEAM_C),
                     "Expected merge() to throw, but it didn't"
             );
         }
@@ -55,8 +56,8 @@ class DepthOneScoreTest {
             DepthOneScore score = buildDepthOneScore(TEAM_A, 18, TEAM_B, 12);
 
             // Then
-            assertThat(score.getPointAgainst(TEAM_A.id())).isEqualTo(12);
-            assertThat(score.getPointAgainst(TEAM_B.id())).isEqualTo(18);
+            assertThat(score.getPointAgainst(TEAM_A)).isEqualTo(12);
+            assertThat(score.getPointAgainst(TEAM_B)).isEqualTo(18);
         }
 
         @Test
@@ -67,7 +68,7 @@ class DepthOneScoreTest {
             // Then
             IllegalStateException exception = assertThrows(
                     IllegalStateException.class,
-                    () -> score.getPointAgainst(TEAM_C.id()),
+                    () -> score.getPointAgainst(TEAM_C),
                     "Expected merge() to throw, but it didn't"
             );
         }
@@ -80,15 +81,15 @@ class DepthOneScoreTest {
 
         public static Stream<Arguments> wonScenario() {
             return Stream.of(
-                    Arguments.of("A win", buildDepthOneScore(TEAM_A, 10, TEAM_B, 9), TEAM_A.id()),
-                    Arguments.of("B win", buildDepthOneScore(TEAM_A, 14, TEAM_B, 25), TEAM_B.id())
+                    Arguments.of("A win", buildDepthOneScore(TEAM_A, 10, TEAM_B, 9), TEAM_A),
+                    Arguments.of("B win", buildDepthOneScore(TEAM_A, 14, TEAM_B, 25), TEAM_B)
             );
         }
 
         public static Stream<Arguments> lostScenario() {
             return Stream.of(
-                    Arguments.of("A win", buildDepthOneScore(TEAM_A, 10, TEAM_B, 9), TEAM_B.id()),
-                    Arguments.of("B win", buildDepthOneScore(TEAM_A, 15, TEAM_B, 25), TEAM_A.id())
+                    Arguments.of("A win", buildDepthOneScore(TEAM_A, 10, TEAM_B, 9), TEAM_B),
+                    Arguments.of("B win", buildDepthOneScore(TEAM_A, 15, TEAM_B, 25), TEAM_A)
             );
         }
 
@@ -98,19 +99,19 @@ class DepthOneScoreTest {
             DepthOneScore score = buildDepthOneScore(TEAM_A, 10, TEAM_B, 10);
 
             // Then
-            assertThat(score.getTeamStatus(TEAM_A.id())).isEqualTo(DRAWN);
-            assertThat(score.getTeamStatus(TEAM_B.id())).isEqualTo(DRAWN);
+            assertThat(score.getTeamStatus(TEAM_A)).isEqualTo(DRAWN);
+            assertThat(score.getTeamStatus(TEAM_B)).isEqualTo(DRAWN);
         }
 
         @ParameterizedTest
         @MethodSource("wonScenario")
-        void should_handle_status_won(String scenario, Score score, String winner) {
+        void should_handle_status_won(String scenario, Score score, Team winner) {
             assertThat(score.getTeamStatus(winner)).isEqualTo(WIN);
         }
 
         @ParameterizedTest
         @MethodSource("lostScenario")
-        void should_handle_status_lost(String scenario, Score score, String loser) {
+        void should_handle_status_lost(String scenario, Score score, Team loser) {
             assertThat(score.getTeamStatus(loser)).isEqualTo(LOST);
         }
 
@@ -122,7 +123,7 @@ class DepthOneScoreTest {
             // Then
             IllegalStateException exception = assertThrows(
                     IllegalStateException.class,
-                    () -> score.getTeamStatus(TEAM_C.id()),
+                    () -> score.getTeamStatus(TEAM_C),
                     "Expected merge() to throw, but it didn't"
             );
         }

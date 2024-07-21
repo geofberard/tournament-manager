@@ -1,5 +1,6 @@
 package com.gberard.tournament.domain.model.score;
 
+import com.gberard.tournament.domain.model.Team;
 import com.gberard.tournament.domain.model.score.DepthTwoScore;
 import com.gberard.tournament.domain.model.score.Score;
 import org.junit.jupiter.api.DisplayName;
@@ -28,8 +29,8 @@ class DepthTwoScoreTest {
             DepthTwoScore score = buildDepthTwoScore(TEAM_A, of(18, 25, 12), TEAM_B, of(12, 14, 25));
 
             // Then
-            assertThat(score.getPointFor(TEAM_A.id())).isEqualTo(55);
-            assertThat(score.getPointFor(TEAM_B.id())).isEqualTo(51);
+            assertThat(score.getPointFor(TEAM_A)).isEqualTo(55);
+            assertThat(score.getPointFor(TEAM_B)).isEqualTo(51);
         }
 
     }
@@ -44,8 +45,8 @@ class DepthTwoScoreTest {
             DepthTwoScore score = buildDepthTwoScore(TEAM_A, of(18, 25, 12), TEAM_B, of(12, 14, 25));
 
             // Then
-            assertThat(score.getPointAgainst(TEAM_A.id())).isEqualTo(51);
-            assertThat(score.getPointAgainst(TEAM_B.id())).isEqualTo(55);
+            assertThat(score.getPointAgainst(TEAM_A)).isEqualTo(51);
+            assertThat(score.getPointAgainst(TEAM_B)).isEqualTo(55);
         }
 
     }
@@ -66,35 +67,35 @@ class DepthTwoScoreTest {
         @MethodSource("drawnScenario")
         void should_handle_status_drawn(String scenario, Score score) {
             // Then
-            assertThat(score.getTeamStatus(TEAM_A.id())).isEqualTo(DRAWN);
-            assertThat(score.getTeamStatus(TEAM_B.id())).isEqualTo(DRAWN);
+            assertThat(score.getTeamStatus(TEAM_A)).isEqualTo(DRAWN);
+            assertThat(score.getTeamStatus(TEAM_B)).isEqualTo(DRAWN);
         }
 
         public static Stream<Arguments> wonScenario() {
             return Stream.of(
-                    Arguments.of("A win", buildDepthTwoScore(TEAM_A, of(18, 25, 12), TEAM_B, of(12, 14, 12)), TEAM_A.id()),
-                    Arguments.of("A win with drawn", buildDepthTwoScore(TEAM_A, of(18, 25, 12), TEAM_B, of(12, 14, 25)), TEAM_A.id()),
-                    Arguments.of("B win", buildDepthTwoScore(TEAM_A, of(18, 25, 12), TEAM_B, of(25, 14, 25)), TEAM_B.id())
+                    Arguments.of("A win", buildDepthTwoScore(TEAM_A, of(18, 25, 12), TEAM_B, of(12, 14, 12)), TEAM_A),
+                    Arguments.of("A win with drawn", buildDepthTwoScore(TEAM_A, of(18, 25, 12), TEAM_B, of(12, 14, 25)), TEAM_A),
+                    Arguments.of("B win", buildDepthTwoScore(TEAM_A, of(18, 25, 12), TEAM_B, of(25, 14, 25)), TEAM_B)
             );
         }
 
         @ParameterizedTest
         @MethodSource("wonScenario")
-        void should_handle_status_won(String scenario, Score score, String winner) {
+        void should_handle_status_won(String scenario, Score score, Team winner) {
             assertThat(score.getTeamStatus(winner)).isEqualTo(WIN);
         }
 
         public static Stream<Arguments> lostScenario() {
             return Stream.of(
-                    Arguments.of("A win", buildDepthTwoScore(TEAM_A, of(18, 25, 12), TEAM_B, of(12, 14, 12)), TEAM_B.id()),
-                    Arguments.of("A win with drawn", buildDepthTwoScore(TEAM_A, of(18, 25, 12), TEAM_B, of(12, 14, 25)), TEAM_B.id()),
-                    Arguments.of("B win", buildDepthTwoScore(TEAM_A, of(18, 25, 12), TEAM_B, of(25, 14, 25)), TEAM_A.id())
+                    Arguments.of("A win", buildDepthTwoScore(TEAM_A, of(18, 25, 12), TEAM_B, of(12, 14, 12)), TEAM_B),
+                    Arguments.of("A win with drawn", buildDepthTwoScore(TEAM_A, of(18, 25, 12), TEAM_B, of(12, 14, 25)), TEAM_B),
+                    Arguments.of("B win", buildDepthTwoScore(TEAM_A, of(18, 25, 12), TEAM_B, of(25, 14, 25)), TEAM_A)
             );
         }
 
         @ParameterizedTest
         @MethodSource("lostScenario")
-        void should_handle_status_lost(String scenario, Score score, String loser) {
+        void should_handle_status_lost(String scenario, Score score, Team loser) {
             assertThat(score.getTeamStatus(loser)).isEqualTo(LOST);
         }
     }

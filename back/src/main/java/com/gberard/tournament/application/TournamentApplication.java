@@ -7,6 +7,7 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import com.gberard.tournament.application.response.Views;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -54,6 +55,7 @@ public class TournamentApplication {
                 .enable(MapperFeature.DEFAULT_VIEW_INCLUSION)
                 .build();
 
+        jsonMapper.setConfig(jsonMapper.getSerializationConfig().withView(Views.Team.Basic.class));
         JavaTimeModule module = new JavaTimeModule();
 
         // Définir le format de sérialisation
@@ -64,6 +66,7 @@ public class TournamentApplication {
         module.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(formatter));
 
         jsonMapper.registerModule(module);
+
         jsonMapper.registerModule(new Jdk8Module());
 
         return jsonMapper;

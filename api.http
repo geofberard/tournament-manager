@@ -5,4 +5,13 @@ GET 127.0.0.1:8080/api/players
 GET 127.0.0.1:8080/api/teams
 
 ###
+GET 127.0.0.1:8080/api/teams/team_1
+
+###
+GET 127.0.0.1:8080/api/teams/team_1/stats
+
+###
 GET 127.0.0.1:8080/api/games
+
+###
+GET 127.0.0.1:8080/api/contestant-stats

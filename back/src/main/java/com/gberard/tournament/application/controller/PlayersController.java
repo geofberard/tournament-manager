@@ -1,9 +1,7 @@
 package com.gberard.tournament.application.controller;
 
 import com.gberard.tournament.application.response.PlayerDTO;
-import com.gberard.tournament.application.response.PlayerDTOMapper;
 import com.gberard.tournament.domain.port.output.PlayerRepository;
-import com.gberard.tournament.infrastructure.repository.SheetPlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,14 +18,14 @@ public class PlayersController {
     @GetMapping("/players")
     public List<PlayerDTO> getPlayers() {
         return playerService.readAll().stream()
-                .map(PlayerDTOMapper::toPlayerDTO)
+                .map(PlayerDTO::toPlayerDTO)
                 .toList();
     }
 
     @GetMapping("/players/{id}")
     public PlayerDTO getPlayer(@PathVariable String id) {
         return playerService.search(id)
-                .map(PlayerDTOMapper::toPlayerDTO)
+                .map(PlayerDTO::toPlayerDTO)
                 .get();
     }
 

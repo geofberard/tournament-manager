@@ -1,17 +1,18 @@
 package com.gberard.tournament.application.response;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.gberard.tournament.domain.model.Player;
+import com.gberard.tournament.domain.model.Team;
 
 import java.util.List;
 
 public record TeamDTO(
         String id,
         String name,
-        List<Player> players) implements ContestantDTO {
+        @JsonView(Views.Team.Full.class)
+        List<PlayerDTO> players) {
 
-    @Override
-    public String getDisplayName(){
-        return name;
+    public static TeamDTO toTeamDTO(Team team) {
+        return new TeamDTO(team.id(), team.name(), team.players().stream().map(PlayerDTO::toPlayerDTO).toList());
     }
 }

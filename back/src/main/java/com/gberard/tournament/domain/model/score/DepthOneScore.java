@@ -1,5 +1,6 @@
 package com.gberard.tournament.domain.model.score;
 
+import com.gberard.tournament.domain.model.Team;
 import com.gberard.tournament.domain.model.stats.ContestantResult;
 
 import java.util.Map;
@@ -7,34 +8,34 @@ import java.util.Map;
 public record DepthOneScore(Map<String, Integer> result) implements Score {
 
     @Override
-    public int getPointFor(String contestantId) {
-        checkContestant(contestantId);
-        return result.get(contestantId);
+    public int getPointFor(Team team) {
+        checkContestant(team);
+        return result.get(team.id());
     }
 
     @Override
-    public int getPointAgainst(String contestantId) {
-        checkContestant(contestantId);
+    public int getPointAgainst(Team team) {
+        checkContestant(team);
         return result.keySet().stream()
-                .filter(key -> !key.equals(contestantId))
+                .filter(key -> !key.equals(team.id()))
                 .mapToInt(result::get)
                 .sum();
     }
 
     @Override
-    public ContestantResult getTeamStatus(String contestantId) {
-        checkContestant(contestantId);
+    public ContestantResult getTeamStatus(Team team) {
+        checkContestant(team);
 
-        if (getPointFor(contestantId) == getPointAgainst(contestantId)) {
+        if (getPointFor(team) == getPointAgainst(team)) {
             return ContestantResult.DRAWN;
         }
 
-        return getPointFor(contestantId) > getPointAgainst(contestantId) ? ContestantResult.WIN : ContestantResult.LOST;
+        return getPointFor(team) > getPointAgainst(team) ? ContestantResult.WIN : ContestantResult.LOST;
     }
 
-    private void checkContestant(String contestantId) {
-        if (!result.containsKey(contestantId)) {
-            throw new IllegalStateException("Contestant " + contestantId + " absent in score " + this);
+    private void checkContestant(Team team) {
+        if (!result.containsKey(team.id())) {
+            throw new IllegalStateException("Contestant " + team.id() + " absent in score " + this);
         }
     }
 }
