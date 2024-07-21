@@ -1,7 +1,6 @@
 package com.gberard.tournament.application.response;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.gberard.tournament.domain.model.Player;
 import com.gberard.tournament.domain.model.Team;
 
 import java.util.List;
@@ -9,7 +8,7 @@ import java.util.List;
 public record TeamDTO(
         String id,
         String name,
-        @JsonView(Views.Team.Full.class)
+        @JsonView(Views.TeamView.Full.class)
         List<PlayerDTO> players) {
 
     public static TeamDTO toTeamDTO(Team team) {

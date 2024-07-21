@@ -23,7 +23,7 @@ public class TeamsController {
     @Autowired
     public ContestantStatsService teamStatsService;
 
-    @JsonView(Views.Team.Full.class)
+    @JsonView(Views.TeamView.Full.class)
     @GetMapping("/teams")
     public List<TeamDTO> getTeams() {
         return teamService.readAll().stream()
@@ -31,7 +31,7 @@ public class TeamsController {
                 .toList();
     }
 
-    @JsonView(Views.Team.Full.class)
+    @JsonView(Views.TeamView.Full.class)
     @GetMapping("/teams/{id}")
     public TeamDTO getTeam(@PathVariable String id) {
         return teamService.search(id)

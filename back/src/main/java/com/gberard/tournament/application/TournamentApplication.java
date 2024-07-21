@@ -55,7 +55,7 @@ public class TournamentApplication {
                 .enable(MapperFeature.DEFAULT_VIEW_INCLUSION)
                 .build();
 
-        jsonMapper.setConfig(jsonMapper.getSerializationConfig().withView(Views.Team.Basic.class));
+        jsonMapper.setConfig(jsonMapper.getSerializationConfig().withView(Views.TeamView.Basic.class));
         JavaTimeModule module = new JavaTimeModule();
 
         // Définir le format de sérialisation
