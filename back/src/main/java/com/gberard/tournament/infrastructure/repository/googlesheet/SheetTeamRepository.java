@@ -1,8 +1,7 @@
-package com.gberard.tournament.infrastructure.repository;
+package com.gberard.tournament.infrastructure.repository.googlesheet;
 
 import com.gberard.tournament.domain.model.Player;
 import com.gberard.tournament.domain.model.Team;
-import com.gberard.tournament.infrastructure.repository.model.PlayerEntity;
 import com.gberard.tournament.infrastructure.serializer.ListRaw;
 import com.gberard.tournament.domain.port.output.TeamRepository;
 import com.google.common.annotations.VisibleForTesting;

@@ -1,8 +1,8 @@
-package com.gberard.tournament.infrastructure.repository;
+package com.gberard.tournament.infrastructure.repository.jpa;
 
 import com.gberard.tournament.domain.model.Game;
 import com.gberard.tournament.domain.port.output.GameRepository;
-import com.gberard.tournament.infrastructure.repository.model.GameEntity;
+import com.gberard.tournament.infrastructure.repository.jpa.model.GameEntity;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 

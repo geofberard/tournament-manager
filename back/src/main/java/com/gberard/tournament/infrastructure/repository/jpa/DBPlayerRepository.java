@@ -1,17 +1,13 @@
-package com.gberard.tournament.infrastructure.repository;
+package com.gberard.tournament.infrastructure.repository.jpa;
 
 import com.gberard.tournament.domain.model.Player;
 import com.gberard.tournament.domain.port.output.PlayerRepository;
-import com.gberard.tournament.infrastructure.repository.model.PlayerEntity;
-import com.google.common.annotations.VisibleForTesting;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.gberard.tournament.infrastructure.repository.jpa.model.PlayerEntity;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-
-import static com.gberard.tournament.infrastructure.serializer.RawUtils.getStringValue;
 
 @Primary
 @Repository

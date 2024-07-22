@@ -1,6 +1,5 @@
-package com.gberard.tournament.infrastructure.repository.model;
+package com.gberard.tournament.infrastructure.repository.jpa.model;
 
-import com.gberard.tournament.domain.model.Player;
 import com.gberard.tournament.domain.model.Team;
 import jakarta.persistence.*;
 

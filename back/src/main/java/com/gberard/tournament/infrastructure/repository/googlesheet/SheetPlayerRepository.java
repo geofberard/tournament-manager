@@ -1,4 +1,4 @@
-package com.gberard.tournament.infrastructure.repository;
+package com.gberard.tournament.infrastructure.repository.googlesheet;
 
 import com.gberard.tournament.domain.model.Player;
 import com.gberard.tournament.domain.port.output.PlayerRepository;

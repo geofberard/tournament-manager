@@ -1,4 +1,4 @@
-package com.gberard.tournament.infrastructure.repository;
+package com.gberard.tournament.infrastructure.repository.googlesheet;
 
 import com.gberard.tournament.domain.model.score.DepthOneScore;
 import com.gberard.tournament.domain.model.score.DepthTwoScore;
@@ -21,7 +21,7 @@ import java.util.OptionalInt;
 import static com.gberard.tournament.domain.model.score.ScoreType.DepthOne;
 import static com.gberard.tournament.domain.model.score.ScoreType.DepthTwo;
 import static com.gberard.tournament.TestUtils.*;
-import static com.gberard.tournament.infrastructure.repository.SheetGameRepository.RANGE;
+import static com.gberard.tournament.infrastructure.repository.googlesheet.SheetGameRepository.RANGE;
 import static java.time.Month.AUGUST;
 import static java.util.List.of;
 import static org.assertj.core.api.Assertions.assertThat;

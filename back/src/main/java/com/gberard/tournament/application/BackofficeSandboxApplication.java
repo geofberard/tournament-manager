@@ -1,22 +1,5 @@
 package com.gberard.tournament.application;
 
-import com.gberard.tournament.domain.model.Game;
-import com.gberard.tournament.domain.model.Team;
-import com.gberard.tournament.domain.model.score.DepthOneScore;
-import com.gberard.tournament.domain.model.score.ScoreType;
-import com.gberard.tournament.domain.port.output.GameRepository;
-import com.gberard.tournament.domain.port.output.TeamRepository;
-import com.gberard.tournament.infrastructure.repository.SheetGameRepository;
-import com.gberard.tournament.infrastructure.repository.SheetTeamRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-
 //Remove comments before usage
 //@SpringBootApplication
 public class BackofficeSandboxApplication {

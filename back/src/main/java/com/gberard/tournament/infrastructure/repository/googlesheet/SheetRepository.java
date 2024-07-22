@@ -1,4 +1,4 @@
-package com.gberard.tournament.infrastructure.repository;
+package com.gberard.tournament.infrastructure.repository.googlesheet;
 
 import com.gberard.tournament.domain.model.Identified;
 import com.gberard.tournament.infrastructure.service.SpreadsheetCRUDService;

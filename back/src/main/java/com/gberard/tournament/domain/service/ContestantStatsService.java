@@ -7,8 +7,6 @@ import com.gberard.tournament.domain.model.stats.ContestantStats;
 import com.gberard.tournament.domain.model.stats.ContestantStatsAccumulator;
 import com.gberard.tournament.domain.port.output.GameRepository;
 import com.gberard.tournament.domain.port.output.TeamRepository;
-import com.gberard.tournament.infrastructure.repository.SheetGameRepository;
-import com.gberard.tournament.infrastructure.repository.SheetTeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

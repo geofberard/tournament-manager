@@ -1,4 +1,4 @@
-package com.gberard.tournament.infrastructure.repository;
+package com.gberard.tournament.infrastructure.repository.googlesheet;
 
 import com.gberard.tournament.domain.model.Game;
 import com.gberard.tournament.domain.model.Team;
@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Function;
 
 import static com.gberard.tournament.infrastructure.serializer.RawUtils.*;
