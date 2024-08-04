@@ -1,9 +1,9 @@
 package com.gberard.tournament.application.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.gberard.tournament.application.response.ContestantStatsDTO;
-import com.gberard.tournament.application.response.TeamDTO;
-import com.gberard.tournament.application.response.Views;
+import com.gberard.tournament.application.dto.ContestantStatsDTO;
+import com.gberard.tournament.application.dto.TeamDTO;
+import com.gberard.tournament.application.dto.Views;
 import com.gberard.tournament.domain.port.output.TeamRepository;
 import com.gberard.tournament.domain.service.ContestantStatsService;
 import org.springframework.beans.factory.annotation.Autowired;

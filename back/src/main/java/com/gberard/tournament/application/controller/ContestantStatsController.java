@@ -1,12 +1,9 @@
 package com.gberard.tournament.application.controller;
 
-import com.gberard.tournament.application.response.ContestantStatsDTO;
-import com.gberard.tournament.domain.model.stats.ContestantStats;
-import com.gberard.tournament.domain.port.output.TeamRepository;
+import com.gberard.tournament.application.dto.ContestantStatsDTO;
 import com.gberard.tournament.domain.service.ContestantStatsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;

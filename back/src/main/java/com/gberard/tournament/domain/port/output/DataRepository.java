@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface DataRepository<T extends Identified> {
     List<T> readAll();
 
-    boolean update(T element);
+    T update(T element);
 
     boolean delete(T element);
 

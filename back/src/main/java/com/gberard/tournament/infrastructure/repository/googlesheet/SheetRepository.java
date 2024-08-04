@@ -26,8 +26,9 @@ public abstract class SheetRepository<T extends Identified> {
         this.tab = range.substring(0, range.indexOf("!"));
     }
 
-    public boolean create(T element) {
-        return spreadsheetCRUDService.appendCells(range, List.of(toRawData(element)));
+    public T create(T element) {
+        spreadsheetCRUDService.appendCells(range, List.of(toRawData(element)));
+        return  element;
     }
 
     public List<T> readAll() {
@@ -36,15 +37,16 @@ public abstract class SheetRepository<T extends Identified> {
                 .collect(toList());
     }
 
-    public boolean update(T element) {
+    public T update(T element) {
         OptionalInt line = spreadsheetCRUDService.findRowIndex(getIdRange(), element.id());
 
         if (line.isEmpty()) {
             log.info("Updating element - cannot find element " + element);
-            return false;
+            return null;
         }
 
-        return spreadsheetCRUDService.updateCells(tab + "!A" + line.getAsInt(), List.of(toRawData(element)));
+        spreadsheetCRUDService.updateCells(tab + "!A" + line.getAsInt(), List.of(toRawData(element)));
+        return element;
     }
 
     public boolean delete(T element) {

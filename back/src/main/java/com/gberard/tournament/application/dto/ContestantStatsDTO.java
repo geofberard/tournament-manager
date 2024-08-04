@@ -1,4 +1,4 @@
-package com.gberard.tournament.application.response;
+package com.gberard.tournament.application.dto;
 
 import com.gberard.tournament.domain.model.stats.ContestantStats;
 

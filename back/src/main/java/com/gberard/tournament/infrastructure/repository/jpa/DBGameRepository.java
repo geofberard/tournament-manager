@@ -25,9 +25,8 @@ public class DBGameRepository implements GameRepository {
     }
 
     @Override
-    public boolean update(Game player) {
-        repository.save(GameEntity.fromGame(player));
-        return true;
+    public Game update(Game game) {
+        return repository.save(GameEntity.fromGame(game)).toGame();
     }
 
     @Override

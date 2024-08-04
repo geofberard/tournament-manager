@@ -25,9 +25,13 @@ public class DBPlayerRepository implements PlayerRepository {
     }
 
     @Override
-    public boolean update(Player player) {
-        repository.save(PlayerEntity.fromPlayer(player));
-        return true;
+    public Player create(Player player) {
+        return repository.save(PlayerEntity.fromPlayer(player)).toPlayer();
+    }
+
+    @Override
+    public Player update(Player player) {
+        return repository.save(PlayerEntity.fromPlayer(player)).toPlayer();
     }
 
     @Override

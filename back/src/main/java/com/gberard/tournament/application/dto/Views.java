@@ -1,4 +1,4 @@
-package com.gberard.tournament.application.response;
+package com.gberard.tournament.application.dto;
 
 public class Views {
     public static class TeamView {

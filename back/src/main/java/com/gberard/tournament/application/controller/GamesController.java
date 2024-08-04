@@ -1,6 +1,6 @@
 package com.gberard.tournament.application.controller;
 
-import com.gberard.tournament.application.response.GameDTO;
+import com.gberard.tournament.application.dto.GameDTO;
 import com.gberard.tournament.domain.model.Game;
 import com.gberard.tournament.domain.port.output.GameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
