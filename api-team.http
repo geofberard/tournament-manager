@@ -1,0 +1,26 @@
+###
+GET 127.0.0.1:8080/api/teams
+
+###
+POST 127.0.0.1:8080/api/teams
+Content-Type: application/json
+
+{
+  "name": "WhatTheFuck",
+  "players": ["player_1", "player_11", "player_21", "player_31"]
+}
+
+###
+GET 127.0.0.1:8080/api/teams/team_51e9f49a-8640-4281-8584-1f3d76ad4084
+
+###
+PUT 127.0.0.1:8080/api/teams/team_51e9f49a-8640-4281-8584-1f3d76ad4084
+Content-Type: application/json
+
+{
+  "name": "WhatTheFuck2",
+  "players": ["player_2", "player_12", "player_22", "player_32"]
+}
+
+###
+DELETE 127.0.0.1:8080/api/teams/team_51e9f49a-8640-4281-8584-1f3d76ad4084

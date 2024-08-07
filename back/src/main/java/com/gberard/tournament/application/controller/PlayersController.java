@@ -31,9 +31,9 @@ public class PlayersController {
     }
 
     @PostMapping
-    public ResponseEntity<PlayerDTO> addPlayers(@RequestBody CreatePlayerDTO createPlayerDTO) {
-        PlayerDTO createdPlayer = PlayerDTO.toPlayerDTO(playerService.create(createPlayerDTO.toPlayer()));
-        return ResponseEntity.ok(createdPlayer);
+    public ResponseEntity<PlayerDTO> createPlayers(@RequestBody CreatePlayerDTO createPlayerDTO) {
+        Player newPlayer = playerService.create(createPlayerDTO.toPlayer());
+        return ResponseEntity.ok(PlayerDTO.toPlayerDTO(newPlayer));
     }
 
     @GetMapping("/{id}")

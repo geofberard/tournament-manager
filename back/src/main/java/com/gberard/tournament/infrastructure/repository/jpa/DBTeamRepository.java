@@ -25,6 +25,11 @@ public class DBTeamRepository implements TeamRepository {
     }
 
     @Override
+    public Team create(Team team) {
+        return repository.save(TeamEntity.fromTeam(team)).toTeam();
+    }
+
+    @Override
     public Team update(Team team) {
         return repository.save(TeamEntity.fromTeam(team)).toTeam();
     }

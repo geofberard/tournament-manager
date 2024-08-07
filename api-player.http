@@ -1,0 +1,26 @@
+###
+GET 127.0.0.1:8080/api/players
+
+###
+POST 127.0.0.1:8080/api/players
+Content-Type: application/json
+
+{
+  "firstname": "John",
+  "lastname": "Doe"
+}
+
+###
+GET 127.0.0.1:8080/api/players/player_9708ef62-5428-449d-ba42-83ebcfa985de
+
+###
+PUT 127.0.0.1:8080/api/players/player_9708ef62-5428-449d-ba42-83ebcfa985de
+Content-Type: application/json
+
+{
+  "firstname": "John2",
+  "lastname": "Doe2"
+}
+
+###
+DELETE 127.0.0.1:8080/api/players/player_9708ef62-5428-449d-ba42-83ebcfa985de

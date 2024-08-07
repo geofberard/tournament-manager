@@ -17,14 +17,12 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Override
     public Player create(Player player) {
-        playerRepository.create(player);
-        return new Player("","","");
+        return playerRepository.create(player);
     }
 
     @Override
     public Player update(Player player) {
-        playerRepository.update(player);
-        return new Player("","","");
+        return playerRepository.update(player);
     }
 
     @Override

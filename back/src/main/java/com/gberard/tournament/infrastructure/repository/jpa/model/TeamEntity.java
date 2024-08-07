@@ -40,6 +40,9 @@ public class TeamEntity {
         TeamEntity playerEntity = new TeamEntity();
         playerEntity.id = team.id();
         playerEntity.name = team.name();
+        playerEntity.players = team.players().stream()
+                .map(PlayerEntity::fromPlayer)
+                .toList();
         return playerEntity;
     }
 
