@@ -24,3 +24,18 @@ Content-Type: application/json
 
 ### Delete
 DELETE 127.0.0.1:8080/api/players/player_9708ef62-5428-449d-ba42-83ebcfa985de
+
+### Error : Read with unknown player
+GET 127.0.0.1:8080/api/players/unknown
+
+### Error : Update with unknown player
+PUT 127.0.0.1:8080/api/players/unknown
+Content-Type: application/json
+
+{
+  "firstname": "John2",
+  "lastname": "Doe2"
+}
+
+### Error : Delete with unknown player
+DELETE 127.0.0.1:8080/api/players/unknown

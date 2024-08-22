@@ -70,7 +70,7 @@ public class GamesController {
         Game matchingGame = findMatchingGame(id);
         List<Team> contestants = findMatchingTeams(updateGameDTO.contestants());
 
-        Game newGame = gameService.create(new Game(
+        Game updatedGame = gameService.create(new Game(
                 matchingGame.id(),
                 updateGameDTO.time(),
                 updateGameDTO.court(),
@@ -81,7 +81,7 @@ public class GamesController {
                 Optional.empty()
         ));
 
-        return ResponseEntity.ok(GameDTO.toGameDTO(newGame));
+        return ResponseEntity.ok(GameDTO.toGameDTO(updatedGame));
     }
 
     @DeleteMapping("/{id}")
@@ -100,8 +100,8 @@ public class GamesController {
         return matchingGame.get();
     }
 
-    private List<Team> findMatchingTeams(List<String> updateGameDTO) {
-        List<Optional<Team>> potentialContestants = updateGameDTO.stream()
+    private List<Team> findMatchingTeams(List<String> teamIds) {
+        List<Optional<Team>> potentialContestants = teamIds.stream()
                 .map(teamService::findById)
                 .toList();
 
@@ -111,7 +111,7 @@ public class GamesController {
                     .map(Optional::get)
                     .map(Team::id).toList();
 
-            List<String> unknownTeams = updateGameDTO.stream()
+            List<String> unknownTeams = teamIds.stream()
                     .filter(teamId -> !foundTeams.contains(teamId))
                     .toList();
 
