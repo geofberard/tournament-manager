@@ -1,35 +1,128 @@
 package com.gberard.tournament.application.controller;
 
-import com.gberard.tournament.application.dto.GameDTO;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.gberard.tournament.application.dto.*;
 import com.gberard.tournament.domain.model.Game;
+import com.gberard.tournament.domain.model.Player;
+import com.gberard.tournament.domain.model.Team;
+import com.gberard.tournament.domain.port.input.GameService;
+import com.gberard.tournament.domain.port.input.TeamService;
 import com.gberard.tournament.domain.port.output.GameRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Stream;
+
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @RestController
+@RequestMapping("/games")
 public class GamesController {
 
     @Autowired
-    public GameRepository gameService;
+    public GameService gameService;
 
-    @GetMapping("/games")
-    public List<GameDTO> getGames() {
-        List<Game> games = gameService.readAll();
+    @Autowired
+    public TeamService teamService;
 
-        return games.stream()
+    @GetMapping
+    public ResponseEntity<List<GameDTO>> getGames() {
+        List<GameDTO> games = gameService.findAll().stream()
                 .map(GameDTO::toGameDTO)
                 .toList();
+
+        return ResponseEntity.ok(games);
     }
 
-    @GetMapping("/games/{id}")
-    public GameDTO getGame(@PathVariable String id) {
-        return gameService.search(id)
-                .map(GameDTO::toGameDTO)
-                .get();
+    @PostMapping
+    public ResponseEntity<GameDTO> createPlayers(@RequestBody CreateGameDTO createGameDTO) {
+        List<Team> contestants = findMatchingTeams(createGameDTO.contestants());
+
+        Game newGame = gameService.create(new Game(
+                null,
+                createGameDTO.time(),
+                createGameDTO.court(),
+                contestants,
+                createGameDTO.referee().map(teamService::findById).flatMap(Function.identity()),
+                createGameDTO.isFinished(),
+                createGameDTO.scoreType(),
+                Optional.empty()
+        ));
+
+        return ResponseEntity.status(CREATED).body(GameDTO.toGameDTO(newGame));
+    }
+
+
+    @GetMapping("/{id}")
+    public ResponseEntity<GameDTO> getGame(@PathVariable String id) {
+        return ResponseEntity.ok(GameDTO.toGameDTO(findMatchingGame(id)));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<GameDTO> updateGame(@PathVariable String id, @RequestBody UpdateGameDTO updateGameDTO) {
+        Game matchingGame = findMatchingGame(id);
+        List<Team> contestants = findMatchingTeams(updateGameDTO.contestants());
+
+        Game newGame = gameService.create(new Game(
+                matchingGame.id(),
+                updateGameDTO.time(),
+                updateGameDTO.court(),
+                contestants,
+                updateGameDTO.referee().map(teamService::findById).flatMap(Function.identity()),
+                updateGameDTO.isFinished(),
+                updateGameDTO.scoreType(),
+                Optional.empty()
+        ));
+
+        return ResponseEntity.ok(GameDTO.toGameDTO(newGame));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteGame(@PathVariable String id) {
+        gameService.delete(findMatchingGame(id));
+        return ResponseEntity.noContent().build();
+    }
+
+    private Game findMatchingGame(String id) {
+        Optional<Game> matchingGame = gameService.findById(id);
+
+        if(matchingGame.isEmpty()) {
+            throw new EntityNotFoundException("Unknown game " + id);
+        }
+
+        return matchingGame.get();
+    }
+
+    private List<Team> findMatchingTeams(List<String> updateGameDTO) {
+        List<Optional<Team>> potentialContestants = updateGameDTO.stream()
+                .map(teamService::findById)
+                .toList();
+
+        if (potentialContestants.stream().anyMatch(Optional::isEmpty)) {
+            List<String> foundTeams = potentialContestants.stream()
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .map(Team::id).toList();
+
+            List<String> unknownTeams = updateGameDTO.stream()
+                    .filter(teamId -> !foundTeams.contains(teamId))
+                    .toList();
+
+            throw new EntityNotFoundException("Unknown teams " + unknownTeams);
+        }
+
+        List<Team> contestants = potentialContestants.stream()
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toList();
+        return contestants;
     }
 
 }

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @RestController
@@ -50,7 +51,7 @@ public class TeamsController {
                 .toList();
 
         Team newTeam = teamService.create(new Team(null, createTeamDTO.name(), players));
-        return ResponseEntity.ok(TeamDTO.toTeamDTO(newTeam));
+        return ResponseEntity.status(CREATED).body(TeamDTO.toTeamDTO(newTeam));
     }
 
     @JsonView(Views.TeamView.Full.class)

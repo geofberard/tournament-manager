@@ -1,0 +1,79 @@
+### Read all
+GET 127.0.0.1:8080/api/games
+
+### Create
+POST 127.0.0.1:8080/api/games
+Content-Type: application/json
+
+{
+  "time": "2022-11-01T18:30:00",
+  "court": "",
+  "contestants": ["team_1", "team_2"],
+  "referee":  "",
+  "isFinished":  false,
+  "scoreType": "DepthOne"
+}
+
+### Read
+GET 127.0.0.1:8080/api/games/game_d71a0e9a-dc11-496a-bb33-ffc975fea405
+
+### Update
+PUT 127.0.0.1:8080/api/games/game_d71a0e9a-dc11-496a-bb33-ffc975fea405
+Content-Type: application/json
+
+{
+  "time": "2022-11-01T18:30:00",
+  "court": "",
+  "contestants": ["team_1", "team_3"],
+  "referee":  "",
+  "isFinished":  false,
+  "scoreType": "DepthOne"
+}
+
+### Delete
+DELETE 127.0.0.1:8080/api/games/game_d71a0e9a-dc11-496a-bb33-ffc975fea405
+
+### Error : Create with unknown team
+POST 127.0.0.1:8080/api/games
+Content-Type: application/json
+
+{
+  "time": "2022-11-01T18:30:00",
+  "court": "",
+  "contestants": ["team_1", "team_0"],
+  "referee":  "",
+  "isFinished":  false,
+  "scoreType": "DepthOne"
+}
+
+### Error : Read with unknown game
+GET 127.0.0.1:8080/api/games/unknown
+
+### Error : Update with unknown game
+PUT 127.0.0.1:8080/api/games/unknown
+Content-Type: application/json
+
+{
+  "time": "2022-11-01T18:30:00",
+  "court": "",
+  "contestants": ["team_1", "team_3"],
+  "referee":  "",
+  "isFinished":  false,
+  "scoreType": "DepthOne"
+}
+
+### Error : Update with unknown team
+PUT 127.0.0.1:8080/api/games/game_1
+Content-Type: application/json
+
+{
+  "time": "2022-11-01T18:30:00",
+  "court": "",
+  "contestants": ["team_1", "team_0"],
+  "referee":  "",
+  "isFinished":  false,
+  "scoreType": "DepthOne"
+}
+
+### Error : Delete with unknown game
+DELETE 127.0.0.1:8080/api/games/unknown

@@ -14,8 +14,8 @@ public final class ScoreRaw {
 
     public static Function<String, Score> getScoreDeserializer(List<Team> contestants, ScoreType type) {
         return switch (type) {
-            case DepthOne -> score -> DepthOneScoreRaw.deserialize(score, contestants);
-            case DepthTwo -> score -> DepthTwoScoreRaw.deserialize(score, contestants);
+            case DepthOne -> score -> score != null ? DepthOneScoreRaw.deserialize(score, contestants) : null;
+            case DepthTwo -> score -> score != null ? DepthTwoScoreRaw.deserialize(score, contestants) : null;
             default -> throw new IllegalStateException("Unsuported score type : " + type);
         };
     }

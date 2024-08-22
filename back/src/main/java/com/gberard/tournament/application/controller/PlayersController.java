@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @RestController
@@ -33,7 +34,7 @@ public class PlayersController {
     @PostMapping
     public ResponseEntity<PlayerDTO> createPlayers(@RequestBody CreatePlayerDTO createPlayerDTO) {
         Player newPlayer = playerService.create(createPlayerDTO.toPlayer());
-        return ResponseEntity.ok(PlayerDTO.toPlayerDTO(newPlayer));
+        return ResponseEntity.status(CREATED).body(PlayerDTO.toPlayerDTO(newPlayer));
     }
 
     @GetMapping("/{id}")

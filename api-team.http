@@ -1,7 +1,7 @@
-###
+### Read all
 GET 127.0.0.1:8080/api/teams
 
-###
+### Create
 POST 127.0.0.1:8080/api/teams
 Content-Type: application/json
 
@@ -10,10 +10,10 @@ Content-Type: application/json
   "players": ["player_1", "player_11", "player_21", "player_31"]
 }
 
-###
+### Read
 GET 127.0.0.1:8080/api/teams/team_51e9f49a-8640-4281-8584-1f3d76ad4084
 
-###
+### Update
 PUT 127.0.0.1:8080/api/teams/team_51e9f49a-8640-4281-8584-1f3d76ad4084
 Content-Type: application/json
 
@@ -22,5 +22,5 @@ Content-Type: application/json
   "players": ["player_2", "player_12", "player_22", "player_32"]
 }
 
-###
+### Delete
 DELETE 127.0.0.1:8080/api/teams/team_51e9f49a-8640-4281-8584-1f3d76ad4084

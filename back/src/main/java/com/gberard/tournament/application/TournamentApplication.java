@@ -58,16 +58,14 @@ public class TournamentApplication {
         jsonMapper.setConfig(jsonMapper.getSerializationConfig().withView(Views.TeamView.Basic.class));
         JavaTimeModule module = new JavaTimeModule();
 
-        // Définir le format de sérialisation
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm");
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
         module.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(formatter));
-
-        // Définir le format de désérialisation
         module.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(formatter));
 
         jsonMapper.registerModule(module);
 
         jsonMapper.registerModule(new Jdk8Module());
+
 
         return jsonMapper;
     }

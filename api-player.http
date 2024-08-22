@@ -1,7 +1,7 @@
-###
+### Read all
 GET 127.0.0.1:8080/api/players
 
-###
+### Create
 POST 127.0.0.1:8080/api/players
 Content-Type: application/json
 
@@ -10,10 +10,10 @@ Content-Type: application/json
   "lastname": "Doe"
 }
 
-###
+### Read
 GET 127.0.0.1:8080/api/players/player_9708ef62-5428-449d-ba42-83ebcfa985de
 
-###
+### Update
 PUT 127.0.0.1:8080/api/players/player_9708ef62-5428-449d-ba42-83ebcfa985de
 Content-Type: application/json
 
@@ -22,5 +22,5 @@ Content-Type: application/json
   "lastname": "Doe2"
 }
 
-###
+### Delete
 DELETE 127.0.0.1:8080/api/players/player_9708ef62-5428-449d-ba42-83ebcfa985de

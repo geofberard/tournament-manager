@@ -25,6 +25,11 @@ public class DBGameRepository implements GameRepository {
     }
 
     @Override
+    public Game create(Game game) {
+        return repository.save(GameEntity.fromGame(game)).toGame();
+    }
+
+    @Override
     public Game update(Game game) {
         return repository.save(GameEntity.fromGame(game)).toGame();
     }
