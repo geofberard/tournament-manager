@@ -3,6 +3,7 @@ package com.gberard.tournament.infrastructure.repository.googlesheet;
 import com.gberard.tournament.domain.model.Identified;
 import com.gberard.tournament.infrastructure.service.SpreadsheetCRUDService;
 import com.google.common.annotations.VisibleForTesting;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -49,25 +50,34 @@ public abstract class SheetRepository<T extends Identified> {
         return element;
     }
 
-    public boolean delete(T element) {
+    public void delete(T element) {
         OptionalInt line = spreadsheetCRUDService.findRowIndex(getIdRange(), element.id());
 
         if (line.isEmpty()) {
             log.info("Deleting element - cannot find element " + element);
-            return false;
         }
 
-        return spreadsheetCRUDService.deleteRaws(tab, line.getAsInt() - 1, 1);
+        spreadsheetCRUDService.deleteRaws(tab, line.getAsInt() - 1, 1);
     }
 
     public boolean deleteAll() {
         return spreadsheetCRUDService.deleteRaws(tab,1);
     }
 
-    public Optional<T> search(String id) {
+    public Optional<T> read(String id) {
         return readAll().stream()
                 .filter(t -> t.id().equals(id))
                 .findFirst();
+    }
+
+    public T readOrThrow(String id) {
+        return readAll().stream()
+                .filter(t -> t.id().equals(id))
+                .findFirst().orElseThrow(() -> new EntityNotFoundException(getLogName() + " : Unknown id [" + id + "]"));
+    }
+
+    private String getLogName() {
+        return getClass().getSimpleName().replace("Sheet", "");
     }
 
     @VisibleForTesting

@@ -128,9 +128,9 @@ class SheetGameRepositoryTest {
         void shoud_use_fromRawData_mapper() {
             // Given
             when(spreadsheetCRUDService.readCells(eq(RANGE))).thenReturn(of(RAW_GAME_1, RAW_GAME_3));
-            when(teamService.search("teamA")).thenReturn(Optional.of(TEAM_A));
-            when(teamService.search("teamB")).thenReturn(Optional.of(TEAM_B));
-            when(teamService.search("teamC")).thenReturn(Optional.of(TEAM_C));
+            when(teamService.read("teamA")).thenReturn(Optional.of(TEAM_A));
+            when(teamService.read("teamB")).thenReturn(Optional.of(TEAM_B));
+            when(teamService.read("teamC")).thenReturn(Optional.of(TEAM_C));
 
             // When
             sheetGameRepository.readAll();
@@ -144,9 +144,9 @@ class SheetGameRepositoryTest {
         void shoud_return_deserialized_game() {
             // Given
             when(spreadsheetCRUDService.readCells(eq(RANGE))).thenReturn(of(RAW_GAME_1, RAW_GAME_3));
-            when(teamService.search("teamA")).thenReturn(Optional.of(TEAM_A));
-            when(teamService.search("teamB")).thenReturn(Optional.of(TEAM_B));
-            when(teamService.search("teamC")).thenReturn(Optional.of(TEAM_C));
+            when(teamService.read("teamA")).thenReturn(Optional.of(TEAM_A));
+            when(teamService.read("teamB")).thenReturn(Optional.of(TEAM_B));
+            when(teamService.read("teamC")).thenReturn(Optional.of(TEAM_C));
 
 
             // When
@@ -167,9 +167,9 @@ class SheetGameRepositoryTest {
         @Test
         void should_filter_properly() {
             // Given
-            when(teamService.search("teamA")).thenReturn(Optional.of(TEAM_A));
-            when(teamService.search("teamB")).thenReturn(Optional.of(TEAM_B));
-            when(teamService.search("teamC")).thenReturn(Optional.of(TEAM_C));
+            when(teamService.read("teamA")).thenReturn(Optional.of(TEAM_A));
+            when(teamService.read("teamB")).thenReturn(Optional.of(TEAM_B));
+            when(teamService.read("teamC")).thenReturn(Optional.of(TEAM_C));
 
             // Given
             when(spreadsheetCRUDService.readCells(eq(RANGE))).thenReturn(of(RAW_GAME_1, RAW_GAME_2, RAW_GAME_3));
@@ -283,9 +283,9 @@ class SheetGameRepositoryTest {
         @Test
         void should_map_game_completed_depth_one() {
             // Given
-            when(teamService.search("teamA")).thenReturn(Optional.of(TEAM_A));
-            when(teamService.search("teamB")).thenReturn(Optional.of(TEAM_B));
-            when(teamService.search("teamC")).thenReturn(Optional.of(TEAM_C));
+            when(teamService.read("teamA")).thenReturn(Optional.of(TEAM_A));
+            when(teamService.read("teamB")).thenReturn(Optional.of(TEAM_B));
+            when(teamService.read("teamC")).thenReturn(Optional.of(TEAM_C));
 
             // When
             Game game = sheetGameRepository.fromRawData(RAW_GAME_1);
@@ -306,9 +306,9 @@ class SheetGameRepositoryTest {
         @Test
         void should_map_game_completed_depth_two() {
             // Given
-            when(teamService.search("teamA")).thenReturn(Optional.of(TEAM_A));
-            when(teamService.search("teamB")).thenReturn(Optional.of(TEAM_B));
-            when(teamService.search("teamC")).thenReturn(Optional.of(TEAM_C));
+            when(teamService.read("teamA")).thenReturn(Optional.of(TEAM_A));
+            when(teamService.read("teamB")).thenReturn(Optional.of(TEAM_B));
+            when(teamService.read("teamC")).thenReturn(Optional.of(TEAM_C));
 
             // When
             Game game = sheetGameRepository.fromRawData(RAW_GAME_2);
@@ -329,8 +329,8 @@ class SheetGameRepositoryTest {
         @Test
         void should_map_game_scoreless() {
             // Given
-            when(teamService.search("teamB")).thenReturn(Optional.of(TEAM_B));
-            when(teamService.search("teamC")).thenReturn(Optional.of(TEAM_C));
+            when(teamService.read("teamB")).thenReturn(Optional.of(TEAM_B));
+            when(teamService.read("teamC")).thenReturn(Optional.of(TEAM_C));
 
             // When
             Game game = sheetGameRepository.fromRawData(RAW_GAME_3);
@@ -351,8 +351,8 @@ class SheetGameRepositoryTest {
             // Given
             List<Object> rawGame =
                     rawData("game4", "23/08/2022", "13:00", "Court1", "teamA;teamC", "", "false", "DepthOne");
-            when(teamService.search("teamA")).thenReturn(Optional.of(TEAM_A));
-            when(teamService.search("teamC")).thenReturn(Optional.of(TEAM_C));
+            when(teamService.read("teamA")).thenReturn(Optional.of(TEAM_A));
+            when(teamService.read("teamC")).thenReturn(Optional.of(TEAM_C));
 
             // When
             Game game = sheetGameRepository.fromRawData(rawGame);

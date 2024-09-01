@@ -51,10 +51,10 @@ public class SheetGameRepository extends SheetRepository<Game> implements GameRe
         getStringValue(value, 3).ifPresent(gameBuilder::court);
 
 
-        var teams = contestantIds.map(ids -> ids.stream().map(id -> teamService.search(id).get()).toList()).orElse(List.of());
+        var teams = contestantIds.map(ids -> ids.stream().map(id -> teamService.read(id).get()).toList()).orElse(List.of());
         gameBuilder.contestants(teams);
 
-        getStringValue(value, 5).map(id -> teamService.search(id)).flatMap(Function.identity()).ifPresent(gameBuilder::refereeId);
+        getStringValue(value, 5).map(id -> teamService.read(id)).flatMap(Function.identity()).ifPresent(gameBuilder::refereeId);
         getBooleanValue(value, 6).ifPresent(gameBuilder::isFinished);
         scoreType.ifPresent(gameBuilder::scoreType);
         getValue(value, 8, getScoreDeserializer(teams, scoreType.get()))

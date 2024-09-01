@@ -120,7 +120,7 @@ class SheetTeamRepositoryTest {
             when(spreadsheetCRUDService.readCells(eq(RANGE))).thenReturn(List.of(RAW_TEAM_A, RAW_TEAM_B));
 
             // When
-            Optional<Team> team = sheetTeamRepository.search("teamB");
+            Optional<Team> team = sheetTeamRepository.read("teamB");
 
             // Then
             assertThat(team.isPresent()).isTrue();
@@ -134,7 +134,7 @@ class SheetTeamRepositoryTest {
             when(spreadsheetCRUDService.readCells(eq(RANGE))).thenReturn(List.of(RAW_TEAM_A, RAW_TEAM_B));
 
             // When
-            Optional<Team> team = sheetTeamRepository.search("team2");
+            Optional<Team> team = sheetTeamRepository.read("team2");
 
             // Then
             assertThat(team.isPresent()).isFalse();

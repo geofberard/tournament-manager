@@ -7,6 +7,7 @@ import com.gberard.tournament.domain.model.Player;
 import com.gberard.tournament.domain.port.input.PlayerService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,38 +33,29 @@ public class PlayersController {
 
     @PostMapping
     public ResponseEntity<PlayerDTO> createPlayers(@RequestBody CreatePlayerDTO createPlayerDTO) {
-        Player newPlayer = playerService.create(createPlayerDTO.toPlayer());
+        Player newPlayer = playerService.create(createPlayerDTO.firstname(), createPlayerDTO.lastname());
         return ResponseEntity.status(CREATED).body(PlayerDTO.toPlayerDTO(newPlayer));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<PlayerDTO> getPlayer(@PathVariable String id) {
-        return ResponseEntity.ok(PlayerDTO.toPlayerDTO(findMatchingPlayer(id)));
+        return playerService.findById(id)
+                .map(PlayerDTO::toPlayerDTO)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<PlayerDTO> updatePlayer(@PathVariable String id, @RequestBody UpdatePlayerDTO updatePlayerDTO) {
-        Player matchingPlayer = findMatchingPlayer(id);
-
-        Player updatedPlayer = playerService.update(updatePlayerDTO.toPlayer(matchingPlayer.id()));
-
+        Player updatedPlayer = playerService.update(id, updatePlayerDTO.firstname(), updatePlayerDTO.lastname());
         return ResponseEntity.ok(PlayerDTO.toPlayerDTO(updatedPlayer));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePlayer(@PathVariable String id) {
-        playerService.delete(findMatchingPlayer(id));
-        return ResponseEntity.noContent().build();
-    }
-
-    private Player findMatchingPlayer(String id) {
-        Optional<Player> matchingPlayer = playerService.findById(id);
-
-        if(matchingPlayer.isEmpty()) {
-            throw new EntityNotFoundException("Unknown player " + id);
-        }
-
-        return matchingPlayer.get();
+        return playerService.delete(id) ?
+                ResponseEntity.noContent().build() :
+                ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
 }

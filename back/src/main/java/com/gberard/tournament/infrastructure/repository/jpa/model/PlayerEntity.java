@@ -23,11 +23,11 @@ public class PlayerEntity {
         }
     }
 
-    public Player toPlayer() {
-        return new Player(id, firstname, lastname);
+    public static Player toDomain(PlayerEntity playerEntity) {
+        return new Player(playerEntity.id, playerEntity.firstname, playerEntity.lastname);
     }
 
-    public static PlayerEntity fromPlayer(Player player) {
+    public static PlayerEntity toEntity(Player player) {
         PlayerEntity playerEntity = new PlayerEntity();
         playerEntity.id = player.id();
         playerEntity.firstname = player.firstName();

@@ -113,7 +113,7 @@ class SheetPlayerRepositoryTest {
             when(spreadsheetCRUDService.readCells(eq(SheetPlayerRepository.RANGE))).thenReturn(List.of(RAW_PLAYER_A, RAW_PLAYER_B));
 
             // When
-            Optional<Player> team = sheetPlayerRepository.search("playerB");
+            Optional<Player> team = sheetPlayerRepository.read("playerB");
 
             // Then
             assertThat(team.isPresent()).isTrue();
@@ -128,7 +128,7 @@ class SheetPlayerRepositoryTest {
             when(spreadsheetCRUDService.readCells(eq(SheetPlayerRepository.RANGE))).thenReturn(List.of(RAW_PLAYER_A, RAW_PLAYER_B));
 
             // When
-            Optional<Player> team = sheetPlayerRepository.search("team2");
+            Optional<Player> team = sheetPlayerRepository.read("team2");
 
             // Then
             assertThat(team.isPresent()).isFalse();

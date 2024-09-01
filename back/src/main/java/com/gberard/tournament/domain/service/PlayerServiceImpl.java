@@ -13,30 +13,34 @@ import java.util.Optional;
 public class PlayerServiceImpl implements PlayerService {
 
     @Autowired
-    public PlayerRepository playerRepository;
-
-    @Override
-    public Player create(Player player) {
-        return playerRepository.create(player);
-    }
-
-    @Override
-    public Player update(Player player) {
-        return playerRepository.update(player);
-    }
-
-    @Override
-    public boolean delete(Player player) {
-        return playerRepository.delete(player);
-    }
+    public PlayerRepository repository;
 
     @Override
     public Optional<Player> findById(String id) {
-        return playerRepository.search(id);
+        return repository.read(id);
     }
 
     @Override
     public List<Player> findAll() {
-        return playerRepository.readAll();
+        return repository.readAll();
     }
+
+    @Override
+    public Player create(String firstName, String lastName) {
+        return repository.create(new Player(null, firstName, lastName));
+    }
+
+    @Override
+    public Player update(String id, String firstName, String lastName) {
+        Player player = repository.readOrThrow(id);
+        return repository.create(new Player(player.id(), firstName, lastName));
+    }
+
+    @Override
+    public boolean delete(String id) {
+        Optional<Player> box = findById(id);
+        box.ifPresent(repository::delete);
+        return box.isPresent();
+    }
+
 }

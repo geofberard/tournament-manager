@@ -3,9 +3,7 @@ package com.gberard.tournament.domain.service;
 import com.gberard.tournament.domain.model.Game;
 import com.gberard.tournament.domain.model.Team;
 import com.gberard.tournament.domain.port.input.GameService;
-import com.gberard.tournament.domain.port.input.TeamService;
 import com.gberard.tournament.domain.port.output.GameRepository;
-import com.gberard.tournament.domain.port.output.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,12 +28,13 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public boolean delete(Game player) {
-        return gameRepository.delete(player);
+        gameRepository.delete(player);
+        return true;
     }
 
     @Override
     public Optional<Game> findById(String id) {
-        return gameRepository.search(id);
+        return gameRepository.read(id);
     }
 
     @Override

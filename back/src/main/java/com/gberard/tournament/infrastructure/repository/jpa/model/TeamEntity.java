@@ -30,18 +30,18 @@ public class TeamEntity {
         }
     }
 
-    public Team toTeam() {
-        return new Team(id, name, players.stream()
-                .map(PlayerEntity::toPlayer)
+    public static Team toDomain(TeamEntity teamEntity) {
+        return new Team(teamEntity.id, teamEntity.name, teamEntity.players.stream()
+                .map(PlayerEntity::toDomain)
                 .toList());
     }
 
-    public static TeamEntity fromTeam(Team team) {
+    public static TeamEntity toEntity(Team team) {
         TeamEntity playerEntity = new TeamEntity();
         playerEntity.id = team.id();
         playerEntity.name = team.name();
         playerEntity.players = team.players().stream()
-                .map(PlayerEntity::fromPlayer)
+                .map(PlayerEntity::toEntity)
                 .toList();
         return playerEntity;
     }

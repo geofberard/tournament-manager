@@ -46,26 +46,26 @@ public class GameEntity {
         }
     }
 
-    public Game toGame() {
-        List<Team> teams = this.teams.stream().map(TeamEntity::toTeam).toList();
-        ScoreType type = ScoreType.valueOf(scoreType);
+    public static Game toDomain(GameEntity entity) {
+        List<Team> teams = entity.teams.stream().map(TeamEntity::toDomain).toList();
+        ScoreType type = ScoreType.valueOf(entity.scoreType);
         return new Game(
-                id,
-                time,
-                court,
+                entity.id,
+                entity.time,
+                entity.court,
                 teams,
-                Optional.ofNullable(referee).map(TeamEntity::toTeam),
-                isFinished,
+                Optional.ofNullable(entity.referee).map(TeamEntity::toDomain),
+                entity.isFinished,
                 type,
-                Optional.ofNullable(ScoreRaw.getScoreDeserializer(teams, type).apply(scoreData)));
+                Optional.ofNullable(ScoreRaw.getScoreDeserializer(teams, type).apply(entity.scoreData)));
     }
 
-    public static GameEntity fromGame(Game game) {
+    public static GameEntity toEntity(Game game) {
         GameEntity playerEntity = new GameEntity();
         playerEntity.id = game.id();
         playerEntity.time = game.time();
         playerEntity.court = game.court();
-        playerEntity.teams = game.contestants().stream().map(TeamEntity::fromTeam).toList();
+        playerEntity.teams = game.contestants().stream().map(TeamEntity::toEntity).toList();
         playerEntity.referee = null;
         playerEntity.isFinished = game.isFinished();
         playerEntity.scoreType = game.scoreType().name();

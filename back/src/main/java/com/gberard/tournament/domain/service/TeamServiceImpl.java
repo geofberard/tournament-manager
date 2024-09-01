@@ -27,12 +27,13 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     public boolean delete(Team player) {
-        return teamRepository.delete(player);
+        teamRepository.delete(player);
+        return true;
     }
 
     @Override
     public Optional<Team> findById(String id) {
-        return teamRepository.search(id);
+        return teamRepository.read(id);
     }
 
     @Override

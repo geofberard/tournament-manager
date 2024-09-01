@@ -6,49 +6,12 @@ import com.gberard.tournament.infrastructure.repository.jpa.model.GameEntity;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Optional;
-
 @Primary
 @Repository
-public class DBGameRepository implements GameRepository {
-
-    private final JpaGameRepository repository;
+public class DBGameRepository extends DBRepository<Game, GameEntity> implements GameRepository {
 
     public DBGameRepository(JpaGameRepository repository) {
-        this.repository = repository;
-    }
-
-    @Override
-    public List<Game> readAll() {
-        return repository.findAll().stream().map(GameEntity::toGame).toList();
-    }
-
-    @Override
-    public Game create(Game game) {
-        return repository.save(GameEntity.fromGame(game)).toGame();
-    }
-
-    @Override
-    public Game update(Game game) {
-        return repository.save(GameEntity.fromGame(game)).toGame();
-    }
-
-    @Override
-    public boolean delete(Game player) {
-        repository.delete(GameEntity.fromGame(player));
-        return true;
-    }
-
-    @Override
-    public boolean deleteAll() {
-        repository.deleteAll();
-        return true;
-    }
-
-    @Override
-    public Optional<Game> search(String id) {
-        return repository.findById(id).map(GameEntity::toGame);
+        super(repository, GameEntity::toEntity, GameEntity::toDomain);
     }
 
 }
