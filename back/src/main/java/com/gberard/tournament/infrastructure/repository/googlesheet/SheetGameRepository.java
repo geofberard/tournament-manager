@@ -1,6 +1,7 @@
 package com.gberard.tournament.infrastructure.repository.googlesheet;
 
 import com.gberard.tournament.domain.model.Game;
+import com.gberard.tournament.domain.model.GameBuilder;
 import com.gberard.tournament.domain.model.Team;
 import com.gberard.tournament.domain.port.output.GameRepository;
 import com.gberard.tournament.domain.model.score.ScoreType;
@@ -41,7 +42,7 @@ public class SheetGameRepository extends SheetRepository<Game> implements GameRe
 
     @Override
     protected Game fromRawData(List<Object> value) {
-        var gameBuilder = Game.builder();
+        var gameBuilder = GameBuilder.newBuilder();
         var contestantIds = getValue(value, 4, ListRaw::deserialize);
         var scoreType = getEnumValue(value, 7, ScoreType.class);
 

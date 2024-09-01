@@ -1,26 +1,23 @@
 package com.gberard.tournament.application.controller;
 
-import com.fasterxml.jackson.annotation.JsonView;
 import com.gberard.tournament.application.dto.*;
+import com.gberard.tournament.application.dto.score.ScoreDTO;
 import com.gberard.tournament.domain.model.Game;
-import com.gberard.tournament.domain.model.Player;
+import com.gberard.tournament.domain.model.GameBuilder;
 import com.gberard.tournament.domain.model.Team;
+import com.gberard.tournament.domain.model.score.Score;
 import com.gberard.tournament.domain.port.input.GameService;
 import com.gberard.tournament.domain.port.input.TeamService;
-import com.gberard.tournament.domain.port.output.GameRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @RestController
 @RequestMapping("/games")
@@ -87,6 +84,60 @@ public class GamesController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteGame(@PathVariable String id) {
         gameService.delete(findMatchingGame(id));
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/score")
+    public ResponseEntity<ScoreDTO> addScore(@PathVariable String id, @RequestBody ScoreDTO scoreDTO) {
+        Game matchingGame = findMatchingGame(id);
+
+        if (matchingGame.score().isPresent()) {
+            throw new EntityNotFoundException("Game already has a score (" + id + ")");
+        }
+
+        Score score = ScoreDTO.toDomain(scoreDTO, matchingGame.scoreType());
+        if(!matchingGame.contestants().stream().allMatch(score::hasContestant)) {
+            throw new IllegalStateException("Score contestants doesn't match those in target game (" + id + ")");
+        }
+
+        Game updatedGame = gameService.update(GameBuilder.from(matchingGame)
+                .score(score)
+                .build());
+
+        return ResponseEntity.ok(ScoreDTO.toDTO(updatedGame.score().get(), updatedGame.scoreType()));
+    }
+
+    @GetMapping("/{id}/score")
+    public ResponseEntity<ScoreDTO> getScore(@PathVariable String id) {
+        Game matchingGame = findMatchingGame(id);
+
+        if (matchingGame.score().isPresent()) {
+            ScoreDTO scoreDTO = ScoreDTO.toDTO(matchingGame.score().get(), matchingGame.scoreType());
+            return ResponseEntity.ok(scoreDTO);
+        }
+
+        throw new EntityNotFoundException("No score for this game");
+    }
+
+    @PutMapping("/{id}/score")
+    public ResponseEntity<ScoreDTO> updateScore(@PathVariable String id, @RequestBody ScoreDTO score) {
+        Game matchingGame = findMatchingGame(id);
+
+        Game updatedGame = gameService.update(GameBuilder.from(matchingGame)
+                .score(ScoreDTO.toDomain(score, matchingGame.scoreType()))
+                .build());
+
+        return ResponseEntity.ok(ScoreDTO.toDTO(updatedGame.score().get(), updatedGame.scoreType()));
+    }
+
+    @DeleteMapping("/{id}/score")
+    public ResponseEntity<Void> deleteScore(@PathVariable String id) {
+        Game matchingGame = findMatchingGame(id);
+
+        Game updatedGame = gameService.update(GameBuilder.from(matchingGame)
+                .eraseScore()
+                .build());
+
         return ResponseEntity.noContent().build();
     }
 

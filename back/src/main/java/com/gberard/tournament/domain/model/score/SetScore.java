@@ -5,7 +5,7 @@ import com.gberard.tournament.domain.model.stats.ContestantResult;
 
 import java.util.List;
 
-public record DepthTwoScore(List<DepthOneScore> result) implements Score {
+public record SetScore(List<SimpleScore> result) implements Score {
 
     @Override
     public int getPointFor(Team team) {
@@ -38,5 +38,10 @@ public record DepthTwoScore(List<DepthOneScore> result) implements Score {
         }
 
         return nbWonSets > nbLostSets ? ContestantResult.WIN : ContestantResult.LOST;
+    }
+
+    @Override
+    public boolean hasContestant(Team team) {
+        return result.stream().allMatch(score -> score.hasContestant(team));
     }
 }

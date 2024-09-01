@@ -1,7 +1,7 @@
 package com.gberard.tournament.infrastructure.serializer.score;
 
 import com.gberard.tournament.domain.model.Team;
-import com.gberard.tournament.domain.model.score.DepthOneScore;
+import com.gberard.tournament.domain.model.score.SimpleScore;
 
 import java.util.Arrays;
 import java.util.List;
@@ -14,15 +14,15 @@ public final class DepthOneScoreRaw {
 
     public static final String SCORE_SEPARATOR = "-";
 
-    public static DepthOneScore deserialize(String value, List<Team> contestants) {
+    public static SimpleScore deserialize(String value, List<Team> contestants) {
         List<Integer> points = Arrays.stream(value.split(SCORE_SEPARATOR)).map(Integer::parseInt).toList();
 
-        return new DepthOneScore(range(0, contestants.size())
+        return new SimpleScore(range(0, contestants.size())
                 .boxed()
                 .collect(toMap(index -> contestants.get(index).id(), points::get)));
     }
 
-    public static String serialize(DepthOneScore score, List<Team> contestants) {
+    public static String serialize(SimpleScore score, List<Team> contestants) {
         return contestants.stream()
                 .map(Team::id)
                 .map(score.result()::get)

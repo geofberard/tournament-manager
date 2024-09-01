@@ -18,19 +18,4 @@ public record Game(
         ScoreType scoreType,
         Optional<Score> score
 ) implements Identified {
-
-    @Builder
-    public static Game createGame(
-            String id,
-            LocalDateTime time,
-            String court,
-            List<Team> contestants,
-            Team refereeId,
-            Boolean isFinished,
-            ScoreType scoreType,
-            Score score
-    ) {
-        return new Game(id, time, court, contestants, Optional.ofNullable(refereeId), isFinished, scoreType,
-                Optional.ofNullable(score));
-    }
 }

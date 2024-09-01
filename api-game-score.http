@@ -1,0 +1,119 @@
+### Simple - Create
+POST 127.0.0.1:8080/api/games/game_41/score
+Content-Type: application/json
+
+{
+  "type": "Simple",
+  "result": {
+    "team_2": 23,
+    "team_3": 18
+    }
+}
+
+### Simple - Read
+GET 127.0.0.1:8080/api/games/game_41/score
+
+### Simple - Update
+PUT 127.0.0.1:8080/api/games/game_41/score
+Content-Type: application/json
+
+{
+  "type": "Simple",
+  "result": {
+    "team_2": 25,
+    "team_3": 20
+  }
+}
+
+### Simple - Delete
+DELETE 127.0.0.1:8080/api/games/game_41/score
+
+### Set - Create
+POST 127.0.0.1:8080/api/games/game_42/score
+Content-Type: application/json
+
+{
+  "type": "Set",
+  "result": [
+    {
+      "team_4": 25,
+      "team_6": 18
+    },
+    {
+      "team_4": 17,
+      "team_6": 25
+    }
+  ]
+}
+
+### Set - Read
+GET 127.0.0.1:8080/api/games/game_42/score
+
+### Set - Update
+PUT 127.0.0.1:8080/api/games/game_42/score
+Content-Type: application/json
+
+{
+  "type": "Set",
+  "result": [
+    {
+      "team_4": 25,
+      "team_6": 18
+    },
+    {
+      "team_4": 17,
+      "team_6": 25
+    },
+    {
+      "team_4": 15,
+      "team_6": 10
+    }
+  ]
+}
+
+### Set - Delete
+DELETE 127.0.0.1:8080/api/games/game_42/score
+
+### Error :  Set - Create with wrong format
+POST 127.0.0.1:8080/api/games/game_41/score
+Content-Type: application/json
+
+{
+  "type": "Set",
+  "result": [
+    {
+      "team_2": 25,
+      "team_3": 18
+    },
+    {
+      "team_2": 17,
+      "team_3": 25
+    }
+  ]
+}
+
+### Error :  Set - Create with wrong teams
+POST 127.0.0.1:8080/api/games/game_41/score
+Content-Type: application/json
+
+{
+  "type": "Simple",
+  "result":
+    {
+      "team_4": 17,
+      "team_6": 25
+    }
+}
+
+### Error :  Set - Create with score already defined
+POST 127.0.0.1:8080/api/games/game_1/score
+Content-Type: application/json
+
+{
+  "type": "Simple",
+  "result":
+  {
+    "team_4": 17,
+    "team_6": 25
+  }
+}

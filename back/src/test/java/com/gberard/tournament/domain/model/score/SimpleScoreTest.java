@@ -15,7 +15,7 @@ import static com.gberard.tournament.domain.model.stats.ContestantResult.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class DepthOneScoreTest {
+class SimpleScoreTest {
 
     @Nested
     @DisplayName("getPointsFor()")
@@ -24,7 +24,7 @@ class DepthOneScoreTest {
         @Test
         void should_return_score_for_team() {
             // Given
-            DepthOneScore score = buildDepthOneScore(TEAM_A, 18, TEAM_B, 12);
+            SimpleScore score = buildSimpleScore(TEAM_A, 18, TEAM_B, 12);
 
             // Then
             assertThat(score.getPointFor(TEAM_A)).isEqualTo(18);
@@ -34,7 +34,7 @@ class DepthOneScoreTest {
         @Test
         void should_throw_exception_on_unknown_contestant() {
             // Given
-            DepthOneScore score = buildDepthOneScore(TEAM_A, 18, TEAM_B, 12);
+            SimpleScore score = buildSimpleScore(TEAM_A, 18, TEAM_B, 12);
 
             // Then
             IllegalStateException exception = assertThrows(
@@ -53,7 +53,7 @@ class DepthOneScoreTest {
         @Test
         void should_return_score_against_team() {
             // Given
-            DepthOneScore score = buildDepthOneScore(TEAM_A, 18, TEAM_B, 12);
+            SimpleScore score = buildSimpleScore(TEAM_A, 18, TEAM_B, 12);
 
             // Then
             assertThat(score.getPointAgainst(TEAM_A)).isEqualTo(12);
@@ -63,7 +63,7 @@ class DepthOneScoreTest {
         @Test
         void should_throw_exception_on_unknown_contestant() {
             // Given
-            DepthOneScore score = buildDepthOneScore(TEAM_A, 18, TEAM_B, 12);
+            SimpleScore score = buildSimpleScore(TEAM_A, 18, TEAM_B, 12);
 
             // Then
             IllegalStateException exception = assertThrows(
@@ -81,22 +81,22 @@ class DepthOneScoreTest {
 
         public static Stream<Arguments> wonScenario() {
             return Stream.of(
-                    Arguments.of("A win", buildDepthOneScore(TEAM_A, 10, TEAM_B, 9), TEAM_A),
-                    Arguments.of("B win", buildDepthOneScore(TEAM_A, 14, TEAM_B, 25), TEAM_B)
+                    Arguments.of("A win", buildSimpleScore(TEAM_A, 10, TEAM_B, 9), TEAM_A),
+                    Arguments.of("B win", buildSimpleScore(TEAM_A, 14, TEAM_B, 25), TEAM_B)
             );
         }
 
         public static Stream<Arguments> lostScenario() {
             return Stream.of(
-                    Arguments.of("A win", buildDepthOneScore(TEAM_A, 10, TEAM_B, 9), TEAM_B),
-                    Arguments.of("B win", buildDepthOneScore(TEAM_A, 15, TEAM_B, 25), TEAM_A)
+                    Arguments.of("A win", buildSimpleScore(TEAM_A, 10, TEAM_B, 9), TEAM_B),
+                    Arguments.of("B win", buildSimpleScore(TEAM_A, 15, TEAM_B, 25), TEAM_A)
             );
         }
 
         @Test
         void should_handle_status_drawn() {
             // Given
-            DepthOneScore score = buildDepthOneScore(TEAM_A, 10, TEAM_B, 10);
+            SimpleScore score = buildSimpleScore(TEAM_A, 10, TEAM_B, 10);
 
             // Then
             assertThat(score.getTeamStatus(TEAM_A)).isEqualTo(DRAWN);
@@ -118,7 +118,7 @@ class DepthOneScoreTest {
         @Test
         void should_throw_exception_on_unknown_contestant() {
             // Given
-            DepthOneScore score = buildDepthOneScore(TEAM_A, 18, TEAM_B, 12);
+            SimpleScore score = buildSimpleScore(TEAM_A, 18, TEAM_B, 12);
 
             // Then
             IllegalStateException exception = assertThrows(

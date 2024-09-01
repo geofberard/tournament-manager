@@ -1,7 +1,7 @@
 package com.gberard.tournament.infrastructure.repository.googlesheet;
 
-import com.gberard.tournament.domain.model.score.DepthOneScore;
-import com.gberard.tournament.domain.model.score.DepthTwoScore;
+import com.gberard.tournament.domain.model.GameBuilder;
+import com.gberard.tournament.domain.model.score.SetScore;
 import com.gberard.tournament.domain.model.Game;
 import com.gberard.tournament.infrastructure.service.SpreadsheetCRUDService;
 import org.junit.jupiter.api.DisplayName;
@@ -18,8 +18,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
 
-import static com.gberard.tournament.domain.model.score.ScoreType.DepthOne;
-import static com.gberard.tournament.domain.model.score.ScoreType.DepthTwo;
+import static com.gberard.tournament.domain.model.score.ScoreType.Simple;
+import static com.gberard.tournament.domain.model.score.ScoreType.Set;
 import static com.gberard.tournament.TestUtils.*;
 import static com.gberard.tournament.infrastructure.repository.googlesheet.SheetGameRepository.RANGE;
 import static java.time.Month.AUGUST;
@@ -44,35 +44,35 @@ class SheetGameRepositoryTest {
 
 
 
-    private static final Game GAME_1 = Game.builder()
+    private static final Game GAME_1 = GameBuilder.newBuilder()
             .id("game1")
             .time(LocalDateTime.of(2022, AUGUST, 29, 10, 30))
             .court("court")
             .contestants(of(TEAM_A, TEAM_B))
             .refereeId(TEAM_C)
             .isFinished(true)
-            .scoreType(DepthOne)
-            .score(buildDepthOneScore(TEAM_A, 25, TEAM_B, 12))
+            .scoreType(Simple)
+            .score(buildSimpleScore(TEAM_A, 25, TEAM_B, 12))
             .build();
 
-    private static final Game GAME_2 = Game.builder()
+    private static final Game GAME_2 = GameBuilder.newBuilder()
             .id("game2")
             .time(LocalDateTime.of(2022, AUGUST, 29, 11, 30))
             .court("court")
             .contestants(of(TEAM_A, TEAM_C))
             .refereeId(TEAM_B)
             .isFinished(true)
-            .scoreType(DepthTwo)
-            .score(buildDepthTwoScore(TEAM_A, of(25, 14), TEAM_C, of(12, 25)))
+            .scoreType(Set)
+            .score(buildSetScore(TEAM_A, of(25, 14), TEAM_C, of(12, 25)))
             .build();
 
-    private static final Game GAME_3 = Game.builder()
+    private static final Game GAME_3 = GameBuilder.newBuilder()
             .id("game3")
             .time(LocalDateTime.of(2022, AUGUST, 29, 12, 30))
             .court("court")
             .contestants(of(TEAM_C, TEAM_B))
             .isFinished(false)
-            .scoreType(DepthOne)
+            .scoreType(Simple)
             .build();
 
 
@@ -296,9 +296,9 @@ class SheetGameRepositoryTest {
             assertThat(game.court()).isEqualTo("court");
             assertThat(game.contestants()).containsExactly(TEAM_A,TEAM_B);
             assertThat(game.refereeId()).isNotEmpty().hasValue(TEAM_C);
-            assertThat(game.scoreType()).isEqualTo(DepthOne);
+            assertThat(game.scoreType()).isEqualTo(Simple);
             assertThat(game.isFinished()).isTrue();
-            assertThat(game.score()).isNotEmpty().get().isOfAnyClassIn(DepthOneScore.class);
+            assertThat(game.score()).isNotEmpty().get().isOfAnyClassIn(com.gberard.tournament.domain.model.score.SimpleScore.class);
             assertThatScore(game.score().get(), "teamA").containsExactly(25);
             assertThatScore(game.score().get(), "teamB").containsExactly(12);
         }
@@ -319,9 +319,9 @@ class SheetGameRepositoryTest {
             assertThat(game.court()).isEqualTo("court");
             assertThat(game.contestants()).containsExactly(TEAM_A,TEAM_C);
             assertThat(game.refereeId()).isNotEmpty().hasValue(TEAM_B);
-            assertThat(game.scoreType()).isEqualTo(DepthTwo);
+            assertThat(game.scoreType()).isEqualTo(Set);
             assertThat(game.isFinished()).isTrue();
-            assertThat(game.score()).isNotEmpty().get().isOfAnyClassIn(DepthTwoScore.class);
+            assertThat(game.score()).isNotEmpty().get().isOfAnyClassIn(SetScore.class);
             assertThatScore(game.score().get(), "teamA").containsExactly(25, 14);
             assertThatScore(game.score().get(), "teamC").containsExactly(12, 25);
         }
@@ -342,7 +342,7 @@ class SheetGameRepositoryTest {
             assertThat(game.contestants()).containsExactly(TEAM_C,TEAM_B);
             assertThat(game.refereeId()).isEmpty();
             assertThat(game.isFinished()).isFalse();
-            assertThat(game.scoreType()).isEqualTo(DepthOne);
+            assertThat(game.scoreType()).isEqualTo(Simple);
             assertThat(game.score()).isEmpty();
         }
 

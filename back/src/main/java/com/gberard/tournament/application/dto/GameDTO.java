@@ -1,6 +1,11 @@
 package com.gberard.tournament.application.dto;
 
+import com.gberard.tournament.application.dto.score.ScoreDTO;
+import com.gberard.tournament.application.dto.score.SetScoreDTO;
+import com.gberard.tournament.application.dto.score.SimpleScoreDTO;
 import com.gberard.tournament.domain.model.Game;
+import com.gberard.tournament.domain.model.score.SimpleScore;
+import com.gberard.tournament.domain.model.score.SetScore;
 import com.gberard.tournament.domain.model.score.Score;
 import com.gberard.tournament.domain.model.score.ScoreType;
 
@@ -16,10 +21,20 @@ public record GameDTO(
         Optional<TeamDTO> refereeId,
         Boolean isFinished,
         ScoreType scoreType,
-        Optional<Score> score
+        Optional<ScoreDTO> score
 ) {
 
     public static GameDTO toGameDTO(Game game) {
+        ScoreDTO scoreDTO = null;
+
+        if (game.score().isPresent()) {
+            Score score = game.score().get();
+            switch (game.scoreType()){
+                case Simple -> scoreDTO = SimpleScoreDTO.toDTO((SimpleScore) score);
+                case Set -> scoreDTO = SetScoreDTO.toDTO((SetScore) score);
+            }
+        }
+
         return new GameDTO(
                 game.id(),
                 game.time(),
@@ -28,7 +43,7 @@ public record GameDTO(
                 game.refereeId().map(TeamDTO::toTeamDTO),
                 game.isFinished(),
                 game.scoreType(),
-                game.score()
+                Optional.ofNullable(scoreDTO)
         );
     }
 }
