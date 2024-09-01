@@ -96,12 +96,13 @@ public class GamesController {
         }
 
         Score score = ScoreDTO.toDomain(scoreDTO, matchingGame.scoreType());
-        if(!matchingGame.contestants().stream().allMatch(score::hasContestant)) {
+        if (!matchingGame.contestants().stream().allMatch(score::hasContestant)) {
             throw new IllegalStateException("Score contestants doesn't match those in target game (" + id + ")");
         }
 
         Game updatedGame = gameService.update(GameBuilder.from(matchingGame)
                 .score(score)
+                .isFinished(true)
                 .build());
 
         return ResponseEntity.ok(ScoreDTO.toDTO(updatedGame.score().get(), updatedGame.scoreType()));
@@ -144,7 +145,7 @@ public class GamesController {
     private Game findMatchingGame(String id) {
         Optional<Game> matchingGame = gameService.findById(id);
 
-        if(matchingGame.isEmpty()) {
+        if (matchingGame.isEmpty()) {
             throw new EntityNotFoundException("Unknown game " + id);
         }
 

@@ -5,6 +5,7 @@ import com.gberard.tournament.application.dto.*;
 import com.gberard.tournament.domain.model.Game;
 import com.gberard.tournament.domain.model.Player;
 import com.gberard.tournament.domain.model.Team;
+import com.gberard.tournament.domain.port.input.GameService;
 import com.gberard.tournament.domain.port.input.PlayerService;
 import com.gberard.tournament.domain.port.input.TeamService;
 import com.gberard.tournament.domain.port.output.TeamRepository;
@@ -24,6 +25,9 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @RestController
 @RequestMapping("/teams")
 public class TeamsController {
+
+    @Autowired
+    public GameService gameService;
 
     @Autowired
     public TeamService teamService;
@@ -77,12 +81,13 @@ public class TeamsController {
         return ResponseEntity.noContent().build();
     }
 
-    @JsonView(Views.TeamView.Full.class)
-    @GetMapping("/{id}/stats")
-    public Optional<ContestantStatsDTO> getTeamStats(@PathVariable String id) {
-        return teamService.findById(id)
-                .map(teamStatsService::getContestantStats)
-                .map(ContestantStatsDTO::fromContestantStats);
+    @GetMapping("/{id}/games")
+    public ResponseEntity<List<GameDTO>> getGames(@PathVariable String id) {
+        Team matchingTeam = findMatchingTeam(id);
+
+        return ResponseEntity.ok(gameService.findByTeam(matchingTeam).stream()
+                .map(GameDTO::toGameDTO)
+                .toList());
     }
 
     private Team findMatchingTeam(String id) {
