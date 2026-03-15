@@ -1,6 +1,7 @@
 package com.gberard.tournament.infrastructure.service;
 
 import com.gberard.tournament.application.config.SpreadsheetConfig;
+import com.gberard.tournament.infrastructure.repository.googlesheet.SheetRepository;
 import com.google.api.client.http.LowLevelHttpRequest;
 import com.google.api.client.json.Json;
 import com.google.api.client.json.gson.GsonFactory;
@@ -11,7 +12,6 @@ import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.AccessToken;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.gson.Gson;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -21,6 +21,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,8 +35,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-@Slf4j
 class SpreadsheetCRUDServiceTest {
+
+    private static final Logger log = LoggerFactory.getLogger(SpreadsheetCRUDServiceTest.class);
 
     protected static final String GET = "GET";
     protected static final String POST = "POST";

@@ -1,23 +1,33 @@
 package com.gberard.tournament.infrastructure.service;
 
-import com.gberard.tournament.application.config.SpreadsheetConfig;
-import com.gberard.tournament.infrastructure.serializer.RawUtils;
-import com.google.api.services.sheets.v4.Sheets;
-import com.google.api.services.sheets.v4.model.*;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import static java.util.Collections.emptyList;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.OptionalInt;
 
-import static java.util.Collections.emptyList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.gberard.tournament.application.config.SpreadsheetConfig;
+import com.gberard.tournament.infrastructure.serializer.RawUtils;
+import com.google.api.services.sheets.v4.Sheets;
+import com.google.api.services.sheets.v4.model.BatchClearValuesByDataFilterRequest;
+import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetRequest;
+import com.google.api.services.sheets.v4.model.DataFilter;
+import com.google.api.services.sheets.v4.model.DeleteDimensionRequest;
+import com.google.api.services.sheets.v4.model.DimensionRange;
+import com.google.api.services.sheets.v4.model.Request;
+import com.google.api.services.sheets.v4.model.Spreadsheet;
+import com.google.api.services.sheets.v4.model.ValueRange;
 
 @Service
-@Slf4j
 public class SpreadsheetCRUDService {
+
+    private static final Logger log = LoggerFactory.getLogger(SpreadsheetCRUDService.class);
 
     public static final String USER_ENTERED = "USER_ENTERED";
     public static final String SEARCH_CELL = "L1";

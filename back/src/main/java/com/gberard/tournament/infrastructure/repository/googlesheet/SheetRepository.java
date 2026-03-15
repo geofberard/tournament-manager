@@ -1,20 +1,24 @@
 package com.gberard.tournament.infrastructure.repository.googlesheet;
 
-import com.gberard.tournament.domain.model.Identified;
-import com.gberard.tournament.infrastructure.service.SpreadsheetCRUDService;
-import com.google.common.annotations.VisibleForTesting;
-import jakarta.persistence.EntityNotFoundException;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import static java.util.stream.Collectors.toList;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
 
-import static java.util.stream.Collectors.toList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
-@Slf4j
+import com.gberard.tournament.domain.model.Identified;
+import com.gberard.tournament.infrastructure.service.SpreadsheetCRUDService;
+import com.google.common.annotations.VisibleForTesting;
+
+import jakarta.persistence.EntityNotFoundException;
+
 public abstract class SheetRepository<T extends Identified> {
+
+    private static final Logger log = LoggerFactory.getLogger(SheetRepository.class);
 
     private final String tab;
     private final String range;

@@ -2,7 +2,6 @@ package com.gberard.tournament.domain.model;
 
 import com.gberard.tournament.domain.model.score.Score;
 import com.gberard.tournament.domain.model.score.ScoreType;
-import lombok.Builder;
 
 import java.time.LocalDateTime;
 import java.util.List;

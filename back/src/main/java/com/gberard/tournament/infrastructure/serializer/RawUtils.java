@@ -1,7 +1,5 @@
 package com.gberard.tournament.infrastructure.serializer;
 
-import lombok.extern.slf4j.Slf4j;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.List;
@@ -9,7 +7,6 @@ import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.function.Function;
 
-@Slf4j
 public class RawUtils {
 
     public static <T> Optional<T> getValue(List<Object> value, int index, Function<String, T> mapper) {
