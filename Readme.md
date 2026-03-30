@@ -24,16 +24,9 @@ To install all dependencies, run :
 $ cd back
 $ mvn clean install
 ```
-As the server requires access to services APIs in Google Cloud Platform, it needs to run using a `service account`.
-To configure it :
-- download a service account json token from GCP
-- put it in `back/src/main/resources/com/gberard/tournament/`
-- pass it to the application using the environment variable `GOOGLE_APPLICATION_CREDENTIALS` :
-```
-GOOGLE_APPLICATION_CREDENTIALS=<path_to_project>/back/src/main/resources/com/gberard/tournament/credentials.json
-```
-Using IntelliJ, the runner should look like this :
-![IntelliJ Runner](.documentation/runner-intellij.png "Title")
+The API now relies on Spring Data JPA with the in-memory H2 database configured in
+[`back/src/main/resources/application.properties`](/Users/geoffrey.berard/lesfurets/_perso/tournament-manager/back/src/main/resources/application.properties).
+No Google service account is required to run the project locally.
 
 
 ## Start local environment

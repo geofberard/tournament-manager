@@ -3,8 +3,8 @@ package com.gberard.tournament.domain.service;
 import com.gberard.tournament.domain.model.stats.ContestantStats;
 import com.gberard.tournament.domain.model.Game;
 import com.gberard.tournament.domain.model.Team;
-import com.gberard.tournament.infrastructure.repository.googlesheet.SheetGameRepository;
-import com.gberard.tournament.infrastructure.repository.googlesheet.SheetTeamRepository;
+import com.gberard.tournament.domain.port.output.GameRepository;
+import com.gberard.tournament.domain.port.output.TeamRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -42,10 +42,10 @@ class ContestantStatsServiceTest {
     private ContestantStatsService teamStatsService = new ContestantStatsService();
 
     @Mock
-    private SheetGameRepository gameService;
+    private GameRepository gameService;
 
     @Mock
-    private SheetTeamRepository teamService;
+    private TeamRepository teamService;
 
     @Nested
     @DisplayName("getTeamStats()")
