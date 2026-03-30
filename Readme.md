@@ -1,6 +1,6 @@
 # Requirements
 - `node` [installation](https://nodejs.org/en/download/)
-- `java jdk17` [installation](https://docs.oracle.com/en/java/javase/17/install/installation-jdk-macos.html#GUID-2FE451B0-9572-4E38-A1A5-568B77B146DE)
+- `java jdk25`
 - `maven` [installation](https://maven.apache.org/install.html)
 
 # Production
