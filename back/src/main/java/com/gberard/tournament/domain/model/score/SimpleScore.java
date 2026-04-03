@@ -1,46 +1,42 @@
 package com.gberard.tournament.domain.model.score;
 
 import com.gberard.tournament.domain.model.Team;
-import com.gberard.tournament.domain.model.stats.ContestantResult;
+import com.gberard.tournament.domain.model.stats.TeamResult;
 
 import java.util.Map;
 
-public record SimpleScore(Map<String, Integer> result) implements Score {
+public record SimpleScore(Map<String, Integer> result) {
 
-    @Override
     public int getPointFor(Team team) {
-        checkContestant(team);
+        checkTeam(team);
         return result.get(team.id());
     }
 
-    @Override
     public int getPointAgainst(Team team) {
-        checkContestant(team);
+        checkTeam(team);
         return result.keySet().stream()
                 .filter(key -> !key.equals(team.id()))
                 .mapToInt(result::get)
                 .sum();
     }
 
-    @Override
-    public ContestantResult getTeamStatus(Team team) {
-        checkContestant(team);
+    public TeamResult getTeamStatus(Team team) {
+        checkTeam(team);
 
         if (getPointFor(team) == getPointAgainst(team)) {
-            return ContestantResult.DRAWN;
+            return TeamResult.DRAWN;
         }
 
-        return getPointFor(team) > getPointAgainst(team) ? ContestantResult.WIN : ContestantResult.LOST;
+        return getPointFor(team) > getPointAgainst(team) ? TeamResult.WIN : TeamResult.LOST;
     }
 
-    @Override
-    public boolean hasContestant(Team team) {
+    public boolean hasTeam(Team team) {
         return result.containsKey(team.id());
     }
 
-    private void checkContestant(Team team) {
-        if (!hasContestant(team)) {
-            throw new IllegalStateException("Contestant " + team.id() + " absent in score " + this);
+    private void checkTeam(Team team) {
+        if (!hasTeam(team)) {
+            throw new IllegalStateException("Team " + team.id() + " absent in score " + this);
         }
     }
 }

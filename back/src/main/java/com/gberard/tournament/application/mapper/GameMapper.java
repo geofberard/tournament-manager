@@ -2,14 +2,10 @@ package com.gberard.tournament.application.mapper;
 
 import static java.util.stream.Collectors.*;
 
-import java.time.ZoneOffset;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import com.gberard.tournament.domain.model.score.ScoreType;
 import com.gberard.tournament.generated.model.CreateGameRequest;
 import com.gberard.tournament.generated.model.GameStatus;
 import com.gberard.tournament.generated.model.Team;
@@ -23,8 +19,9 @@ public final class GameMapper {
                 .court(game.court())
                 .contestants(game.contestants().stream().map(TeamMapper::toApi).collect(toSet()))
                 .referee(game.refereeId().map(TeamMapper::toApi).orElse(null))
-                .time(game.time().atOffset(ZoneOffset.UTC))
-                .status(game.isFinished() ? GameStatus.COMPLETED : GameStatus.SCHEDULED);
+                .time(game.time().atOffset(java.time.ZoneOffset.UTC))
+                .status(game.isFinished() ? GameStatus.COMPLETED : GameStatus.SCHEDULED)
+                .score(game.score().map(score -> GameScoreMapper.toApi(score, game.contestants())).orElse(null));
     }
 
     public static com.gberard.tournament.domain.model.Game toDomain(
@@ -39,7 +36,6 @@ public final class GameMapper {
                 List.copyOf(contestants),
                 referee,
                 false,
-                ScoreType.Set,
                 Optional.empty()
         );
     }
@@ -56,8 +52,7 @@ public final class GameMapper {
                 request.getCourt(),
                 List.copyOf(contestants),
                 referee,
-                false,
-                ScoreType.Set,
+                GameStatus.COMPLETED.equals(request.getStatus()),
                 Optional.empty()
         );
     }

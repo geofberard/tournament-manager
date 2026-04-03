@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import com.gberard.tournament.application.mapper.StatisticsMapper;
 import com.gberard.tournament.domain.model.Team;
 import com.gberard.tournament.domain.port.input.TeamService;
-import com.gberard.tournament.domain.service.ContestantStatsService;
+import com.gberard.tournament.domain.service.TeamStatsService;
 import com.gberard.tournament.generated.api.StatisticsApiDelegate;
 import com.gberard.tournament.generated.model.ContestantStats;
 
@@ -20,7 +20,7 @@ import jakarta.persistence.EntityNotFoundException;
 public class RankingsApiDelegateImpl implements StatisticsApiDelegate {
 
     @Autowired
-    public ContestantStatsService teamStatsService;
+    public TeamStatsService teamStatsService;
 
     @Autowired
     public TeamService teamService;
@@ -33,13 +33,13 @@ public class RankingsApiDelegateImpl implements StatisticsApiDelegate {
             throw new EntityNotFoundException("Unknown team " + teamId);
         }
 
-        var contestantStats = teamStatsService.getContestantStats(team.get());
-        return ResponseEntity.ok(StatisticsMapper.toApi(contestantStats));
+        var teamStats = teamStatsService.getTeamStats(team.get());
+        return ResponseEntity.ok(StatisticsMapper.toApi(teamStats));
     }
 
     @Override
     public ResponseEntity<List<ContestantStats>> listRankings() {
-        List<ContestantStats> allStats = teamStatsService.getContestantsStats().stream()
+        List<ContestantStats> allStats = teamStatsService.getTeamsStats().stream()
                 .map(StatisticsMapper::toApi)
                 .toList();
         return ResponseEntity.ok(allStats);

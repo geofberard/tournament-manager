@@ -2,8 +2,8 @@ package com.gberard.tournament.domain.model.stats;
 
 import com.gberard.tournament.domain.model.Team;
 
-public record ContestantStats(
-        Team contestant,
+public record TeamStats(
+        Team team,
         int played,
         int won,
         int drawn,

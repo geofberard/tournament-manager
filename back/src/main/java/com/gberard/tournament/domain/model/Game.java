@@ -1,7 +1,6 @@
 package com.gberard.tournament.domain.model;
 
-import com.gberard.tournament.domain.model.score.Score;
-import com.gberard.tournament.domain.model.score.ScoreType;
+import com.gberard.tournament.domain.model.score.SimpleScore;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,7 +13,6 @@ public record Game(
         List<Team> contestants,
         Optional<Team> refereeId,
         Boolean isFinished,
-        ScoreType scoreType,
-        Optional<Score> score
+        Optional<SimpleScore> score
 ) implements Identified {
 }

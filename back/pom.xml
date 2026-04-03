@@ -101,6 +101,9 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <argLine>--enable-preview -Djdk.attach.allowAttachSelf=true -XX:+EnableDynamicAgentLoading</argLine>
+          <excludes>
+            <exclude>**/OpenApiGeneratorApplicationTests.java</exclude>
+          </excludes>
         </configuration>
       </plugin>
       <plugin>

@@ -34,11 +34,11 @@ public class GamesApiDelegateImpl implements GamesApiDelegate {
     @Override
     public ResponseEntity<Game> createGame(CreateGameRequest createGameRequest) {
         Set<Team> contestants = createGameRequest.getContestantIds().stream()
-                .map(this::findContestantOrThrow)
+                .map(this::findTeamOrThrow)
                 .collect(toSet());
 
         Optional<Team> referee = Optional.ofNullable(createGameRequest.getRefereeId())
-                .map(this::findContestantOrThrow);
+                .map(this::findTeamOrThrow);
 
         var newGame = gameService.create(GameMapper.toDomain(createGameRequest, contestants, referee));
 
@@ -68,11 +68,11 @@ public class GamesApiDelegateImpl implements GamesApiDelegate {
     @Override
     public ResponseEntity<Game> updateGame(String gameId, UpdateGameRequest updateGameRequest) {
         Set<Team> contestants = updateGameRequest.getContestantIds().stream()
-                .map(this::findContestantOrThrow)
+                .map(this::findTeamOrThrow)
                 .collect(toSet());
 
         Optional<Team> referee = Optional.ofNullable(updateGameRequest.getRefereeId())
-                .map(this::findContestantOrThrow);
+                .map(this::findTeamOrThrow);
 
         var newGame = gameService.create(GameMapper.toDomain(gameId, updateGameRequest, contestants, referee));
 
@@ -84,8 +84,8 @@ public class GamesApiDelegateImpl implements GamesApiDelegate {
                 .orElseThrow(() -> new EntityNotFoundException("Unknown game " + id));
     }
 
-    private com.gberard.tournament.domain.model.Team findContestantOrThrow(String contestantId) {
-        return teamService.findById(contestantId)
-                .orElseThrow(() -> new EntityNotFoundException("Unknown team " + contestantId));
+    private com.gberard.tournament.domain.model.Team findTeamOrThrow(String teamId) {
+        return teamService.findById(teamId)
+                .orElseThrow(() -> new EntityNotFoundException("Unknown team " + teamId));
     }
 }

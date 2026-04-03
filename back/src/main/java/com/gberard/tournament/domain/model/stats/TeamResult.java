@@ -1,13 +1,13 @@
 package com.gberard.tournament.domain.model.stats;
 
-public enum ContestantResult {
+public enum TeamResult {
     WIN(3),
     DRAWN(1),
     LOST(0);
 
     private final int points;
 
-    ContestantResult(int points) {
+    TeamResult(int points) {
         this.points = points;
     }
 

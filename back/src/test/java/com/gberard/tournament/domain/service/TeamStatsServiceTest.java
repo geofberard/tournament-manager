@@ -1,8 +1,8 @@
 package com.gberard.tournament.domain.service;
 
-import com.gberard.tournament.domain.model.stats.ContestantStats;
 import com.gberard.tournament.domain.model.Game;
 import com.gberard.tournament.domain.model.Team;
+import com.gberard.tournament.domain.model.stats.TeamStats;
 import com.gberard.tournament.domain.port.output.GameRepository;
 import com.gberard.tournament.domain.port.output.TeamRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -20,13 +20,12 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static com.gberard.tournament.TestUtils.*;
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.of;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ContestantStatsServiceTest {
+class TeamStatsServiceTest {
 
     List<Team> teams = List.of(TEAM_A, TEAM_B, TEAM_C, TEAM_D);
 
@@ -39,38 +38,35 @@ class ContestantStatsServiceTest {
     );
 
     @InjectMocks
-    private ContestantStatsService teamStatsService = new ContestantStatsService();
+    private TeamStatsService teamStatsService = new TeamStatsService();
 
     @Mock
-    private GameRepository gameService;
+    private GameRepository gameRepository;
 
     @Mock
-    private TeamRepository teamService;
+    private TeamRepository teamRepository;
 
     @Nested
     @DisplayName("getTeamStats()")
     class GetTeamStats {
 
-        public static Stream<Arguments> getExpectedStats() {
+        static Stream<Arguments> getExpectedStats() {
             return Stream.of(
-                    of(new ContestantStats(TEAM_A, 2, 2, 0, 0, 6, 43, 29, 14)),
-                    of(new ContestantStats(TEAM_B, 3, 1, 1, 1, 4, 47, 54, -7)),
-                    of(new ContestantStats(TEAM_C, 3, 1, 0, 2, 3, 53, 50, 3)),
-                    of(new ContestantStats(TEAM_D, 2, 0, 1, 1, 1, 20, 30, -10)),
-                    of(new ContestantStats(TEAM_E, 0, 0, 0, 0, 0, 0, 0, 0))
+                    of(new TeamStats(TEAM_A, 2, 2, 0, 0, 6, 43, 29, 14)),
+                    of(new TeamStats(TEAM_B, 3, 1, 1, 1, 4, 47, 54, -7)),
+                    of(new TeamStats(TEAM_C, 3, 1, 0, 2, 3, 53, 50, 3)),
+                    of(new TeamStats(TEAM_D, 2, 0, 1, 1, 1, 20, 30, -10)),
+                    of(new TeamStats(TEAM_E, 0, 0, 0, 0, 0, 0, 0, 0))
             );
         }
 
         @ParameterizedTest
         @MethodSource("getExpectedStats")
-        void should_return_team_stats(ContestantStats expected) {
-            // Given
-            when(gameService.readAll()).thenReturn(games);
+        void should_return_team_stats(TeamStats expected) {
+            when(gameRepository.readAll()).thenReturn(games);
 
-            // When
-            ContestantStats stats = teamStatsService.getContestantStats(expected.contestant());
+            TeamStats stats = teamStatsService.getTeamStats(expected.team());
 
-            // Then
             assertThat(stats).isEqualTo(expected);
         }
     }
@@ -81,18 +77,15 @@ class ContestantStatsServiceTest {
 
         @Test
         void should_return_teams_stats() {
-            // Given
-            when(teamService.readAll()).thenReturn(teams.stream()
-                    .map(team -> new Team(team.id(), team.id(), List.of()))
+            when(teamRepository.readAll()).thenReturn(teams.stream()
+                    .map(team -> new Team(team.id(), team.id()))
                     .toList());
-            when(gameService.readAll()).thenReturn(games);
+            when(gameRepository.readAll()).thenReturn(games);
 
-            // When
-            List<ContestantStats> teamsStats = teamStatsService.getContestantsStats();
+            List<TeamStats> teamsStats = teamStatsService.getTeamsStats();
 
-            // Then
             assertThat(teamsStats).hasSize(teams.size());
-            assertThat(teamsStats.stream().map(ContestantStats::contestant).collect(toList()))
+            assertThat(teamsStats.stream().map(TeamStats::team).toList())
                     .containsAll(teams);
         }
     }

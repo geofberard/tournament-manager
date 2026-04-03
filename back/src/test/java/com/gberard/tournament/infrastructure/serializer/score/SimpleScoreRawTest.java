@@ -1,13 +1,9 @@
 package com.gberard.tournament.infrastructure.serializer.score;
 
 import com.gberard.tournament.domain.model.Game;
-import com.gberard.tournament.domain.model.score.Score;
 import org.junit.jupiter.api.Test;
 
 import static com.gberard.tournament.TestUtils.*;
-import static com.gberard.tournament.domain.model.score.ScoreType.Simple;
-import static com.gberard.tournament.infrastructure.serializer.score.ScoreRaw.getScoreDeserializer;
-import static com.gberard.tournament.infrastructure.serializer.score.ScoreRaw.getScoreSerializer;
 import static java.util.List.of;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -18,10 +14,10 @@ class SimpleScoreRawTest {
     @Test
     void should_serialize_properly() {
         // Given
-        Game game = gameBuilder().scoreType(Simple).build();
+        Game game = gameBuilder().build();
 
         // When
-        String serialized = getScoreSerializer(game).apply(GAME_SCORE);
+        String serialized = DepthOneScoreRaw.serialize(GAME_SCORE, game.contestants());
 
         // Then
         assertThat(serialized).isEqualTo("10-9");
@@ -32,10 +28,9 @@ class SimpleScoreRawTest {
         // Given
         String serialized = "10-9";
         // When
-        Score score = getScoreDeserializer(of(TEAM_A, TEAM_B), Simple).apply(serialized);
+        var score = DepthOneScoreRaw.deserialize(serialized, of(TEAM_A, TEAM_B));
 
         // Then
-        assertThat(score).isOfAnyClassIn(com.gberard.tournament.domain.model.score.SimpleScore.class);
         assertThat(score.getPointFor(TEAM_A)).isEqualTo(10);
         assertThat(score.getPointFor(TEAM_B)).isEqualTo(9);
         assertThat(score).isEqualTo(GAME_SCORE);

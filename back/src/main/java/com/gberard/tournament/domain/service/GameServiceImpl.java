@@ -40,7 +40,7 @@ public class GameServiceImpl implements GameService {
     @Override
     public List<Game> findByTeam(Team searchedTeam) {
         return findAll().stream()
-                .filter(game -> game.contestants().stream().anyMatch(team -> team.id() == searchedTeam.id()))
+                .filter(game -> game.contestants().stream().anyMatch(team -> team.id().equals(searchedTeam.id())))
                 .toList();
     }
 

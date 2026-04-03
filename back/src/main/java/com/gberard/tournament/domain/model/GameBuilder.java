@@ -1,7 +1,6 @@
 package com.gberard.tournament.domain.model;
 
-import com.gberard.tournament.domain.model.score.Score;
-import com.gberard.tournament.domain.model.score.ScoreType;
+import com.gberard.tournament.domain.model.score.SimpleScore;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,10 +11,9 @@ public class GameBuilder {
     private LocalDateTime time;
     private String court;
     private List<Team> contestants;
-    private Optional<Team> refereeId;
+    private Optional<Team> refereeId = Optional.empty();
     private Boolean isFinished;
-    private ScoreType scoreType;
-    private Optional<Score> score;
+    private Optional<SimpleScore> score = Optional.empty();
 
     // Constructeur privé pour forcer l'utilisation des méthodes de la classe pour initialiser le builder
     private GameBuilder() {}
@@ -34,7 +32,6 @@ public class GameBuilder {
                 .contestants(game.contestants())
                 .refereeId(game.refereeId())
                 .isFinished(game.isFinished())
-                .scoreType(game.scoreType())
                 .score(game.score());
     }
 
@@ -73,17 +70,12 @@ public class GameBuilder {
         return this;
     }
 
-    public GameBuilder scoreType(ScoreType scoreType) {
-        this.scoreType = scoreType;
-        return this;
-    }
-
-    public GameBuilder score(Optional<Score> score) {
+    public GameBuilder score(Optional<SimpleScore> score) {
         this.score = score;
         return this;
     }
 
-    public GameBuilder score(Score score) {
+    public GameBuilder score(SimpleScore score) {
         return score(Optional.of(score));
     }
 
@@ -92,7 +84,6 @@ public class GameBuilder {
     }
 
     public Game build() {
-        return new Game(id, time, court, contestants, refereeId, isFinished, scoreType, score);
+        return new Game(id, time, court, contestants, refereeId, isFinished, score);
     }
 }
-

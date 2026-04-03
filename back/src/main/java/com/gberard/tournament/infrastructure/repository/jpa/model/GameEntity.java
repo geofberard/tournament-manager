@@ -2,8 +2,7 @@ package com.gberard.tournament.infrastructure.repository.jpa.model;
 
 import com.gberard.tournament.domain.model.Game;
 import com.gberard.tournament.domain.model.Team;
-import com.gberard.tournament.domain.model.score.ScoreType;
-import com.gberard.tournament.infrastructure.serializer.score.ScoreRaw;
+import com.gberard.tournament.infrastructure.serializer.score.DepthOneScoreRaw;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -23,7 +22,6 @@ public class GameEntity {
 
     private String court;
     private Boolean isFinished;
-    private String scoreType;
     private String scoreData;
 
     @OneToMany
@@ -48,7 +46,6 @@ public class GameEntity {
 
     public static Game toDomain(GameEntity entity) {
         List<Team> teams = entity.teams.stream().map(TeamEntity::toDomain).toList();
-        ScoreType type = ScoreType.valueOf(entity.scoreType);
         return new Game(
                 entity.id,
                 entity.time,
@@ -56,8 +53,7 @@ public class GameEntity {
                 teams,
                 Optional.ofNullable(entity.referee).map(TeamEntity::toDomain),
                 entity.isFinished,
-                type,
-                Optional.ofNullable(ScoreRaw.getScoreDeserializer(teams, type).apply(entity.scoreData)));
+                Optional.ofNullable(entity.scoreData).map(scoreData -> DepthOneScoreRaw.deserialize(scoreData, teams)));
     }
 
     public static GameEntity toEntity(Game game) {
@@ -66,10 +62,9 @@ public class GameEntity {
         playerEntity.time = game.time();
         playerEntity.court = game.court();
         playerEntity.teams = game.contestants().stream().map(TeamEntity::toEntity).toList();
-        playerEntity.referee = null;
+        playerEntity.referee = game.refereeId().map(TeamEntity::toEntity).orElse(null);
         playerEntity.isFinished = game.isFinished();
-        playerEntity.scoreType = game.scoreType().name();
-        game.score().ifPresent(score -> playerEntity.scoreData = ScoreRaw.getScoreSerializer(game).apply(score));
+        game.score().ifPresent(score -> playerEntity.scoreData = DepthOneScoreRaw.serialize(score, game.contestants()));
         return playerEntity;
     }
 

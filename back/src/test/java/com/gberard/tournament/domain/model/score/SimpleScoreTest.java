@@ -11,7 +11,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.stream.Stream;
 
 import static com.gberard.tournament.TestUtils.*;
-import static com.gberard.tournament.domain.model.stats.ContestantResult.*;
+import static com.gberard.tournament.domain.model.stats.TeamResult.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -32,7 +32,7 @@ class SimpleScoreTest {
         }
 
         @Test
-        void should_throw_exception_on_unknown_contestant() {
+        void should_throw_exception_on_unknown_team() {
             // Given
             SimpleScore score = buildSimpleScore(TEAM_A, 18, TEAM_B, 12);
 
@@ -61,7 +61,7 @@ class SimpleScoreTest {
         }
 
         @Test
-        void should_throw_exception_on_unknown_contestant() {
+        void should_throw_exception_on_unknown_team() {
             // Given
             SimpleScore score = buildSimpleScore(TEAM_A, 18, TEAM_B, 12);
 
@@ -76,8 +76,8 @@ class SimpleScoreTest {
     }
 
     @Nested
-    @DisplayName("getContestantStatus()")
-    class GetContestantStatusTest {
+    @DisplayName("getTeamStatus()")
+    class GetTeamStatusTest {
 
         public static Stream<Arguments> wonScenario() {
             return Stream.of(
@@ -105,18 +105,18 @@ class SimpleScoreTest {
 
         @ParameterizedTest
         @MethodSource("wonScenario")
-        void should_handle_status_won(String scenario, Score score, Team winner) {
+        void should_handle_status_won(String scenario, SimpleScore score, Team winner) {
             assertThat(score.getTeamStatus(winner)).isEqualTo(WIN);
         }
 
         @ParameterizedTest
         @MethodSource("lostScenario")
-        void should_handle_status_lost(String scenario, Score score, Team loser) {
+        void should_handle_status_lost(String scenario, SimpleScore score, Team loser) {
             assertThat(score.getTeamStatus(loser)).isEqualTo(LOST);
         }
 
         @Test
-        void should_throw_exception_on_unknown_contestant() {
+        void should_throw_exception_on_unknown_team() {
             // Given
             SimpleScore score = buildSimpleScore(TEAM_A, 18, TEAM_B, 12);
 

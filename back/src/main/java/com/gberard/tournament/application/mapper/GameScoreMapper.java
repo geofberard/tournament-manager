@@ -7,8 +7,8 @@ import com.gberard.tournament.generated.model.UpsertGameScoreRequest;
 
 public final class GameScoreMapper {
 
-    public static com.gberard.tournament.generated.model.GameScore toApi(
-            com.gberard.tournament.domain.model.score.Score gameScore,
+    public static GameScore toApi(
+            com.gberard.tournament.domain.model.score.SimpleScore gameScore,
             List<com.gberard.tournament.domain.model.Team> contestants
     ) {
         GameScore gameScoreDTO = new GameScore();
