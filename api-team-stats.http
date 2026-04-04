@@ -1,5 +1,0 @@
-### Read all
-GET 127.0.0.1:8080/api/teams/stats
-
-### Read
-GET 127.0.0.1:8080/api/teams/team_1/stats

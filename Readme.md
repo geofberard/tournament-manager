@@ -14,18 +14,18 @@
 |||
 |---|---|
 |Language|[Java](https://www.java.com/fr/)|
-|Code Location|`back/`|
+|Code Location|`api/`|
 |Building Tool|[Maven](https://maven.apache.org)|
 |Framework|[Spring Boot](https://spring.io/projects/spring-boot)|
 
 ## Set Up
 To install all dependencies, run :
 ```
-$ cd back
+$ cd api
 $ mvn clean install
 ```
 The API now relies on Spring Data JPA with the in-memory H2 database configured in
-[`back/src/main/resources/application.properties`](/Users/geoffrey.berard/lesfurets/_perso/tournament-manager/back/src/main/resources/application.properties).
+[`api/src/main/resources/application.properties`](/Users/geoffrey.berard/lesfurets/_perso/tournament-manager/api/src/main/resources/application.properties).
 No Google service account is required to run the project locally.
 
 
