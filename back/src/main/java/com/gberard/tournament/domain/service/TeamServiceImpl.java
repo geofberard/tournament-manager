@@ -17,27 +17,27 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     public Team create(Team player) {
-        return teamRepository.create(player);
+        return teamRepository.save(player);
     }
 
     @Override
     public Team update(Team player) {
-        return teamRepository.update(player);
+        return teamRepository.save(player);
     }
 
     @Override
     public boolean delete(Team player) {
-        teamRepository.delete(player);
+        teamRepository.deleteById(player.id());
         return true;
     }
 
     @Override
     public Optional<Team> findById(String id) {
-        return teamRepository.read(id);
+        return teamRepository.findById(id);
     }
 
     @Override
     public List<Team> findAll() {
-        return teamRepository.readAll();
+        return teamRepository.findAll();
     }
 }

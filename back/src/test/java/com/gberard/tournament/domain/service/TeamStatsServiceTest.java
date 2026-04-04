@@ -63,7 +63,11 @@ class TeamStatsServiceTest {
         @ParameterizedTest
         @MethodSource("getExpectedStats")
         void should_return_team_stats(TeamStats expected) {
-            when(gameRepository.readAll()).thenReturn(games);
+            when(gameRepository.findByTeamId(expected.team().id())).thenReturn(
+                    games.stream()
+                            .filter(game -> game.contestants().stream().anyMatch(team -> team.id().equals(expected.team().id())))
+                            .toList()
+            );
 
             TeamStats stats = teamStatsService.getTeamStats(expected.team());
 
@@ -77,10 +81,14 @@ class TeamStatsServiceTest {
 
         @Test
         void should_return_teams_stats() {
-            when(teamRepository.readAll()).thenReturn(teams.stream()
+            when(teamRepository.findAll()).thenReturn(teams.stream()
                     .map(team -> new Team(team.id(), team.id()))
                     .toList());
-            when(gameRepository.readAll()).thenReturn(games);
+            teams.forEach(team -> when(gameRepository.findByTeamId(team.id())).thenReturn(
+                    games.stream()
+                            .filter(game -> game.contestants().stream().anyMatch(contestant -> contestant.id().equals(team.id())))
+                            .toList()
+            ));
 
             List<TeamStats> teamsStats = teamStatsService.getTeamsStats();
 

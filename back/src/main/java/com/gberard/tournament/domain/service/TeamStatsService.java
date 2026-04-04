@@ -27,14 +27,14 @@ public class TeamStatsService implements TeamStatsUseCase {
 
     @Override
     public List<TeamStats> getTeamsStats() {
-        return teamRepository.readAll().stream()
+        return teamRepository.findAll().stream()
                 .map(this::getTeamStats)
                 .toList();
     }
 
     @Override
     public TeamStats getTeamStats(Team team) {
-        return gameRepository.readAll().stream()
+        return gameRepository.findByTeamId(team.id()).stream()
                 .filter(game -> game.contestants().stream().anyMatch(contestant -> contestant.id().equals(team.id())))
                 .filter(Game::isFinished)
                 .reduce(

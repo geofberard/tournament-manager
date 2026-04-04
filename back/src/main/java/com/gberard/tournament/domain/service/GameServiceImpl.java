@@ -18,34 +18,32 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public Game create(Game player) {
-        return gameRepository.create(player);
+        return gameRepository.save(player);
     }
 
     @Override
     public Game update(Game player) {
-        return gameRepository.update(player);
+        return gameRepository.save(player);
     }
 
     @Override
     public boolean delete(Game player) {
-        gameRepository.delete(player);
+        gameRepository.deleteById(player.id());
         return true;
     }
 
     @Override
     public Optional<Game> findById(String id) {
-        return gameRepository.read(id);
+        return gameRepository.findById(id);
     }
 
     @Override
     public List<Game> findByTeam(Team searchedTeam) {
-        return findAll().stream()
-                .filter(game -> game.contestants().stream().anyMatch(team -> team.id().equals(searchedTeam.id())))
-                .toList();
+        return gameRepository.findByTeamId(searchedTeam.id());
     }
 
     @Override
     public List<Game> findAll() {
-        return gameRepository.readAll();
+        return gameRepository.findAll();
     }
 }

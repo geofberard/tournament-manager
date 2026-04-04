@@ -1,15 +1,13 @@
 package com.gberard.tournament.infrastructure.repository.jpa;
 
 import com.gberard.tournament.domain.model.Identified;
-import com.gberard.tournament.domain.port.output.DataRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
-public abstract class DBRepository<D extends Identified,E> implements DataRepository<D> {
+public abstract class DBRepository<D extends Identified,E> {
 
     private final JpaRepository<E,String> repository;
     private final Function<D,E> toEntity;
@@ -21,40 +19,20 @@ public abstract class DBRepository<D extends Identified,E> implements DataReposi
         this.toDomain = toDomain;
     }
 
-    @Override
-    public List<D> readAll() {
+    protected List<D> findAllMapped() {
         return repository.findAll().stream().map(toDomain).toList();
     }
 
-    @Override
-    public Optional<D> read(String id) {
+    protected Optional<D> findByIdMapped(String id) {
         return repository.findById(id).map(toDomain);
     }
 
-    @Override
-    public D readOrThrow(String id) {
-        return repository.findById(id)
-                .map(toDomain)
-                .orElseThrow(() -> new EntityNotFoundException(getLogName() + " : Unknown id [" + id + "]"));
-    }
-
-    private String getLogName() {
-        return getClass().getSimpleName().replace("DB", "");
-    }
-
-    @Override
-    public D create(D entity) {
+    protected D saveMapped(D entity) {
         return toDomain.apply(repository.save(toEntity.apply(entity)));
     }
 
-    @Override
-    public D update(D entity) {
-        return toDomain.apply(repository.save(toEntity.apply(entity)));
-    }
-
-    @Override
-    public void delete(D element) {
-        repository.delete(toEntity.apply(element));
+    protected void deleteByIdMapped(String id) {
+        repository.deleteById(id);
     }
 
 }
