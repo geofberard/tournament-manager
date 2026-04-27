@@ -3,6 +3,19 @@
 - `java jdk25`
 - `maven` [installation](https://maven.apache.org/install.html)
 
+# Docker
+To run the `api` and `web` projects together with Docker:
+```bash
+docker compose -f local/docker/docker-compose.tournament.yml up
+```
+
+The services are then available at:
+- `web`: [http://localhost:5173](http://localhost:5173)
+- `api`: [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+- `api remote debug`: `localhost:5005`
+
+The Vite dev server uses a minimal Docker-specific setup for live reload, proxies `/api` requests to the `api` container, and the Spring Boot process exposes JDWP on port `5005`.
+
 # Production
 |Service|Url|
 |---|---|

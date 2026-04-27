@@ -1,0 +1,48 @@
+services:
+  api:
+    image: maven:3.9.11-eclipse-temurin-25
+    working_dir: /workspace/api
+    entrypoint: ["/workspace/local/docker/api-dev-entrypoint.sh"]
+    command:
+      [
+        "mvn",
+        "spring-boot:run",
+        "-Dspring-boot.run.jvmArguments=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005",
+      ]
+    environment:
+      MAVEN_CONFIG: /root/.m2
+    ports:
+      - "127.0.0.1:8080:8080"
+      - "127.0.0.1:5005:5005"
+    volumes:
+      - ../..:/workspace
+      - api_m2:/root/.m2
+    networks:
+      - tournament
+
+  web:
+    image: node:24-bookworm-slim
+    working_dir: /workspace/web
+    entrypoint: ["/workspace/local/docker/web-dev-entrypoint.sh"]
+    command: ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "5173"]
+    environment:
+      VITE_API_PROXY_TARGET: "http://api:8080"
+      VITE_HMR_HOST: "localhost"
+      VITE_USE_POLLING: "true"
+    ports:
+      - "127.0.0.1:5173:5173"
+    volumes:
+      - ../..:/workspace
+      - web_node_modules:/workspace/web/node_modules
+    depends_on:
+      - api
+    restart: unless-stopped
+    networks:
+      - tournament
+
+volumes:
+  api_m2:
+  web_node_modules:
+
+networks:
+  tournament:

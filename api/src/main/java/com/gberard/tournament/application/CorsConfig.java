@@ -14,11 +14,14 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins(
-                                "http://localhost",
-                                "https://geofberard.github.io/",
-                                "https://static-scuf-tournois-prod.storage.googleapis.com/"
-                        );
+                        .allowedOriginPatterns(
+                                "http://localhost:*",
+                                "http://127.0.0.1:*",
+                                "https://geofberard.github.io",
+                                "https://static-scuf-tournois-prod.storage.googleapis.com"
+                        )
+                        .allowedMethods("*")
+                        .allowedHeaders("*");
             }
         };
     }
