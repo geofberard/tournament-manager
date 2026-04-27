@@ -6,6 +6,5 @@ const apiConfiguration = new Configuration({
 
 const teamsApi = new TeamsApi(apiConfiguration)
 
+export { teamsApi }
 export type { Team }
-
-export const listTeams = async (): Promise<Team[]> => teamsApi.listTeams()
