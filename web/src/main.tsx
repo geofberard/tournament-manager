@@ -3,31 +3,44 @@ import { createRoot } from 'react-dom/client'
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material'
 import { Router } from './app/Router'
 
-const theme = createTheme({
+const defaultTheme = createTheme()
+
+const theme = createTheme(defaultTheme, {
   palette: {
-    mode: 'light',
     primary: {
-      main: '#1565c0',
+      light: '#484848',
+      main: '#212121',
+      dark: '#000000',
+      contrastText: '#ffffff',
     },
     secondary: {
-      main: '#00897b',
+      light: '#ffeb90',
+      main: '#dcb961',
+      dark: '#a88933',
+      contrastText: '#000000',
     },
     background: {
-      default: '#f4f7fb',
+      default: '#ffffff',
       paper: '#ffffff',
     },
   },
-  shape: {
-    borderRadius: 20,
-  },
   typography: {
+    fontFamily: ['Montserrat', 'sans-serif'].join(','),
     h1: {
-      fontSize: 'clamp(2.4rem, 4vw, 3.5rem)',
-      fontWeight: 700,
-      letterSpacing: '-0.04em',
+      fontSize: '2rem',
+      fontWeight: 900,
+      [defaultTheme.breakpoints.up('md')]: {
+        fontSize: '2.8rem',
+      },
     },
-    h5: {
-      fontWeight: 700,
+    h2: {
+      fontSize: '2rem',
+      fontWeight: 900,
+    },
+    h3: {
+      fontSize: '1.3rem',
+      fontWeight: 900,
+      alignSelf: 'center',
     },
   },
 })
