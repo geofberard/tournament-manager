@@ -1,85 +1,126 @@
-import { useEffect, useState } from 'react'
+import { HashRouter, Navigate, Outlet, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { TeamAppShell } from '../components/team-app/TeamAppShell'
 import {
+  ADMIN_HOME_PATH,
+  ADMIN_LOGIN_PATH,
+  PUBLIC_HOME_PATH,
   TEAM_HOME_PATH,
   TEAM_LOGIN_PATH,
-  isKnownTeamPath,
   teamRoutes,
-} from './teamRoutes'
+} from './routes'
 import { TeamSelectionView } from '../views/TeamSelectionView'
 import { useTeamLogin } from '../hooks/useTeamLogin'
+import { useAdminSession } from '../hooks/useAdminSession'
+import { PublicView } from '../views/PublicView'
+import { AdminLoginView } from '../views/AdminLoginView'
+import { AdminView } from '../views/AdminView'
 import { TeamsView } from '../views/TeamsView'
 
-const readCurrentPath = () => window.location.pathname || TEAM_HOME_PATH
-
-const updateCurrentPath = (nextPath: string, replace = false) => {
-  const currentPath = readCurrentPath()
-
-  if (currentPath === nextPath) {
-    return
-  }
-
-  window.history[replace ? 'replaceState' : 'pushState'](null, '', nextPath)
+type TeamProtectedLayoutProps = {
+  currentTeam: NonNullable<ReturnType<typeof useTeamLogin>['currentTeam']>
+  onChangeTeam: () => void
 }
 
-export function Router() {
-  const { clearTeamSelection, currentTeam, handleTeamChange } = useTeamLogin()
-  const [currentPath, setCurrentPath] = useState(readCurrentPath)
+function TeamProtectedLayout({ currentTeam, onChangeTeam }: TeamProtectedLayoutProps) {
+  const location = useLocation()
+  const navigate = useNavigate()
 
-  useEffect(() => {
-    const handlePopState = () => {
-      setCurrentPath(readCurrentPath())
-    }
-
-    window.addEventListener('popstate', handlePopState)
-
-    return () => {
-      window.removeEventListener('popstate', handlePopState)
-    }
-  }, [])
-
-  useEffect(() => {
-    if (!currentTeam) {
-      if (currentPath !== TEAM_LOGIN_PATH) {
-        updateCurrentPath(TEAM_LOGIN_PATH, true)
-        setCurrentPath(TEAM_LOGIN_PATH)
-      }
-
-      return
-    }
-
-    if (currentPath === TEAM_LOGIN_PATH || !isKnownTeamPath(currentPath)) {
-      updateCurrentPath(TEAM_HOME_PATH, true)
-      setCurrentPath(TEAM_HOME_PATH)
-    }
-  }, [currentPath, currentTeam])
-
-  const navigateTo = (nextPath: string) => {
-    updateCurrentPath(nextPath)
-    setCurrentPath(nextPath)
-  }
-
-  const handleChangeTeam = () => {
-    clearTeamSelection()
-    updateCurrentPath(TEAM_LOGIN_PATH, true)
-    setCurrentPath(TEAM_LOGIN_PATH)
-  }
-
-  if (!currentTeam) {
-    return <TeamSelectionView onTeamChange={handleTeamChange} />
-  }
-
-  const normalizedPath = isKnownTeamPath(currentPath) ? currentPath : TEAM_HOME_PATH
+  const handleNavigate = (path: string) => navigate(path)
 
   return (
     <TeamAppShell
-      currentPath={normalizedPath}
+      currentPath={location.pathname}
       currentTeam={currentTeam}
-      onChangeTeam={handleChangeTeam}
-      onNavigate={navigateTo}
+      onChangeTeam={onChangeTeam}
+      onNavigate={handleNavigate}
       routes={teamRoutes}
     >
-      <TeamsView currentTeam={currentTeam} />
+      <Outlet />
     </TeamAppShell>
+  )
+}
+
+type AppRoutesProps = {
+  adminSession: ReturnType<typeof useAdminSession>
+  teamSession: ReturnType<typeof useTeamLogin>
+}
+
+function AppRoutes({ adminSession, teamSession }: AppRoutesProps) {
+  const { currentTeam, handleTeamChange, clearTeamSelection } = teamSession
+  const { isAuthenticated, login, logout } = adminSession
+  const navigate = useNavigate()
+
+  const handleTeamLogout = () => {
+    clearTeamSelection()
+    navigate(TEAM_LOGIN_PATH, { replace: true })
+  }
+
+  const handleAdminLogout = () => {
+    logout()
+    navigate(ADMIN_LOGIN_PATH, { replace: true })
+  }
+
+  return (
+    <Routes>
+      <Route path="/" element={<Navigate to={PUBLIC_HOME_PATH} replace />} />
+      <Route path={PUBLIC_HOME_PATH} element={<PublicView />} />
+
+      <Route
+        path={TEAM_LOGIN_PATH}
+        element={
+          currentTeam ? (
+            <Navigate to={TEAM_HOME_PATH} replace />
+          ) : (
+            <TeamSelectionView onTeamChange={handleTeamChange} />
+          )
+        }
+      />
+      <Route
+        path={TEAM_HOME_PATH}
+        element={
+          currentTeam ? (
+            <TeamProtectedLayout currentTeam={currentTeam} onChangeTeam={handleTeamLogout} />
+          ) : (
+            <Navigate to={TEAM_LOGIN_PATH} replace />
+          )
+        }
+      >
+        <Route index element={<TeamsView currentTeam={currentTeam ?? undefined!} />} />
+      </Route>
+
+      <Route
+        path={ADMIN_LOGIN_PATH}
+        element={
+          isAuthenticated ? (
+            <Navigate to={ADMIN_HOME_PATH} replace />
+          ) : (
+            <AdminLoginView onLogin={login} />
+          )
+        }
+      />
+      <Route
+        path={ADMIN_HOME_PATH}
+        element={
+          isAuthenticated ? (
+            <AdminView onLogout={handleAdminLogout} />
+          ) : (
+            <Navigate to={ADMIN_LOGIN_PATH} replace />
+          )
+        }
+      />
+
+      <Route path="*" element={<Navigate to={PUBLIC_HOME_PATH} replace />} />
+    </Routes>
+  )
+}
+
+export function Router() {
+  const teamSession = useTeamLogin()
+  const adminSession = useAdminSession()
+
+  return (
+    <HashRouter>
+      <AppRoutes adminSession={adminSession} teamSession={teamSession} />
+    </HashRouter>
   )
 }

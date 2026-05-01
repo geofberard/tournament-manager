@@ -13,7 +13,7 @@ import {
 } from '@mui/material'
 import scufLogo from '../../assets/scuf-logo.svg'
 import type { Team } from '../../services/teamsService'
-import type { TeamRoute } from '../../app/teamRoutes'
+import type { AppRoute } from '../../app/routes'
 
 type TeamAppShellProps = {
   children: React.ReactNode
@@ -21,7 +21,7 @@ type TeamAppShellProps = {
   currentTeam: Team
   onChangeTeam: () => void
   onNavigate: (path: string) => void
-  routes: TeamRoute[]
+  routes: AppRoute[]
 }
 
 function BurgerButton({ onClick }: { onClick: () => void }) {

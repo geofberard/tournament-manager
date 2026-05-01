@@ -33,7 +33,6 @@ export function useTeamLogin(): UseTeamLoginResult {
       setCurrentTeam(selectedTeam)
       persistCurrentTeam(selectedTeam)
     }
-
   }
 
   return {

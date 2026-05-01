@@ -1,15 +1,20 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ThemeProvider, createTheme } from '@mui/material'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { Router } from './Router'
-import { TEAM_HOME_PATH, TEAM_LOGIN_PATH } from './teamRoutes'
+import { ADMIN_HOME_PATH, ADMIN_LOGIN_PATH, PUBLIC_HOME_PATH, TEAM_HOME_PATH, TEAM_LOGIN_PATH } from './routes'
 import * as useGamesModule from '../hooks/useGames'
 import * as useRankingsModule from '../hooks/useRankings'
 import * as useTeamLoginModule from '../hooks/useTeamLogin'
+import * as useAdminSessionModule from '../hooks/useAdminSession'
 import * as useTeamsModule from '../hooks/useTeams'
 
 vi.mock('../hooks/useTeamLogin', () => ({
   useTeamLogin: vi.fn(),
+}))
+
+vi.mock('../hooks/useAdminSession', () => ({
+  useAdminSession: vi.fn(),
 }))
 
 vi.mock('../hooks/useTeams', () => ({
@@ -25,6 +30,7 @@ vi.mock('../hooks/useRankings', () => ({
 }))
 
 const useTeamLoginMock = vi.mocked(useTeamLoginModule.useTeamLogin)
+const useAdminSessionMock = vi.mocked(useAdminSessionModule.useAdminSession)
 const useTeamsMock = vi.mocked(useTeamsModule.useTeams)
 const useGamesMock = vi.mocked(useGamesModule.useGames)
 const useRankingsMock = vi.mocked(useRankingsModule.useRankings)
@@ -36,96 +42,166 @@ const renderRouter = () =>
     </ThemeProvider>,
   )
 
+const setHashPath = (path: string) => {
+  window.location.hash = `#${path}`
+}
+
 describe('Router', () => {
-  afterEach(() => {
-    cleanup()
-    window.history.replaceState(null, '', TEAM_HOME_PATH)
+  beforeEach(() => {
+    useTeamsMock.mockReturnValue({
+      errorMessage: null,
+      isLoading: false,
+      teams: [],
+    })
+    useGamesMock.mockReturnValue({
+      errorMessage: null,
+      games: [],
+      isLoading: false,
+    })
+    useRankingsMock.mockReturnValue({
+      errorMessage: null,
+      isLoading: false,
+      rankings: [],
+    })
   })
 
-  it("should render the selection page when no team is selected", () => {
-    window.history.replaceState(null, '', TEAM_HOME_PATH)
+  afterEach(() => {
+    cleanup()
+    window.location.hash = ''
+  })
+
+  it('should render the public page for /public', () => {
+    setHashPath(PUBLIC_HOME_PATH)
 
     useTeamLoginMock.mockReturnValue({
       clearTeamSelection: vi.fn(),
       currentTeam: null,
       handleTeamChange: vi.fn(),
     })
+    useAdminSessionMock.mockReturnValue({
+      isAuthenticated: false,
+      login: vi.fn(),
+      logout: vi.fn(),
+    })
+
+    renderRouter()
+
+    expect(screen.getByText('Zone publique')).toBeInTheDocument()
+  })
+
+  it('should redirect /team to /team/login when no team is selected', async () => {
+    setHashPath(TEAM_HOME_PATH)
+
+    useTeamLoginMock.mockReturnValue({
+      clearTeamSelection: vi.fn(),
+      currentTeam: null,
+      handleTeamChange: vi.fn(),
+    })
+    useAdminSessionMock.mockReturnValue({
+      isAuthenticated: false,
+      login: vi.fn(),
+      logout: vi.fn(),
+    })
     useTeamsMock.mockReturnValue({
       errorMessage: null,
       isLoading: true,
       teams: [],
-    })
-    useGamesMock.mockReturnValue({
-      errorMessage: null,
-      games: [],
-      isLoading: false,
-    })
-    useRankingsMock.mockReturnValue({
-      errorMessage: null,
-      isLoading: false,
-      rankings: [],
     })
 
     renderRouter()
 
     expect(screen.getByText('Tournois')).toBeInTheDocument()
     expect(screen.getByRole('progressbar')).toBeInTheDocument()
-    expect(window.location.pathname).toBe(TEAM_LOGIN_PATH)
+
+    await waitFor(() => {
+      expect(window.location.hash).toBe(`#${TEAM_LOGIN_PATH}`)
+    })
   })
 
-  it('should render the teams page when a team is selected', () => {
-    window.history.replaceState(null, '', TEAM_LOGIN_PATH)
+  it('should render the team area when a team is selected', async () => {
+    setHashPath(TEAM_LOGIN_PATH)
 
     useTeamLoginMock.mockReturnValue({
       clearTeamSelection: vi.fn(),
       currentTeam: { id: 'team-2', name: 'Tigres' },
       handleTeamChange: vi.fn(),
     })
-    useTeamsMock.mockReturnValue({
-      errorMessage: null,
-      isLoading: false,
-      teams: [],
-    })
-    useGamesMock.mockReturnValue({
-      errorMessage: null,
-      games: [],
-      isLoading: false,
-    })
-    useRankingsMock.mockReturnValue({
-      errorMessage: null,
-      isLoading: false,
-      rankings: [],
+    useAdminSessionMock.mockReturnValue({
+      isAuthenticated: false,
+      login: vi.fn(),
+      logout: vi.fn(),
     })
 
     renderRouter()
 
-    expect(screen.getByText('Bienvenue Tigres')).toBeInTheDocument()
     expect(screen.getByText('Espace équipe')).toBeInTheDocument()
-    expect(window.location.pathname).toBe(TEAM_HOME_PATH)
+    expect(screen.getByText('Bienvenue Tigres')).toBeInTheDocument()
+
+    await waitFor(() => {
+      expect(window.location.hash).toBe(`#${TEAM_HOME_PATH}`)
+    })
   })
 
-  it("should allow clearing the selected team from the teams page", () => {
+  it('should redirect /admin to /admin/login when the admin is not authenticated', async () => {
+    setHashPath(ADMIN_HOME_PATH)
+
+    useTeamLoginMock.mockReturnValue({
+      clearTeamSelection: vi.fn(),
+      currentTeam: null,
+      handleTeamChange: vi.fn(),
+    })
+    useAdminSessionMock.mockReturnValue({
+      isAuthenticated: false,
+      login: vi.fn(),
+      logout: vi.fn(),
+    })
+
+    renderRouter()
+
+    expect(screen.getByText('Connexion admin')).toBeInTheDocument()
+
+    await waitFor(() => {
+      expect(window.location.hash).toBe(`#${ADMIN_LOGIN_PATH}`)
+    })
+  })
+
+  it('should render the admin area when the admin is authenticated', async () => {
+    setHashPath(ADMIN_LOGIN_PATH)
+
+    useTeamLoginMock.mockReturnValue({
+      clearTeamSelection: vi.fn(),
+      currentTeam: null,
+      handleTeamChange: vi.fn(),
+    })
+    useAdminSessionMock.mockReturnValue({
+      isAuthenticated: true,
+      login: vi.fn(),
+      logout: vi.fn(),
+    })
+
+    renderRouter()
+
+    expect(screen.getByText('Zone admin')).toBeInTheDocument()
+
+    await waitFor(() => {
+      expect(window.location.hash).toBe(`#${ADMIN_HOME_PATH}`)
+    })
+  })
+
+  it("should allow clearing the selected team from the team area", () => {
     const clearTeamSelection = vi.fn()
+
+    setHashPath(TEAM_HOME_PATH)
 
     useTeamLoginMock.mockReturnValue({
       clearTeamSelection,
       currentTeam: { id: 'team-2', name: 'Tigres' },
       handleTeamChange: vi.fn(),
     })
-    useTeamsMock.mockReturnValue({
-      errorMessage: null,
-      isLoading: false,
-      teams: [],
-    })
-    useGamesMock.mockReturnValue({
-      errorMessage: null,
-      games: [],
-      isLoading: false,
-    })
-    useRankingsMock.mockReturnValue({
-      errorMessage: null,
-      isLoading: false,
-      rankings: [],
+    useAdminSessionMock.mockReturnValue({
+      isAuthenticated: false,
+      login: vi.fn(),
+      logout: vi.fn(),
     })
 
     renderRouter()
