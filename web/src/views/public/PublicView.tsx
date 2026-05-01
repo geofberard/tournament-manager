@@ -1,6 +1,6 @@
 import { Alert, Card, CardContent, Stack, Typography } from '@mui/material'
 
-export function PublicView() {
+export const PublicView = () => {
   return (
     <Stack spacing={3} sx={{ maxWidth: 760, mx: 'auto', py: { xs: 4, md: 8 }, px: 2 }}>
       <Typography variant="h1">Zone publique</Typography>

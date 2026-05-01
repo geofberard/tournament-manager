@@ -19,12 +19,12 @@ type RankingTableProps = {
   rankings: ContestantStats[]
 }
 
-export function RankingTable({
+export const RankingTable = ({
   currentTeamId,
   errorMessage,
   isLoading,
   rankings,
-}: RankingTableProps) {
+}: RankingTableProps) => {
   if (errorMessage) {
     return <Alert severity="error">{errorMessage}</Alert>
   }

@@ -1,5 +1,5 @@
 import { HashRouter, Navigate, Outlet, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
-import { TeamAppShell } from '../components/team-app/TeamAppShell'
+import { TeamAppShell } from '../components/team/TeamAppShell'
 import {
   ADMIN_HOME_PATH,
   ADMIN_LOGIN_PATH,
@@ -8,20 +8,20 @@ import {
   TEAM_LOGIN_PATH,
   teamRoutes,
 } from './routes'
-import { TeamSelectionView } from '../views/TeamSelectionView'
+import { TeamSelectionView } from '../views/team/TeamSelectionView'
 import { useTeamLogin } from '../hooks/useTeamLogin'
 import { useAdminSession } from '../hooks/useAdminSession'
-import { PublicView } from '../views/PublicView'
-import { AdminLoginView } from '../views/AdminLoginView'
-import { AdminView } from '../views/AdminView'
-import { TeamsView } from '../views/TeamsView'
+import { PublicView } from '../views/public/PublicView'
+import { AdminLoginView } from '../views/admin/AdminLoginView'
+import { AdminView } from '../views/admin/AdminView'
+import { TeamsView } from '../views/team/TeamsView'
 
 type TeamProtectedLayoutProps = {
   currentTeam: NonNullable<ReturnType<typeof useTeamLogin>['currentTeam']>
   onChangeTeam: () => void
 }
 
-function TeamProtectedLayout({ currentTeam, onChangeTeam }: TeamProtectedLayoutProps) {
+const TeamProtectedLayout = ({ currentTeam, onChangeTeam }: TeamProtectedLayoutProps) => {
   const location = useLocation()
   const navigate = useNavigate()
 
@@ -45,7 +45,7 @@ type AppRoutesProps = {
   teamSession: ReturnType<typeof useTeamLogin>
 }
 
-function AppRoutes({ adminSession, teamSession }: AppRoutesProps) {
+const AppRoutes = ({ adminSession, teamSession }: AppRoutesProps) => {
   const { currentTeam, handleTeamChange, clearTeamSelection } = teamSession
   const { isAuthenticated, login, logout } = adminSession
   const navigate = useNavigate()
@@ -114,7 +114,7 @@ function AppRoutes({ adminSession, teamSession }: AppRoutesProps) {
   )
 }
 
-export function Router() {
+export const Router = () => {
   const teamSession = useTeamLogin()
   const adminSession = useAdminSession()
 

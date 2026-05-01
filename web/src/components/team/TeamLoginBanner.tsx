@@ -1,7 +1,7 @@
 import { Box, CardMedia, Grid, Typography } from '@mui/material'
 import scufLogo from '../../assets/scuf-logo.svg'
 
-export function TeamLoginBanner() {
+export const TeamLoginBanner = () => {
   return (
     <Grid
       size={{ xs: 12, md: 5 }}

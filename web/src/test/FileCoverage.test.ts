@@ -10,13 +10,9 @@ const includedDirectories = ['app', 'components', 'hooks', 'services', 'views']
 
 const excludedFiles = new Set([
   'app/teamRoutes.ts',
-  'components/LoadingState.tsx',
-  'components/PageHeader.tsx',
-  'components/TeamList.tsx',
-  'components/team-home/RankingTable.tsx',
-  'components/team-home/TeamMatchesCard.tsx',
-  'hooks/useGames.ts',
-  'hooks/useRankings.ts',
+  'components/shared/RankingTable.tsx',
+  'components/shared/GameCard.tsx',
+  'components/shared/GameList.tsx',
   'main.tsx',
   'services/apiClient.ts',
   'services/gamesService.ts',

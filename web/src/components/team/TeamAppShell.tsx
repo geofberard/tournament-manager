@@ -24,7 +24,7 @@ type TeamAppShellProps = {
   routes: AppRoute[]
 }
 
-function BurgerButton({ onClick }: { onClick: () => void }) {
+const BurgerButton = ({ onClick }: { onClick: () => void }) => {
   return (
     <ButtonBase
       aria-label="Ouvrir le menu"
@@ -56,14 +56,14 @@ function BurgerButton({ onClick }: { onClick: () => void }) {
   )
 }
 
-export function TeamAppShell({
+export const TeamAppShell = ({
   children,
   currentPath,
   currentTeam,
   onChangeTeam,
   onNavigate,
   routes,
-}: TeamAppShellProps) {
+}: TeamAppShellProps) => {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const closeMobileMenu = () => setMobileMenuOpen(false)

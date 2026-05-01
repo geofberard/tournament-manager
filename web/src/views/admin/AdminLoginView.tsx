@@ -4,7 +4,7 @@ type AdminLoginViewProps = {
   onLogin: () => void
 }
 
-export function AdminLoginView({ onLogin }: AdminLoginViewProps) {
+export const AdminLoginView = ({ onLogin }: AdminLoginViewProps) => {
   return (
     <Stack spacing={3} sx={{ maxWidth: 480, mx: 'auto', py: { xs: 4, md: 10 }, px: 2 }}>
       <Typography variant="h1">Connexion admin</Typography>

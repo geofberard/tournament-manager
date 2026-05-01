@@ -1,15 +1,15 @@
 import { Alert, CircularProgress, Grid, Stack, Typography } from '@mui/material'
-import { RankingTable } from '../components/team-home/RankingTable'
-import { TeamMatchesCard } from '../components/team-home/TeamMatchesCard'
-import { useGames } from '../hooks/useGames'
-import { useRankings } from '../hooks/useRankings'
-import type { Team } from '../services/teamsService'
+import { GameList } from '../../components/shared/GameList'
+import { RankingTable } from '../../components/shared/RankingTable'
+import { useGames } from '../../hooks/useGames'
+import { useRankings } from '../../hooks/useRankings'
+import type { Team } from '../../services/teamsService'
 
 type TeamsViewProps = {
   currentTeam: Team
 }
 
-export function TeamsView({ currentTeam }: TeamsViewProps) {
+export const TeamsView = ({ currentTeam }: TeamsViewProps) => {
   const { errorMessage: gamesErrorMessage, games, isLoading: isGamesLoading } = useGames()
   const {
     errorMessage: rankingsErrorMessage,
@@ -60,7 +60,8 @@ export function TeamsView({ currentTeam }: TeamsViewProps) {
         <Grid size={{ xs: 12, lg: 5 }}>
           <Stack spacing={2}>
             <Typography variant="h3">Vos matchs</Typography>
-            <TeamMatchesCard
+            <GameList
+              emptyMessage="Aucun match n'est encore planifie pour cette equipe."
               errorMessage={gamesErrorMessage}
               games={teamGames}
               isLoading={isGamesLoading}

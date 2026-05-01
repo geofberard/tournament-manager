@@ -22,13 +22,13 @@ type TeamLoginCardProps = {
   teams: Team[]
 }
 
-export function TeamLoginCard({
+export const TeamLoginCard = ({
   currentTeam,
   errorMessage,
   isLoading,
   onTeamChange,
   teams,
-}: TeamLoginCardProps) {
+}: TeamLoginCardProps) => {
   return (
     <>
       <Card sx={{ maxWidth: '400px', width: '100%' }} elevation={5}>

@@ -1,15 +1,15 @@
 import { Grid } from '@mui/material'
 import type { SelectChangeEvent } from '@mui/material'
-import { TeamLoginBanner } from '../components/team-login/TeamLoginBanner'
-import { TeamLoginCard } from '../components/team-login/TeamLoginCard'
-import { useTeams } from '../hooks/useTeams'
-import type { Team } from '../services/teamsService'
+import { TeamLoginBanner } from '../../components/team/TeamLoginBanner'
+import { TeamLoginCard } from '../../components/team/TeamLoginCard'
+import { useTeams } from '../../hooks/useTeams'
+import type { Team } from '../../services/teamsService'
 
 type TeamSelectionViewProps = {
   onTeamChange: (teams: Team[], event: SelectChangeEvent<string>) => void
 }
 
-export function TeamSelectionView({ onTeamChange }: TeamSelectionViewProps) {
+export const TeamSelectionView = ({ onTeamChange }: TeamSelectionViewProps) => {
   const { errorMessage, isLoading, teams } = useTeams()
 
   return (

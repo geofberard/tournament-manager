@@ -2,9 +2,9 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { ThemeProvider, createTheme } from '@mui/material'
 import { describe, expect, it, vi } from 'vitest'
 import { TeamSelectionView } from './TeamSelectionView'
-import * as useTeamsModule from '../hooks/useTeams'
+import * as useTeamsModule from '../../hooks/useTeams'
 
-vi.mock('../hooks/useTeams', () => ({
+vi.mock('../../hooks/useTeams', () => ({
   useTeams: vi.fn(),
 }))
 

@@ -2,14 +2,14 @@ import { render, screen } from '@testing-library/react'
 import { ThemeProvider, createTheme } from '@mui/material'
 import { describe, expect, it, vi } from 'vitest'
 import { TeamsView } from './TeamsView'
-import * as useGamesModule from '../hooks/useGames'
-import * as useRankingsModule from '../hooks/useRankings'
+import * as useGamesModule from '../../hooks/useGames'
+import * as useRankingsModule from '../../hooks/useRankings'
 
-vi.mock('../hooks/useGames', () => ({
+vi.mock('../../hooks/useGames', () => ({
   useGames: vi.fn(),
 }))
 
-vi.mock('../hooks/useRankings', () => ({
+vi.mock('../../hooks/useRankings', () => ({
   useRankings: vi.fn(),
 }))
 
