@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.gberard.tournament.domain.model.stats.TeamResult.DRAWN;
 import static com.gberard.tournament.domain.model.stats.TeamResult.LOST;
@@ -34,7 +35,33 @@ public class TeamStatsService implements TeamStatsUseCase {
 
     @Override
     public TeamStats getTeamStats(Team team) {
+        return buildTeamStats(team, gameRepository.findByTeamId(team.id()));
+    }
+
+    @Override
+    public List<TeamStats> getTeamsStatsByPool(String pool) {
+        List<Game> poolGames = gameRepository.findByPool(pool);
+
+        return poolGames.stream()
+                .flatMap(game -> game.contestants().stream())
+                .distinct()
+                .map(team -> buildTeamStats(team, poolGames))
+                .toList();
+    }
+
+    @Override
+    public Optional<String> getTeamPool(Team team) {
         return gameRepository.findByTeamId(team.id()).stream()
+                .filter(game -> game.contestants().stream().anyMatch(contestant -> contestant.id().equals(team.id())))
+                .map(Game::pool)
+                .distinct()
+                .reduce((first, second) -> {
+                    throw new IllegalStateException("Team " + team.id() + " belongs to multiple pools");
+                });
+    }
+
+    private TeamStats buildTeamStats(Team team, List<Game> games) {
+        return games.stream()
                 .filter(game -> game.contestants().stream().anyMatch(contestant -> contestant.id().equals(team.id())))
                 .filter(Game::isFinished)
                 .reduce(

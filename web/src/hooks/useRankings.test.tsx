@@ -3,16 +3,26 @@ import { SWRConfig } from 'swr'
 import { describe, expect, it, vi } from 'vitest'
 import { useRankings } from './useRankings'
 import * as statisticsService from '../services/statisticsService'
+import * as teamsService from '../services/teamsService'
 
 vi.mock('../services/statisticsService', async () => {
   const actual = await vi.importActual<typeof statisticsService>('../services/statisticsService')
   return {
     ...actual,
-    listRankings: vi.fn(),
+    listPoolRankings: vi.fn(),
   }
 })
 
-const listRankingsMock = vi.mocked(statisticsService.listRankings)
+vi.mock('../services/teamsService', async () => {
+  const actual = await vi.importActual<typeof teamsService>('../services/teamsService')
+  return {
+    ...actual,
+    getTeamPool: vi.fn(),
+  }
+})
+
+const listPoolRankingsMock = vi.mocked(statisticsService.listPoolRankings)
+const getTeamPoolMock = vi.mocked(teamsService.getTeamPool)
 
 const createWrapper = () => {
   return function Wrapper({ children }: { children: React.ReactNode }) {
@@ -22,7 +32,8 @@ const createWrapper = () => {
 
 describe('useRankings', () => {
   it('should load rankings from the service', async () => {
-    listRankingsMock.mockResolvedValueOnce([
+    getTeamPoolMock.mockResolvedValueOnce({ id: 'Poule A' })
+    listPoolRankingsMock.mockResolvedValueOnce([
       {
         contestant: { id: 'team-1', name: 'Aigles' },
         played: 3,
@@ -36,11 +47,12 @@ describe('useRankings', () => {
       },
     ])
 
-    const { result } = renderHook(() => useRankings(), { wrapper: createWrapper() })
+    const { result } = renderHook(() => useRankings('team-1'), { wrapper: createWrapper() })
 
     await waitFor(() => expect(result.current.isLoading).toBe(false))
 
     expect(result.current.errorMessage).toBeNull()
+    expect(result.current.poolName).toBe('Poule A')
     expect(result.current.rankings).toEqual([
       {
         contestant: { id: 'team-1', name: 'Aigles' },
@@ -57,13 +69,13 @@ describe('useRankings', () => {
   })
 
   it('should expose the service error message when the request fails', async () => {
-    listRankingsMock.mockRejectedValueOnce(new Error('Classement indisponible'))
+    getTeamPoolMock.mockRejectedValueOnce(new Error('Poule indisponible'))
 
-    const { result } = renderHook(() => useRankings(), { wrapper: createWrapper() })
+    const { result } = renderHook(() => useRankings('team-1'), { wrapper: createWrapper() })
 
     await waitFor(() => expect(result.current.isLoading).toBe(false))
 
     expect(result.current.rankings).toEqual([])
-    expect(result.current.errorMessage).toBe('Classement indisponible')
+    expect(result.current.errorMessage).toBe('Poule indisponible')
   })
 })

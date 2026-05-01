@@ -171,6 +171,24 @@ paths:
                     code: TEAM_IN_USE
                     message: Team team_1 is still referenced by existing games
 
+  /api/teams/{teamId}/pool:
+    parameters:
+      - $ref: '#/components/parameters/TeamId'
+    get:
+      tags: [Teams]
+      operationId: getTeamPool
+      summary: Lire la poule d'une équipe
+      description: Retourne la poule à laquelle appartient l'équipe donnée.
+      responses:
+        '200':
+          description: Poule de l'équipe
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pool'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
   /api/games:
     get:
       tags: [Games]
@@ -426,6 +444,28 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
+  /api/pools/{poolId}/statistics:
+    parameters:
+      - $ref: '#/components/parameters/PoolId'
+    get:
+      tags: [Statistics]
+      operationId: listPoolRankings
+      summary: Lire le classement d'une poule
+      description: |
+        Retourne le classement calculé en ne prenant en compte que les matchs
+        appartenant à la poule demandée.
+      responses:
+        '200':
+          description: Classement de la poule
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ContestantStats'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
 components:
   parameters:
     TeamId:
@@ -451,6 +491,18 @@ components:
       examples:
         default:
           value: game_1
+
+    PoolId:
+      name: poolId
+      in: path
+      required: true
+      description: Identifiant unique d'une poule
+      schema:
+        type: string
+        minLength: 1
+      examples:
+        default:
+          value: Poule A
 
   responses:
     BadRequest:
@@ -478,6 +530,18 @@ components:
                 message: The requested resource does not exist
 
   schemas:
+    Pool:
+      type: object
+      description: Représentation d'une poule.
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          minLength: 1
+          description: Identifiant ou nom de la poule
+          examples: [Poule A]
+
     Team:
       type: object
       description: Équipe participante au tournoi.

@@ -44,4 +44,17 @@ public class RankingsApiDelegateImpl implements StatisticsApiDelegate {
                 .toList();
         return ResponseEntity.ok(allStats);
     }
+
+    @Override
+    public ResponseEntity<List<ContestantStats>> listPoolRankings(String poolId) {
+        List<ContestantStats> poolStats = teamStatsService.getTeamsStatsByPool(poolId).stream()
+                .map(StatisticsMapper::toApi)
+                .toList();
+
+        if (poolStats.isEmpty()) {
+            throw new EntityNotFoundException("Unknown pool " + poolId);
+        }
+
+        return ResponseEntity.ok(poolStats);
+    }
 }

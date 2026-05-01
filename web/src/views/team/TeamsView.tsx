@@ -36,10 +36,11 @@ const sortGamesChronologically = (games: Game[]) =>
 export const TeamRankingsView = ({ currentTeam }: TeamsViewProps) => {
   const { errorMessage: gamesErrorMessage } = useGames()
   const {
+    poolName,
     errorMessage: rankingsErrorMessage,
     isLoading: isRankingsLoading,
     rankings,
-  } = useRankings()
+  } = useRankings(currentTeam.id)
 
   const hasGlobalError = gamesErrorMessage && rankingsErrorMessage
 
@@ -47,7 +48,7 @@ export const TeamRankingsView = ({ currentTeam }: TeamsViewProps) => {
     <Stack spacing={3}>
       <TeamIntro
         currentTeam={currentTeam}
-        description="Retrouvez ici le classement du tournoi et suivez votre position."
+        description="Retrouvez ici les resultats de votre poule et suivez votre position."
       />
 
       {isRankingsLoading ? (
@@ -59,7 +60,12 @@ export const TeamRankingsView = ({ currentTeam }: TeamsViewProps) => {
       {hasGlobalError ? <Alert severity="warning">La liste des matchs est indisponible pour le moment.</Alert> : null}
 
       <Stack spacing={2}>
-        <Typography variant="h3">Classement</Typography>
+        <Typography variant="h3">Resultat</Typography>
+        {poolName ? (
+          <Typography variant="body1" color="text.secondary">
+            {poolName}
+          </Typography>
+        ) : null}
         <RankingTable
           currentTeamId={currentTeam.id}
           errorMessage={rankingsErrorMessage}
@@ -75,7 +81,7 @@ export const TeamGamesView = ({ currentTeam }: TeamsViewProps) => {
   const { errorMessage: gamesErrorMessage, games, isLoading: isGamesLoading } = useGames()
   const {
     errorMessage: rankingsErrorMessage,
-  } = useRankings()
+  } = useRankings(currentTeam.id)
 
   const teamGames = games.filter((game) =>
     Array.from(game.contestants).some((team) => team.id === currentTeam.id),

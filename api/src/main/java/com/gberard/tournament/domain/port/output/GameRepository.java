@@ -13,6 +13,8 @@ public interface GameRepository {
 
     List<Game> findByTeamId(String teamId);
 
+    List<Game> findByPool(String pool);
+
     Game save(Game game);
 
     void deleteById(String id);

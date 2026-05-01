@@ -35,6 +35,13 @@ public class DBGameRepository extends DBRepository<Game, GameEntity> implements 
     }
 
     @Override
+    public java.util.List<Game> findByPool(String pool) {
+        return repository.findByPool(pool).stream()
+                .map(GameEntity::toDomain)
+                .toList();
+    }
+
+    @Override
     public Game save(Game game) {
         return saveMapped(game);
     }

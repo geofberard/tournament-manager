@@ -17,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static com.gberard.tournament.TestUtils.*;
@@ -30,11 +31,11 @@ class TeamStatsServiceTest {
     List<Team> teams = List.of(TEAM_A, TEAM_B, TEAM_C, TEAM_D);
 
     List<Game> games = List.of(
-            buildGame(TEAM_A, 25, TEAM_B, 15),
-            buildGame(TEAM_A, 18, TEAM_C, 14),
-            buildGame(TEAM_B, 22, TEAM_C, 19),
-            buildGame(TEAM_D, 10, TEAM_C, 20),
-            buildGame(TEAM_D, 10, TEAM_B, 10)
+            gameBuilder().pool("Poule A").contestants(List.of(TEAM_A, TEAM_B)).score(buildSimpleScore(TEAM_A, 25, TEAM_B, 15)).build(),
+            gameBuilder().pool("Poule A").contestants(List.of(TEAM_A, TEAM_C)).score(buildSimpleScore(TEAM_A, 18, TEAM_C, 14)).build(),
+            gameBuilder().pool("Poule A").contestants(List.of(TEAM_B, TEAM_C)).score(buildSimpleScore(TEAM_B, 22, TEAM_C, 19)).build(),
+            gameBuilder().pool("Poule B").contestants(List.of(TEAM_D, TEAM_C)).score(buildSimpleScore(TEAM_D, 10, TEAM_C, 20)).build(),
+            gameBuilder().pool("Poule B").contestants(List.of(TEAM_D, TEAM_B)).score(buildSimpleScore(TEAM_D, 10, TEAM_B, 10)).build()
     );
 
     @InjectMocks
@@ -95,6 +96,55 @@ class TeamStatsServiceTest {
             assertThat(teamsStats).hasSize(teams.size());
             assertThat(teamsStats.stream().map(TeamStats::team).toList())
                     .containsAll(teams);
+        }
+    }
+
+    @Nested
+    @DisplayName("getTeamsStatsByPool()")
+    class GetTeamsStatsByPool {
+
+        @Test
+        void should_return_only_pool_stats() {
+            when(gameRepository.findByPool("Poule A")).thenReturn(
+                    games.stream()
+                            .filter(game -> game.pool().equals("Poule A"))
+                            .toList()
+            );
+
+            List<TeamStats> teamsStats = teamStatsService.getTeamsStatsByPool("Poule A");
+
+            assertThat(teamsStats).containsExactlyInAnyOrder(
+                    new TeamStats(TEAM_A, 2, 2, 0, 0, 6, 43, 29, 14),
+                    new TeamStats(TEAM_B, 2, 1, 0, 1, 3, 37, 44, -7),
+                    new TeamStats(TEAM_C, 2, 0, 0, 2, 0, 33, 40, -7)
+            );
+        }
+    }
+
+    @Nested
+    @DisplayName("getTeamPool()")
+    class GetTeamPool {
+
+        @Test
+        void should_return_team_pool() {
+            when(gameRepository.findByTeamId(TEAM_A.id())).thenReturn(
+                    games.stream()
+                            .filter(game -> game.contestants().stream().anyMatch(team -> team.id().equals(TEAM_A.id())))
+                            .toList()
+            );
+
+            Optional<String> pool = teamStatsService.getTeamPool(TEAM_A);
+
+            assertThat(pool).contains("Poule A");
+        }
+
+        @Test
+        void should_return_empty_when_team_has_no_pool() {
+            when(gameRepository.findByTeamId(TEAM_E.id())).thenReturn(List.of());
+
+            Optional<String> pool = teamStatsService.getTeamPool(TEAM_E);
+
+            assertThat(pool).isEmpty();
         }
     }
 }

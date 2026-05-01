@@ -29,6 +29,7 @@ describe('TeamsView', () => {
       isLoading: false,
     })
     useRankingsMock.mockReturnValue({
+      poolName: 'Poule A',
       errorMessage: null,
       isLoading: false,
       rankings: [],
@@ -41,7 +42,8 @@ describe('TeamsView', () => {
     )
 
     expect(screen.getByText('Bienvenue Tigres')).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: 'Classement' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Resultat' })).toBeInTheDocument()
+    expect(screen.getByText('Poule A')).toBeInTheDocument()
     expect(screen.queryByRole('heading', { name: 'Vos matchs' })).not.toBeInTheDocument()
   })
 
@@ -52,6 +54,7 @@ describe('TeamsView', () => {
       isLoading: false,
     })
     useRankingsMock.mockReturnValue({
+      poolName: 'Poule A',
       errorMessage: null,
       isLoading: false,
       rankings: [],
@@ -63,7 +66,8 @@ describe('TeamsView', () => {
       </ThemeProvider>,
     )
 
-    expect(screen.getByRole('heading', { name: 'Classement' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Resultat' })).toBeInTheDocument()
+    expect(screen.getByText('Poule A')).toBeInTheDocument()
     expect(screen.queryByRole('heading', { name: 'Vos matchs' })).not.toBeInTheDocument()
   })
 
@@ -74,6 +78,7 @@ describe('TeamsView', () => {
       isLoading: false,
     })
     useRankingsMock.mockReturnValue({
+      poolName: 'Poule A',
       errorMessage: null,
       isLoading: false,
       rankings: [],
@@ -87,7 +92,7 @@ describe('TeamsView', () => {
 
     expect(screen.getByRole('heading', { name: 'Prochains matchs' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Matchs terminés' })).toBeInTheDocument()
-    expect(screen.queryByRole('heading', { name: 'Classement' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'Resultat' })).not.toBeInTheDocument()
   })
 
   it('should split team games into upcoming and completed lists in chronological order', () => {
@@ -150,6 +155,7 @@ describe('TeamsView', () => {
       ],
     })
     useRankingsMock.mockReturnValue({
+      poolName: 'Poule A',
       errorMessage: null,
       isLoading: false,
       rankings: [],
