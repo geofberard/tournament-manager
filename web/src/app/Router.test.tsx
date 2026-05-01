@@ -2,7 +2,15 @@ import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/re
 import { ThemeProvider, createTheme } from '@mui/material'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { Router } from './Router'
-import { ADMIN_HOME_PATH, ADMIN_LOGIN_PATH, PUBLIC_HOME_PATH, TEAM_HOME_PATH, TEAM_LOGIN_PATH } from './routes'
+import {
+  ADMIN_HOME_PATH,
+  ADMIN_LOGIN_PATH,
+  PUBLIC_HOME_PATH,
+  TEAM_GAMES_PATH,
+  TEAM_HOME_PATH,
+  TEAM_LOGIN_PATH,
+  TEAM_RANKINGS_PATH,
+} from './routes'
 import * as useGamesModule from '../hooks/useGames'
 import * as useRankingsModule from '../hooks/useRankings'
 import * as useTeamLoginModule from '../hooks/useTeamLogin'
@@ -138,8 +146,29 @@ describe('Router', () => {
     expect(screen.getByText('Bienvenue Tigres')).toBeInTheDocument()
 
     await waitFor(() => {
-      expect(window.location.hash).toBe(`#${TEAM_HOME_PATH}`)
+      expect(window.location.hash).toBe(`#${TEAM_RANKINGS_PATH}`)
     })
+  })
+
+  it('should render the team matches page when requested', () => {
+    setHashPath(TEAM_GAMES_PATH)
+
+    useTeamLoginMock.mockReturnValue({
+      clearTeamSelection: vi.fn(),
+      currentTeam: { id: 'team-2', name: 'Tigres' },
+      handleTeamChange: vi.fn(),
+    })
+    useAdminSessionMock.mockReturnValue({
+      isAuthenticated: false,
+      login: vi.fn(),
+      logout: vi.fn(),
+    })
+
+    renderRouter()
+
+    expect(screen.getByRole('heading', { name: 'Prochains matchs' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Matchs terminés' })).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'Classement' })).not.toBeInTheDocument()
   })
 
   it('should redirect /admin to /admin/login when the admin is not authenticated', async () => {

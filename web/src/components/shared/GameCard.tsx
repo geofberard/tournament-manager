@@ -25,9 +25,9 @@ const statusLabelByValue: Record<string, string> = {
 }
 
 const statusColorByValue: Record<string, 'default' | 'error' | 'info' | 'success'> = {
-  [GameStatus.Completed]: 'success',
+  [GameStatus.Completed]: 'default',
   [GameStatus.InProgress]: 'info',
-  [GameStatus.Scheduled]: 'default',
+  [GameStatus.Scheduled]: 'info',
 }
 
 const formatContestants = (game: Game) =>

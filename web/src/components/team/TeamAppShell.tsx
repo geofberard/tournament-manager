@@ -65,6 +65,7 @@ export const TeamAppShell = ({
   routes,
 }: TeamAppShellProps) => {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const contentMaxWidth = 1200
 
   const closeMobileMenu = () => setMobileMenuOpen(false)
 
@@ -86,59 +87,61 @@ export const TeamAppShell = ({
           borderBottom: (theme) => `4px solid ${theme.palette.secondary.main}`,
         }}
       >
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-          spacing={2}
-          sx={{ px: { xs: 2, md: 3 }, py: 1.5 }}
-        >
-          <Stack direction="row" spacing={1.5} alignItems="center">
-            <BurgerButton onClick={() => setMobileMenuOpen(true)} />
-            <Box
-              component="img"
-              src={scufLogo}
-              alt="SCUF"
-              sx={{ width: { xs: 44, md: 56 }, display: 'block' }}
-            />
-            <Box>
-              <Typography variant="h3">Espace équipe</Typography>
-              <Typography variant="body2" sx={{ opacity: 0.85 }}>
-                {currentTeam.name}
-              </Typography>
-            </Box>
-          </Stack>
-
+        <Box sx={{ maxWidth: contentMaxWidth, mx: 'auto', width: '100%' }}>
           <Stack
             direction="row"
-            spacing={1}
             alignItems="center"
-            sx={{ display: { xs: 'none', md: 'flex' } }}
+            justifyContent="space-between"
+            spacing={2}
+            sx={{ px: { xs: 2, md: 3 }, py: 1.5 }}
           >
-            {routes.map((route) => {
-              const isActive = route.path === currentPath
+            <Stack direction="row" spacing={1.5} alignItems="center">
+              <BurgerButton onClick={() => setMobileMenuOpen(true)} />
+              <Box
+                component="img"
+                src={scufLogo}
+                alt="SCUF"
+                sx={{ width: { xs: 44, md: 56 }, display: 'block' }}
+              />
+              <Box>
+                <Typography variant="h3">Espace équipe</Typography>
+                <Typography variant="body2" sx={{ opacity: 0.85 }}>
+                  {currentTeam.name}
+                </Typography>
+              </Box>
+            </Stack>
 
-              return (
-                <Button
-                  key={route.path}
-                  color="inherit"
-                  variant={isActive ? 'outlined' : 'text'}
-                  onClick={() => onNavigate(route.path)}
-                  sx={{
-                    borderColor: isActive ? 'secondary.main' : 'transparent',
-                    color: 'inherit',
-                  }}
-                >
-                  {route.label}
-                </Button>
-              )
-            })}
+            <Stack
+              direction="row"
+              spacing={1}
+              alignItems="center"
+              sx={{ display: { xs: 'none', md: 'flex' } }}
+            >
+              {routes.map((route) => {
+                const isActive = route.path === currentPath
+
+                return (
+                  <Button
+                    key={route.path}
+                    color="inherit"
+                    variant={isActive ? 'outlined' : 'text'}
+                    onClick={() => onNavigate(route.path)}
+                    sx={{
+                      borderColor: isActive ? 'secondary.main' : 'transparent',
+                      color: 'inherit',
+                    }}
+                  >
+                    {route.label}
+                  </Button>
+                )
+              })}
+            </Stack>
+
+            <Button variant="outlined" color="secondary" onClick={onChangeTeam}>
+              Changer d'équipe
+            </Button>
           </Stack>
-
-          <Button variant="outlined" color="secondary" onClick={onChangeTeam}>
-            Changer d'équipe
-          </Button>
-        </Stack>
+        </Box>
       </Box>
 
       <Drawer anchor="left" open={isMobileMenuOpen} onClose={closeMobileMenu}>
@@ -171,7 +174,16 @@ export const TeamAppShell = ({
         </Box>
       </Drawer>
 
-      <Box component="main" sx={{ px: { xs: 2, md: 3 }, py: { xs: 2, md: 3 } }}>
+      <Box
+        component="main"
+        sx={{
+          maxWidth: contentMaxWidth,
+          mx: 'auto',
+          width: '100%',
+          px: { xs: 2, md: 3 },
+          py: { xs: 2, md: 3 },
+        }}
+      >
         {children}
       </Box>
     </Box>

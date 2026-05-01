@@ -1,8 +1,10 @@
-import { Alert, CircularProgress, Grid, Stack, Typography } from '@mui/material'
+import { Alert, CircularProgress, Stack, Typography } from '@mui/material'
 import { GameList } from '../../components/shared/GameList'
 import { RankingTable } from '../../components/shared/RankingTable'
+import { GameStatus } from '../../generated/api-client'
 import { useGames } from '../../hooks/useGames'
 import { useRankings } from '../../hooks/useRankings'
+import type { Game } from '../../services/gamesService'
 import type { Team } from '../../services/teamsService'
 
 type TeamsViewProps = {
@@ -10,65 +12,130 @@ type TeamsViewProps = {
 }
 
 export const TeamsView = ({ currentTeam }: TeamsViewProps) => {
-  const { errorMessage: gamesErrorMessage, games, isLoading: isGamesLoading } = useGames()
+  return <TeamRankingsView currentTeam={currentTeam} />
+}
+
+const TeamIntro = ({
+  currentTeam,
+  description,
+}: {
+  currentTeam: Team
+  description: string
+}) => (
+  <Stack spacing={0.5}>
+    <Typography variant="h2">Bienvenue {currentTeam.name}</Typography>
+    <Typography variant="body1" color="text.secondary">
+      {description}
+    </Typography>
+  </Stack>
+)
+
+const sortGamesChronologically = (games: Game[]) =>
+  [...games].sort((leftGame, rightGame) => leftGame.time.getTime() - rightGame.time.getTime())
+
+export const TeamRankingsView = ({ currentTeam }: TeamsViewProps) => {
+  const { errorMessage: gamesErrorMessage } = useGames()
   const {
     errorMessage: rankingsErrorMessage,
     isLoading: isRankingsLoading,
     rankings,
   } = useRankings()
 
-  const teamGames = games.filter((game) =>
-    Array.from(game.contestants).some((team) => team.id === currentTeam.id),
-  )
-
-  const isLoading = isGamesLoading || isRankingsLoading
+  const hasGlobalError = gamesErrorMessage && rankingsErrorMessage
 
   return (
     <Stack spacing={3}>
-      <Stack spacing={0.5}>
-        <Typography variant="h2">Bienvenue {currentTeam.name}</Typography>
-        <Typography variant="body1" color="text.secondary">
-          Retrouvez ici le classement du tournoi et vos prochains matchs.
-        </Typography>
-      </Stack>
+      <TeamIntro
+        currentTeam={currentTeam}
+        description="Retrouvez ici le classement du tournoi et suivez votre position."
+      />
 
-      {isLoading ? (
+      {isRankingsLoading ? (
         <Stack direction="row" justifyContent="center" sx={{ py: 3 }}>
           <CircularProgress />
         </Stack>
       ) : null}
 
-      {!isLoading && gamesErrorMessage && rankingsErrorMessage ? (
-        <Alert severity="error">
-          Impossible de charger les informations de l'équipe pour le moment.
+      {hasGlobalError ? <Alert severity="warning">La liste des matchs est indisponible pour le moment.</Alert> : null}
+
+      <Stack spacing={2}>
+        <Typography variant="h3">Classement</Typography>
+        <RankingTable
+          currentTeamId={currentTeam.id}
+          errorMessage={rankingsErrorMessage}
+          isLoading={isRankingsLoading}
+          rankings={rankings}
+        />
+      </Stack>
+    </Stack>
+  )
+}
+
+export const TeamGamesView = ({ currentTeam }: TeamsViewProps) => {
+  const { errorMessage: gamesErrorMessage, games, isLoading: isGamesLoading } = useGames()
+  const {
+    errorMessage: rankingsErrorMessage,
+  } = useRankings()
+
+  const teamGames = games.filter((game) =>
+    Array.from(game.contestants).some((team) => team.id === currentTeam.id),
+  )
+  const upcomingGames = sortGamesChronologically(
+    teamGames.filter((game) => game.status !== GameStatus.Completed),
+  )
+  const completedGames = sortGamesChronologically(
+    teamGames.filter((game) => game.status === GameStatus.Completed),
+  )
+
+  const hasGlobalError = gamesErrorMessage && rankingsErrorMessage
+
+  return (
+    <Stack spacing={3}>
+      <TeamIntro
+        currentTeam={currentTeam}
+        description="Retrouvez ici la liste de vos matchs a venir et deja joues."
+      />
+
+      {isGamesLoading ? (
+        <Stack direction="row" justifyContent="center" sx={{ py: 3 }}>
+          <CircularProgress />
+        </Stack>
+      ) : null}
+
+      {hasGlobalError ? (
+        <Alert severity="warning">
+          Le classement est indisponible pour le moment.
         </Alert>
       ) : null}
 
-      <Grid container spacing={3}>
-        <Grid size={{ xs: 12, lg: 7 }}>
-          <Stack spacing={2}>
-            <Typography variant="h3">Classement</Typography>
-            <RankingTable
-              currentTeamId={currentTeam.id}
-              errorMessage={rankingsErrorMessage}
-              isLoading={isRankingsLoading}
-              rankings={rankings}
-            />
-          </Stack>
-        </Grid>
+      <Stack spacing={2}>
+        <Stack spacing={0.5}>
+          <Typography variant="h3" color="primary" sx={{ fontWeight: 700 }}>
+            Prochains matchs
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Vos prochains rendez-vous sur le tournoi.
+          </Typography>
+        </Stack>
+        <GameList
+          emptyMessage="Aucun match a venir n'est encore planifie pour cette equipe."
+          errorMessage={gamesErrorMessage}
+          games={upcomingGames}
+          isLoading={isGamesLoading}
+        />
+      </Stack>
 
-        <Grid size={{ xs: 12, lg: 5 }}>
-          <Stack spacing={2}>
-            <Typography variant="h3">Vos matchs</Typography>
-            <GameList
-              emptyMessage="Aucun match n'est encore planifie pour cette equipe."
-              errorMessage={gamesErrorMessage}
-              games={teamGames}
-              isLoading={isGamesLoading}
-            />
-          </Stack>
-        </Grid>
-      </Grid>
+      <Stack spacing={2.5} sx={{ pt: 1 }}>
+        <Typography variant="h3" color="primary" sx={{ fontWeight: 700 }}>
+          Matchs terminés
+        </Typography>
+        <GameList
+          emptyMessage="Aucun match termine pour cette equipe."
+          errorMessage={gamesErrorMessage}
+          games={completedGames}
+          isLoading={isGamesLoading}
+        />
+      </Stack>
     </Stack>
   )
 }

@@ -1,15 +1,4 @@
-import {
-  Alert,
-  Chip,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Typography,
-} from '@mui/material'
+import { Alert, Box, Chip, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material'
 import type { ContestantStats } from '../../services/statisticsService'
 
 type RankingTableProps = {
@@ -38,7 +27,9 @@ export const RankingTable = ({
       <Table size="small">
         <TableHead>
           <TableRow>
-            <TableCell>#</TableCell>
+            <TableCell align="center" sx={{ width: 72 }}>
+              #
+            </TableCell>
             <TableCell>Equipe</TableCell>
             <TableCell align="center">P</TableCell>
             <TableCell align="center">G</TableCell>
@@ -61,12 +52,14 @@ export const RankingTable = ({
                   },
                 }}
               >
-                <TableCell>
-                  {isSelected ? (
-                    <Chip size="small" color="primary" label={index + 1} />
-                  ) : (
-                    <Typography variant="body2">{index + 1}</Typography>
-                  )}
+                <TableCell align="center" sx={{ width: 72 }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                    {isSelected ? (
+                      <Chip size="small" color="primary" label={index + 1} />
+                    ) : (
+                      <Typography variant="body2">{index + 1}</Typography>
+                    )}
+                  </Box>
                 </TableCell>
                 <TableCell>{entry.contestant.name}</TableCell>
                 <TableCell align="center">{entry.played}</TableCell>
