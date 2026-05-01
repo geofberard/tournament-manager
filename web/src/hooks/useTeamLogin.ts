@@ -9,6 +9,7 @@ import {
 
 type UseTeamLoginResult = {
   currentTeam: Team | null
+  clearTeamSelection: () => void
   handleTeamChange: (teams: Team[], event: SelectChangeEvent<string>) => void
 }
 
@@ -18,20 +19,25 @@ const findSelectedTeam = (teams: Team[], teamId: string) =>
 export function useTeamLogin(): UseTeamLoginResult {
   const [currentTeam, setCurrentTeam] = useState<Team | null>(() => getCurrentTeam())
 
-  const handleTeamChange = (teams: Team[], event: SelectChangeEvent<string>) => {
-    const selectedTeam = findSelectedTeam(teams, event.target.value)
-
-    setCurrentTeam(selectedTeam)
-
-    if (selectedTeam) {
-      persistCurrentTeam(selectedTeam)
-      return
-    }
-
+  const clearTeamSelection = () => {
+    setCurrentTeam(null)
     clearCurrentTeam()
   }
 
+  const handleTeamChange = (teams: Team[], event: SelectChangeEvent<string>) => {
+    const selectedTeam = findSelectedTeam(teams, event.target.value)
+
+    if (!selectedTeam) {
+      clearTeamSelection()
+    } else {
+      setCurrentTeam(selectedTeam)
+      persistCurrentTeam(selectedTeam)
+    }
+
+  }
+
   return {
+    clearTeamSelection,
     currentTeam,
     handleTeamChange,
   }

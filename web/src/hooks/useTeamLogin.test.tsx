@@ -1,4 +1,4 @@
-import { renderHook, act } from '@testing-library/react'
+import { act, renderHook } from '@testing-library/react'
 import type { SelectChangeEvent } from '@mui/material'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { useTeamLogin } from './useTeamLogin'
@@ -84,5 +84,21 @@ describe('useTeamLogin', () => {
     expect(result.current.currentTeam).toBeNull()
     expect(clearCurrentTeamMock).toHaveBeenCalled()
     expect(setCurrentTeamMock).not.toHaveBeenCalled()
+  })
+
+  it('should clear the current team selection explicitly', () => {
+    // Given
+    getCurrentTeamMock.mockReturnValueOnce(teams[0])
+
+    const { result } = renderHook(() => useTeamLogin())
+
+    // When
+    act(() => {
+      result.current.clearTeamSelection()
+    })
+
+    // Then
+    expect(result.current.currentTeam).toBeNull()
+    expect(clearCurrentTeamMock).toHaveBeenCalledOnce()
   })
 })
