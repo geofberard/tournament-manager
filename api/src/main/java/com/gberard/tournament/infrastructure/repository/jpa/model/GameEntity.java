@@ -20,6 +20,13 @@ public class GameEntity {
     @Column(name = "time")
     private LocalDateTime time;
 
+    @Column(name = "phase_id", nullable = false)
+    private String phaseId;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "phase_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
+    private PhaseEntity phase;
+
     private String pool;
     private String court;
     private Boolean isFinished;
@@ -49,6 +56,7 @@ public class GameEntity {
         List<Team> teams = entity.teams.stream().map(TeamEntity::toDomain).toList();
         return new Game(
                 entity.id,
+                PhaseEntity.toDomain(entity.phase),
                 entity.pool,
                 entity.time,
                 entity.court,
@@ -61,6 +69,7 @@ public class GameEntity {
     public static GameEntity toEntity(Game game) {
         GameEntity playerEntity = new GameEntity();
         playerEntity.id = game.id();
+        playerEntity.phaseId = game.phase().id();
         playerEntity.pool = game.pool();
         playerEntity.time = game.time();
         playerEntity.court = game.court();

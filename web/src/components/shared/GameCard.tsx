@@ -53,6 +53,7 @@ export const GameCard = ({ game }: GameCardProps) => {
               {formatContestants(game)}
             </Typography>
             <Stack direction="row" spacing={1} flexWrap="wrap" justifyContent="flex-end">
+              <Chip label={game.phase.name} variant="filled" size="small" />
               <Chip label={game.pool} variant="outlined" size="small" />
               <Chip
                 label={statusLabelByValue[game.status] ?? game.status}

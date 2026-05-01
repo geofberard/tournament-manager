@@ -4,15 +4,24 @@ CREATE TABLE teams
     name VARCHAR(255) NOT NULL
 );
 
+CREATE TABLE phases
+(
+    id            VARCHAR(255) PRIMARY KEY,
+    name          VARCHAR(255) NOT NULL,
+    display_order INTEGER      NOT NULL
+);
+
 CREATE TABLE games
 (
     id          VARCHAR(255) PRIMARY KEY,
+    phase_id    VARCHAR(255) NOT NULL,
     pool        VARCHAR(255) NOT NULL,
     time        TIMESTAMP    NOT NULL,
     court       VARCHAR(255) NOT NULL,
     is_finished BOOLEAN      NOT NULL,
     score_data  TEXT,
     referee_id  VARCHAR(255),
+    FOREIGN KEY (phase_id) REFERENCES phases (id),
     FOREIGN KEY (referee_id) REFERENCES teams (id) ON DELETE SET NULL
 );
 

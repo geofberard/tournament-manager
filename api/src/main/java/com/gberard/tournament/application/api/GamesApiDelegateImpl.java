@@ -12,8 +12,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.gberard.tournament.application.mapper.GameMapper;
+import com.gberard.tournament.domain.model.Phase;
 import com.gberard.tournament.domain.model.Team;
 import com.gberard.tournament.domain.port.input.GameService;
+import com.gberard.tournament.domain.port.input.PhaseService;
 import com.gberard.tournament.domain.port.input.TeamService;
 import com.gberard.tournament.generated.api.GamesApiDelegate;
 import com.gberard.tournament.generated.model.CreateGameRequest;
@@ -31,6 +33,9 @@ public class GamesApiDelegateImpl implements GamesApiDelegate {
     @Autowired
     public TeamService teamService;
 
+    @Autowired
+    public PhaseService phaseService;
+
     @Override
     public ResponseEntity<Game> createGame(CreateGameRequest createGameRequest) {
         Set<Team> contestants = createGameRequest.getContestantIds().stream()
@@ -40,7 +45,9 @@ public class GamesApiDelegateImpl implements GamesApiDelegate {
         Optional<Team> referee = Optional.ofNullable(createGameRequest.getRefereeId())
                 .map(this::findTeamOrThrow);
 
-        var newGame = gameService.create(GameMapper.toDomain(createGameRequest, contestants, referee));
+        Phase phase = findPhaseOrThrow(createGameRequest.getPhaseId());
+
+        var newGame = gameService.create(GameMapper.toDomain(createGameRequest, phase, contestants, referee));
 
         return ResponseEntity.status(CREATED).body(GameMapper.toApi(newGame));
     }
@@ -74,7 +81,9 @@ public class GamesApiDelegateImpl implements GamesApiDelegate {
         Optional<Team> referee = Optional.ofNullable(updateGameRequest.getRefereeId())
                 .map(this::findTeamOrThrow);
 
-        var newGame = gameService.create(GameMapper.toDomain(gameId, updateGameRequest, contestants, referee));
+        Phase phase = findPhaseOrThrow(updateGameRequest.getPhaseId());
+
+        var newGame = gameService.create(GameMapper.toDomain(gameId, updateGameRequest, phase, contestants, referee));
 
         return ResponseEntity.ok(GameMapper.toApi(newGame));
     }
@@ -87,5 +96,10 @@ public class GamesApiDelegateImpl implements GamesApiDelegate {
     private com.gberard.tournament.domain.model.Team findTeamOrThrow(String teamId) {
         return teamService.findById(teamId)
                 .orElseThrow(() -> new EntityNotFoundException("Unknown team " + teamId));
+    }
+
+    private Phase findPhaseOrThrow(String phaseId) {
+        return phaseService.findById(phaseId)
+                .orElseThrow(() -> new EntityNotFoundException("Unknown phase " + phaseId));
     }
 }

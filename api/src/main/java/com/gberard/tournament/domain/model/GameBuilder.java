@@ -8,6 +8,7 @@ import java.util.Optional;
 
 public class GameBuilder {
     private String id;
+    private Phase phase = new Phase("phase-default", "Phase par defaut", 1);
     private String pool = "A";
     private LocalDateTime time;
     private String court;
@@ -28,6 +29,7 @@ public class GameBuilder {
     public static GameBuilder from(Game game) {
         return new GameBuilder()
                 .id(game.id())
+                .phase(game.phase())
                 .pool(game.pool())
                 .time(game.time())
                 .court(game.court())
@@ -44,6 +46,11 @@ public class GameBuilder {
 
     public GameBuilder time(LocalDateTime time) {
         this.time = time;
+        return this;
+    }
+
+    public GameBuilder phase(Phase phase) {
+        this.phase = phase;
         return this;
     }
 
@@ -91,6 +98,6 @@ public class GameBuilder {
     }
 
     public Game build() {
-        return new Game(id, pool, time, court, contestants, refereeId, isFinished, score);
+        return new Game(id, phase, pool, time, court, contestants, refereeId, isFinished, score);
     }
 }

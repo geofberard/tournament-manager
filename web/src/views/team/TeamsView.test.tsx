@@ -102,6 +102,7 @@ describe('TeamsView', () => {
       games: [
         {
           id: 'game-1',
+          phase: { id: 'phase-1', name: 'Brassage', order: 1 },
           pool: 'Poule A',
           time: new Date('2026-05-04T18:00:00Z'),
           court: 'Central',
@@ -115,6 +116,7 @@ describe('TeamsView', () => {
         },
         {
           id: 'game-2',
+          phase: { id: 'phase-1', name: 'Brassage', order: 1 },
           pool: 'Poule A',
           time: new Date('2026-05-02T18:00:00Z'),
           court: 'Annexe',
@@ -128,6 +130,7 @@ describe('TeamsView', () => {
         },
         {
           id: 'game-3',
+          phase: { id: 'phase-2', name: 'Principale', order: 2 },
           pool: 'Poule B',
           time: new Date('2026-05-03T18:00:00Z'),
           court: 'Court 2',
@@ -141,6 +144,7 @@ describe('TeamsView', () => {
         },
         {
           id: 'game-4',
+          phase: { id: 'phase-2', name: 'Principale', order: 2 },
           pool: 'Poule B',
           time: new Date('2026-05-01T18:00:00Z'),
           court: 'Court 3',

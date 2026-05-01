@@ -2,6 +2,7 @@ package com.gberard.tournament;
 
 import com.gberard.tournament.domain.model.Game;
 import com.gberard.tournament.domain.model.GameBuilder;
+import com.gberard.tournament.domain.model.Phase;
 import com.gberard.tournament.domain.model.Team;
 import com.gberard.tournament.domain.model.score.SimpleScore;
 import org.assertj.core.api.ListAssert;
@@ -19,10 +20,12 @@ public class TestUtils {
     public static Team TEAM_C = new Team("teamC", "teamC");
     public static Team TEAM_D = new Team("teamD", "teamD");
     public static Team TEAM_E = new Team("teamE", "teamE");
+    public static Phase PHASE_A = new Phase("phaseA", "Brassage", 1);
 
     public static GameBuilder gameBuilder() {
         return GameBuilder.newBuilder()
                 .id("gameId")
+                .phase(PHASE_A)
                 .pool("A")
                 .time(LocalDateTime.of(2022, AUGUST, 29, 10, 30))
                 .contestants(List.of(TEAM_A, TEAM_B))
