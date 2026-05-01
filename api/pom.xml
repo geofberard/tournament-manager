@@ -149,7 +149,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>${project.basedir}/contracts/openapi.yaml</inputSpec>
+              <inputSpec>${project.basedir}/../contract/openapi.yaml</inputSpec>
               <generatorName>spring</generatorName>
               <library>spring-boot</library>
 
@@ -185,7 +185,7 @@
         <directory>src/main/resources</directory>
       </resource>
       <resource>
-        <directory>contracts</directory>
+        <directory>../contract</directory>
         <includes>
           <include>openapi.yaml</include>
         </includes>

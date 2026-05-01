@@ -17,12 +17,12 @@ info:
     - un match référence un ensemble d'équipes participantes
     - un score est toujours simple, sur un seul set
     - le score est manipulé via une sous-ressource dédiée `/games/{gameId}/score`
-    - le classement est exposé via `/rankings`
+    - le classement est exposé via `/statistics`
 
     Cette spécification est destinée à devenir la source de vérité du serveur.
 
 servers:
-  - url: "http://localhost:3000/api"
+  - url: "http://localhost:3000"
     description: "Serveur local"
 
 tags:
@@ -40,12 +40,12 @@ tags:
       Gestion du score d'un match.
       Dans cette version, le score est toujours un score simple,
       représenté comme une association entre identifiant d'équipe et nombre de points.
-  - name: Rankings
+  - name: Statistics
     description: |
       Exposition du classement calculé à partir des matchs et de leurs scores.
 
 paths:
-  /teams:
+  /api/teams:
     get:
       tags: [Teams]
       operationId: listTeams
@@ -101,7 +101,7 @@ paths:
         '400':
           $ref: '#/components/responses/BadRequest'
 
-  /teams/{teamId}:
+  /api/teams/{teamId}:
     parameters:
       - $ref: '#/components/parameters/TeamId'
     get:
@@ -171,7 +171,7 @@ paths:
                     code: TEAM_IN_USE
                     message: Team team_1 is still referenced by existing games
 
-  /games:
+  /api/games:
     get:
       tags: [Games]
       operationId: listGames
@@ -190,10 +190,10 @@ paths:
                 default:
                   value:
                     - id: game_1
-                      scheduledAt: '2026-03-15T18:30:00Z'
+                      time: '2026-03-15T18:30:00Z'
                       court: Court A
                       status: scheduled
-                      teams:
+                      contestants:
                         - id: team_1
                           name: Les Furets
                         - id: team_2
@@ -224,9 +224,9 @@ paths:
             examples:
               default:
                 value:
-                  scheduledAt: '2026-03-15T18:30:00Z'
+                  time: '2026-03-15T18:30:00Z'
                   court: Court A
-                  teamIds:
+                  contestantIds:
                     - team_1
                     - team_2
       responses:
@@ -250,7 +250,7 @@ paths:
                     code: TEAM_NOT_FOUND
                     message: One or more teams do not exist
 
-  /games/{gameId}:
+  /api/games/{gameId}:
     parameters:
       - $ref: '#/components/parameters/GameId'
     get:
@@ -272,11 +272,7 @@ paths:
       tags: [Games]
       operationId: updateGame
       summary: Modifier un match
-      description: |
-        Met à jour complètement les informations principales du match.
-
-        Le score n'est pas modifié par cette opération.
-        Pour modifier le score, utiliser `/games/{gameId}/score`.
+      description: Met à jour les métadonnées d'un match existant.
       requestBody:
         required: true
         description: Nouveau contenu du match
@@ -287,10 +283,10 @@ paths:
             examples:
               default:
                 value:
-                  scheduledAt: '2026-03-15T19:00:00Z'
+                  time: '2026-03-15T19:00:00Z'
                   court: Court B
                   status: scheduled
-                  teamIds:
+                  contestantIds:
                     - team_1
                     - team_2
       responses:
@@ -309,66 +305,37 @@ paths:
       tags: [Games]
       operationId: deleteGame
       summary: Supprimer un match
-      description: Supprime un match existant ainsi que son score éventuel.
+      description: Supprime un match existant.
       responses:
         '204':
           description: Match supprimé
         '404':
           $ref: '#/components/responses/NotFound'
 
-  /games/{gameId}/score:
+  /api/games/{gameId}/score:
     parameters:
       - $ref: '#/components/parameters/GameId'
     get:
       tags: [Scores]
       operationId: getGameScore
       summary: Lire le score d'un match
-      description: |
-        Retourne le score associé à un match.
-
-        Le score est un score simple sur un seul set.
-        Il associe chaque équipe participante à son nombre de points.
+      description: Retourne le score d'un match s'il existe.
       responses:
         '200':
-          description: Score trouvé
+          description: Score du match
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/GameScore'
-              examples:
-                default:
-                  value:
-                    pointsByTeam:
-                      team_1: 21
-                      team_2: 18
         '404':
-          description: Match introuvable ou score absent
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              examples:
-                gameNotFound:
-                  value:
-                    code: GAME_NOT_FOUND
-                    message: Game game_1 not found
-                scoreNotFound:
-                  value:
-                    code: SCORE_NOT_FOUND
-                    message: No score found for game game_1
+          $ref: '#/components/responses/NotFound'
 
     put:
       tags: [Scores]
       operationId: upsertGameScore
       summary: Créer ou remplacer le score d'un match
       description: |
-        Crée ou remplace intégralement le score d'un match.
-
-        Cette opération permet :
-        - de créer un score si le match n'en possède pas encore
-        - de remplacer le score existant
-
-        Le payload doit contenir exactement une entrée par équipe participante au match.
+        Définit le score du match en remplaçant intégralement la valeur existante si besoin.
       requestBody:
         required: true
         description: Nouveau score du match
@@ -376,12 +343,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UpsertGameScoreRequest'
-            examples:
-              default:
-                value:
-                  pointsByTeam:
-                    team_1: 21
-                    team_2: 18
       responses:
         '200':
           description: Score enregistré
@@ -390,16 +351,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/GameScore'
         '400':
-          description: Le score fourni est invalide
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              examples:
-                invalidScore:
-                  value:
-                    code: INVALID_SCORE
-                    message: Score must contain exactly one entry for each participating team
+          $ref: '#/components/responses/BadRequest'
         '404':
           $ref: '#/components/responses/NotFound'
 
@@ -407,71 +359,70 @@ paths:
       tags: [Scores]
       operationId: deleteGameScore
       summary: Supprimer le score d'un match
-      description: Supprime le score associé à un match.
+      description: Supprime le score d'un match existant.
       responses:
         '204':
           description: Score supprimé
         '404':
           $ref: '#/components/responses/NotFound'
 
-  /rankings:
+  /api/statistics:
     get:
-      tags: [Rankings]
+      tags: [Statistics]
       operationId: listRankings
       summary: Lire le classement
       description: |
-        Retourne le classement global des équipes.
-
-        Le classement est une vue calculée à partir des matchs et des scores saisis.
-        L'ordre retourné doit être celui du classement métier.
+        Retourne le classement complet de toutes les équipes connues.
       responses:
         '200':
-          description: Classement global
+          description: Classement calculé
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/RankingEntry'
+                  $ref: '#/components/schemas/ContestantStats'
               examples:
                 default:
                   value:
-                    - rank: 1
-                      team:
+                    - contestant:
                         id: team_1
                         name: Les Furets
                       played: 3
-                      won: 3
-                      lost: 0
-                      pointsFor: 63
-                      pointsAgainst: 42
-                      pointsDifference: 21
-                    - rank: 2
-                      team:
+                      won: 2
+                      drawn: 0
+                      lost: 1
+                      score: 6
+                      pointsFor: 66
+                      pointsAgainst: 57
+                      pointsDiff: 9
+                    - contestant:
                         id: team_2
                         name: Les Blaireaux
                       played: 3
                       won: 1
+                      drawn: 0
                       lost: 2
+                      score: 3
                       pointsFor: 54
                       pointsAgainst: 60
-                      pointsDifference: -6
+                      pointsDiff: -6
 
-  /rankings/{teamId}:
+  /api/statistics/{teamId}:
     parameters:
       - $ref: '#/components/parameters/TeamId'
     get:
-      tags: [Rankings]
+      tags: [Statistics]
       operationId: getRankingByTeamId
       summary: Lire le classement d'une équipe
       description: Retourne l'entrée de classement correspondant à une équipe donnée.
       responses:
         '200':
-          description: Entrée de classement trouvée
+          description: Entrée de classement
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RankingEntry'
+                $ref: '#/components/schemas/ContestantStats'
         '404':
           $ref: '#/components/responses/NotFound'
 
@@ -481,59 +432,67 @@ components:
       name: teamId
       in: path
       required: true
-      description: Identifiant d'une équipe
+      description: Identifiant unique d'une équipe
       schema:
         type: string
-        examples: [team_1]
+        minLength: 1
+      examples:
+        default:
+          value: team_1
 
     GameId:
       name: gameId
       in: path
       required: true
-      description: Identifiant d'un match
+      description: Identifiant unique d'un match
       schema:
         type: string
-        examples: [game_1]
+        minLength: 1
+      examples:
+        default:
+          value: game_1
 
   responses:
     BadRequest:
-      description: La requête est invalide
+      description: Requête invalide
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
           examples:
-            default:
+            validationError:
               value:
                 code: BAD_REQUEST
-                message: Request payload is invalid
+                message: The request payload is invalid
 
     NotFound:
-      description: La ressource demandée est introuvable
+      description: Ressource introuvable
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
           examples:
-            default:
+            notFound:
               value:
                 code: NOT_FOUND
-                message: Requested resource was not found
+                message: The requested resource does not exist
 
   schemas:
     Team:
       type: object
-      description: Représentation publique d'une équipe.
+      description: Équipe participante au tournoi.
       required:
         - id
         - name
       properties:
         id:
           type: string
-          description: Identifiant technique unique de l'équipe
+          minLength: 1
+          description: Identifiant unique de l'équipe
           examples: [team_1]
         name:
           type: string
+          minLength: 1
           description: Nom affiché de l'équipe
           examples: [Les Furets]
 
@@ -546,12 +505,12 @@ components:
         name:
           type: string
           minLength: 1
-          description: Nom de l'équipe à créer
+          description: Nom de la nouvelle équipe
           examples: [Les Furets]
 
     UpdateTeamRequest:
       type: object
-      description: Payload utilisé pour mettre à jour une équipe.
+      description: Payload utilisé pour modifier une équipe existante.
       required:
         - name
       properties:
@@ -561,90 +520,29 @@ components:
           description: Nouveau nom de l'équipe
           examples: [Les Furets Volants]
 
-    GameStatus:
-      type: string
-      description: |
-        Statut fonctionnel du match.
-
-        - `scheduled` : le match est planifié mais n'a pas commencé
-        - `in_progress` : le match a commencé et est en cours
-        - `completed` : le match est terminé
-      enum:
-        - scheduled
-        - in_progress
-        - completed
-
-    GameScore:
-      type: object
-      description: |
-        Score simple d'un match sur un seul set.
-
-        Le score associe chaque identifiant d'équipe participante
-        au nombre de points qui lui est attribué.
-      required:
-        - pointsByTeam
-      properties:
-        pointsByTeam:
-          type: object
-          description: |
-            Association entre identifiant d'équipe et nombre de points.
-
-            Exemples :
-            - `{ "team_1": 21, "team_2": 18 }`
-          additionalProperties:
-            type: integer
-            format: int32
-            minimum: 0
-          minProperties: 2
-          examples:
-            - team_1: 21
-              team_2: 18
-
-    UpsertGameScoreRequest:
-      type: object
-      description: Payload utilisé pour créer ou remplacer le score d'un match.
-      required:
-        - pointsByTeam
-      properties:
-        pointsByTeam:
-          type: object
-          description: |
-            Association entre identifiant d'équipe et nombre de points.
-            Le contenu doit correspondre exactement aux équipes du match.
-          additionalProperties:
-            type: integer
-            format: int32
-            minimum: 0
-          minProperties: 2
-          examples:
-            - team_1: 21
-              team_2: 18
-
     Game:
       type: object
       description: |
-        Représentation publique d'un match.
-
-        Les équipes participantes sont retournées sous forme enrichie,
+        Représentation d'un match enrichie avec les équipes participantes,
         tandis que les opérations d'écriture utilisent des identifiants.
       required:
         - id
-        - scheduledAt
+        - time
         - court
         - status
-        - teams
+        - contestants
         - score
       properties:
         id:
           type: string
-          description: Identifiant technique unique du match
+          minLength: 1
+          description: Identifiant unique du match
           examples: [game_1]
         time:
           type: string
           format: date-time
-          description: Date et heure planifiées du match
-          examples:
-            - '2026-03-15T18:30:00Z'
+          description: Date et heure prévues du match
+          examples: ['2026-03-15T18:30:00Z']
         court:
           type: string
           minLength: 1
@@ -652,12 +550,10 @@ components:
           examples: [Court A]
         status:
           $ref: '#/components/schemas/GameStatus'
-        teams:
+        contestants:
           type: array
           description: |
             Ensemble des équipes participant au match.
-
-            Le contrat représente cet ensemble comme un tableau JSON sans doublon.
           minItems: 2
           uniqueItems: true
           items:
@@ -673,99 +569,104 @@ components:
           description: |
             Score du match.
 
-            Ce champ vaut `null` tant qu'aucun score n'a été saisi.
+            Ce champ vaut `null` tant qu'aucun score n'a encore été saisi.
+
+    GameStatus:
+      type: string
+      description: État métier d'un match.
+      enum:
+        - scheduled
+        - in_progress
+        - completed
+        - canceled
 
     CreateGameRequest:
       type: object
       description: Payload utilisé pour créer un match.
       required:
-        - scheduledAt
+        - time
         - court
-        - teamIds
+        - contestantIds
       properties:
-        scheduledAt:
+        time:
           type: string
           format: date-time
           description: Date et heure prévues du match
-          examples:
-            - '2026-03-15T18:30:00Z'
+          examples: ['2026-03-15T18:30:00Z']
         court:
           type: string
           minLength: 1
           description: Nom ou libellé du terrain
           examples: [Court A]
-        teamIds:
+        contestantIds:
           type: array
           description: |
             Ensemble des identifiants des équipes participantes.
-
-            Ce champ est modélisé comme un tableau JSON sans doublon pour représenter un set.
           minItems: 2
           uniqueItems: true
           items:
             type: string
             examples: [team_1]
+        refereeId:
+          type: string
+          nullable: true
 
     UpdateGameRequest:
       type: object
       description: |
-        Payload utilisé pour modifier un match.
+        Payload utilisé pour modifier un match existant.
 
         Cette opération ne permet pas de modifier le score.
       required:
-        - scheduledAt
+        - time
         - court
         - status
-        - teamIds
+        - contestantIds
+        - refereeId
       properties:
-        scheduledAt:
+        time:
           type: string
           format: date-time
           description: Nouvelle date et heure prévues du match
-          examples:
-            - '2026-03-15T19:00:00Z'
+          examples: ['2026-03-15T19:00:00Z']
         court:
           type: string
           minLength: 1
-          description: Nouveau terrain
+          description: Nouveau nom ou libellé du terrain
           examples: [Court B]
         status:
           $ref: '#/components/schemas/GameStatus'
-        teamIds:
+        contestantIds:
           type: array
           description: |
             Nouvel ensemble des identifiants des équipes participantes.
-
-            Ce champ est modélisé comme un tableau JSON sans doublon pour représenter un set.
           minItems: 2
           uniqueItems: true
           items:
             type: string
             examples: [team_1]
+        refereeId:
+          type: string
+          nullable: true
 
-    RankingEntry:
+    ContestantStats:
       type: object
       description: |
-        Entrée de classement pour une équipe donnée.
+        Information .
 
         Cette vue est calculée à partir des matchs et des scores disponibles.
       required:
-        - rank
-        - team
+        - contestant
         - played
         - won
+        - drawn
         - lost
+        - score
         - pointsFor
         - pointsAgainst
-        - pointsDifference
+        - pointsDiff
       properties:
-        rank:
-          type: integer
-          format: int32
-          minimum: 1
-          description: Position de l'équipe dans le classement
-          examples: [1]
-        team:
+        contestant:
           $ref: '#/components/schemas/Team'
         played:
           type: integer
@@ -779,7 +680,19 @@ components:
           minimum: 0
           description: Nombre de matchs gagnés
           examples: [2]
+        drawn:
+          type: integer
+          format: int32
+          minimum: 0
+          description: Nombre de matchs gagnés
+          examples: [2]
         lost:
+          type: integer
+          format: int32
+          minimum: 0
+          description: Nombre de matchs perdus
+          examples: [1]
+        score:
           type: integer
           format: int32
           minimum: 0
@@ -789,34 +702,70 @@ components:
           type: integer
           format: int32
           description: Total des points marqués
-          examples: [63]
+          examples: [66]
         pointsAgainst:
           type: integer
           format: int32
           description: Total des points encaissés
           examples: [57]
-        pointsDifference:
+        pointsDiff:
           type: integer
           format: int32
           description: Différence entre points marqués et encaissés
-          examples: [6]
+          examples: [9]
+
+    GameScore:
+      type: object
+      description: |
+        Score simple d'un match sur un seul set.
+
+        Le score associe chaque identifiant d'équipe participante
+        au nombre de points qui lui est attribué.
+      required:
+        - pointsByTeam
+      properties:
+        pointsByTeam:
+          type: object
+          minProperties: 0
+          description: |
+            Association entre identifiant d'équipe et nombre de points.
+
+            Exemples :
+            - `{ "team_1": 21, "team_2": 18 }`
+          additionalProperties:
+            type: integer
+            format: int32
+            minimum: 0
+
+    UpsertGameScoreRequest:
+      type: object
+      description: Payload utilisé pour créer ou remplacer le score d'un match.
+      required:
+        - pointsByTeam
+      properties:
+        pointsByTeam:
+          type: object
+          minProperties: 2
+          description: Association entre identifiant d'équipe et nombre de points.
+          additionalProperties:
+            type: integer
+            format: int32
+            minimum: 0
+          examples:
+            - team_1: 21
+              team_2: 18
 
     ErrorResponse:
       type: object
-      description: Format d'erreur standard de l'API.
       required:
         - code
         - message
       properties:
         code:
           type: string
-          description: Code fonctionnel ou technique de l'erreur
-          examples:
-            - NOT_FOUND
-            - BAD_REQUEST
-            - INVALID_SCORE
+          minLength: 1
+          examples: [BAD_REQUEST]
         message:
           type: string
-          description: Message décrivant l'erreur
-          examples:
-            - Requested resource was not found
+          minLength: 1
+          examples: [The request payload is invalid]

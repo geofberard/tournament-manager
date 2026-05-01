@@ -16,6 +16,9 @@ The services are then available at:
 
 The Vite dev server uses a minimal Docker-specific setup for live reload, proxies `/api` requests to the `api` container, and the Spring Boot process exposes JDWP on port `5005`.
 
+The shared OpenAPI contract used by both `api` and `web` lives in
+[`contract/openapi.yaml`](/Users/geoffrey.berard/lesfurets/_perso/tournament-manager/contract/openapi.yaml).
+
 # Production
 |Service|Url|
 |---|---|
