@@ -54,34 +54,29 @@ $ mvn spring-boot:run
 |||
 |---|---|
 |Language|[ReactJS](https://fr.reactjs.org/)|
-|Code Location|`front/`|
-|Building Tool|[Webpack](https://webpack.js.org/)|
+|Code Location|`web/`|
+|Building Tool|[Vite](https://vite.dev/)|
 |Design System|[Material UI](https://mui.com/material-ui/getting-started/overview/)|
 
 ## Set Up
 To install all dependencies, run :  
 ```
-$ cd front
+$ cd web
 $ npm install
 ```
 
 ## Start local environment
-To run locally the React App and the Java server locally :
+To run locally the React App:
 ```
-$ npm run start:local-api
-```
-
-To run locally the React App only and to use staging API (running on google cloud platform here [scuf-tournois-prod.uc.r.appspot.com](https://scuf-tournois-prod.uc.r.appspot.com/api/swagger-ui/index.html):
-```
-$ npm run start:remote-api
+$ npm run dev
 ```
 
-## Before commit
-To ensure the code quality, run prettier before commiting 
+To run the quality checks locally:
 ```
-$ npm run lint:fix
-$ npm run prettier
+$ npm test
+$ npm run build
+$ npm run lint
 ```
 
 ## Deployment
-The WebApp is hosted on github `gh-pages`, all the code merge in `main`branch is automatically deployed.
+The WebApp is built from `web/` and deployed by the GitHub Actions frontend workflow.
