@@ -20,6 +20,7 @@ public class GameEntity {
     @Column(name = "time")
     private LocalDateTime time;
 
+    private String pool;
     private String court;
     private Boolean isFinished;
     private String scoreData;
@@ -48,6 +49,7 @@ public class GameEntity {
         List<Team> teams = entity.teams.stream().map(TeamEntity::toDomain).toList();
         return new Game(
                 entity.id,
+                entity.pool,
                 entity.time,
                 entity.court,
                 teams,
@@ -59,6 +61,7 @@ public class GameEntity {
     public static GameEntity toEntity(Game game) {
         GameEntity playerEntity = new GameEntity();
         playerEntity.id = game.id();
+        playerEntity.pool = game.pool();
         playerEntity.time = game.time();
         playerEntity.court = game.court();
         playerEntity.teams = game.contestants().stream().map(TeamEntity::toEntity).toList();

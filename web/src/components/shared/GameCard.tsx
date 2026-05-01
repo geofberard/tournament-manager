@@ -52,11 +52,14 @@ export const GameCard = ({ game }: GameCardProps) => {
             <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
               {formatContestants(game)}
             </Typography>
-            <Chip
-              label={statusLabelByValue[game.status] ?? game.status}
-              color={statusColorByValue[game.status] ?? 'default'}
-              size="small"
-            />
+            <Stack direction="row" spacing={1} flexWrap="wrap" justifyContent="flex-end">
+              <Chip label={game.pool} variant="outlined" size="small" />
+              <Chip
+                label={statusLabelByValue[game.status] ?? game.status}
+                color={statusColorByValue[game.status] ?? 'default'}
+                size="small"
+              />
+            </Stack>
           </Stack>
 
           <Typography variant="body2" color="text.secondary">

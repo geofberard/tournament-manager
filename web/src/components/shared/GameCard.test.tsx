@@ -14,6 +14,7 @@ const renderCard = (game: Game) =>
 
 const baseGame: Game = {
   id: 'game-1',
+  pool: 'Poule A',
   time: new Date('2026-05-01T18:30:00Z'),
   court: 'Central',
   status: GameStatus.Completed,
@@ -39,6 +40,7 @@ describe('GameCard', () => {
     renderCard(baseGame)
 
     expect(screen.getByText('Aigles vs Tigres')).toBeInTheDocument()
+    expect(screen.getByText('Poule A')).toBeInTheDocument()
     expect(screen.getByText('Termine')).toBeInTheDocument()
     expect(screen.getByText('Score:')).toBeInTheDocument()
     expect(screen.getByText('21 - 18')).toBeInTheDocument()

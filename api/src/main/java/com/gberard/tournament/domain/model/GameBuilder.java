@@ -8,6 +8,7 @@ import java.util.Optional;
 
 public class GameBuilder {
     private String id;
+    private String pool = "A";
     private LocalDateTime time;
     private String court;
     private List<Team> contestants;
@@ -27,6 +28,7 @@ public class GameBuilder {
     public static GameBuilder from(Game game) {
         return new GameBuilder()
                 .id(game.id())
+                .pool(game.pool())
                 .time(game.time())
                 .court(game.court())
                 .contestants(game.contestants())
@@ -42,6 +44,11 @@ public class GameBuilder {
 
     public GameBuilder time(LocalDateTime time) {
         this.time = time;
+        return this;
+    }
+
+    public GameBuilder pool(String pool) {
+        this.pool = pool;
         return this;
     }
 
@@ -84,6 +91,6 @@ public class GameBuilder {
     }
 
     public Game build() {
-        return new Game(id, time, court, contestants, refereeId, isFinished, score);
+        return new Game(id, pool, time, court, contestants, refereeId, isFinished, score);
     }
 }

@@ -23,6 +23,7 @@ public class TestUtils {
     public static GameBuilder gameBuilder() {
         return GameBuilder.newBuilder()
                 .id("gameId")
+                .pool("A")
                 .time(LocalDateTime.of(2022, AUGUST, 29, 10, 30))
                 .contestants(List.of(TEAM_A, TEAM_B))
                 .court("court")

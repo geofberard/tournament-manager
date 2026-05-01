@@ -527,6 +527,7 @@ components:
         tandis que les opérations d'écriture utilisent des identifiants.
       required:
         - id
+        - pool
         - time
         - court
         - status
@@ -538,6 +539,11 @@ components:
           minLength: 1
           description: Identifiant unique du match
           examples: [game_1]
+        pool:
+          type: string
+          minLength: 1
+          description: Identifiant ou nom de la poule du match
+          examples: [Poule A]
         time:
           type: string
           format: date-time
@@ -584,10 +590,16 @@ components:
       type: object
       description: Payload utilisé pour créer un match.
       required:
+        - pool
         - time
         - court
         - contestantIds
       properties:
+        pool:
+          type: string
+          minLength: 1
+          description: Identifiant ou nom de la poule du match
+          examples: [Poule A]
         time:
           type: string
           format: date-time
@@ -618,12 +630,18 @@ components:
 
         Cette opération ne permet pas de modifier le score.
       required:
+        - pool
         - time
         - court
         - status
         - contestantIds
         - refereeId
       properties:
+        pool:
+          type: string
+          minLength: 1
+          description: Identifiant ou nom de la poule du match
+          examples: [Poule B]
         time:
           type: string
           format: date-time

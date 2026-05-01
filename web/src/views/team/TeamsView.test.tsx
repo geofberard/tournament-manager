@@ -97,6 +97,7 @@ describe('TeamsView', () => {
       games: [
         {
           id: 'game-1',
+          pool: 'Poule A',
           time: new Date('2026-05-04T18:00:00Z'),
           court: 'Central',
           status: GameStatus.Scheduled,
@@ -109,6 +110,7 @@ describe('TeamsView', () => {
         },
         {
           id: 'game-2',
+          pool: 'Poule A',
           time: new Date('2026-05-02T18:00:00Z'),
           court: 'Annexe',
           status: GameStatus.Completed,
@@ -121,6 +123,7 @@ describe('TeamsView', () => {
         },
         {
           id: 'game-3',
+          pool: 'Poule B',
           time: new Date('2026-05-03T18:00:00Z'),
           court: 'Court 2',
           status: GameStatus.InProgress,
@@ -133,6 +136,7 @@ describe('TeamsView', () => {
         },
         {
           id: 'game-4',
+          pool: 'Poule B',
           time: new Date('2026-05-01T18:00:00Z'),
           court: 'Court 3',
           status: GameStatus.Completed,

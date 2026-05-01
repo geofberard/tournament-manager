@@ -9,6 +9,7 @@ import java.util.Optional;
 
 public final class Game implements Identified {
     private final String id;
+    private final String pool;
     private final LocalDateTime time;
     private final String court;
     private final List<Team> contestants;
@@ -18,6 +19,7 @@ public final class Game implements Identified {
 
     public Game(
             String id,
+            String pool,
             LocalDateTime time,
             String court,
             List<Team> contestants,
@@ -26,6 +28,7 @@ public final class Game implements Identified {
             Optional<SimpleScore> score
     ) {
         this.id = id;
+        this.pool = Objects.requireNonNull(pool, "pool must not be null");
         this.time = Objects.requireNonNull(time, "time must not be null");
         this.court = Objects.requireNonNull(court, "court must not be null");
         this.contestants = List.copyOf(Objects.requireNonNull(contestants, "contestants must not be null"));
@@ -41,6 +44,10 @@ public final class Game implements Identified {
 
     public LocalDateTime time() {
         return time;
+    }
+
+    public String pool() {
+        return pool;
     }
 
     public String court() {
@@ -64,23 +71,23 @@ public final class Game implements Identified {
     }
 
     public Game withScore(SimpleScore newScore) {
-        return new Game(id, time, court, contestants, refereeId, isFinished, Optional.of(newScore));
+        return new Game(id, pool, time, court, contestants, refereeId, isFinished, Optional.of(newScore));
     }
 
     public Game withoutScore() {
-        return new Game(id, time, court, contestants, refereeId, isFinished, Optional.empty());
+        return new Game(id, pool, time, court, contestants, refereeId, isFinished, Optional.empty());
     }
 
     public Game finishWithScore(SimpleScore newScore) {
-        return new Game(id, time, court, contestants, refereeId, true, Optional.of(newScore));
+        return new Game(id, pool, time, court, contestants, refereeId, true, Optional.of(newScore));
     }
 
     public Game markAsFinished() {
-        return new Game(id, time, court, contestants, refereeId, true, score);
+        return new Game(id, pool, time, court, contestants, refereeId, true, score);
     }
 
     public Game markAsScheduled() {
-        return new Game(id, time, court, contestants, refereeId, false, score);
+        return new Game(id, pool, time, court, contestants, refereeId, false, score);
     }
 
     @Override
@@ -92,6 +99,7 @@ public final class Game implements Identified {
             return false;
         }
         return Objects.equals(id, game.id)
+                && Objects.equals(pool, game.pool)
                 && Objects.equals(time, game.time)
                 && Objects.equals(court, game.court)
                 && Objects.equals(contestants, game.contestants)
@@ -102,13 +110,14 @@ public final class Game implements Identified {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, time, court, contestants, refereeId, isFinished, score);
+        return Objects.hash(id, pool, time, court, contestants, refereeId, isFinished, score);
     }
 
     @Override
     public String toString() {
         return "Game[" +
                 "id=" + id +
+                ", pool=" + pool +
                 ", time=" + time +
                 ", court=" + court +
                 ", contestants=" + contestants +

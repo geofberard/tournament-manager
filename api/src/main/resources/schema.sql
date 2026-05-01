@@ -7,6 +7,7 @@ CREATE TABLE teams
 CREATE TABLE games
 (
     id          VARCHAR(255) PRIMARY KEY,
+    pool        VARCHAR(255) NOT NULL,
     time        TIMESTAMP    NOT NULL,
     court       VARCHAR(255) NOT NULL,
     is_finished BOOLEAN      NOT NULL,

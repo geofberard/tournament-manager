@@ -26,6 +26,7 @@ describe('useGames', () => {
     listGamesMock.mockResolvedValueOnce([
       {
         id: 'game-2',
+        pool: 'Poule B',
         time: new Date('2026-05-02T10:00:00Z'),
         court: 'Annexe',
         status: GameStatus.Scheduled,
@@ -35,6 +36,7 @@ describe('useGames', () => {
       },
       {
         id: 'game-1',
+        pool: 'Poule A',
         time: new Date('2026-05-01T18:30:00Z'),
         court: 'Central',
         status: GameStatus.Completed,
