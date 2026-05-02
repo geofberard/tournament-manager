@@ -16,6 +16,7 @@ import { TeamSelectionView } from '../views/team/TeamSelectionView'
 import { useTeamLogin } from '../hooks/useTeamLogin'
 import { useAdminSession } from '../hooks/useAdminSession'
 import { PublicView } from '../views/public/PublicView'
+import { AdminGamesView } from '../views/admin/AdminGamesView'
 import { AdminLoginView } from '../views/admin/AdminLoginView'
 import { AdminView } from '../views/admin/AdminView'
 import { AdminPhasesView } from '../views/admin/AdminPhasesView'
@@ -169,6 +170,7 @@ const AppRoutes = ({ adminSession, teamSession }: AppRoutesProps) => {
         }
       >
         <Route index element={<AdminView username={username} />} />
+        <Route path="games" element={<AdminGamesView />} />
         <Route path="phases" element={<AdminPhasesView />} />
       </Route>
 

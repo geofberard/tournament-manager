@@ -3,6 +3,7 @@ import { ThemeProvider, createTheme } from '@mui/material'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { Router } from './Router'
 import {
+  ADMIN_GAMES_PATH,
   ADMIN_HOME_PATH,
   ADMIN_LOGIN_PATH,
   ADMIN_PHASES_PATH,
@@ -268,6 +269,49 @@ describe('Router', () => {
 
     expect(screen.getByRole('heading', { name: 'Phases' })).toBeInTheDocument()
     expect(screen.getByText('Brassage')).toBeInTheDocument()
+  })
+
+  it('should render the admin games page when requested', () => {
+    setHashPath(ADMIN_GAMES_PATH)
+
+    useTeamLoginMock.mockReturnValue({
+      clearTeamSelection: vi.fn(),
+      currentTeam: null,
+      handleTeamChange: vi.fn(),
+    })
+    useAdminSessionMock.mockReturnValue({
+      isAuthenticated: true,
+      isLoading: false,
+      login: vi.fn(),
+      logout: vi.fn(),
+      username: 'admin',
+    })
+    useGamesMock.mockReturnValue({
+      errorMessage: null,
+      games: [
+        {
+          contestants: new Set([
+            { id: 'team-1', name: 'Tigres' },
+            { id: 'team-2', name: 'Lynx' },
+          ]),
+          court: 'Terrain 1',
+          group: 'Poule A',
+          id: 'game-1',
+          name: 'Finale',
+          phase: { id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' },
+          referee: { id: 'team-3', name: 'Aigles' },
+          score: { pointsByTeam: { 'team-1': 21, 'team-2': 18 } },
+          status: 'completed',
+          time: new Date('2026-05-03T10:30:00.000Z'),
+        },
+      ],
+      isLoading: false,
+    })
+
+    renderRouter()
+
+    expect(screen.getByRole('heading', { name: 'Matchs' })).toBeInTheDocument()
+    expect(screen.getByText('Finale')).toBeInTheDocument()
   })
 
   it('should allow logging out from the admin area', () => {

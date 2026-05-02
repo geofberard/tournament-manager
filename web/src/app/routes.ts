@@ -6,6 +6,7 @@ export const TEAM_GAMES_PATH = '/team/games'
 export const TEAM_LOGIN_PATH = '/team/login'
 
 export const ADMIN_HOME_PATH = '/admin'
+export const ADMIN_GAMES_PATH = '/admin/games'
 export const ADMIN_LOGIN_PATH = '/admin/login'
 export const ADMIN_PHASES_PATH = '/admin/phases'
 
@@ -33,5 +34,9 @@ export const adminRoutes: AppRoute[] = [
   {
     label: 'Phases',
     path: ADMIN_PHASES_PATH,
+  },
+  {
+    label: 'Matchs',
+    path: ADMIN_GAMES_PATH,
   },
 ]

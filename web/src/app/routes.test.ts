@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   adminRoutes,
+  ADMIN_GAMES_PATH,
   ADMIN_HOME_PATH,
   ADMIN_LOGIN_PATH,
   ADMIN_PHASES_PATH,
@@ -20,6 +21,7 @@ describe('routes', () => {
     expect(TEAM_GAMES_PATH).toBe('/team/games')
     expect(TEAM_LOGIN_PATH).toBe('/team/login')
     expect(ADMIN_HOME_PATH).toBe('/admin')
+    expect(ADMIN_GAMES_PATH).toBe('/admin/games')
     expect(ADMIN_LOGIN_PATH).toBe('/admin/login')
     expect(ADMIN_PHASES_PATH).toBe('/admin/phases')
   })
@@ -35,6 +37,7 @@ describe('routes', () => {
     expect(adminRoutes).toEqual([
       { label: 'Accueil', path: '/admin' },
       { label: 'Phases', path: '/admin/phases' },
+      { label: 'Matchs', path: '/admin/games' },
     ])
   })
 })
