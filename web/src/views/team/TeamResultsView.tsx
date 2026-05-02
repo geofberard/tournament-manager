@@ -1,5 +1,6 @@
 import { Alert, CircularProgress, Paper, Stack, Tab, Tabs, Typography } from '@mui/material'
 import { TeamResultsContent } from '../../components/team/TeamResultsContent'
+import { MarkdownContent } from '../../components/shared/MarkdownContent'
 import { useState } from 'react'
 import { usePhases } from '../../hooks/usePhases'
 import type { Team } from '../../services/teamsService'
@@ -13,10 +14,7 @@ export const TeamResultsView = ({ currentTeam }: TeamResultsViewProps) => {
   const [selectedPhaseId, setSelectedPhaseId] = useState<string | null>(null)
   const effectiveSelectedPhaseId = selectedPhaseId ?? phases[0]?.id ?? null
   const selectedPhase = phases.find((phase) => phase.id === effectiveSelectedPhaseId) ?? null
-  const phaseDetailsParagraphs = selectedPhase?.details
-    ?.split(/\n\s*\n/)
-    .map((paragraph) => paragraph.trim())
-    .filter(Boolean) ?? []
+  const phaseDetails = selectedPhase?.details?.trim() ?? ''
 
   return (
     <Stack spacing={3}>
@@ -54,14 +52,8 @@ export const TeamResultsView = ({ currentTeam }: TeamResultsViewProps) => {
         ) : null}
         <Paper variant="outlined" sx={{ p: 2.5 }}>
           <Stack spacing={1.5}>
-            {phaseDetailsParagraphs.length > 0 ? (
-              <Stack spacing={1.5}>
-                {phaseDetailsParagraphs.map((paragraph, index) => (
-                  <Typography key={`${selectedPhase?.id ?? 'phase'}-${index}`} variant="body1">
-                    {paragraph}
-                  </Typography>
-                ))}
-              </Stack>
+            {phaseDetails ? (
+              <MarkdownContent content={phaseDetails} />
             ) : (
               <Typography variant="body2" color="text.secondary">
                 Aucun detail n'est disponible pour cette phase.
