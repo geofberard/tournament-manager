@@ -264,42 +264,42 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
-  /api/phases/{phaseId}/pools:
+  /api/phases/{phaseId}/groups:
     parameters:
       - $ref: '#/components/parameters/PhaseId'
     get:
       tags: [Phases]
-      operationId: listPhasePools
-      summary: Lister les poules d'une phase
-      description: Retourne les poules presentes dans la phase demandee.
+      operationId: listPhaseGroups
+      summary: Lister les groupes d'une phase
+      description: Retourne les groupes presents dans la phase demandee.
       responses:
         '200':
-          description: Liste des poules de la phase
+          description: Liste des groupes de la phase
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Pool'
+                  $ref: '#/components/schemas/Group'
         '404':
           $ref: '#/components/responses/NotFound'
 
-  /api/phases/{phaseId}/teams/{teamId}/pool:
+  /api/phases/{phaseId}/teams/{teamId}/group:
     parameters:
       - $ref: '#/components/parameters/PhaseId'
       - $ref: '#/components/parameters/TeamId'
     get:
       tags: [Phases]
-      operationId: getPhaseTeamPool
-      summary: Lire la poule d'une équipe dans une phase
-      description: Retourne la poule a laquelle appartient l'equipe donnee dans la phase demandee.
+      operationId: getPhaseTeamGroup
+      summary: Lire le groupe d'une équipe dans une phase
+      description: Retourne le groupe auquel appartient l'equipe donnee dans la phase demandee.
       responses:
         '200':
-          description: Poule de l'équipe dans la phase
+          description: Groupe de l'équipe dans la phase
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Pool'
+                $ref: '#/components/schemas/Group'
         '404':
           $ref: '#/components/responses/NotFound'
 
@@ -558,20 +558,20 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
-  /api/phases/{phaseId}/pools/{poolId}/statistics:
+  /api/phases/{phaseId}/groups/{groupId}/statistics:
     parameters:
       - $ref: '#/components/parameters/PhaseId'
-      - $ref: '#/components/parameters/PoolId'
+      - $ref: '#/components/parameters/GroupId'
     get:
       tags: [Phases]
-      operationId: listPhasePoolRankings
-      summary: Lire le classement d'une poule
+      operationId: listPhaseGroupRankings
+      summary: Lire le classement d'un groupe
       description: |
         Retourne le classement calculé en ne prenant en compte que les matchs
-        appartenant a la poule demandee au sein de la phase donnee.
+        appartenant au groupe demande au sein de la phase donnee.
       responses:
         '200':
-          description: Classement de la poule
+          description: Classement du groupe
           content:
             application/json:
               schema:
@@ -607,11 +607,11 @@ components:
         default:
           value: game_1
 
-    PoolId:
-      name: poolId
+    GroupId:
+      name: groupId
       in: path
       required: true
-      description: Identifiant unique d'une poule
+      description: Identifiant unique d'un groupe
       schema:
         type: string
         minLength: 1
@@ -656,16 +656,16 @@ components:
                 message: The requested resource does not exist
 
   schemas:
-    Pool:
+    Group:
       type: object
-      description: Représentation d'une poule.
+      description: Représentation d'un groupe.
       required:
         - id
       properties:
         id:
           type: string
           minLength: 1
-          description: Identifiant ou nom de la poule
+          description: Identifiant ou nom du groupe
           examples: [Poule A]
 
     Team:
@@ -718,7 +718,7 @@ components:
       required:
         - id
         - phase
-        - pool
+        - group
         - time
         - court
         - status
@@ -732,10 +732,10 @@ components:
           examples: [game_1]
         phase:
           $ref: '#/components/schemas/Phase'
-        pool:
+        group:
           type: string
           minLength: 1
-          description: Identifiant ou nom de la poule du match
+          description: Identifiant ou nom du groupe du match
           examples: [Poule A]
         time:
           type: string
@@ -847,7 +847,7 @@ components:
       description: Payload utilisé pour créer un match.
       required:
         - phaseId
-        - pool
+        - group
         - time
         - court
         - contestantIds
@@ -857,10 +857,10 @@ components:
           minLength: 1
           description: Identifiant de la phase du match
           examples: [phase_1]
-        pool:
+        group:
           type: string
           minLength: 1
-          description: Identifiant ou nom de la poule du match
+          description: Identifiant ou nom du groupe du match
           examples: [Poule A]
         time:
           type: string
@@ -893,7 +893,7 @@ components:
         Cette opération ne permet pas de modifier le score.
       required:
         - phaseId
-        - pool
+        - group
         - time
         - court
         - status
@@ -905,10 +905,10 @@ components:
           minLength: 1
           description: Identifiant de la phase du match
           examples: [phase_2]
-        pool:
+        group:
           type: string
           minLength: 1
-          description: Identifiant ou nom de la poule du match
+          description: Identifiant ou nom du groupe du match
           examples: [Poule B]
         time:
           type: string

@@ -5,7 +5,7 @@ export type { ContestantStats }
 export const listRankings = async (): Promise<ContestantStats[]> =>
   statisticsApi.listRankings()
 
-export const listPoolRankings = async (poolId: string, phaseId: string): Promise<ContestantStats[]> =>
+export const listGroupRankings = async (groupId: string, phaseId: string): Promise<ContestantStats[]> =>
   fetchJson<ContestantStats[]>(
-    `/api/phases/${encodeURIComponent(phaseId)}/pools/${encodeURIComponent(poolId)}/statistics`,
+    `/api/phases/${encodeURIComponent(phaseId)}/groups/${encodeURIComponent(groupId)}/statistics`,
   )

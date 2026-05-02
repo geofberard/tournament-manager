@@ -31,11 +31,11 @@ class TeamStatsServiceTest {
     List<Team> teams = List.of(TEAM_A, TEAM_B, TEAM_C, TEAM_D);
 
     List<Game> games = List.of(
-            gameBuilder().pool("Poule A").contestants(List.of(TEAM_A, TEAM_B)).score(buildSimpleScore(TEAM_A, 25, TEAM_B, 15)).build(),
-            gameBuilder().pool("Poule A").contestants(List.of(TEAM_A, TEAM_C)).score(buildSimpleScore(TEAM_A, 18, TEAM_C, 14)).build(),
-            gameBuilder().pool("Poule A").contestants(List.of(TEAM_B, TEAM_C)).score(buildSimpleScore(TEAM_B, 22, TEAM_C, 19)).build(),
-            gameBuilder().pool("Poule B").contestants(List.of(TEAM_D, TEAM_C)).score(buildSimpleScore(TEAM_D, 10, TEAM_C, 20)).build(),
-            gameBuilder().pool("Poule B").contestants(List.of(TEAM_D, TEAM_B)).score(buildSimpleScore(TEAM_D, 10, TEAM_B, 10)).build()
+            gameBuilder().group("Poule A").contestants(List.of(TEAM_A, TEAM_B)).score(buildSimpleScore(TEAM_A, 25, TEAM_B, 15)).build(),
+            gameBuilder().group("Poule A").contestants(List.of(TEAM_A, TEAM_C)).score(buildSimpleScore(TEAM_A, 18, TEAM_C, 14)).build(),
+            gameBuilder().group("Poule A").contestants(List.of(TEAM_B, TEAM_C)).score(buildSimpleScore(TEAM_B, 22, TEAM_C, 19)).build(),
+            gameBuilder().group("Poule B").contestants(List.of(TEAM_D, TEAM_C)).score(buildSimpleScore(TEAM_D, 10, TEAM_C, 20)).build(),
+            gameBuilder().group("Poule B").contestants(List.of(TEAM_D, TEAM_B)).score(buildSimpleScore(TEAM_D, 10, TEAM_B, 10)).build()
     );
 
     @InjectMocks
@@ -100,18 +100,18 @@ class TeamStatsServiceTest {
     }
 
     @Nested
-    @DisplayName("getTeamsStatsByPool()")
-    class GetTeamsStatsByPool {
+    @DisplayName("getTeamsStatsByGroup()")
+    class GetTeamsStatsByGroup {
 
         @Test
-        void should_return_only_pool_stats() {
-            when(gameRepository.findByPool("Poule A")).thenReturn(
+        void should_return_only_group_stats() {
+            when(gameRepository.findByGroup("Poule A")).thenReturn(
                     games.stream()
-                            .filter(game -> game.pool().equals("Poule A"))
+                            .filter(game -> game.group().equals("Poule A"))
                             .toList()
             );
 
-            List<TeamStats> teamsStats = teamStatsService.getTeamsStatsByPool("Poule A");
+            List<TeamStats> teamsStats = teamStatsService.getTeamsStatsByGroup("Poule A");
 
             assertThat(teamsStats).containsExactlyInAnyOrder(
                     new TeamStats(TEAM_A, 2, 2, 0, 0, 6, 43, 29, 14),
@@ -122,29 +122,29 @@ class TeamStatsServiceTest {
     }
 
     @Nested
-    @DisplayName("getTeamPool()")
-    class GetTeamPool {
+    @DisplayName("getTeamGroup()")
+    class GetTeamGroup {
 
         @Test
-        void should_return_team_pool() {
+        void should_return_team_group() {
             when(gameRepository.findByTeamIdAndPhaseId(TEAM_A.id(), PHASE_A.id())).thenReturn(
                     games.stream()
                             .filter(game -> game.contestants().stream().anyMatch(team -> team.id().equals(TEAM_A.id())))
                             .toList()
             );
 
-            Optional<String> pool = teamStatsService.getTeamPool(TEAM_A, PHASE_A.id());
+            Optional<String> group = teamStatsService.getTeamGroup(TEAM_A, PHASE_A.id());
 
-            assertThat(pool).contains("Poule A");
+            assertThat(group).contains("Poule A");
         }
 
         @Test
-        void should_return_empty_when_team_has_no_pool() {
+        void should_return_empty_when_team_has_no_group() {
             when(gameRepository.findByTeamIdAndPhaseId(TEAM_E.id(), PHASE_A.id())).thenReturn(List.of());
 
-            Optional<String> pool = teamStatsService.getTeamPool(TEAM_E, PHASE_A.id());
+            Optional<String> group = teamStatsService.getTeamGroup(TEAM_E, PHASE_A.id());
 
-            assertThat(pool).isEmpty();
+            assertThat(group).isEmpty();
         }
     }
 }

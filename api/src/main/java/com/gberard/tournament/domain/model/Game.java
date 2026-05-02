@@ -10,7 +10,7 @@ import java.util.Optional;
 public final class Game implements Identified {
     private final String id;
     private final Phase phase;
-    private final String pool;
+    private final String group;
     private final LocalDateTime time;
     private final String court;
     private final List<Team> contestants;
@@ -21,7 +21,7 @@ public final class Game implements Identified {
     public Game(
             String id,
             Phase phase,
-            String pool,
+            String group,
             LocalDateTime time,
             String court,
             List<Team> contestants,
@@ -31,7 +31,7 @@ public final class Game implements Identified {
     ) {
         this.id = id;
         this.phase = Objects.requireNonNull(phase, "phase must not be null");
-        this.pool = Objects.requireNonNull(pool, "pool must not be null");
+        this.group = Objects.requireNonNull(group, "group must not be null");
         this.time = Objects.requireNonNull(time, "time must not be null");
         this.court = Objects.requireNonNull(court, "court must not be null");
         this.contestants = List.copyOf(Objects.requireNonNull(contestants, "contestants must not be null"));
@@ -53,8 +53,8 @@ public final class Game implements Identified {
         return phase;
     }
 
-    public String pool() {
-        return pool;
+    public String group() {
+        return group;
     }
 
     public String court() {
@@ -78,23 +78,23 @@ public final class Game implements Identified {
     }
 
     public Game withScore(SimpleScore newScore) {
-        return new Game(id, phase, pool, time, court, contestants, refereeId, isFinished, Optional.of(newScore));
+        return new Game(id, phase, group, time, court, contestants, refereeId, isFinished, Optional.of(newScore));
     }
 
     public Game withoutScore() {
-        return new Game(id, phase, pool, time, court, contestants, refereeId, isFinished, Optional.empty());
+        return new Game(id, phase, group, time, court, contestants, refereeId, isFinished, Optional.empty());
     }
 
     public Game finishWithScore(SimpleScore newScore) {
-        return new Game(id, phase, pool, time, court, contestants, refereeId, true, Optional.of(newScore));
+        return new Game(id, phase, group, time, court, contestants, refereeId, true, Optional.of(newScore));
     }
 
     public Game markAsFinished() {
-        return new Game(id, phase, pool, time, court, contestants, refereeId, true, score);
+        return new Game(id, phase, group, time, court, contestants, refereeId, true, score);
     }
 
     public Game markAsScheduled() {
-        return new Game(id, phase, pool, time, court, contestants, refereeId, false, score);
+        return new Game(id, phase, group, time, court, contestants, refereeId, false, score);
     }
 
     @Override
@@ -107,7 +107,7 @@ public final class Game implements Identified {
         }
         return Objects.equals(id, game.id)
                 && Objects.equals(phase, game.phase)
-                && Objects.equals(pool, game.pool)
+                && Objects.equals(group, game.group)
                 && Objects.equals(time, game.time)
                 && Objects.equals(court, game.court)
                 && Objects.equals(contestants, game.contestants)
@@ -118,7 +118,7 @@ public final class Game implements Identified {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, phase, pool, time, court, contestants, refereeId, isFinished, score);
+        return Objects.hash(id, phase, group, time, court, contestants, refereeId, isFinished, score);
     }
 
     @Override
@@ -126,7 +126,7 @@ public final class Game implements Identified {
         return "Game[" +
                 "id=" + id +
                 ", phase=" + phase +
-                ", pool=" + pool +
+                ", group=" + group +
                 ", time=" + time +
                 ", court=" + court +
                 ", contestants=" + contestants +

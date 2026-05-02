@@ -1,26 +1,26 @@
 import useSWR from 'swr'
-import { listPoolRankings, type ContestantStats } from '../services/statisticsService'
-import { getTeamPool, type Pool } from '../services/teamsService'
+import { listGroupRankings, type ContestantStats } from '../services/statisticsService'
+import { getTeamGroup, type Group } from '../services/teamsService'
 
-const poolFetcher = async ([_key, phaseId, teamId]: readonly [string, string, string]) =>
-  getTeamPool(teamId, phaseId)
-const rankingsFetcher = async ([_key, phaseId, poolId]: readonly [string, string, string]) =>
-  listPoolRankings(poolId, phaseId)
+const groupFetcher = async ([_key, phaseId, teamId]: readonly [string, string, string]) =>
+  getTeamGroup(teamId, phaseId)
+const rankingsFetcher = async ([_key, phaseId, groupId]: readonly [string, string, string]) =>
+  listGroupRankings(groupId, phaseId)
 
 export function useRankings(teamId: string, phaseId: string | null) {
-  const { data: pool, error: poolError, isLoading: isPoolLoading } = useSWR<Pool>(
-    teamId && phaseId ? ['/api/phases/team-pool', phaseId, teamId] : null,
-    poolFetcher,
+  const { data: group, error: groupError, isLoading: isGroupLoading } = useSWR<Group>(
+    teamId && phaseId ? ['/api/phases/team-group', phaseId, teamId] : null,
+    groupFetcher,
   )
   const { data, error: rankingsError, isLoading: isRankingsLoading } = useSWR<ContestantStats[]>(
-    pool?.id && phaseId ? ['/api/phases/pools/statistics', phaseId, pool.id] : null,
+    group?.id && phaseId ? ['/api/phases/groups/statistics', phaseId, group.id] : null,
     rankingsFetcher,
   )
-  const error = poolError ?? rankingsError
-  const isLoading = isPoolLoading || isRankingsLoading
+  const error = groupError ?? rankingsError
+  const isLoading = isGroupLoading || isRankingsLoading
 
   return {
-    poolName: pool?.id ?? null,
+    groupName: group?.id ?? null,
     errorMessage: error instanceof Error ? error.message : error ? 'Le chargement du classement a echoue.' : null,
     isLoading,
     rankings: data ?? [],

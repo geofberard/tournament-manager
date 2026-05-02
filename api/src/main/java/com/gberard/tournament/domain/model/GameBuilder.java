@@ -9,7 +9,7 @@ import java.util.Optional;
 public class GameBuilder {
     private String id;
     private Phase phase = new Phase("phase-default", "Phase par defaut", 1);
-    private String pool = "A";
+    private String group = "A";
     private LocalDateTime time;
     private String court;
     private List<Team> contestants;
@@ -30,7 +30,7 @@ public class GameBuilder {
         return new GameBuilder()
                 .id(game.id())
                 .phase(game.phase())
-                .pool(game.pool())
+                .group(game.group())
                 .time(game.time())
                 .court(game.court())
                 .contestants(game.contestants())
@@ -54,8 +54,8 @@ public class GameBuilder {
         return this;
     }
 
-    public GameBuilder pool(String pool) {
-        this.pool = pool;
+    public GameBuilder group(String group) {
+        this.group = group;
         return this;
     }
 
@@ -98,6 +98,6 @@ public class GameBuilder {
     }
 
     public Game build() {
-        return new Game(id, phase, pool, time, court, contestants, refereeId, isFinished, score);
+        return new Game(id, phase, group, time, court, contestants, refereeId, isFinished, score);
     }
 }

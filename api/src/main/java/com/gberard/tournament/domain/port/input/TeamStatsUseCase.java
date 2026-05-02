@@ -12,11 +12,11 @@ public interface TeamStatsUseCase {
 
     TeamStats getTeamStats(Team team);
 
-    List<TeamStats> getTeamsStatsByPool(String pool);
+    List<TeamStats> getTeamsStatsByGroup(String group);
 
-    List<String> getPhasePools(String phaseId);
+    List<String> getPhaseGroups(String phaseId);
 
-    List<TeamStats> getTeamsStatsByPool(String pool, String phaseId);
+    List<TeamStats> getTeamsStatsByGroup(String group, String phaseId);
 
-    Optional<String> getTeamPool(Team team, String phaseId);
+    Optional<String> getTeamGroup(Team team, String phaseId);
 }

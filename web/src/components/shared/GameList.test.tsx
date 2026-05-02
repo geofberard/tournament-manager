@@ -21,7 +21,7 @@ const games: Game[] = [
   {
     id: 'game-1',
     phase: { id: 'phase-1', name: 'Brassage', order: 1 },
-    pool: 'Poule A',
+    group: 'Poule A',
     time: new Date('2026-05-01T18:30:00Z'),
     court: 'Central',
     status: GameStatus.Completed,
@@ -40,7 +40,7 @@ const games: Game[] = [
   {
     id: 'game-2',
     phase: { id: 'phase-2', name: 'Principale', order: 2 },
-    pool: 'Poule B',
+    group: 'Poule B',
     time: new Date('2026-05-02T10:00:00Z'),
     court: 'Annexe',
     status: GameStatus.Scheduled,

@@ -12,7 +12,7 @@ INSERT INTO phases (id, name, display_order)
 VALUES ('phase_1', 'Poules de brassage', 1),
        ('phase_2', 'Poules principales', 2);
 
-INSERT INTO games (id, phase_id, pool, time, court, is_finished, score_data)
+INSERT INTO games (id, phase_id, group_id, time, court, is_finished, score_data)
 VALUES ('game_1', 'phase_1', 'Poule A', '2022-11-01 11:00:00', 'Terrain1', TRUE, '23-18'),
        ('game_2', 'phase_1', 'Poule A', '2022-11-01 11:00:00', 'Terrain2', TRUE, '20-21'),
        ('game_3', 'phase_1', 'Poule B', '2022-11-01 11:00:00', 'Terrain3', TRUE, '19-23'),

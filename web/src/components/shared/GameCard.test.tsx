@@ -15,7 +15,7 @@ const renderCard = (game: Game) =>
 const baseGame: Game = {
   id: 'game-1',
   phase: { id: 'phase-1', name: 'Brassage', order: 1 },
-  pool: 'Poule A',
+  group: 'Poule A',
   time: new Date('2026-05-01T18:30:00Z'),
   court: 'Central',
   status: GameStatus.Completed,

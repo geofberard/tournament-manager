@@ -67,7 +67,7 @@ describe('Router', () => {
       isLoading: false,
     })
     useRankingsMock.mockReturnValue({
-      poolName: 'Poule A',
+      groupName: 'Poule A',
       errorMessage: null,
       isLoading: false,
       rankings: [],

@@ -27,7 +27,8 @@ public class GameEntity {
     @JoinColumn(name = "phase_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
     private PhaseEntity phase;
 
-    private String pool;
+    @Column(name = "group_id")
+    private String groupId;
     private String court;
     private Boolean isFinished;
     private String scoreData;
@@ -57,7 +58,7 @@ public class GameEntity {
         return new Game(
                 entity.id,
                 PhaseEntity.toDomain(entity.phase),
-                entity.pool,
+                entity.groupId,
                 entity.time,
                 entity.court,
                 teams,
@@ -70,7 +71,7 @@ public class GameEntity {
         GameEntity playerEntity = new GameEntity();
         playerEntity.id = game.id();
         playerEntity.phaseId = game.phase().id();
-        playerEntity.pool = game.pool();
+        playerEntity.groupId = game.group();
         playerEntity.time = game.time();
         playerEntity.court = game.court();
         playerEntity.teams = game.contestants().stream().map(TeamEntity::toEntity).toList();

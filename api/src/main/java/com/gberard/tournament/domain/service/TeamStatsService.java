@@ -39,32 +39,32 @@ public class TeamStatsService implements TeamStatsUseCase {
     }
 
     @Override
-    public List<TeamStats> getTeamsStatsByPool(String pool) {
-        return buildTeamsStats(gameRepository.findByPool(pool));
+    public List<TeamStats> getTeamsStatsByGroup(String group) {
+        return buildTeamsStats(gameRepository.findByGroup(group));
     }
 
     @Override
-    public List<String> getPhasePools(String phaseId) {
+    public List<String> getPhaseGroups(String phaseId) {
         return gameRepository.findByPhaseId(phaseId).stream()
-                .map(Game::pool)
+                .map(Game::group)
                 .distinct()
                 .sorted()
                 .toList();
     }
 
     @Override
-    public List<TeamStats> getTeamsStatsByPool(String pool, String phaseId) {
-        return buildTeamsStats(gameRepository.findByPoolAndPhaseId(pool, phaseId));
+    public List<TeamStats> getTeamsStatsByGroup(String group, String phaseId) {
+        return buildTeamsStats(gameRepository.findByGroupAndPhaseId(group, phaseId));
     }
 
     @Override
-    public Optional<String> getTeamPool(Team team, String phaseId) {
+    public Optional<String> getTeamGroup(Team team, String phaseId) {
         return gameRepository.findByTeamIdAndPhaseId(team.id(), phaseId).stream()
                 .filter(game -> game.contestants().stream().anyMatch(contestant -> contestant.id().equals(team.id())))
-                .map(Game::pool)
+                .map(Game::group)
                 .distinct()
                 .reduce((first, second) -> {
-                    throw new IllegalStateException("Team " + team.id() + " belongs to multiple pools");
+                    throw new IllegalStateException("Team " + team.id() + " belongs to multiple groups");
                 });
     }
 

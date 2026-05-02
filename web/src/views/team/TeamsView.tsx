@@ -48,7 +48,7 @@ export const TeamRankingsView = ({ currentTeam }: TeamsViewProps) => {
 
   const selectedPhase = phases.find((phase) => phase.id === selectedPhaseId) ?? null
   const {
-    poolName,
+    groupName,
     errorMessage: rankingsErrorMessage,
     isLoading: isRankingsLoading,
     rankings,
@@ -61,7 +61,7 @@ export const TeamRankingsView = ({ currentTeam }: TeamsViewProps) => {
     <Stack spacing={3}>
       <TeamIntro
         currentTeam={currentTeam}
-        description="Retrouvez ici les resultats de votre poule et suivez votre position."
+        description="Retrouvez ici les resultats de votre groupe et suivez votre position."
       />
 
       {isLoading ? (
@@ -92,9 +92,9 @@ export const TeamRankingsView = ({ currentTeam }: TeamsViewProps) => {
             Phase active: {selectedPhase.name}
           </Typography>
         ) : null}
-        {poolName ? (
+        {groupName ? (
           <Typography variant="body1" color="text.secondary">
-            {poolName}
+            {groupName}
           </Typography>
         ) : null}
         <RankingTable

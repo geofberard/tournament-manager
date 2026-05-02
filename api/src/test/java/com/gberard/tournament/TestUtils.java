@@ -26,7 +26,7 @@ public class TestUtils {
         return GameBuilder.newBuilder()
                 .id("gameId")
                 .phase(PHASE_A)
-                .pool("A")
+                .group("A")
                 .time(LocalDateTime.of(2022, AUGUST, 29, 10, 30))
                 .contestants(List.of(TEAM_A, TEAM_B))
                 .court("court")

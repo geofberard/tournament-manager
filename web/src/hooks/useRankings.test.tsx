@@ -9,7 +9,7 @@ vi.mock('../services/statisticsService', async () => {
   const actual = await vi.importActual<typeof statisticsService>('../services/statisticsService')
   return {
     ...actual,
-    listPoolRankings: vi.fn(),
+    listGroupRankings: vi.fn(),
   }
 })
 
@@ -17,12 +17,12 @@ vi.mock('../services/teamsService', async () => {
   const actual = await vi.importActual<typeof teamsService>('../services/teamsService')
   return {
     ...actual,
-    getTeamPool: vi.fn(),
+    getTeamGroup: vi.fn(),
   }
 })
 
-const listPoolRankingsMock = vi.mocked(statisticsService.listPoolRankings)
-const getTeamPoolMock = vi.mocked(teamsService.getTeamPool)
+const listGroupRankingsMock = vi.mocked(statisticsService.listGroupRankings)
+const getTeamGroupMock = vi.mocked(teamsService.getTeamGroup)
 
 const createWrapper = () => {
   return function Wrapper({ children }: { children: React.ReactNode }) {
@@ -36,8 +36,8 @@ describe('useRankings', () => {
   })
 
   it('should load rankings from the service', async () => {
-    getTeamPoolMock.mockResolvedValueOnce({ id: 'Poule A' })
-    listPoolRankingsMock.mockResolvedValueOnce([
+    getTeamGroupMock.mockResolvedValueOnce({ id: 'Poule A' })
+    listGroupRankingsMock.mockResolvedValueOnce([
       {
         contestant: { id: 'team-1', name: 'Aigles' },
         played: 3,
@@ -56,7 +56,7 @@ describe('useRankings', () => {
     await waitFor(() => expect(result.current.isLoading).toBe(false))
 
     expect(result.current.errorMessage).toBeNull()
-    expect(result.current.poolName).toBe('Poule A')
+    expect(result.current.groupName).toBe('Poule A')
     expect(result.current.rankings).toEqual([
       {
         contestant: { id: 'team-1', name: 'Aigles' },
@@ -73,14 +73,14 @@ describe('useRankings', () => {
   })
 
   it('should expose the service error message when the request fails', async () => {
-    getTeamPoolMock.mockRejectedValueOnce(new Error('Poule indisponible'))
+    getTeamGroupMock.mockRejectedValueOnce(new Error('Groupe indisponible'))
 
     const { result } = renderHook(() => useRankings('team-1', 'phase-1'), { wrapper: createWrapper() })
 
     await waitFor(() => expect(result.current.isLoading).toBe(false))
 
     expect(result.current.rankings).toEqual([])
-    expect(result.current.errorMessage).toBe('Poule indisponible')
+    expect(result.current.errorMessage).toBe('Groupe indisponible')
   })
 
   it('should stay idle while no phase is selected', async () => {
@@ -88,8 +88,8 @@ describe('useRankings', () => {
 
     await waitFor(() => expect(result.current.isLoading).toBe(false))
 
-    expect(getTeamPoolMock).not.toHaveBeenCalled()
-    expect(listPoolRankingsMock).not.toHaveBeenCalled()
+    expect(getTeamGroupMock).not.toHaveBeenCalled()
+    expect(listGroupRankingsMock).not.toHaveBeenCalled()
     expect(result.current.rankings).toEqual([])
   })
 })

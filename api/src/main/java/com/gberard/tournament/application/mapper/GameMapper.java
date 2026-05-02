@@ -17,7 +17,7 @@ public final class GameMapper {
         return new com.gberard.tournament.generated.model.Game()
                 .id(game.id())
                 .phase(PhaseMapper.toApi(game.phase()))
-                .pool(game.pool())
+                .group(game.group())
                 .court(game.court())
                 .contestants(game.contestants().stream().map(TeamMapper::toApi).collect(toSet()))
                 .referee(game.refereeId().map(TeamMapper::toApi).orElse(null))
@@ -35,7 +35,7 @@ public final class GameMapper {
         return new com.gberard.tournament.domain.model.Game(
                 null,
                 phase,
-                request.getPool(),
+                request.getGroup(),
                 request.getTime().toLocalDateTime(),
                 request.getCourt(),
                 List.copyOf(contestants),
@@ -55,7 +55,7 @@ public final class GameMapper {
         return new com.gberard.tournament.domain.model.Game(
                 id,
                 phase,
-                request.getPool(),
+                request.getGroup(),
                 request.getTime().toLocalDateTime(),
                 request.getCourt(),
                 List.copyOf(contestants),
