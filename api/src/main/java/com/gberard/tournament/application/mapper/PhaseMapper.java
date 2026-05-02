@@ -12,6 +12,7 @@ public final class PhaseMapper {
         return new com.gberard.tournament.generated.model.Phase()
                 .id(phase.id())
                 .name(phase.name())
+                .details(phase.details())
                 .order(phase.order())
                 .type(com.gberard.tournament.generated.model.PhaseType.fromValue(phase.type().name()));
     }
@@ -20,6 +21,7 @@ public final class PhaseMapper {
         return new com.gberard.tournament.domain.model.Phase(
                 null,
                 request.getName(),
+                request.getDetails(),
                 request.getOrder(),
                 com.gberard.tournament.domain.model.PhaseType.valueOf(request.getType().getValue()));
     }
@@ -28,6 +30,7 @@ public final class PhaseMapper {
         return new com.gberard.tournament.domain.model.Phase(
                 id,
                 request.getName(),
+                request.getDetails(),
                 request.getOrder(),
                 com.gberard.tournament.domain.model.PhaseType.valueOf(request.getType().getValue()));
     }

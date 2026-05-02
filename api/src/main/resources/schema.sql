@@ -8,6 +8,7 @@ CREATE TABLE phases
 (
     id            VARCHAR(255) PRIMARY KEY,
     name          VARCHAR(255) NOT NULL,
+    details       TEXT,
     display_order INTEGER      NOT NULL,
     type          VARCHAR(255) NOT NULL
 );

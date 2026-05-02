@@ -21,6 +21,9 @@ public class PhaseEntity {
 
     String name;
 
+    @Column(columnDefinition = "TEXT")
+    String details;
+
     Integer displayOrder;
 
     @Enumerated(EnumType.STRING)
@@ -35,13 +38,14 @@ public class PhaseEntity {
     }
 
     public static Phase toDomain(PhaseEntity phaseEntity) {
-        return new Phase(phaseEntity.id, phaseEntity.name, phaseEntity.displayOrder, phaseEntity.type);
+        return new Phase(phaseEntity.id, phaseEntity.name, phaseEntity.details, phaseEntity.displayOrder, phaseEntity.type);
     }
 
     public static PhaseEntity toEntity(Phase phase) {
         PhaseEntity phaseEntity = new PhaseEntity();
         phaseEntity.id = phase.id();
         phaseEntity.name = phase.name();
+        phaseEntity.details = phase.details();
         phaseEntity.displayOrder = phase.order();
         phaseEntity.type = phase.type();
         return phaseEntity;

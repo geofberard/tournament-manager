@@ -21,7 +21,7 @@ public class TestUtils {
     public static Team TEAM_C = new Team("teamC", "teamC");
     public static Team TEAM_D = new Team("teamD", "teamD");
     public static Team TEAM_E = new Team("teamE", "teamE");
-    public static Phase PHASE_A = new Phase("phaseA", "Brassage", 1, PhaseType.POOL);
+    public static Phase PHASE_A = new Phase("phaseA", "Brassage", null, 1, PhaseType.POOL);
 
     public static GameBuilder gameBuilder() {
         return GameBuilder.newBuilder()

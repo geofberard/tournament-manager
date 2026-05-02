@@ -812,6 +812,14 @@ components:
           minLength: 1
           description: Nom affiche de la phase
           examples: [Poules de brassage]
+        details:
+          type: string
+          description: Description libre optionnelle de la phase, pouvant contenir plusieurs paragraphes.
+          examples:
+            - |-
+              Premiere partie de la competition.
+
+              Les equipes sont reparties en poules de brassage.
         order:
           type: integer
           format: int32
@@ -834,6 +842,14 @@ components:
           minLength: 1
           description: Nom affiche de la phase
           examples: [Poules de brassage]
+        details:
+          type: string
+          description: Description libre optionnelle de la phase, pouvant contenir plusieurs paragraphes.
+          examples:
+            - |-
+              Premiere partie de la competition.
+
+              Les equipes sont reparties en poules de brassage.
         order:
           type: integer
           format: int32
@@ -856,6 +872,14 @@ components:
           minLength: 1
           description: Nouveau nom affiche de la phase
           examples: [Tableau principal]
+        details:
+          type: string
+          description: Description libre optionnelle de la phase, pouvant contenir plusieurs paragraphes.
+          examples:
+            - |-
+              Tableau final a elimination directe.
+
+              Les demi-finales et finales sont jouees sur le terrain central.
         order:
           type: integer
           format: int32

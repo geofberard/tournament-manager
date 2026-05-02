@@ -5,12 +5,14 @@ import java.util.Objects;
 public final class Phase implements Identified {
     private final String id;
     private final String name;
+    private final String details;
     private final Integer order;
     private final PhaseType type;
 
-    public Phase(String id, String name, Integer order, PhaseType type) {
+    public Phase(String id, String name, String details, Integer order, PhaseType type) {
         this.id = id;
         this.name = Objects.requireNonNull(name, "name must not be null");
+        this.details = details;
         this.order = Objects.requireNonNull(order, "order must not be null");
         this.type = Objects.requireNonNull(type, "type must not be null");
     }
@@ -22,6 +24,10 @@ public final class Phase implements Identified {
 
     public String name() {
         return name;
+    }
+
+    public String details() {
+        return details;
     }
 
     public Integer order() {
@@ -42,13 +48,14 @@ public final class Phase implements Identified {
         }
         return Objects.equals(id, phase.id)
                 && Objects.equals(name, phase.name)
+                && Objects.equals(details, phase.details)
                 && Objects.equals(order, phase.order)
                 && type == phase.type;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, order, type);
+        return Objects.hash(id, name, details, order, type);
     }
 
     @Override
@@ -56,6 +63,7 @@ public final class Phase implements Identified {
         return "Phase[" +
                 "id=" + id +
                 ", name=" + name +
+                ", details=" + details +
                 ", order=" + order +
                 ", type=" + type +
                 ']';
