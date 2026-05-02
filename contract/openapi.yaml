@@ -46,6 +46,9 @@ tags:
   - name: Phases
     description: |
       Gestion et consultation des phases du tournoi.
+  - name: AdminAuth
+    description: |
+      Authentification de la zone d'administration via session HTTP.
 
 paths:
   /api/teams:
@@ -581,6 +584,59 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
+  /api/admin/auth/login:
+    post:
+      tags: [AdminAuth]
+      operationId: loginAdmin
+      summary: Ouvrir une session admin
+      description: |
+        Authentifie un utilisateur admin et ouvre une session HTTP cote serveur.
+      requestBody:
+        required: true
+        description: Identifiants de connexion admin
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminLoginRequest'
+            examples:
+              default:
+                value:
+                  username: admin
+                  password: admin123
+      responses:
+        '200':
+          description: Session admin ouverte
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminSession'
+        '401':
+          description: Identifiants invalides
+
+  /api/admin/auth/session:
+    get:
+      tags: [AdminAuth]
+      operationId: getAdminSession
+      summary: Lire la session admin courante
+      description: Retourne l'etat d'authentification admin de la session HTTP courante.
+      responses:
+        '200':
+          description: Etat courant de la session admin
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminSession'
+
+  /api/admin/auth/logout:
+    post:
+      tags: [AdminAuth]
+      operationId: logoutAdmin
+      summary: Fermer la session admin
+      description: Invalide la session HTTP admin courante.
+      responses:
+        '204':
+          description: Session admin fermee
+
 components:
   parameters:
     TeamId:
@@ -656,6 +712,41 @@ components:
                 message: The requested resource does not exist
 
   schemas:
+    AdminLoginRequest:
+      type: object
+      description: Payload utilise pour se connecter a la zone admin.
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          minLength: 1
+          description: Nom d'utilisateur admin
+          examples: [admin]
+        password:
+          type: string
+          minLength: 1
+          description: Mot de passe admin
+          examples: [admin123]
+
+    AdminSession:
+      type: object
+      description: Etat de la session admin courante.
+      required:
+        - authenticated
+        - username
+      properties:
+        authenticated:
+          type: boolean
+          description: Indique si la session courante est authentifiee
+          examples: [true]
+        username:
+          type: string
+          nullable: true
+          description: Nom d'utilisateur admin connecte, ou `null` si personne n'est connecte
+          examples: [admin]
+
     Group:
       type: object
       description: Représentation d'un groupe.

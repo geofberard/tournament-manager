@@ -21,7 +21,8 @@ public class CorsConfig {
                                 "https://static-scuf-tournois-prod.storage.googleapis.com"
                         )
                         .allowedMethods("*")
-                        .allowedHeaders("*");
+                        .allowedHeaders("*")
+                        .allowCredentials(true);
             }
         };
     }

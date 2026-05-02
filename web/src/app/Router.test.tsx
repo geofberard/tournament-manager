@@ -89,8 +89,10 @@ describe('Router', () => {
     })
     useAdminSessionMock.mockReturnValue({
       isAuthenticated: false,
+      isLoading: false,
       login: vi.fn(),
       logout: vi.fn(),
+      username: null,
     })
 
     renderRouter()
@@ -108,8 +110,10 @@ describe('Router', () => {
     })
     useAdminSessionMock.mockReturnValue({
       isAuthenticated: false,
+      isLoading: false,
       login: vi.fn(),
       logout: vi.fn(),
+      username: null,
     })
     useTeamsMock.mockReturnValue({
       errorMessage: null,
@@ -137,8 +141,10 @@ describe('Router', () => {
     })
     useAdminSessionMock.mockReturnValue({
       isAuthenticated: false,
+      isLoading: false,
       login: vi.fn(),
       logout: vi.fn(),
+      username: null,
     })
 
     renderRouter()
@@ -161,8 +167,10 @@ describe('Router', () => {
     })
     useAdminSessionMock.mockReturnValue({
       isAuthenticated: false,
+      isLoading: false,
       login: vi.fn(),
       logout: vi.fn(),
+      username: null,
     })
 
     renderRouter()
@@ -182,8 +190,10 @@ describe('Router', () => {
     })
     useAdminSessionMock.mockReturnValue({
       isAuthenticated: false,
+      isLoading: false,
       login: vi.fn(),
       logout: vi.fn(),
+      username: null,
     })
 
     renderRouter()
@@ -205,8 +215,10 @@ describe('Router', () => {
     })
     useAdminSessionMock.mockReturnValue({
       isAuthenticated: true,
+      isLoading: false,
       login: vi.fn(),
       logout: vi.fn(),
+      username: 'admin',
     })
 
     renderRouter()
@@ -230,8 +242,10 @@ describe('Router', () => {
     })
     useAdminSessionMock.mockReturnValue({
       isAuthenticated: false,
+      isLoading: false,
       login: vi.fn(),
       logout: vi.fn(),
+      username: null,
     })
 
     renderRouter()

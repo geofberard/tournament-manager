@@ -1,3 +1,4 @@
+import { CircularProgress, Stack } from '@mui/material'
 import { HashRouter, Navigate, Outlet, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { TeamAppShell } from '../components/team/TeamAppShell'
 import {
@@ -49,17 +50,31 @@ type AppRoutesProps = {
 
 const AppRoutes = ({ adminSession, teamSession }: AppRoutesProps) => {
   const { currentTeam, handleTeamChange, clearTeamSelection } = teamSession
-  const { isAuthenticated, login, logout } = adminSession
+  const { isAuthenticated, isLoading, login, logout, username } = adminSession
   const navigate = useNavigate()
+
+  const adminLoadingFallback = (
+    <Stack alignItems="center" justifyContent="center" sx={{ minHeight: '50vh' }}>
+      <CircularProgress />
+    </Stack>
+  )
 
   const handleTeamLogout = () => {
     clearTeamSelection()
     navigate(TEAM_LOGIN_PATH, { replace: true })
   }
 
-  const handleAdminLogout = () => {
-    logout()
-    navigate(ADMIN_LOGIN_PATH, { replace: true })
+  const handleAdminLogout = async () => {
+    try {
+      await logout()
+    } finally {
+      navigate(ADMIN_LOGIN_PATH, { replace: true })
+    }
+  }
+
+  const handleAdminLogin = async (loginUsername: string, password: string) => {
+    await login({ username: loginUsername, password })
+    navigate(ADMIN_HOME_PATH, { replace: true })
   }
 
   return (
@@ -95,18 +110,22 @@ const AppRoutes = ({ adminSession, teamSession }: AppRoutesProps) => {
       <Route
         path={ADMIN_LOGIN_PATH}
         element={
-          isAuthenticated ? (
+          isLoading ? (
+            adminLoadingFallback
+          ) : isAuthenticated ? (
             <Navigate to={ADMIN_HOME_PATH} replace />
           ) : (
-            <AdminLoginView onLogin={login} />
+            <AdminLoginView onLogin={handleAdminLogin} />
           )
         }
       />
       <Route
         path={ADMIN_HOME_PATH}
         element={
-          isAuthenticated ? (
-            <AdminView onLogout={handleAdminLogout} />
+          isLoading ? (
+            adminLoadingFallback
+          ) : isAuthenticated ? (
+            <AdminView onLogout={handleAdminLogout} username={username} />
           ) : (
             <Navigate to={ADMIN_LOGIN_PATH} replace />
           )
