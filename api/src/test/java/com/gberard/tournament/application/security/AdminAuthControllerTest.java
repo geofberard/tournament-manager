@@ -16,6 +16,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -91,7 +92,65 @@ class AdminAuthControllerTest {
     }
 
     @Test
-    void shouldAllowWriteApiWhenNotAuthenticated() throws Exception {
+    void shouldAllowGetApiWhenNotAuthenticated() throws Exception {
+        HttpResponse<String> response = send(
+                "/api/teams",
+                "GET",
+                null
+        );
+
+        assertEquals(200, response.statusCode());
+    }
+
+    @Test
+    void shouldRejectProtectedWriteApiWhenNotAuthenticated() throws Exception {
+        HttpResponse<String> response = send(
+                "/api/teams",
+                "POST",
+                """
+                {
+                  "name": "Equipe securisee"
+                }
+                """
+        );
+
+        assertEquals(401, response.statusCode());
+    }
+
+    @Test
+    void shouldAllowScoreWriteWhenNotAuthenticated() throws Exception {
+        HttpResponse<String> response = send(
+                "/api/games/game_1/score",
+                "PUT",
+                """
+                {
+                  "pointsByTeam": {
+                    "team_1": 21,
+                    "team_2": 18
+                  }
+                }
+                """
+        );
+
+        assertNotEquals(401, response.statusCode());
+        assertNotEquals(403, response.statusCode());
+    }
+
+    @Test
+    void shouldAllowProtectedWriteApiWhenAuthenticated() throws Exception {
+        HttpResponse<String> loginResponse = send(
+                "/api/admin/auth/login",
+                "POST",
+                """
+                {
+                  "username": "admin",
+                  "password": "admin123"
+                }
+                """
+        );
+
+        assertEquals(200, loginResponse.statusCode());
+
         HttpResponse<String> response = send(
                 "/api/teams",
                 "POST",
