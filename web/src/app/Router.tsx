@@ -3,6 +3,7 @@ import { HashRouter, Navigate, Outlet, Route, Routes, useLocation, useNavigate }
 import scufLogo from '../assets/scuf-logo.svg'
 import { AppShell } from '../components/shared/AppShell'
 import {
+  adminRoutes,
   ADMIN_HOME_PATH,
   ADMIN_LOGIN_PATH,
   PUBLIC_HOME_PATH,
@@ -17,6 +18,7 @@ import { useAdminSession } from '../hooks/useAdminSession'
 import { PublicView } from '../views/public/PublicView'
 import { AdminLoginView } from '../views/admin/AdminLoginView'
 import { AdminView } from '../views/admin/AdminView'
+import { AdminPhasesView } from '../views/admin/AdminPhasesView'
 import { TeamGamesView } from '../views/team/TeamGamesView'
 import { TeamResultsView } from '../views/team/TeamResultsView'
 
@@ -40,6 +42,36 @@ const TeamProtectedLayout = ({ currentTeam, onChangeTeam }: TeamProtectedLayoutP
       onNavigate={handleNavigate}
       actionLabel="Changer d'équipe"
       onActionClick={onChangeTeam}
+      logoSrc={scufLogo}
+      logoAlt="SCUF"
+    >
+      <Outlet />
+    </AppShell>
+  )
+}
+
+type AdminProtectedLayoutProps = {
+  onLogout: () => Promise<void>
+  username: string | null
+}
+
+const AdminProtectedLayout = ({ onLogout, username }: AdminProtectedLayoutProps) => {
+  const location = useLocation()
+  const navigate = useNavigate()
+
+  const handleNavigate = (path: string) => navigate(path)
+
+  return (
+    <AppShell
+      title="Zone admin"
+      subtitle={username ? `Connecte en tant que ${username}` : undefined}
+      pages={adminRoutes}
+      currentPath={location.pathname}
+      onNavigate={handleNavigate}
+      actionLabel="Se deconnecter"
+      onActionClick={() => {
+        void onLogout()
+      }}
       logoSrc={scufLogo}
       logoAlt="SCUF"
     >
@@ -130,12 +162,15 @@ const AppRoutes = ({ adminSession, teamSession }: AppRoutesProps) => {
           isLoading ? (
             adminLoadingFallback
           ) : isAuthenticated ? (
-            <AdminView onLogout={handleAdminLogout} username={username} />
+            <AdminProtectedLayout onLogout={handleAdminLogout} username={username} />
           ) : (
             <Navigate to={ADMIN_LOGIN_PATH} replace />
           )
         }
-      />
+      >
+        <Route index element={<AdminView username={username} />} />
+        <Route path="phases" element={<AdminPhasesView />} />
+      </Route>
 
       <Route path="*" element={<Navigate to={PUBLIC_HOME_PATH} replace />} />
     </Routes>

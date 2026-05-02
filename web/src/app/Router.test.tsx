@@ -5,6 +5,7 @@ import { Router } from './Router'
 import {
   ADMIN_HOME_PATH,
   ADMIN_LOGIN_PATH,
+  ADMIN_PHASES_PATH,
   PUBLIC_HOME_PATH,
   TEAM_GAMES_PATH,
   TEAM_HOME_PATH,
@@ -15,6 +16,7 @@ import * as useGamesModule from '../hooks/useGames'
 import * as useRankingsModule from '../hooks/useRankings'
 import * as useTeamLoginModule from '../hooks/useTeamLogin'
 import * as useAdminSessionModule from '../hooks/useAdminSession'
+import * as usePhasesModule from '../hooks/usePhases'
 import * as useTeamsModule from '../hooks/useTeams'
 
 vi.mock('../hooks/useTeamLogin', () => ({
@@ -37,11 +39,16 @@ vi.mock('../hooks/useRankings', () => ({
   useRankings: vi.fn(),
 }))
 
+vi.mock('../hooks/usePhases', () => ({
+  usePhases: vi.fn(),
+}))
+
 const useTeamLoginMock = vi.mocked(useTeamLoginModule.useTeamLogin)
 const useAdminSessionMock = vi.mocked(useAdminSessionModule.useAdminSession)
 const useTeamsMock = vi.mocked(useTeamsModule.useTeams)
 const useGamesMock = vi.mocked(useGamesModule.useGames)
 const useRankingsMock = vi.mocked(useRankingsModule.useRankings)
+const usePhasesMock = vi.mocked(usePhasesModule.usePhases)
 
 const renderRouter = () =>
   render(
@@ -71,6 +78,11 @@ describe('Router', () => {
       errorMessage: null,
       isLoading: false,
       rankings: [],
+    })
+    usePhasesMock.mockReturnValue({
+      errorMessage: null,
+      isLoading: false,
+      phases: [],
     })
   })
 
@@ -223,11 +235,64 @@ describe('Router', () => {
 
     renderRouter()
 
-    expect(screen.getByText('Zone admin')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Zone admin', level: 1 })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Se deconnecter' })).toBeInTheDocument()
 
     await waitFor(() => {
       expect(window.location.hash).toBe(`#${ADMIN_HOME_PATH}`)
     })
+  })
+
+  it('should render the admin phases page when requested', () => {
+    setHashPath(ADMIN_PHASES_PATH)
+
+    useTeamLoginMock.mockReturnValue({
+      clearTeamSelection: vi.fn(),
+      currentTeam: null,
+      handleTeamChange: vi.fn(),
+    })
+    useAdminSessionMock.mockReturnValue({
+      isAuthenticated: true,
+      isLoading: false,
+      login: vi.fn(),
+      logout: vi.fn(),
+      username: 'admin',
+    })
+    usePhasesMock.mockReturnValue({
+      errorMessage: null,
+      isLoading: false,
+      phases: [{ details: 'Premiere phase', id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' }],
+    })
+
+    renderRouter()
+
+    expect(screen.getByRole('heading', { name: 'Phases' })).toBeInTheDocument()
+    expect(screen.getByText('Brassage')).toBeInTheDocument()
+  })
+
+  it('should allow logging out from the admin area', () => {
+    const logout = vi.fn().mockResolvedValue(undefined)
+
+    setHashPath(ADMIN_HOME_PATH)
+
+    useTeamLoginMock.mockReturnValue({
+      clearTeamSelection: vi.fn(),
+      currentTeam: null,
+      handleTeamChange: vi.fn(),
+    })
+    useAdminSessionMock.mockReturnValue({
+      isAuthenticated: true,
+      isLoading: false,
+      login: vi.fn(),
+      logout,
+      username: 'admin',
+    })
+
+    renderRouter()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Se deconnecter' }))
+
+    expect(logout).toHaveBeenCalledOnce()
   })
 
   it("should allow clearing the selected team from the team area", () => {
