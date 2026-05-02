@@ -9,6 +9,7 @@ import java.util.Optional;
 public class GameBuilder {
     private String id;
     private Phase phase = new Phase("phase-default", "Phase par defaut", 1);
+    private Optional<String> name = Optional.empty();
     private String group = "A";
     private LocalDateTime time;
     private String court;
@@ -30,6 +31,7 @@ public class GameBuilder {
         return new GameBuilder()
                 .id(game.id())
                 .phase(game.phase())
+                .name(game.name())
                 .group(game.group())
                 .time(game.time())
                 .court(game.court())
@@ -56,6 +58,21 @@ public class GameBuilder {
 
     public GameBuilder group(String group) {
         this.group = group;
+        return this;
+    }
+
+    public GameBuilder name(Optional<String> name) {
+        this.name = name;
+        return this;
+    }
+
+    public GameBuilder name(String name) {
+        this.name = Optional.of(name);
+        return this;
+    }
+
+    public GameBuilder eraseName() {
+        this.name = Optional.empty();
         return this;
     }
 
@@ -98,6 +115,6 @@ public class GameBuilder {
     }
 
     public Game build() {
-        return new Game(id, phase, group, time, court, contestants, refereeId, isFinished, score);
+        return new Game(id, phase, name, group, time, court, contestants, refereeId, isFinished, score);
     }
 }

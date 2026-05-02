@@ -732,6 +732,13 @@ components:
           examples: [game_1]
         phase:
           $ref: '#/components/schemas/Phase'
+        name:
+          type: string
+          nullable: true
+          description: |
+            Intitule optionnel du match pour les cas particuliers,
+            par exemple `Finale` ou `Match de Barrage`.
+          examples: [Finale]
         group:
           type: string
           minLength: 1
@@ -857,6 +864,13 @@ components:
           minLength: 1
           description: Identifiant de la phase du match
           examples: [phase_1]
+        name:
+          type: string
+          nullable: true
+          description: |
+            Intitule optionnel du match pour les cas particuliers,
+            par exemple `Finale` ou `Match de Barrage`.
+          examples: [Match de Barrage]
         group:
           type: string
           minLength: 1
@@ -905,6 +919,13 @@ components:
           minLength: 1
           description: Identifiant de la phase du match
           examples: [phase_2]
+        name:
+          type: string
+          nullable: true
+          description: |
+            Intitule optionnel du match pour les cas particuliers,
+            par exemple `Finale` ou `Match de Barrage`.
+          examples: [Finale]
         group:
           type: string
           minLength: 1

@@ -10,21 +10,26 @@ VALUES ('team_1', 'Star Wars Heroes'),
 
 INSERT INTO phases (id, name, display_order)
 VALUES ('phase_1', 'Poules de brassage', 1),
-       ('phase_2', 'Poules principales', 2);
+       ('phase_2', 'Poules principales', 2),
+       ('phase_3', 'Bracket final', 3);
 
-INSERT INTO games (id, phase_id, group_id, time, court, is_finished, score_data)
-VALUES ('game_1', 'phase_1', 'Poule A', '2022-11-01 11:00:00', 'Terrain1', TRUE, '23-18'),
-       ('game_2', 'phase_1', 'Poule A', '2022-11-01 11:00:00', 'Terrain2', TRUE, '20-21'),
-       ('game_3', 'phase_1', 'Poule B', '2022-11-01 11:00:00', 'Terrain3', TRUE, '19-23'),
-       ('game_4', 'phase_1', 'Poule B', '2022-11-01 11:00:00', 'Terrain4', TRUE, '21-13'),
-       ('game_5', 'phase_1', 'Poule A', '2022-11-01 11:20:00', 'Terrain1', TRUE, '13-4'),
-       ('game_6', 'phase_1', 'Poule A', '2022-11-01 11:20:00', 'Terrain2', TRUE, '19-8'),
-       ('game_7', 'phase_1', 'Poule B', '2022-11-01 11:20:00', 'Terrain3', TRUE, '13-13'),
-       ('game_8', 'phase_1', 'Poule B', '2022-11-01 11:20:00', 'Terrain4', TRUE, '19-3'),
-       ('game_9', 'phase_2', 'Poule A', '2022-11-01 11:40:00', 'Terrain1', FALSE, '21-10'),
-       ('game_10', 'phase_2', 'Poule B', '2022-11-01 11:40:00', 'Terrain2', FALSE, '18-24'),
-       ('game_11', 'phase_2', 'Poule A', '2022-11-01 12:00:00', 'Terrain3', FALSE, '12-9'),
-       ('game_12', 'phase_2', 'Poule B', '2022-11-01 12:00:00', 'Terrain4', FALSE, '16-14');
+INSERT INTO games (id, phase_id, name, group_id, time, court, is_finished, score_data)
+VALUES ('game_1', 'phase_1', NULL, 'Poule A', '2022-11-01 11:00:00', 'Terrain1', TRUE, '23-18'),
+       ('game_2', 'phase_1', NULL, 'Poule A', '2022-11-01 11:00:00', 'Terrain2', TRUE, '20-21'),
+       ('game_3', 'phase_1', NULL, 'Poule B', '2022-11-01 11:00:00', 'Terrain3', TRUE, '19-23'),
+       ('game_4', 'phase_1', NULL, 'Poule B', '2022-11-01 11:00:00', 'Terrain4', TRUE, '21-13'),
+       ('game_5', 'phase_1', NULL, 'Poule A', '2022-11-01 11:20:00', 'Terrain1', TRUE, '13-4'),
+       ('game_6', 'phase_1', NULL, 'Poule A', '2022-11-01 11:20:00', 'Terrain2', TRUE, '19-8'),
+       ('game_7', 'phase_1', NULL, 'Poule B', '2022-11-01 11:20:00', 'Terrain3', TRUE, '13-13'),
+       ('game_8', 'phase_1', NULL, 'Poule B', '2022-11-01 11:20:00', 'Terrain4', TRUE, '19-3'),
+       ('game_9', 'phase_2', NULL, 'Poule A', '2022-11-01 11:40:00', 'Terrain1', FALSE, '21-10'),
+       ('game_10', 'phase_2', NULL, 'Poule B', '2022-11-01 11:40:00', 'Terrain2', FALSE, '18-24'),
+       ('game_11', 'phase_2', NULL, 'Poule A', '2022-11-01 12:00:00', 'Terrain3', FALSE, '12-9'),
+       ('game_12', 'phase_2', NULL, 'Poule B', '2022-11-01 12:00:00', 'Terrain4', FALSE, '16-14'),
+       ('game_13', 'phase_3', 'Demi-finale 1', 'Bracket principal', '2022-11-01 12:20:00', 'Terrain1', FALSE, NULL),
+       ('game_14', 'phase_3', 'Demi-finale 2', 'Bracket principal', '2022-11-01 12:20:00', 'Terrain2', FALSE, NULL),
+       ('game_15', 'phase_3', 'Petite finale', 'Bracket principal', '2022-11-01 12:40:00', 'Terrain1', FALSE, NULL),
+       ('game_16', 'phase_3', 'Finale', 'Bracket principal', '2022-11-01 12:40:00', 'Terrain2', FALSE, NULL);
 
 INSERT INTO game_teams (game_id, team_id)
 VALUES ('game_1', 'team_1'),
@@ -50,4 +55,12 @@ VALUES ('game_1', 'team_1'),
        ('game_11', 'team_2'),
        ('game_11', 'team_3'),
        ('game_12', 'team_6'),
-       ('game_12', 'team_7');
+       ('game_12', 'team_7'),
+       ('game_13', 'team_1'),
+       ('game_13', 'team_8'),
+       ('game_14', 'team_4'),
+       ('game_14', 'team_5'),
+       ('game_15', 'team_1'),
+       ('game_15', 'team_4'),
+       ('game_16', 'team_8'),
+       ('game_16', 'team_5');

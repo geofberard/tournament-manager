@@ -15,6 +15,7 @@ const renderCard = (game: Game) =>
 const baseGame: Game = {
   id: 'game-1',
   phase: { id: 'phase-1', name: 'Brassage', order: 1 },
+  name: undefined,
   group: 'Poule A',
   time: new Date('2026-05-01T18:30:00Z'),
   court: 'Central',
@@ -48,6 +49,16 @@ describe('GameCard', () => {
     expect(screen.getByText('21 - 18')).toBeInTheDocument()
     expect(screen.getByText('Arbitre: Pantheres')).toBeInTheDocument()
     expect(screen.getByText(/Terrain Central/)).toBeInTheDocument()
+  })
+
+  it('should render the match name when provided', () => {
+    renderCard({
+      ...baseGame,
+      name: 'Finale',
+    })
+
+    expect(screen.getByText('Finale')).toBeInTheDocument()
+    expect(screen.getByText('Aigles vs Tigres')).toBeInTheDocument()
   })
 
   it('should omit the referee block when no referee is provided', () => {

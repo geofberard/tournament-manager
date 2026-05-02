@@ -29,6 +29,7 @@ public class GameEntity {
 
     @Column(name = "group_id")
     private String groupId;
+    private String name;
     private String court;
     private Boolean isFinished;
     private String scoreData;
@@ -58,6 +59,7 @@ public class GameEntity {
         return new Game(
                 entity.id,
                 PhaseEntity.toDomain(entity.phase),
+                Optional.ofNullable(entity.name),
                 entity.groupId,
                 entity.time,
                 entity.court,
@@ -71,6 +73,7 @@ public class GameEntity {
         GameEntity playerEntity = new GameEntity();
         playerEntity.id = game.id();
         playerEntity.phaseId = game.phase().id();
+        playerEntity.name = game.name().orElse(null);
         playerEntity.groupId = game.group();
         playerEntity.time = game.time();
         playerEntity.court = game.court();

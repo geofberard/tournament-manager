@@ -49,9 +49,16 @@ export const GameCard = ({ game }: GameCardProps) => {
       <CardContent>
         <Stack spacing={1.5}>
           <Stack direction="row" justifyContent="space-between" spacing={2}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-              {formatContestants(game)}
-            </Typography>
+            <Stack spacing={0.5}>
+              {game.name ? (
+                <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+                  {game.name}
+                </Typography>
+              ) : null}
+              <Typography variant="body2" color="text.secondary">
+                {formatContestants(game)}
+              </Typography>
+            </Stack>
             <Stack direction="row" spacing={1} flexWrap="wrap" justifyContent="flex-end">
               <Chip label={game.phase.name} variant="filled" size="small" />
               <Chip label={game.group} variant="outlined" size="small" />
