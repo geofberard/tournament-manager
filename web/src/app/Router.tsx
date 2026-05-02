@@ -1,6 +1,7 @@
 import { CircularProgress, Stack } from '@mui/material'
 import { HashRouter, Navigate, Outlet, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
-import { TeamAppShell } from '../components/team/TeamAppShell'
+import scufLogo from '../assets/scuf-logo.svg'
+import { AppShell } from '../components/shared/AppShell'
 import {
   ADMIN_HOME_PATH,
   ADMIN_LOGIN_PATH,
@@ -31,15 +32,19 @@ const TeamProtectedLayout = ({ currentTeam, onChangeTeam }: TeamProtectedLayoutP
   const handleNavigate = (path: string) => navigate(path)
 
   return (
-    <TeamAppShell
+    <AppShell
+      title="Espace équipe"
+      subtitle={currentTeam.name}
+      pages={teamRoutes}
       currentPath={location.pathname}
-      currentTeam={currentTeam}
-      onChangeTeam={onChangeTeam}
       onNavigate={handleNavigate}
-      routes={teamRoutes}
+      actionLabel="Changer d'équipe"
+      onActionClick={onChangeTeam}
+      logoSrc={scufLogo}
+      logoAlt="SCUF"
     >
       <Outlet />
-    </TeamAppShell>
+    </AppShell>
   )
 }
 

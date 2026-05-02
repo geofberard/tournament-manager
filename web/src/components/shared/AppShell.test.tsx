@@ -1,9 +1,9 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { ThemeProvider, createTheme } from '@mui/material'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { TeamAppShell } from './TeamAppShell'
+import { AppShell } from './AppShell'
 
-describe('TeamAppShell', () => {
+describe('AppShell', () => {
   afterEach(() => {
     cleanup()
   })
@@ -11,18 +11,20 @@ describe('TeamAppShell', () => {
   it('should render the shared menu and page content', () => {
     render(
       <ThemeProvider theme={createTheme()}>
-        <TeamAppShell
-          currentPath="/"
-          currentTeam={{ id: 'team-2', name: 'Tigres' }}
-          onChangeTeam={vi.fn()}
-          onNavigate={vi.fn()}
-          routes={[
+        <AppShell
+          title="Espace équipe"
+          subtitle="Tigres"
+          pages={[
             { label: 'Resultats', path: '/results' },
             { label: 'Matchs', path: '/games' },
           ]}
+          currentPath="/results"
+          onNavigate={vi.fn()}
+          actionLabel="Changer d'équipe"
+          onActionClick={vi.fn()}
         >
           <div>Contenu de page</div>
-        </TeamAppShell>
+        </AppShell>
       </ThemeProvider>,
     )
 
@@ -38,18 +40,20 @@ describe('TeamAppShell', () => {
 
     render(
       <ThemeProvider theme={createTheme()}>
-        <TeamAppShell
-          currentPath="/"
-          currentTeam={{ id: 'team-2', name: 'Tigres' }}
-          onChangeTeam={vi.fn()}
-          onNavigate={onNavigate}
-          routes={[
+        <AppShell
+          title="Espace équipe"
+          subtitle="Tigres"
+          pages={[
             { label: 'Resultats', path: '/results' },
             { label: 'Matchs', path: '/games' },
           ]}
+          currentPath="/results"
+          onNavigate={onNavigate}
+          actionLabel="Changer d'équipe"
+          onActionClick={vi.fn()}
         >
           <div>Contenu de page</div>
-        </TeamAppShell>
+        </AppShell>
       </ThemeProvider>,
     )
 
