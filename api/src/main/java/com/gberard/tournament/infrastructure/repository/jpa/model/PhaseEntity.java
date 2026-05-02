@@ -1,7 +1,11 @@
 package com.gberard.tournament.infrastructure.repository.jpa.model;
 
 import com.gberard.tournament.domain.model.Phase;
+import com.gberard.tournament.domain.model.PhaseType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
@@ -19,6 +23,10 @@ public class PhaseEntity {
 
     Integer displayOrder;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type")
+    PhaseType type;
+
     @PrePersist
     public void generateUUID() {
         if (this.id == null) {
@@ -27,7 +35,7 @@ public class PhaseEntity {
     }
 
     public static Phase toDomain(PhaseEntity phaseEntity) {
-        return new Phase(phaseEntity.id, phaseEntity.name, phaseEntity.displayOrder);
+        return new Phase(phaseEntity.id, phaseEntity.name, phaseEntity.displayOrder, phaseEntity.type);
     }
 
     public static PhaseEntity toEntity(Phase phase) {
@@ -35,6 +43,7 @@ public class PhaseEntity {
         phaseEntity.id = phase.id();
         phaseEntity.name = phase.name();
         phaseEntity.displayOrder = phase.order();
+        phaseEntity.type = phase.type();
         return phaseEntity;
     }
 }

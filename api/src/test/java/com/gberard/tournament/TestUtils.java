@@ -3,6 +3,7 @@ package com.gberard.tournament;
 import com.gberard.tournament.domain.model.Game;
 import com.gberard.tournament.domain.model.GameBuilder;
 import com.gberard.tournament.domain.model.Phase;
+import com.gberard.tournament.domain.model.PhaseType;
 import com.gberard.tournament.domain.model.Team;
 import com.gberard.tournament.domain.model.score.SimpleScore;
 import org.assertj.core.api.ListAssert;
@@ -20,7 +21,7 @@ public class TestUtils {
     public static Team TEAM_C = new Team("teamC", "teamC");
     public static Team TEAM_D = new Team("teamD", "teamD");
     public static Team TEAM_E = new Team("teamE", "teamE");
-    public static Phase PHASE_A = new Phase("phaseA", "Brassage", 1);
+    public static Phase PHASE_A = new Phase("phaseA", "Brassage", 1, PhaseType.POOL);
 
     public static GameBuilder gameBuilder() {
         return GameBuilder.newBuilder()

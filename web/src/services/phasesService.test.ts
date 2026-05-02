@@ -11,11 +11,11 @@ const fetchJsonMock = vi.mocked(fetchJson)
 
 describe('phasesService', () => {
   it('should fetch phases from the API', async () => {
-    fetchJsonMock.mockResolvedValueOnce([{ id: 'phase-1', name: 'Brassage', order: 1 }])
+    fetchJsonMock.mockResolvedValueOnce([{ id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' }])
 
     const result = await listPhases()
 
     expect(fetchJsonMock).toHaveBeenCalledWith('/api/phases')
-    expect(result).toEqual([{ id: 'phase-1', name: 'Brassage', order: 1 }])
+    expect(result).toEqual([{ id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' }])
   })
 })

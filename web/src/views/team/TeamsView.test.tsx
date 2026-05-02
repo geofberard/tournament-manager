@@ -37,7 +37,7 @@ describe('TeamsView', () => {
     usePhasesMock.mockReturnValue({
       errorMessage: null,
       isLoading: false,
-      phases: [{ id: 'phase-1', name: 'Brassage', order: 1 }],
+      phases: [{ id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' }],
     })
     useRankingsMock.mockReturnValue({
       groupName: 'Poule A',
@@ -70,7 +70,7 @@ describe('TeamsView', () => {
     usePhasesMock.mockReturnValue({
       errorMessage: null,
       isLoading: false,
-      phases: [{ id: 'phase-1', name: 'Brassage', order: 1 }],
+      phases: [{ id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' }],
     })
     useRankingsMock.mockReturnValue({
       groupName: 'Poule A',
@@ -99,7 +99,7 @@ describe('TeamsView', () => {
     usePhasesMock.mockReturnValue({
       errorMessage: null,
       isLoading: false,
-      phases: [{ id: 'phase-1', name: 'Brassage', order: 1 }],
+      phases: [{ id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' }],
     })
     useRankingsMock.mockReturnValue({
       groupName: 'Poule A',
@@ -126,7 +126,7 @@ describe('TeamsView', () => {
       games: [
         {
           id: 'game-1',
-          phase: { id: 'phase-1', name: 'Brassage', order: 1 },
+          phase: { id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' },
           group: 'Poule A',
           time: new Date('2026-05-04T18:00:00Z'),
           court: 'Central',
@@ -140,7 +140,7 @@ describe('TeamsView', () => {
         },
         {
           id: 'game-2',
-          phase: { id: 'phase-1', name: 'Brassage', order: 1 },
+          phase: { id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' },
           group: 'Poule A',
           time: new Date('2026-05-02T18:00:00Z'),
           court: 'Annexe',
@@ -154,7 +154,7 @@ describe('TeamsView', () => {
         },
         {
           id: 'game-3',
-          phase: { id: 'phase-2', name: 'Principale', order: 2 },
+          phase: { id: 'phase-2', name: 'Principale', order: 2, type: 'POOL' },
           group: 'Poule B',
           time: new Date('2026-05-03T18:00:00Z'),
           court: 'Court 2',
@@ -168,7 +168,7 @@ describe('TeamsView', () => {
         },
         {
           id: 'game-4',
-          phase: { id: 'phase-2', name: 'Principale', order: 2 },
+          phase: { id: 'phase-2', name: 'Principale', order: 2, type: 'POOL' },
           group: 'Poule B',
           time: new Date('2026-05-01T18:00:00Z'),
           court: 'Court 3',
@@ -185,7 +185,7 @@ describe('TeamsView', () => {
     usePhasesMock.mockReturnValue({
       errorMessage: null,
       isLoading: false,
-      phases: [{ id: 'phase-1', name: 'Brassage', order: 1 }],
+      phases: [{ id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' }],
     })
     useRankingsMock.mockReturnValue({
       groupName: 'Poule A',
@@ -211,6 +211,66 @@ describe('TeamsView', () => {
       'Tigres vs Lynx',
       'Tigres vs Pumas',
       'Aigles vs Tigres',
+    ])
+  })
+
+  it('should render bracket games instead of rankings for a bracket phase', () => {
+    useGamesMock.mockReturnValue({
+      errorMessage: null,
+      isLoading: false,
+      games: [
+        {
+          id: 'game-1',
+          phase: { id: 'phase-2', name: 'Bracket final', order: 2, type: 'BRACKET' },
+          group: 'Bracket principal',
+          time: new Date('2026-05-04T18:00:00Z'),
+          court: 'Central',
+          status: GameStatus.Scheduled,
+          contestants: new Set([
+            { id: 'team-2', name: 'Tigres' },
+            { id: 'team-4', name: 'Lynx' },
+          ]),
+          referee: undefined,
+          score: { pointsByTeam: {} },
+        },
+        {
+          id: 'game-2',
+          phase: { id: 'phase-2', name: 'Bracket final', order: 2, type: 'BRACKET' },
+          group: 'Bracket principal',
+          time: new Date('2026-05-03T18:00:00Z'),
+          court: 'Annexe',
+          status: GameStatus.Completed,
+          contestants: new Set([
+            { id: 'team-1', name: 'Aigles' },
+            { id: 'team-2', name: 'Tigres' },
+          ]),
+          referee: undefined,
+          score: { pointsByTeam: { 'team-1': 21, 'team-2': 18 } },
+        },
+      ],
+    })
+    usePhasesMock.mockReturnValue({
+      errorMessage: null,
+      isLoading: false,
+      phases: [{ id: 'phase-2', name: 'Bracket final', order: 2, type: 'BRACKET' }],
+    })
+    useRankingsMock.mockReturnValue({
+      groupName: null,
+      errorMessage: null,
+      isLoading: false,
+      rankings: [],
+    })
+
+    render(
+      <ThemeProvider theme={createTheme()}>
+        <TeamRankingsView currentTeam={{ id: 'team-2', name: 'Tigres' }} />
+      </ThemeProvider>,
+    )
+
+    expect(screen.queryByText("Le classement n'est pas encore disponible.")).not.toBeInTheDocument()
+    expect(screen.getAllByText(/Tigres vs|Aigles vs/).map((card) => card.textContent)).toEqual([
+      'Aigles vs Tigres',
+      'Tigres vs Lynx',
     ])
   })
 })

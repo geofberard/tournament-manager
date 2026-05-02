@@ -786,6 +786,13 @@ components:
         - completed
         - canceled
 
+    PhaseType:
+      type: string
+      description: Type de phase du tournoi.
+      enum:
+        - POOL
+        - BRACKET
+
     Phase:
       type: object
       description: Phase du tournoi a laquelle appartient le match.
@@ -793,6 +800,7 @@ components:
         - id
         - name
         - order
+        - type
       properties:
         id:
           type: string
@@ -810,6 +818,8 @@ components:
           minimum: 1
           description: Ordre de la phase dans le tournoi
           examples: [1]
+        type:
+          $ref: '#/components/schemas/PhaseType'
 
     CreatePhaseRequest:
       type: object
@@ -817,6 +827,7 @@ components:
       required:
         - name
         - order
+        - type
       properties:
         name:
           type: string
@@ -829,6 +840,8 @@ components:
           minimum: 1
           description: Ordre de la phase dans le tournoi
           examples: [1]
+        type:
+          $ref: '#/components/schemas/PhaseType'
 
     UpdatePhaseRequest:
       type: object
@@ -836,6 +849,7 @@ components:
       required:
         - name
         - order
+        - type
       properties:
         name:
           type: string
@@ -848,6 +862,8 @@ components:
           minimum: 1
           description: Nouvel ordre de la phase dans le tournoi
           examples: [2]
+        type:
+          $ref: '#/components/schemas/PhaseType'
 
     CreateGameRequest:
       type: object

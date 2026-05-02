@@ -4,10 +4,14 @@ import {
   StatisticsApi,
   TeamsApi,
   type ContestantStats,
-  type Game,
-  type Phase,
+  type Game as ApiGame,
+  type Phase as ApiPhase,
   type Team,
 } from '../generated/api-client'
+
+export type PhaseType = 'POOL' | 'BRACKET'
+export type Phase = ApiPhase & { type: PhaseType }
+export type Game = Omit<ApiGame, 'phase'> & { phase: Phase }
 
 const apiConfiguration = new Configuration({
   basePath: import.meta.env.VITE_API_BASE_URL ?? window.location.origin,
@@ -19,7 +23,7 @@ const statisticsApi = new StatisticsApi(apiConfiguration)
 
 export { teamsApi }
 export { gamesApi, statisticsApi }
-export type { ContestantStats, Game, Phase, Team }
+export type { ContestantStats, Team }
 
 export const apiBasePath = import.meta.env.VITE_API_BASE_URL ?? window.location.origin
 

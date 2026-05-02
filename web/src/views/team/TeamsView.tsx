@@ -36,7 +36,7 @@ const sortGamesChronologically = (games: Game[]) =>
   [...games].sort((leftGame, rightGame) => leftGame.time.getTime() - rightGame.time.getTime())
 
 export const TeamRankingsView = ({ currentTeam }: TeamsViewProps) => {
-  const { errorMessage: gamesErrorMessage } = useGames()
+  const { errorMessage: gamesErrorMessage, games } = useGames()
   const { errorMessage: phasesErrorMessage, isLoading: isPhasesLoading, phases } = usePhases()
   const [selectedPhaseId, setSelectedPhaseId] = useState<string | null>(null)
 
@@ -47,15 +47,26 @@ export const TeamRankingsView = ({ currentTeam }: TeamsViewProps) => {
   }, [phases, selectedPhaseId])
 
   const selectedPhase = phases.find((phase) => phase.id === selectedPhaseId) ?? null
+  const isPoolPhase = selectedPhase?.type === 'POOL'
   const {
     groupName,
     errorMessage: rankingsErrorMessage,
     isLoading: isRankingsLoading,
     rankings,
-  } = useRankings(currentTeam.id, selectedPhaseId)
+  } = useRankings(currentTeam.id, isPoolPhase ? selectedPhaseId : null)
 
-  const hasGlobalError = gamesErrorMessage && (rankingsErrorMessage || phasesErrorMessage)
-  const isLoading = isPhasesLoading || isRankingsLoading
+  const teamBracketGames = sortGamesChronologically(
+    games.filter(
+      (game) =>
+        game.phase.id === selectedPhaseId &&
+        Array.from(game.contestants).some((team) => team.id === currentTeam.id),
+    ),
+  )
+
+  const hasGlobalError = isPoolPhase
+    ? gamesErrorMessage && (rankingsErrorMessage || phasesErrorMessage)
+    : phasesErrorMessage && gamesErrorMessage
+  const isLoading = isPhasesLoading || (isPoolPhase ? isRankingsLoading : false)
 
   return (
     <Stack spacing={3}>
@@ -92,17 +103,26 @@ export const TeamRankingsView = ({ currentTeam }: TeamsViewProps) => {
             Phase active: {selectedPhase.name}
           </Typography>
         ) : null}
-        {groupName ? (
+        {isPoolPhase && groupName ? (
           <Typography variant="body1" color="text.secondary">
             {groupName}
           </Typography>
         ) : null}
-        <RankingTable
-          currentTeamId={currentTeam.id}
-          errorMessage={phasesErrorMessage ?? rankingsErrorMessage}
-          isLoading={isLoading}
-          rankings={rankings}
-        />
+        {isPoolPhase ? (
+          <RankingTable
+            currentTeamId={currentTeam.id}
+            errorMessage={phasesErrorMessage ?? rankingsErrorMessage}
+            isLoading={isLoading}
+            rankings={rankings}
+          />
+        ) : (
+          <GameList
+            emptyMessage="Aucun match de bracket n'est encore planifie pour cette equipe."
+            errorMessage={phasesErrorMessage ?? gamesErrorMessage}
+            games={teamBracketGames}
+            isLoading={isPhasesLoading}
+          />
+        )}
       </Stack>
     </Stack>
   )

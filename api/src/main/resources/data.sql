@@ -8,10 +8,10 @@ VALUES ('team_1', 'Star Wars Heroes'),
        ('team_7', 'Harry Potter'),
        ('team_8', 'Jurassic Park Team');
 
-INSERT INTO phases (id, name, display_order)
-VALUES ('phase_1', 'Poules de brassage', 1),
-       ('phase_2', 'Poules principales', 2),
-       ('phase_3', 'Bracket final', 3);
+INSERT INTO phases (id, name, display_order, type)
+VALUES ('phase_1', 'Poules de brassage', 1, 'POOL'),
+       ('phase_2', 'Poules principales', 2, 'POOL'),
+       ('phase_3', 'Bracket final', 3, 'BRACKET');
 
 INSERT INTO games (id, phase_id, name, group_id, time, court, is_finished, score_data)
 VALUES ('game_1', 'phase_1', NULL, 'Poule A', '2022-11-01 11:00:00', 'Terrain1', TRUE, '23-18'),

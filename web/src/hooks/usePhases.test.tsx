@@ -27,8 +27,8 @@ describe('usePhases', () => {
 
   it('should load phases from the service', async () => {
     listPhasesMock.mockResolvedValueOnce([
-      { id: 'phase-1', name: 'Brassage', order: 1 },
-      { id: 'phase-2', name: 'Principale', order: 2 },
+      { id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' },
+      { id: 'phase-2', name: 'Principale', order: 2, type: 'BRACKET' },
     ])
 
     const { result } = renderHook(() => usePhases(), { wrapper: createWrapper() })

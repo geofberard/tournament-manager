@@ -12,14 +12,23 @@ public final class PhaseMapper {
         return new com.gberard.tournament.generated.model.Phase()
                 .id(phase.id())
                 .name(phase.name())
-                .order(phase.order());
+                .order(phase.order())
+                .type(com.gberard.tournament.generated.model.PhaseType.fromValue(phase.type().name()));
     }
 
     public static com.gberard.tournament.domain.model.Phase toDomain(CreatePhaseRequest request) {
-        return new com.gberard.tournament.domain.model.Phase(null, request.getName(), request.getOrder());
+        return new com.gberard.tournament.domain.model.Phase(
+                null,
+                request.getName(),
+                request.getOrder(),
+                com.gberard.tournament.domain.model.PhaseType.valueOf(request.getType().getValue()));
     }
 
     public static com.gberard.tournament.domain.model.Phase toDomain(String id, UpdatePhaseRequest request) {
-        return new com.gberard.tournament.domain.model.Phase(id, request.getName(), request.getOrder());
+        return new com.gberard.tournament.domain.model.Phase(
+                id,
+                request.getName(),
+                request.getOrder(),
+                com.gberard.tournament.domain.model.PhaseType.valueOf(request.getType().getValue()));
     }
 }

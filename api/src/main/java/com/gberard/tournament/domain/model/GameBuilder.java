@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public class GameBuilder {
     private String id;
-    private Phase phase = new Phase("phase-default", "Phase par defaut", 1);
+    private Phase phase = new Phase("phase-default", "Phase par defaut", 1, PhaseType.POOL);
     private Optional<String> name = Optional.empty();
     private String group = "A";
     private LocalDateTime time;
