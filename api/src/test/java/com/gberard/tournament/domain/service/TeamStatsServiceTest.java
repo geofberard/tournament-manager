@@ -127,22 +127,22 @@ class TeamStatsServiceTest {
 
         @Test
         void should_return_team_pool() {
-            when(gameRepository.findByTeamId(TEAM_A.id())).thenReturn(
+            when(gameRepository.findByTeamIdAndPhaseId(TEAM_A.id(), PHASE_A.id())).thenReturn(
                     games.stream()
                             .filter(game -> game.contestants().stream().anyMatch(team -> team.id().equals(TEAM_A.id())))
                             .toList()
             );
 
-            Optional<String> pool = teamStatsService.getTeamPool(TEAM_A);
+            Optional<String> pool = teamStatsService.getTeamPool(TEAM_A, PHASE_A.id());
 
             assertThat(pool).contains("Poule A");
         }
 
         @Test
         void should_return_empty_when_team_has_no_pool() {
-            when(gameRepository.findByTeamId(TEAM_E.id())).thenReturn(List.of());
+            when(gameRepository.findByTeamIdAndPhaseId(TEAM_E.id(), PHASE_A.id())).thenReturn(List.of());
 
-            Optional<String> pool = teamStatsService.getTeamPool(TEAM_E);
+            Optional<String> pool = teamStatsService.getTeamPool(TEAM_E, PHASE_A.id());
 
             assertThat(pool).isEmpty();
         }

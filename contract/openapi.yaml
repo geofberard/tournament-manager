@@ -43,6 +43,9 @@ tags:
   - name: Statistics
     description: |
       Exposition du classement calculé à partir des matchs et de leurs scores.
+  - name: Phases
+    description: |
+      Consultation des phases du tournoi.
 
 paths:
   /api/teams:
@@ -171,17 +174,54 @@ paths:
                     code: TEAM_IN_USE
                     message: Team team_1 is still referenced by existing games
 
-  /api/teams/{teamId}/pool:
-    parameters:
-      - $ref: '#/components/parameters/TeamId'
+  /api/phases:
     get:
-      tags: [Teams]
-      operationId: getTeamPool
-      summary: Lire la poule d'une équipe
-      description: Retourne la poule à laquelle appartient l'équipe donnée.
+      tags: [Phases]
+      operationId: listPhases
+      summary: Lister les phases
+      description: Retourne les phases du tournoi dans l'ordre.
       responses:
         '200':
-          description: Poule de l'équipe
+          description: Liste des phases
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Phase'
+
+  /api/phases/{phaseId}/pools:
+    parameters:
+      - $ref: '#/components/parameters/PhaseId'
+    get:
+      tags: [Phases]
+      operationId: listPhasePools
+      summary: Lister les poules d'une phase
+      description: Retourne les poules presentes dans la phase demandee.
+      responses:
+        '200':
+          description: Liste des poules de la phase
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pool'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/phases/{phaseId}/teams/{teamId}/pool:
+    parameters:
+      - $ref: '#/components/parameters/PhaseId'
+      - $ref: '#/components/parameters/TeamId'
+    get:
+      tags: [Phases]
+      operationId: getPhaseTeamPool
+      summary: Lire la poule d'une équipe dans une phase
+      description: Retourne la poule a laquelle appartient l'equipe donnee dans la phase demandee.
+      responses:
+        '200':
+          description: Poule de l'équipe dans la phase
           content:
             application/json:
               schema:
@@ -444,16 +484,17 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
-  /api/pools/{poolId}/statistics:
+  /api/phases/{phaseId}/pools/{poolId}/statistics:
     parameters:
+      - $ref: '#/components/parameters/PhaseId'
       - $ref: '#/components/parameters/PoolId'
     get:
       tags: [Statistics]
-      operationId: listPoolRankings
+      operationId: listPhasePoolRankings
       summary: Lire le classement d'une poule
       description: |
         Retourne le classement calculé en ne prenant en compte que les matchs
-        appartenant à la poule demandée.
+        appartenant a la poule demandee au sein de la phase donnee.
       responses:
         '200':
           description: Classement de la poule
@@ -503,6 +544,17 @@ components:
       examples:
         default:
           value: Poule A
+    PhaseId:
+      name: phaseId
+      in: path
+      required: true
+      description: Identifiant unique d'une phase
+      schema:
+        type: string
+        minLength: 1
+      examples:
+        default:
+          value: phase_1
 
   responses:
     BadRequest:

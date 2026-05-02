@@ -15,6 +15,12 @@ public interface GameRepository {
 
     List<Game> findByPool(String pool);
 
+    List<Game> findByPhaseId(String phaseId);
+
+    List<Game> findByPoolAndPhaseId(String pool, String phaseId);
+
+    List<Game> findByTeamIdAndPhaseId(String teamId, String phaseId);
+
     Game save(Game game);
 
     void deleteById(String id);

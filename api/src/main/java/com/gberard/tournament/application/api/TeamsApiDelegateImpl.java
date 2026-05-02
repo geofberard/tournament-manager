@@ -4,10 +4,8 @@ import static org.springframework.http.HttpStatus.CREATED;
 
 import com.gberard.tournament.application.mapper.TeamMapper;
 import com.gberard.tournament.domain.port.input.TeamService;
-import com.gberard.tournament.domain.port.input.TeamStatsUseCase;
 import com.gberard.tournament.generated.api.TeamsApiDelegate;
 import com.gberard.tournament.generated.model.CreateTeamRequest;
-import com.gberard.tournament.generated.model.Pool;
 import com.gberard.tournament.generated.model.Team;
 import com.gberard.tournament.generated.model.UpdateTeamRequest;
 
@@ -25,9 +23,6 @@ public class TeamsApiDelegateImpl implements TeamsApiDelegate {
     @Autowired
     public TeamService teamService;
 
-    @Autowired
-    public TeamStatsUseCase teamStatsUseCase;
-
     @Override
     public ResponseEntity<Team> createTeam(CreateTeamRequest createTeamRequest) {
         var newTeam = teamService.create(TeamMapper.toDomain(createTeamRequest));
@@ -44,15 +39,6 @@ public class TeamsApiDelegateImpl implements TeamsApiDelegate {
     @Override
     public ResponseEntity<Team> getTeamById(String teamId) {
         return ResponseEntity.ok(TeamMapper.toApi(findTeamOrThrow(teamId)));
-    }
-
-    @Override
-    public ResponseEntity<Pool> getTeamPool(String teamId) {
-        var team = findTeamOrThrow(teamId);
-        var pool = teamStatsUseCase.getTeamPool(team)
-                .orElseThrow(() -> new EntityNotFoundException("No pool found for team " + teamId));
-
-        return ResponseEntity.ok(new Pool().id(pool));
     }
 
     @Override

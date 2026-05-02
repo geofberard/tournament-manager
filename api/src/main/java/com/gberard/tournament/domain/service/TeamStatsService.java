@@ -40,24 +40,40 @@ public class TeamStatsService implements TeamStatsUseCase {
 
     @Override
     public List<TeamStats> getTeamsStatsByPool(String pool) {
-        List<Game> poolGames = gameRepository.findByPool(pool);
+        return buildTeamsStats(gameRepository.findByPool(pool));
+    }
 
-        return poolGames.stream()
-                .flatMap(game -> game.contestants().stream())
+    @Override
+    public List<String> getPhasePools(String phaseId) {
+        return gameRepository.findByPhaseId(phaseId).stream()
+                .map(Game::pool)
                 .distinct()
-                .map(team -> buildTeamStats(team, poolGames))
+                .sorted()
                 .toList();
     }
 
     @Override
-    public Optional<String> getTeamPool(Team team) {
-        return gameRepository.findByTeamId(team.id()).stream()
+    public List<TeamStats> getTeamsStatsByPool(String pool, String phaseId) {
+        return buildTeamsStats(gameRepository.findByPoolAndPhaseId(pool, phaseId));
+    }
+
+    @Override
+    public Optional<String> getTeamPool(Team team, String phaseId) {
+        return gameRepository.findByTeamIdAndPhaseId(team.id(), phaseId).stream()
                 .filter(game -> game.contestants().stream().anyMatch(contestant -> contestant.id().equals(team.id())))
                 .map(Game::pool)
                 .distinct()
                 .reduce((first, second) -> {
                     throw new IllegalStateException("Team " + team.id() + " belongs to multiple pools");
                 });
+    }
+
+    private List<TeamStats> buildTeamsStats(List<Game> games) {
+        return games.stream()
+                .flatMap(game -> game.contestants().stream())
+                .distinct()
+                .map(team -> buildTeamStats(team, games))
+                .toList();
     }
 
     private TeamStats buildTeamStats(Team team, List<Game> games) {

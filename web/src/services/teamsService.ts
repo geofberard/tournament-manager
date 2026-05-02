@@ -8,5 +8,7 @@ export type Pool = {
 
 export const listTeams = async (): Promise<Team[]> => teamsApi.listTeams()
 
-export const getTeamPool = async (teamId: string): Promise<Pool> =>
-  fetchJson<Pool>(`/api/teams/${encodeURIComponent(teamId)}/pool`)
+export const getTeamPool = async (teamId: string, phaseId: string): Promise<Pool> =>
+  fetchJson<Pool>(
+    `/api/phases/${encodeURIComponent(phaseId)}/teams/${encodeURIComponent(teamId)}/pool`,
+  )

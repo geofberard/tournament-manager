@@ -42,6 +42,27 @@ public class DBGameRepository extends DBRepository<Game, GameEntity> implements 
     }
 
     @Override
+    public java.util.List<Game> findByPhaseId(String phaseId) {
+        return repository.findByPhaseId(phaseId).stream()
+                .map(GameEntity::toDomain)
+                .toList();
+    }
+
+    @Override
+    public java.util.List<Game> findByPoolAndPhaseId(String pool, String phaseId) {
+        return repository.findByPoolAndPhaseId(pool, phaseId).stream()
+                .map(GameEntity::toDomain)
+                .toList();
+    }
+
+    @Override
+    public java.util.List<Game> findByTeamIdAndPhaseId(String teamId, String phaseId) {
+        return repository.findByTeamsIdAndPhaseId(teamId, phaseId).stream()
+                .map(GameEntity::toDomain)
+                .toList();
+    }
+
+    @Override
     public Game save(Game game) {
         return saveMapped(game);
     }

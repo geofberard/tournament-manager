@@ -4,10 +4,15 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { TeamGamesView, TeamRankingsView, TeamsView } from './TeamsView'
 import { GameStatus } from '../../generated/api-client'
 import * as useGamesModule from '../../hooks/useGames'
+import * as usePhasesModule from '../../hooks/usePhases'
 import * as useRankingsModule from '../../hooks/useRankings'
 
 vi.mock('../../hooks/useGames', () => ({
   useGames: vi.fn(),
+}))
+
+vi.mock('../../hooks/usePhases', () => ({
+  usePhases: vi.fn(),
 }))
 
 vi.mock('../../hooks/useRankings', () => ({
@@ -15,6 +20,7 @@ vi.mock('../../hooks/useRankings', () => ({
 }))
 
 const useGamesMock = vi.mocked(useGamesModule.useGames)
+const usePhasesMock = vi.mocked(usePhasesModule.usePhases)
 const useRankingsMock = vi.mocked(useRankingsModule.useRankings)
 
 describe('TeamsView', () => {
@@ -27,6 +33,11 @@ describe('TeamsView', () => {
       errorMessage: null,
       games: [],
       isLoading: false,
+    })
+    usePhasesMock.mockReturnValue({
+      errorMessage: null,
+      isLoading: false,
+      phases: [{ id: 'phase-1', name: 'Brassage', order: 1 }],
     })
     useRankingsMock.mockReturnValue({
       poolName: 'Poule A',
@@ -43,6 +54,9 @@ describe('TeamsView', () => {
 
     expect(screen.getByText('Bienvenue Tigres')).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Resultat' })).toBeInTheDocument()
+    expect(screen.getByRole('tablist', { name: 'Phases du tournoi' })).toBeInTheDocument()
+    expect(screen.getByRole('tab', { name: 'Brassage' })).toBeInTheDocument()
+    expect(screen.getByText('Phase active: Brassage')).toBeInTheDocument()
     expect(screen.getByText('Poule A')).toBeInTheDocument()
     expect(screen.queryByRole('heading', { name: 'Vos matchs' })).not.toBeInTheDocument()
   })
@@ -52,6 +66,11 @@ describe('TeamsView', () => {
       errorMessage: null,
       games: [],
       isLoading: false,
+    })
+    usePhasesMock.mockReturnValue({
+      errorMessage: null,
+      isLoading: false,
+      phases: [{ id: 'phase-1', name: 'Brassage', order: 1 }],
     })
     useRankingsMock.mockReturnValue({
       poolName: 'Poule A',
@@ -76,6 +95,11 @@ describe('TeamsView', () => {
       errorMessage: null,
       games: [],
       isLoading: false,
+    })
+    usePhasesMock.mockReturnValue({
+      errorMessage: null,
+      isLoading: false,
+      phases: [{ id: 'phase-1', name: 'Brassage', order: 1 }],
     })
     useRankingsMock.mockReturnValue({
       poolName: 'Poule A',
@@ -157,6 +181,11 @@ describe('TeamsView', () => {
           score: { pointsByTeam: { 'team-2': 21, 'team-6': 19 } },
         },
       ],
+    })
+    usePhasesMock.mockReturnValue({
+      errorMessage: null,
+      isLoading: false,
+      phases: [{ id: 'phase-1', name: 'Brassage', order: 1 }],
     })
     useRankingsMock.mockReturnValue({
       poolName: 'Poule A',

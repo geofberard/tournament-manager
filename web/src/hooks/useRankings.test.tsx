@@ -1,6 +1,6 @@
 import { renderHook, waitFor } from '@testing-library/react'
 import { SWRConfig } from 'swr'
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { useRankings } from './useRankings'
 import * as statisticsService from '../services/statisticsService'
 import * as teamsService from '../services/teamsService'
@@ -31,6 +31,10 @@ const createWrapper = () => {
 }
 
 describe('useRankings', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
   it('should load rankings from the service', async () => {
     getTeamPoolMock.mockResolvedValueOnce({ id: 'Poule A' })
     listPoolRankingsMock.mockResolvedValueOnce([
@@ -47,7 +51,7 @@ describe('useRankings', () => {
       },
     ])
 
-    const { result } = renderHook(() => useRankings('team-1'), { wrapper: createWrapper() })
+    const { result } = renderHook(() => useRankings('team-1', 'phase-1'), { wrapper: createWrapper() })
 
     await waitFor(() => expect(result.current.isLoading).toBe(false))
 
@@ -71,11 +75,21 @@ describe('useRankings', () => {
   it('should expose the service error message when the request fails', async () => {
     getTeamPoolMock.mockRejectedValueOnce(new Error('Poule indisponible'))
 
-    const { result } = renderHook(() => useRankings('team-1'), { wrapper: createWrapper() })
+    const { result } = renderHook(() => useRankings('team-1', 'phase-1'), { wrapper: createWrapper() })
 
     await waitFor(() => expect(result.current.isLoading).toBe(false))
 
     expect(result.current.rankings).toEqual([])
     expect(result.current.errorMessage).toBe('Poule indisponible')
+  })
+
+  it('should stay idle while no phase is selected', async () => {
+    const { result } = renderHook(() => useRankings('team-1', null), { wrapper: createWrapper() })
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false))
+
+    expect(getTeamPoolMock).not.toHaveBeenCalled()
+    expect(listPoolRankingsMock).not.toHaveBeenCalled()
+    expect(result.current.rankings).toEqual([])
   })
 })

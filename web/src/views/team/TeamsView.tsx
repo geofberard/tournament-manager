@@ -1,8 +1,10 @@
-import { Alert, CircularProgress, Stack, Typography } from '@mui/material'
+import { Alert, CircularProgress, Stack, Tab, Tabs, Typography } from '@mui/material'
+import { useEffect, useState } from 'react'
 import { GameList } from '../../components/shared/GameList'
 import { RankingTable } from '../../components/shared/RankingTable'
 import { GameStatus } from '../../generated/api-client'
 import { useGames } from '../../hooks/useGames'
+import { usePhases } from '../../hooks/usePhases'
 import { useRankings } from '../../hooks/useRankings'
 import type { Game } from '../../services/gamesService'
 import type { Team } from '../../services/teamsService'
@@ -35,14 +37,25 @@ const sortGamesChronologically = (games: Game[]) =>
 
 export const TeamRankingsView = ({ currentTeam }: TeamsViewProps) => {
   const { errorMessage: gamesErrorMessage } = useGames()
+  const { errorMessage: phasesErrorMessage, isLoading: isPhasesLoading, phases } = usePhases()
+  const [selectedPhaseId, setSelectedPhaseId] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!selectedPhaseId && phases.length > 0) {
+      setSelectedPhaseId(phases[0].id)
+    }
+  }, [phases, selectedPhaseId])
+
+  const selectedPhase = phases.find((phase) => phase.id === selectedPhaseId) ?? null
   const {
     poolName,
     errorMessage: rankingsErrorMessage,
     isLoading: isRankingsLoading,
     rankings,
-  } = useRankings(currentTeam.id)
+  } = useRankings(currentTeam.id, selectedPhaseId)
 
-  const hasGlobalError = gamesErrorMessage && rankingsErrorMessage
+  const hasGlobalError = gamesErrorMessage && (rankingsErrorMessage || phasesErrorMessage)
+  const isLoading = isPhasesLoading || isRankingsLoading
 
   return (
     <Stack spacing={3}>
@@ -51,7 +64,7 @@ export const TeamRankingsView = ({ currentTeam }: TeamsViewProps) => {
         description="Retrouvez ici les resultats de votre poule et suivez votre position."
       />
 
-      {isRankingsLoading ? (
+      {isLoading ? (
         <Stack direction="row" justifyContent="center" sx={{ py: 3 }}>
           <CircularProgress />
         </Stack>
@@ -61,6 +74,24 @@ export const TeamRankingsView = ({ currentTeam }: TeamsViewProps) => {
 
       <Stack spacing={2}>
         <Typography variant="h3">Resultat</Typography>
+        {phases.length > 0 ? (
+          <Tabs
+            value={selectedPhaseId ?? false}
+            onChange={(_event, value: string) => setSelectedPhaseId(value)}
+            variant="scrollable"
+            scrollButtons="auto"
+            aria-label="Phases du tournoi"
+          >
+            {phases.map((phase) => (
+              <Tab key={phase.id} value={phase.id} label={phase.name} />
+            ))}
+          </Tabs>
+        ) : null}
+        {selectedPhase ? (
+          <Typography variant="body2" color="text.secondary">
+            Phase active: {selectedPhase.name}
+          </Typography>
+        ) : null}
         {poolName ? (
           <Typography variant="body1" color="text.secondary">
             {poolName}
@@ -68,8 +99,8 @@ export const TeamRankingsView = ({ currentTeam }: TeamsViewProps) => {
         ) : null}
         <RankingTable
           currentTeamId={currentTeam.id}
-          errorMessage={rankingsErrorMessage}
-          isLoading={isRankingsLoading}
+          errorMessage={phasesErrorMessage ?? rankingsErrorMessage}
+          isLoading={isLoading}
           rankings={rankings}
         />
       </Stack>
@@ -79,9 +110,10 @@ export const TeamRankingsView = ({ currentTeam }: TeamsViewProps) => {
 
 export const TeamGamesView = ({ currentTeam }: TeamsViewProps) => {
   const { errorMessage: gamesErrorMessage, games, isLoading: isGamesLoading } = useGames()
+  const { phases } = usePhases()
   const {
     errorMessage: rankingsErrorMessage,
-  } = useRankings(currentTeam.id)
+  } = useRankings(currentTeam.id, phases[0]?.id ?? null)
 
   const teamGames = games.filter((game) =>
     Array.from(game.contestants).some((team) => team.id === currentTeam.id),

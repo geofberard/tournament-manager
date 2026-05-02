@@ -5,6 +5,7 @@ import {
   TeamsApi,
   type ContestantStats,
   type Game,
+  type Phase,
   type Team,
 } from '../generated/api-client'
 
@@ -18,7 +19,7 @@ const statisticsApi = new StatisticsApi(apiConfiguration)
 
 export { teamsApi }
 export { gamesApi, statisticsApi }
-export type { ContestantStats, Game, Team }
+export type { ContestantStats, Game, Phase, Team }
 
 export const apiBasePath = import.meta.env.VITE_API_BASE_URL ?? window.location.origin
 

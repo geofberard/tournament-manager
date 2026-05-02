@@ -22,7 +22,7 @@ public final class GameMapper {
                 .contestants(game.contestants().stream().map(TeamMapper::toApi).collect(toSet()))
                 .referee(game.refereeId().map(TeamMapper::toApi).orElse(null))
                 .time(game.time().atOffset(java.time.ZoneOffset.UTC))
-                .status(game.isFinished() ? GameStatus.COMPLETED : GameStatus.SCHEDULED)
+                .status(resolveStatus(game))
                 .score(game.score().map(score -> GameScoreMapper.toApi(score, game.contestants())).orElse(null));
     }
 
@@ -63,5 +63,17 @@ public final class GameMapper {
                 GameStatus.COMPLETED.equals(request.getStatus()),
                 Optional.empty()
         );
+    }
+
+    private static GameStatus resolveStatus(com.gberard.tournament.domain.model.Game game) {
+        if (game.isFinished()) {
+            return GameStatus.COMPLETED;
+        }
+
+        if (game.score().isPresent()) {
+            return GameStatus.IN_PROGRESS;
+        }
+
+        return GameStatus.SCHEDULED;
     }
 }

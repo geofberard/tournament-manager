@@ -14,5 +14,9 @@ public interface TeamStatsUseCase {
 
     List<TeamStats> getTeamsStatsByPool(String pool);
 
-    Optional<String> getTeamPool(Team team);
+    List<String> getPhasePools(String phaseId);
+
+    List<TeamStats> getTeamsStatsByPool(String pool, String phaseId);
+
+    Optional<String> getTeamPool(Team team, String phaseId);
 }
