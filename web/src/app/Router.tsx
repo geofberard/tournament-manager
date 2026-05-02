@@ -4,10 +4,9 @@ import {
   ADMIN_HOME_PATH,
   ADMIN_LOGIN_PATH,
   PUBLIC_HOME_PATH,
-  TEAM_GAMES_PATH,
   TEAM_HOME_PATH,
   TEAM_LOGIN_PATH,
-  TEAM_RANKINGS_PATH,
+  TEAM_RESULTS_PATH,
   teamRoutes,
 } from './routes'
 import { TeamSelectionView } from '../views/team/TeamSelectionView'
@@ -16,7 +15,8 @@ import { useAdminSession } from '../hooks/useAdminSession'
 import { PublicView } from '../views/public/PublicView'
 import { AdminLoginView } from '../views/admin/AdminLoginView'
 import { AdminView } from '../views/admin/AdminView'
-import { TeamGamesView, TeamRankingsView } from '../views/team/TeamsView'
+import { TeamGamesView } from '../views/team/TeamGamesView'
+import { TeamResultsView } from '../views/team/TeamResultsView'
 
 type TeamProtectedLayoutProps = {
   currentTeam: NonNullable<ReturnType<typeof useTeamLogin>['currentTeam']>
@@ -87,9 +87,9 @@ const AppRoutes = ({ adminSession, teamSession }: AppRoutesProps) => {
           )
         }
       >
-        <Route index element={<Navigate to={TEAM_RANKINGS_PATH} replace />} />
-        <Route path="classement" element={<TeamRankingsView currentTeam={currentTeam ?? undefined!} />} />
-        <Route path="matchs" element={<TeamGamesView currentTeam={currentTeam ?? undefined!} />} />
+        <Route index element={<Navigate to={TEAM_RESULTS_PATH} replace />} />
+        <Route path="results" element={<TeamResultsView currentTeam={currentTeam ?? undefined!} />} />
+        <Route path="games" element={<TeamGamesView currentTeam={currentTeam ?? undefined!} />} />
       </Route>
 
       <Route

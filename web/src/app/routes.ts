@@ -1,8 +1,8 @@
 export const PUBLIC_HOME_PATH = '/public'
 
 export const TEAM_HOME_PATH = '/team'
-export const TEAM_RANKINGS_PATH = '/team/classement'
-export const TEAM_GAMES_PATH = '/team/matchs'
+export const TEAM_RESULTS_PATH = '/team/results'
+export const TEAM_GAMES_PATH = '/team/games'
 export const TEAM_LOGIN_PATH = '/team/login'
 
 export const ADMIN_HOME_PATH = '/admin'
@@ -15,8 +15,8 @@ export type AppRoute = {
 
 export const teamRoutes: AppRoute[] = [
   {
-    label: 'Classement',
-    path: TEAM_RANKINGS_PATH,
+    label: 'Resultats',
+    path: TEAM_RESULTS_PATH,
   },
   {
     label: 'Matchs',

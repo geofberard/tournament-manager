@@ -9,7 +9,7 @@ import {
   TEAM_GAMES_PATH,
   TEAM_HOME_PATH,
   TEAM_LOGIN_PATH,
-  TEAM_RANKINGS_PATH,
+  TEAM_RESULTS_PATH,
 } from './routes'
 import * as useGamesModule from '../hooks/useGames'
 import * as useRankingsModule from '../hooks/useRankings'
@@ -147,7 +147,7 @@ describe('Router', () => {
     expect(screen.getByText('Bienvenue Tigres')).toBeInTheDocument()
 
     await waitFor(() => {
-      expect(window.location.hash).toBe(`#${TEAM_RANKINGS_PATH}`)
+      expect(window.location.hash).toBe(`#${TEAM_RESULTS_PATH}`)
     })
   })
 
@@ -169,7 +169,7 @@ describe('Router', () => {
 
     expect(screen.getByRole('heading', { name: 'Prochains matchs' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Matchs terminés' })).toBeInTheDocument()
-    expect(screen.queryByRole('heading', { name: 'Classement' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'Resultats' })).not.toBeInTheDocument()
   })
 
   it('should redirect /admin to /admin/login when the admin is not authenticated', async () => {

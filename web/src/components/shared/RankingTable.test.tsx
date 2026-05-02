@@ -48,15 +48,15 @@ describe('RankingTable', () => {
   })
 
   it('should show an error state when rankings fail to load', () => {
-    renderTable({ errorMessage: 'Classement indisponible' })
+    renderTable({ errorMessage: 'Resultats indisponibles' })
 
-    expect(screen.getByText('Classement indisponible')).toBeInTheDocument()
+    expect(screen.getByText('Resultats indisponibles')).toBeInTheDocument()
   })
 
   it('should show the empty state when no ranking is available', () => {
     renderTable()
 
-    expect(screen.getByText("Le classement n'est pas encore disponible.")).toBeInTheDocument()
+    expect(screen.getByText("Les resultats ne sont pas encore disponibles.")).toBeInTheDocument()
   })
 
   it('should render ranking rows and highlight the current team rank', () => {

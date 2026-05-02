@@ -9,9 +9,15 @@ VALUES ('team_1', 'Star Wars Heroes'),
        ('team_8', 'Jurassic Park Team');
 
 INSERT INTO phases (id, name, details, display_order, type)
-VALUES ('phase_1', 'Poules de brassage', NULL, 1, 'POOL'),
-       ('phase_2', 'Poules principales', NULL, 2, 'POOL'),
-       ('phase_3', 'Bracket final', NULL, 3, 'BRACKET');
+VALUES ('phase_1', 'Poules de brassage', 'Cette premiere phase permet de repartir les equipes selon leurs premiers resultats.
+
+Chaque equipe dispute ses matchs de poule afin d''etablir un classement initial.', 1, 'POOL'),
+       ('phase_2', 'Poules principales', 'Les equipes sont redistribuees dans de nouvelles poules en fonction de la phase precedente.
+
+Les resultats de cette phase determinent l''acces au tableau final.', 2, 'POOL'),
+       ('phase_3', 'Bracket final', 'Le tableau final rassemble les equipes qualifiees pour les matchs a elimination directe.
+
+Les demi-finales, la petite finale et la finale decident du classement final du tournoi.', 3, 'BRACKET');
 
 INSERT INTO games (id, phase_id, name, group_id, time, court, is_finished, score_data)
 VALUES ('game_1', 'phase_1', NULL, 'Poule A', '2022-11-01 11:00:00', 'Terrain1', TRUE, '23-18'),

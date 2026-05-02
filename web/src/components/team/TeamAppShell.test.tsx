@@ -17,8 +17,8 @@ describe('TeamAppShell', () => {
           onChangeTeam={vi.fn()}
           onNavigate={vi.fn()}
           routes={[
-            { label: 'Classement', path: '/classement' },
-            { label: 'Matchs', path: '/matchs' },
+            { label: 'Resultats', path: '/results' },
+            { label: 'Matchs', path: '/games' },
           ]}
         >
           <div>Contenu de page</div>
@@ -29,7 +29,7 @@ describe('TeamAppShell', () => {
     expect(screen.getByText('Espace équipe')).toBeInTheDocument()
     expect(screen.getByText('Contenu de page')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: "Changer d'équipe" })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Classement' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Resultats' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Matchs' })).toBeInTheDocument()
   })
 
@@ -44,8 +44,8 @@ describe('TeamAppShell', () => {
           onChangeTeam={vi.fn()}
           onNavigate={onNavigate}
           routes={[
-            { label: 'Classement', path: '/classement' },
-            { label: 'Matchs', path: '/matchs' },
+            { label: 'Resultats', path: '/results' },
+            { label: 'Matchs', path: '/games' },
           ]}
         >
           <div>Contenu de page</div>
@@ -56,6 +56,6 @@ describe('TeamAppShell', () => {
     fireEvent.click(screen.getAllByRole('button', { name: 'Ouvrir le menu' })[0])
     fireEvent.click(screen.getAllByText('Matchs')[0])
 
-    expect(onNavigate).toHaveBeenCalledWith('/matchs')
+    expect(onNavigate).toHaveBeenCalledWith('/games')
   })
 })

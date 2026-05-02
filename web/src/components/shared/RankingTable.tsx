@@ -19,7 +19,7 @@ export const RankingTable = ({
   }
 
   if (!isLoading && rankings.length === 0) {
-    return <Alert severity="info">Le classement n'est pas encore disponible.</Alert>
+    return <Alert severity="info">Les resultats ne sont pas encore disponibles.</Alert>
   }
 
   return (

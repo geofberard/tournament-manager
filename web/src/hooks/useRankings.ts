@@ -2,9 +2,9 @@ import useSWR from 'swr'
 import { listGroupRankings, type ContestantStats } from '../services/statisticsService'
 import { getTeamGroup, type Group } from '../services/teamsService'
 
-const groupFetcher = async ([_key, phaseId, teamId]: readonly [string, string, string]) =>
+const groupFetcher = async ([, phaseId, teamId]: readonly [string, string, string]) =>
   getTeamGroup(teamId, phaseId)
-const rankingsFetcher = async ([_key, phaseId, groupId]: readonly [string, string, string]) =>
+const rankingsFetcher = async ([, phaseId, groupId]: readonly [string, string, string]) =>
   listGroupRankings(groupId, phaseId)
 
 export function useRankings(teamId: string, phaseId: string | null) {
@@ -21,7 +21,7 @@ export function useRankings(teamId: string, phaseId: string | null) {
 
   return {
     groupName: group?.id ?? null,
-    errorMessage: error instanceof Error ? error.message : error ? 'Le chargement du classement a echoue.' : null,
+    errorMessage: error instanceof Error ? error.message : error ? 'Le chargement des resultats a echoue.' : null,
     isLoading,
     rankings: data ?? [],
   }
