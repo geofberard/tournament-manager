@@ -45,7 +45,7 @@ tags:
       Exposition du classement calculé à partir des matchs et de leurs scores.
   - name: Phases
     description: |
-      Consultation des phases du tournoi.
+      Gestion et consultation des phases du tournoi.
 
 paths:
   /api/teams:
@@ -189,6 +189,80 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Phase'
+    post:
+      tags: [Phases]
+      operationId: createPhase
+      summary: Créer une phase
+      description: Crée une nouvelle phase du tournoi.
+      requestBody:
+        required: true
+        description: Informations de création de la phase
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePhaseRequest'
+      responses:
+        '201':
+          description: Phase créée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Phase'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /api/phases/{phaseId}:
+    parameters:
+      - $ref: '#/components/parameters/PhaseId'
+    get:
+      tags: [Phases]
+      operationId: getPhaseById
+      summary: Lire une phase
+      description: Retourne une phase à partir de son identifiant.
+      responses:
+        '200':
+          description: Phase trouvée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Phase'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags: [Phases]
+      operationId: updatePhase
+      summary: Modifier une phase
+      description: Met à jour une phase existante.
+      requestBody:
+        required: true
+        description: Nouveau contenu de la phase
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePhaseRequest'
+      responses:
+        '200':
+          description: Phase mise à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Phase'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      tags: [Phases]
+      operationId: deletePhase
+      summary: Supprimer une phase
+      description: Supprime une phase existante.
+      responses:
+        '204':
+          description: Phase supprimée
+        '404':
+          $ref: '#/components/responses/NotFound'
 
   /api/phases/{phaseId}/pools:
     parameters:
@@ -489,7 +563,7 @@ paths:
       - $ref: '#/components/parameters/PhaseId'
       - $ref: '#/components/parameters/PoolId'
     get:
-      tags: [Statistics]
+      tags: [Phases]
       operationId: listPhasePoolRankings
       summary: Lire le classement d'une poule
       description: |
@@ -729,6 +803,44 @@ components:
           minimum: 1
           description: Ordre de la phase dans le tournoi
           examples: [1]
+
+    CreatePhaseRequest:
+      type: object
+      description: Payload utilisé pour créer une phase.
+      required:
+        - name
+        - order
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: Nom affiche de la phase
+          examples: [Poules de brassage]
+        order:
+          type: integer
+          format: int32
+          minimum: 1
+          description: Ordre de la phase dans le tournoi
+          examples: [1]
+
+    UpdatePhaseRequest:
+      type: object
+      description: Payload utilisé pour modifier une phase existante.
+      required:
+        - name
+        - order
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: Nouveau nom affiche de la phase
+          examples: [Tableau principal]
+        order:
+          type: integer
+          format: int32
+          minimum: 1
+          description: Nouvel ordre de la phase dans le tournoi
+          examples: [2]
 
     CreateGameRequest:
       type: object

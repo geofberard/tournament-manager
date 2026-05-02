@@ -16,6 +16,22 @@ public class PhaseServiceImpl implements PhaseService {
     public PhaseRepository phaseRepository;
 
     @Override
+    public Phase create(Phase phase) {
+        return phaseRepository.save(phase);
+    }
+
+    @Override
+    public Phase update(Phase phase) {
+        return phaseRepository.save(phase);
+    }
+
+    @Override
+    public boolean delete(Phase phase) {
+        phaseRepository.deleteById(phase.id());
+        return true;
+    }
+
+    @Override
     public List<Phase> findAll() {
         return phaseRepository.findAll();
     }

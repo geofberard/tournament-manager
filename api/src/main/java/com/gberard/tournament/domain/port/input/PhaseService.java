@@ -7,6 +7,12 @@ import java.util.Optional;
 
 public interface PhaseService {
 
+    Phase create(Phase phase);
+
+    Phase update(Phase phase);
+
+    boolean delete(Phase phase);
+
     List<Phase> findAll();
 
     Optional<Phase> findById(String id);

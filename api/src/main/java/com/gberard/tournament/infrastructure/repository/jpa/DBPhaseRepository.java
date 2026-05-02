@@ -29,4 +29,14 @@ public class DBPhaseRepository extends DBRepository<Phase, PhaseEntity> implemen
     public Optional<Phase> findById(String id) {
         return findByIdMapped(id);
     }
+
+    @Override
+    public Phase save(Phase phase) {
+        return saveMapped(phase);
+    }
+
+    @Override
+    public void deleteById(String id) {
+        deleteByIdMapped(id);
+    }
 }

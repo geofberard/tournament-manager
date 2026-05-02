@@ -44,13 +44,4 @@ public class RankingsApiDelegateImpl implements StatisticsApiDelegate {
                 .toList();
         return ResponseEntity.ok(allStats);
     }
-
-    @Override
-    public ResponseEntity<List<ContestantStats>> listPhasePoolRankings(String phaseId, String poolId) {
-        List<ContestantStats> poolStats = teamStatsService.getTeamsStatsByPool(poolId, phaseId).stream()
-                .map(StatisticsMapper::toApi)
-                .toList();
-
-        return ResponseEntity.ok(poolStats);
-    }
 }

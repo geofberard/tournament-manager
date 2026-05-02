@@ -10,4 +10,8 @@ public interface PhaseRepository {
     List<Phase> findAll();
 
     Optional<Phase> findById(String id);
+
+    Phase save(Phase phase);
+
+    void deleteById(String id);
 }
