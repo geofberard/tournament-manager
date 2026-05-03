@@ -40,8 +40,16 @@ To install all dependencies, run :
 $ cd api
 $ mvn clean install
 ```
-The API now relies on Spring Data JPA with the in-memory H2 database configured in
-[`api/src/main/resources/application.properties`](/Users/geoffrey.berard/lesfurets/_perso/tournament-manager/api/src/main/resources/application.properties).
+The API now relies on Spring Data JPA and supports two database profiles:
+- `h2` (default): in-memory database for local quick start and tests
+- `postgres`: external PostgreSQL database configured at startup
+
+The shared configuration lives in
+[`api/src/main/resources/application.properties`](/Users/geoffrey.berard/lesfurets/_perso/tournament-manager/api/src/main/resources/application.properties),
+with profile-specific settings in
+[`api/src/main/resources/application-h2.properties`](/Users/geoffrey.berard/lesfurets/_perso/tournament-manager/api/src/main/resources/application-h2.properties)
+and
+[`api/src/main/resources/application-postgres.properties`](/Users/geoffrey.berard/lesfurets/_perso/tournament-manager/api/src/main/resources/application-postgres.properties).
 No Google service account is required to run the project locally.
 
 
@@ -51,6 +59,37 @@ However, it is possible to run it in terminal with the command :
 ```
 $ mvn spring-boot:run
 ```
+
+This starts the API with the default `h2` profile.
+
+To start the API on PostgreSQL instead:
+```bash
+$ SPRING_PROFILES_ACTIVE=postgres \
+  APP_DATASOURCE_URL='jdbc:postgresql://localhost:5432/tournament_manager' \
+  APP_DATASOURCE_USERNAME=tournament \
+  mvn spring-boot:run
+```
+
+The local PostgreSQL setup is configured to accept passwordless connections for the
+`tournament` user, so `APP_DATASOURCE_PASSWORD` is optional in local development.
+For shared or production environments, keep using a real password or a stronger auth
+mechanism.
+
+The application initializes the schema and seed data automatically for both profiles
+using
+[`api/src/main/resources/schema.sql`](/Users/geoffrey.berard/lesfurets/_perso/tournament-manager/api/src/main/resources/schema.sql)
+and
+[`api/src/main/resources/data.sql`](/Users/geoffrey.berard/lesfurets/_perso/tournament-manager/api/src/main/resources/data.sql).
+
+To start a local PostgreSQL container for development:
+```bash
+$ SPRING_PROFILES_ACTIVE=postgres docker compose -f local/docker/docker-compose.yml --profile postgres up
+```
+
+The `postgres` service exposes a database on `localhost:5432` with:
+- database: `tournament_manager`
+- username: `tournament`
+- password: none in local Docker setup
 
 # Web App
 ## Overview

@@ -1,3 +1,5 @@
+name: tournament-manager
+
 services:
   api:
     image: maven:3.9.11-eclipse-temurin-25
@@ -11,12 +13,18 @@ services:
       ]
     environment:
       MAVEN_CONFIG: /root/.m2
+      SPRING_PROFILES_ACTIVE: postgres
+      APP_DATASOURCE_URL: jdbc:postgresql://postgres:5432/tournament_manager
+      APP_DATASOURCE_USERNAME: tournament
+      APP_DATASOURCE_PASSWORD: ${APP_DATASOURCE_PASSWORD:-}
     ports:
       - "127.0.0.1:8080:8080"
       - "127.0.0.1:5005:5005"
     volumes:
       - ../..:/workspace
       - api_m2:/root/.m2
+    depends_on:
+      - postgres
     networks:
       - tournament
 
@@ -40,9 +48,24 @@ services:
     networks:
       - tournament
 
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: tournament_manager
+      POSTGRES_USER: tournament
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - tournament
+
 volumes:
   api_m2:
   web_node_modules:
+  postgres_data:
 
 networks:
   tournament:
