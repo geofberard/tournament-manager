@@ -25,6 +25,14 @@ The shared OpenAPI contract used by both `api` and `web` lives in
 |Web App|https://geofberard.github.io/tournament-manager/|
 |Api|https://scuf-tournois-prod.uc.r.appspot.com/api/swagger-ui/index.html|
 
+# Infrastructure GCP
+
+La proposition Terraform pour GCP se trouve dans
+[`infra/gcp/README.md`](/Users/geoffrey.berard/lesfurets/_perso/tournament-manager/infra/gcp/README.md).
+
+L'API dispose aussi d'un Dockerfile Cloud Run dans
+[`api/Dockerfile`](/Users/geoffrey.berard/lesfurets/_perso/tournament-manager/api/Dockerfile).
+
 # API Server
 ## Overview
 |||

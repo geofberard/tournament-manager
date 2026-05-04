@@ -24,3 +24,9 @@ front/dist/bundle.*
 
 ### MacOS ###
 .DS_Store
+
+### Terraform ###
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
