@@ -6,7 +6,7 @@
 # Docker
 To run the `api` and `web` projects together with Docker:
 ```bash
-docker compose -f local/docker/docker-compose.tournament.yml up
+docker compose -f infra/local/docker/docker-compose.yml up
 ```
 
 The services are then available at:
@@ -91,7 +91,7 @@ and
 
 To start a local PostgreSQL container for development:
 ```bash
-$ SPRING_PROFILES_ACTIVE=postgres docker compose -f local/docker/docker-compose.yml --profile postgres up
+$ SPRING_PROFILES_ACTIVE=postgres docker compose -f infra/local/docker/docker-compose.yml --profile postgres up
 ```
 
 The `postgres` service exposes a database on `localhost:5432` with:
