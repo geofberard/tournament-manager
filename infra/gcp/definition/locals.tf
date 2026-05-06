@@ -1,5 +1,6 @@
 locals {
   required_services = toset([
+    "artifactregistry.googleapis.com",
     "cloudresourcemanager.googleapis.com",
     "iam.googleapis.com",
     "iamcredentials.googleapis.com",
@@ -14,8 +15,11 @@ locals {
 
   cloud_run_service_name          = "${var.project_id}-api"
   database_instance_name          = "${var.project_id}-db"
+  api_artifact_repository_name    = "${var.project_id}-api"
+  web_artifact_repository_name    = "${var.project_id}-web"
+  web_artifact_package_name       = "${var.project_id}-web"
 
-  artifact_registry_repository_url = "${var.region}-docker.pkg.dev/${var.project_id}/${var.project_id}-api"
+  artifact_registry_repository_url = "${var.region}-docker.pkg.dev/${var.project_id}/${local.api_artifact_repository_name}"
   api_image_url                    = "${local.artifact_registry_repository_url}/${local.cloud_run_service_name}:latest"
 
   cloud_sql_jdbc_url = join("", [

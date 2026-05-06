@@ -42,7 +42,8 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-ARTIFACT_REGISTRY_REPOSITORY_ID="${PROJECT_ID}-api"
+ARTIFACT_REGISTRY_DOCKER_REPOSITORY_ID="${PROJECT_ID}-api"
+ARTIFACT_REGISTRY_GENERIC_REPOSITORY_ID="${PROJECT_ID}-web"
 STATE_BUCKET="${PROJECT_ID}-tfstate"
 
 if [[ -z "$PROJECT_ID" || -z "$REGION" ]]; then
@@ -59,6 +60,9 @@ if ! command -v gcloud >/dev/null 2>&1; then
   echo "gcloud is required." >&2
   exit 1
 fi
+
+GITHUB_ACTIONS_SERVICE_ACCOUNT_ID="github-actions-ci"
+GITHUB_ACTIONS_SERVICE_ACCOUNT_EMAIL="${GITHUB_ACTIONS_SERVICE_ACCOUNT_ID}@${PROJECT_ID}.iam.gserviceaccount.com"
 
 project_exists() {
   gcloud projects describe "$PROJECT_ID" >/dev/null 2>&1
@@ -114,6 +118,8 @@ gcloud config set project "$PROJECT_ID" >/dev/null
 
 gcloud services enable \
   artifactregistry.googleapis.com \
+  iam.googleapis.com \
+  iamcredentials.googleapis.com \
   serviceusage.googleapis.com \
   cloudresourcemanager.googleapis.com \
   cloudbilling.googleapis.com \
@@ -130,15 +136,37 @@ gcloud storage buckets update "gs://${STATE_BUCKET}" \
   --project "$PROJECT_ID" \
   --versioning
 
-if ! gcloud artifacts repositories describe "$ARTIFACT_REGISTRY_REPOSITORY_ID" \
+if ! gcloud artifacts repositories describe "$ARTIFACT_REGISTRY_DOCKER_REPOSITORY_ID" \
   --project "$PROJECT_ID" \
   --location "$REGION" >/dev/null 2>&1; then
-  gcloud artifacts repositories create "$ARTIFACT_REGISTRY_REPOSITORY_ID" \
+  gcloud artifacts repositories create "$ARTIFACT_REGISTRY_DOCKER_REPOSITORY_ID" \
     --project "$PROJECT_ID" \
     --location "$REGION" \
     --repository-format docker \
     --description "Docker repository for the tournament API"
 fi
+
+if ! gcloud artifacts repositories describe "$ARTIFACT_REGISTRY_GENERIC_REPOSITORY_ID" \
+  --project "$PROJECT_ID" \
+  --location "$REGION" >/dev/null 2>&1; then
+  gcloud artifacts repositories create "$ARTIFACT_REGISTRY_GENERIC_REPOSITORY_ID" \
+    --project "$PROJECT_ID" \
+    --location "$REGION" \
+    --repository-format generic \
+    --description "Generic repository for the tournament web build"
+fi
+
+if ! gcloud iam service-accounts describe "$GITHUB_ACTIONS_SERVICE_ACCOUNT_EMAIL" \
+  --project "$PROJECT_ID" >/dev/null 2>&1; then
+  gcloud iam service-accounts create "$GITHUB_ACTIONS_SERVICE_ACCOUNT_ID" \
+    --project "$PROJECT_ID" \
+    --display-name "GitHub Actions CI"
+fi
+
+gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+  --member "serviceAccount:${GITHUB_ACTIONS_SERVICE_ACCOUNT_EMAIL}" \
+  --role "roles/artifactregistry.writer" \
+  >/dev/null
 
 cat <<EOF
 Bootstrap complete.
@@ -147,13 +175,19 @@ Project:      $PROJECT_ID
 Project name: ${PROJECT_NAME:-"(existing project)"}
 Region:       $REGION
 State bucket: gs://$STATE_BUCKET
-Artifact Registry: ${REGION}-docker.pkg.dev/${PROJECT_ID}/${ARTIFACT_REGISTRY_REPOSITORY_ID}
+Artifact Registry Docker:  ${REGION}-docker.pkg.dev/${PROJECT_ID}/${ARTIFACT_REGISTRY_DOCKER_REPOSITORY_ID}
+Artifact Registry Generic: ${REGION}-generic.pkg.dev/${PROJECT_ID}/${ARTIFACT_REGISTRY_GENERIC_REPOSITORY_ID}
+GitHub Actions service account: ${GITHUB_ACTIONS_SERVICE_ACCOUNT_EMAIL}
 
 Next steps:
-  1. gcloud auth application-default login
-  2. build and push the API image to ${REGION}-docker.pkg.dev/${PROJECT_ID}/${ARTIFACT_REGISTRY_REPOSITORY_ID}
-  3. cd infra/gcp/definition
-  4. update backend.hcl and terraform.tfvars if needed
-  5. terraform init -backend-config=backend.hcl
-  6. terraform apply
+  1. configure GitHub repository variables:
+     GCP_PROJECT_ID=${PROJECT_ID}
+     GCP_REGION=${REGION}
+  2. create a service account key and store it in the GitHub secret GCP_SA_KEY
+  3. run the GitHub Actions workflows to publish the API image and web build
+  4. gcloud auth application-default login
+  5. cd infra/gcp/definition
+  6. update backend.hcl and terraform.tfvars if needed
+  7. terraform init -backend-config=backend.hcl
+  8. terraform apply
 EOF

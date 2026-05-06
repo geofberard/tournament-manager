@@ -3,6 +3,16 @@ output "artifact_registry_repository_url" {
   value       = local.artifact_registry_repository_url
 }
 
+output "web_artifact_registry_repository_name" {
+  description = "Artifact Registry generic repository name for web build assets."
+  value       = local.web_artifact_repository_name
+}
+
+output "web_artifact_registry_package_name" {
+  description = "Artifact Registry generic package name for uploaded web builds."
+  value       = local.web_artifact_package_name
+}
+
 output "static_bucket_name" {
   description = "Public GCS bucket hosting static files."
   value       = google_storage_bucket.static.name
