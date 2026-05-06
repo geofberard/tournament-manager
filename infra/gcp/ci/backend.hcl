@@ -1,2 +1,2 @@
 bucket = "tournament-manager-prod-tfstate"
-prefix = "terraform/gcp-app"
+prefix = "terraform/gcp-ci"

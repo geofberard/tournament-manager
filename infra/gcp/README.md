@@ -1,26 +1,25 @@
 # GCP Infrastructure
 
-Cette arborescence contient la proposition d'infrastructure GCP du projet.
+Cette arborescence est maintenant decoupee en trois couches : `init`, `ci` et
+`definition`.
 
 ## Structure
 
 - [`init/bootstrap.sh`](/Users/geoffrey.berard/lesfurets/_perso/tournament-manager/infra/gcp/init/bootstrap.sh) :
-  bootstrap one-shot du projet GCP, du bucket de state partage et des
-  repositories Artifact Registry
+  bootstrap minimal du projet GCP et du bucket de state Terraform partage
+- [`ci`](/Users/geoffrey.berard/lesfurets/_perso/tournament-manager/infra/gcp/ci) :
+  root Terraform dedie a la chaine CI, aux repositories Artifact Registry et au
+  service account GitHub Actions
 - [`definition`](/Users/geoffrey.berard/lesfurets/_perso/tournament-manager/infra/gcp/definition) :
-  infrastructure applicative Terraform pour Cloud SQL, Secret Manager,
-  Cloud Run et un bucket public de fichiers statiques
+  root Terraform dedie a l'infrastructure applicative
 
 ## Vision
 
-- Terraform est execute en local par un developpeur
-- le state Terraform est partage dans GCS
-- GitHub Actions pousse les artefacts dans Artifact Registry via une cle JSON
-  de service account
-- l'image Cloud Run suit une convention stable :
-  `${region}-docker.pkg.dev/${project_id}/${project_id}-api/${project_id}-api:latest`
-- les builds web sont stockes dans un repository generic
-  `${region}-generic.pkg.dev/${project_id}/${project_id}-web/${project_id}-web`
+- `init` prepare juste ce qu'il faut pour pouvoir lancer Terraform proprement
+- `ci` prepare ce qu'il faut pour que GitHub Actions publie les artefacts
+- `definition` deploie l'infrastructure qui consomme les artefacts publies par la CI
+- les deux roots Terraform partagent le meme bucket GCS de state avec des
+  prefixes differents
 
 ## Bootstrap
 
@@ -31,18 +30,15 @@ Il :
 
 - cree le projet GCP s'il n'existe pas deja
 - rattache le compte de facturation lors de cette creation
-- active les APIs minimales necessaires au bootstrap du projet et du backend Terraform
+- active les APIs minimales necessaires au bootstrap et au backend Terraform
 - cree le bucket GCS `<project-id>-tfstate` pour le state distant
 - active le versioning sur ce bucket
-- cree le repository Artifact Registry Docker `<project-id>-api`
-- cree le repository Artifact Registry Generic `<project-id>-web`
-- cree le service account GitHub Actions pour publier dans Artifact Registry
-- attribue les roles IAM necessaires a la CI
 
 Pre-requis :
 
 - `gcloud` est installe et authentifie sur ta machine
 - tu as les droits suffisants sur le projet
+
 Si le projet n'existe pas encore, il faut aussi :
 
 - un `billing account id`
@@ -62,9 +58,26 @@ Exemple :
 
 Si le projet existe deja, `--project-name` et `--billing-account` sont optionnels.
 
-## Definition
+## Root CI
 
-Le root Terraform principal est
+Le root Terraform CI est
+[`infra/gcp/ci`](/Users/geoffrey.berard/lesfurets/_perso/tournament-manager/infra/gcp/ci).
+
+Il cree :
+
+- le repository Artifact Registry Docker `<project-id>-api`
+- le repository Artifact Registry Generic `<project-id>-web`
+- le service account `github-actions-ci`
+- les droits `roles/artifactregistry.writer` pour ce service account
+
+Le backend GCS de ce root pointe vers :
+
+- [`ci/backend.hcl`](/Users/geoffrey.berard/lesfurets/_perso/tournament-manager/infra/gcp/ci/backend.hcl)
+  avec le prefix `terraform/gcp-ci`
+
+## Root Definition
+
+Le root Terraform applicatif est
 [`infra/gcp/definition`](/Users/geoffrey.berard/lesfurets/_perso/tournament-manager/infra/gcp/definition).
 
 Il cree :
@@ -75,39 +88,37 @@ Il cree :
 - un bucket GCS public pour servir des fichiers statiques `html`, `css`, `js`,
   images, etc.
 
-Avant de lancer Terraform en local :
+Le backend GCS de ce root pointe vers :
 
-```bash
-gcloud auth application-default login
-```
-
-Les fichiers
-[`backend.hcl`](/Users/geoffrey.berard/lesfurets/_perso/tournament-manager/infra/gcp/definition/backend.hcl)
-et
-[`terraform.tfvars`](/Users/geoffrey.berard/lesfurets/_perso/tournament-manager/infra/gcp/definition/terraform.tfvars)
-sont versionnes et partages entre les developpeurs.
+- [`definition/backend.hcl`](/Users/geoffrey.berard/lesfurets/_perso/tournament-manager/infra/gcp/definition/backend.hcl)
+  avec le prefix `terraform/gcp-app`
 
 ## Ordre recommande
 
 1. lancer le bootstrap
-2. configurer GitHub avec les valeurs retournees par le bootstrap
-3. laisser GitHub Actions pousser les artefacts
-4. `cd infra/gcp/definition`
+2. `gcloud auth application-default login`
+3. `cd infra/gcp/ci`
+4. ajuster `backend.hcl` et `terraform.tfvars` si besoin
 5. `terraform init -backend-config=backend.hcl`
 6. `terraform apply`
+7. creer une cle pour le service account CI et la mettre dans le secret GitHub `GCP_SA_KEY`
+8. laisser GitHub Actions pousser les artefacts
+9. `cd ../definition`
+10. ajuster `backend.hcl` et `terraform.tfvars` si besoin
+11. `terraform init -backend-config=backend.hcl`
+12. `terraform apply`
 
 ## GitHub Actions
 
-La configuration la plus simple repose sur une cle JSON de service account.
+La configuration GitHub la plus simple repose sur une cle JSON de service account.
 
 Variables GitHub a definir dans le repository :
 
 - `GCP_PROJECT_ID` : l'id du projet GCP
 - `GCP_REGION` : la region Artifact Registry, par exemple `europe-west9`
-- `GCP_SA_KEY` : secret GitHub contenant la cle JSON du service account
-  `github-actions-ci`
+- `GCP_SA_KEY` : secret GitHub contenant la cle JSON du service account CI
 
-Exemple pour creer la cle :
+Exemple pour creer la cle apres le `terraform apply` du root `ci` :
 
 ```bash
 gcloud iam service-accounts keys create github-actions-ci-key.json \
@@ -148,21 +159,11 @@ cors_allowed_origins = [
 - Les mots de passe generes par Terraform sont stockes dans le state Terraform.
 - Le backend GCS doit donc rester prive.
 - La base Cloud SQL est la partie qui coutera le plus.
-- Le bucket statique est public en lecture et expose une configuration website
-  simple basee sur `index.html` et `404.html`.
-- Le bucket statique reste cree par Terraform. Il peut toujours servir plus tard
-  pour une exposition publique du front, mais il n'est plus cible par la CI.
-- Le bucket statique suit une convention de nommage stable :
-  `<project-id>-static`.
-- D'autres noms techniques sont aussi standardises :
-  repository Docker `<project-id>-api`, service Cloud Run `<project-id>-api`,
-  repository generic `<project-id>-web`, service account runtime derive de
-  `<project-id>-sa` avec troncature si necessaire, service account GitHub
-  `github-actions-ci`,
-  instance Cloud SQL `<project-id>-db`, base
-  `<project_id_avec_underscores>_db`, user `<project_id_avec_underscores>`.
-- Secret Manager est conserve pour ne pas injecter les mots de passe en clair
-  dans la configuration Cloud Run.
-- Secret Manager reste tres peu couteux dans ce cas d'usage : avec 2 secrets
-  actifs et un faible volume d'acces, tu restes normalement dans le free tier
-  actuel.
+- Le bucket statique reste dans `definition` parce qu'il fait partie de l'infra
+  consommee en production.
+- Les noms techniques restent standardises :
+  repository Docker `<project-id>-api`, repository generic `<project-id>-web`,
+  service Cloud Run `<project-id>-api`, service account CI `github-actions-ci`,
+  service account runtime derive de `<project-id>-sa`, instance Cloud SQL
+  `<project-id>-db`, base `<project_id_avec_underscores>_db`, user
+  `<project_id_avec_underscores>`.
