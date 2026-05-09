@@ -21,7 +21,7 @@ resource "google_sql_database_instance" "database" {
     }
   }
 
-  depends_on = [for service in google_project_service.services : service]
+  depends_on = [google_project_service.services]
 }
 
 resource "google_sql_database" "database" {

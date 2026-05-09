@@ -1,8 +1,8 @@
 project_id = "gberard-tournament-prod"
 region     = "europe-west1"
 
-api_image_version    = "replace-me"
-web_artifact_version = "replace-me"
+api_image_version    = "0.1.0"
+web_artifact_version = "0.1.0"
 
 cloud_run_cpu           = "1"
 cloud_run_memory        = "512Mi"

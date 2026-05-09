@@ -15,7 +15,7 @@ resource "google_secret_manager_secret" "database_password" {
     auto {}
   }
 
-  depends_on = [for service in google_project_service.services : service]
+  depends_on = [google_project_service.services]
 }
 
 resource "google_secret_manager_secret_version" "database_password" {
@@ -30,7 +30,7 @@ resource "google_secret_manager_secret" "admin_password" {
     auto {}
   }
 
-  depends_on = [for service in google_project_service.services : service]
+  depends_on = [google_project_service.services]
 }
 
 resource "google_secret_manager_secret_version" "admin_password" {

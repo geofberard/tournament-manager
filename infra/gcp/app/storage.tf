@@ -8,7 +8,7 @@ resource "google_storage_bucket" "static" {
     not_found_page   = var.static_bucket_not_found_page
   }
 
-  depends_on = [for service in google_project_service.services : service]
+  depends_on = [google_project_service.services]
 }
 
 resource "google_storage_bucket_iam_member" "static_public_reader" {
