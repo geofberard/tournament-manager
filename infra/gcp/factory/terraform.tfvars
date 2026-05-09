@@ -1,2 +1,2 @@
-project_id = "tournament-manager-prod"
-region     = "europe-west9"
+project_id = "gberard-tournament-prod"
+region     = "europe-west1"

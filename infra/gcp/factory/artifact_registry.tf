@@ -4,7 +4,7 @@ resource "google_artifact_registry_repository" "api" {
   description   = "Docker repository for the tournament API"
   format        = "DOCKER"
 
-  depends_on = [for service in google_project_service.services : service]
+  depends_on = [google_project_service.services]
 }
 
 resource "google_artifact_registry_repository" "web" {
@@ -13,5 +13,5 @@ resource "google_artifact_registry_repository" "web" {
   description   = "Generic repository for the tournament web build"
   format        = "GENERIC"
 
-  depends_on = [for service in google_project_service.services : service]
+  depends_on = [google_project_service.services]
 }

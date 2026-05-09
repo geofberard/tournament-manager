@@ -1,4 +1,4 @@
-project_id = "tournament-manager-prod"
+project_id = "gberard-tournament-prod"
 region     = "europe-west9"
 
 cloud_run_cpu           = "1"
