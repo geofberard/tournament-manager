@@ -7,6 +7,7 @@ const usePolling = process.env.VITE_USE_POLLING === 'true'
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: './',
   plugins: [react()],
   server: {
     watch: usePolling ? { usePolling: true, interval: 300 } : undefined,

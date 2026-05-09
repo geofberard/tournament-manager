@@ -14,8 +14,10 @@ export type PhaseType = 'POOL' | 'BRACKET'
 export type Phase = ApiPhase & { type: PhaseType }
 export type Game = Omit<ApiGame, 'phase'> & { phase: Phase }
 
+const apiBasePath = import.meta.env.VITE_API_BASE_URL ?? window.location.origin
+
 const apiConfiguration = new Configuration({
-  basePath: import.meta.env.VITE_API_BASE_URL ?? window.location.origin,
+  basePath: apiBasePath,
   credentials: 'include',
 })
 
@@ -28,8 +30,6 @@ export { adminAuthApi }
 export { teamsApi }
 export { gamesApi, statisticsApi }
 export type { ContestantStats, Team }
-
-export const apiBasePath = import.meta.env.VITE_API_BASE_URL ?? window.location.origin
 
 export const fetchJson = async <T>(path: string): Promise<T> => {
   const response = await fetch(`${apiBasePath}${path}`, {

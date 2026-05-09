@@ -121,6 +121,10 @@ To run locally the React App:
 $ npm run dev
 ```
 
+En local, le navigateur appelle l'application Vite sur `localhost:5173` et le
+serveur Vite proxyfie automatiquement les requetes `/api` vers l'API cible
+configuree par `VITE_API_PROXY_TARGET` (par defaut `http://localhost:8080`).
+
 To run the quality checks locally:
 ```
 $ npm test
@@ -130,3 +134,16 @@ $ npm run lint
 
 ## Deployment
 The WebApp is built from `web/` and deployed by the GitHub Actions frontend workflow.
+
+For a production deployment where the frontend and API do not share the same
+origin, define `VITE_API_BASE_URL` at build time with the public API origin.
+Do not include `/api` at the end of the value.
+
+Example:
+```bash
+cd web
+VITE_API_BASE_URL="https://gberard-tournament-prod-api-169213190968.europe-west1.run.app" npm run build
+```
+
+If `VITE_API_BASE_URL` is omitted, the frontend falls back to the current page
+origin.
