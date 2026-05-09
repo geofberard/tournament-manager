@@ -17,6 +17,7 @@ env:
   GCP_REGION: ${{ vars.GCP_REGION }}
   WEB_REPOSITORY: ${{ vars.GCP_PROJECT_ID }}-web
   WEB_PACKAGE_NAME: ${{ vars.GCP_PROJECT_ID }}-web
+  VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL }}
 
 jobs:
   build:

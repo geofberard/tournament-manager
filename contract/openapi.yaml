@@ -22,7 +22,9 @@ info:
     Cette spécification est destinée à devenir la source de vérité du serveur.
 
 servers:
-  - url: "http://localhost:3000"
+  - url: /
+    description: "Serveur courant"
+  - url: "http://localhost:8080"
     description: "Serveur local"
 
 tags:
