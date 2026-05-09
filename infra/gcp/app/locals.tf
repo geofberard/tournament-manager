@@ -28,8 +28,6 @@ locals {
     "?cloudSqlInstance=",
     google_sql_database_instance.database.connection_name,
     "&socketFactory=com.google.cloud.sql.postgres.SocketFactory",
-    "&user=",
-    google_sql_user.application.name,
     "&cloudSqlRefreshStrategy=lazy",
   ])
 }

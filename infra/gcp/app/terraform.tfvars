@@ -10,9 +10,9 @@ cloud_run_min_instances = 0
 cloud_run_max_instances = 2
 
 cors_allowed_origins = [
-  "http://localhost:*",
-  "http://127.0.0.1:*",
   "https://geofberard.github.io",
+  "https://gberard-tournament-prod-api-169213190968.europe-west1.run.app",
+  "https://storage.googleapis.com",
 ]
 
 database_tier                = "db-f1-micro"

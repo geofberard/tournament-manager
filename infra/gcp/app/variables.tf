@@ -56,11 +56,11 @@ variable "cloud_run_max_instances" {
 variable "cors_allowed_origins" {
   description = "Origins allowed by API CORS, without any path."
   type        = list(string)
-  default = [
-    "http://localhost:*",
-    "http://127.0.0.1:*",
-    "https://geofberard.github.io",
-  ]
+
+  validation {
+    condition     = length(var.cors_allowed_origins) > 0
+    error_message = "cors_allowed_origins must contain at least one origin."
+  }
 }
 
 variable "database_tier" {

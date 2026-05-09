@@ -165,16 +165,23 @@ authentifie, car Terraform appelle `gcloud artifacts generic download` puis
 
 Les origins CORS sont centralisees dans `cors_allowed_origins`.
 Chaque valeur doit etre un origin, pas une URL complete avec un chemin.
+En local, l'application Spring Boot utilise par defaut
+`http://localhost:*,http://127.0.0.1:*`.
+Les origins de production doivent etre fournis par l'infra.
 
 Exemple :
 
 ```hcl
 cors_allowed_origins = [
-  "http://localhost:*",
-  "http://127.0.0.1:*",
   "https://geofberard.github.io",
+  "https://gberard-tournament-prod-api-169213190968.europe-west1.run.app",
+  "https://storage.googleapis.com",
 ]
 ```
+
+Important : pour une application servie depuis
+`https://storage.googleapis.com/<bucket>/index.html`, l'origin CORS a declarer
+reste `https://storage.googleapis.com` sans le chemin du bucket.
 
 ## Notes
 

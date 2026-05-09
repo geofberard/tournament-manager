@@ -13,10 +13,7 @@ public class CorsConfig {
 
     @Bean
     public WebMvcConfigurer corsConfigurer(Environment environment) {
-        String[] allowedOrigins = Arrays.stream(environment.getProperty(
-                        "app.cors.allowed-origins",
-                        "http://localhost:*,http://127.0.0.1:*"
-                ).split(","))
+        String[] allowedOrigins = Arrays.stream(environment.getRequiredProperty("app.cors.allowed-origins").split(","))
                 .map(String::trim)
                 .filter(origin -> !origin.isEmpty())
                 .toArray(String[]::new);

@@ -83,6 +83,11 @@ The local PostgreSQL setup is configured to accept passwordless connections for 
 For shared or production environments, keep using a real password or a stronger auth
 mechanism.
 
+In production on Cloud Run, Terraform injects `APP_DATASOURCE_URL`,
+`APP_DATASOURCE_USERNAME`, and `APP_DATASOURCE_PASSWORD` separately. The JDBC URL
+targets Cloud SQL through the Google socket factory, while credentials stay outside
+the URL.
+
 The application initializes the schema and seed data automatically for both profiles
 using
 [`api/src/main/resources/schema.sql`](/Users/geoffrey.berard/lesfurets/_perso/tournament-manager/api/src/main/resources/schema.sql)
