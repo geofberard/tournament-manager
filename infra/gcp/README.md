@@ -84,9 +84,11 @@ Il cree :
 
 - Secret Manager pour les secrets applicatifs
 - Cloud SQL PostgreSQL
-- Cloud Run pour l'API
+- Cloud Run pour l'API, en pointant sur un tag d'image fourni en variable
 - un bucket GCS public pour servir des fichiers statiques `html`, `css`, `js`,
   images, etc.
+- la synchronisation du build web depuis Artifact Registry generic vers ce
+  bucket, pour une version fournie en variable
 
 Le backend GCS de ce root pointe vers :
 
@@ -105,6 +107,7 @@ Le backend GCS de ce root pointe vers :
 8. laisser GitHub Actions pousser les artefacts
 9. `cd ../definition`
 10. ajuster `backend.hcl` et `terraform.tfvars` si besoin
+   en renseignant notamment `api_image_version` et `web_artifact_version`
 11. `terraform init -backend-config=backend.hcl`
 12. `terraform apply`
 
@@ -134,10 +137,29 @@ Une fois ces variables renseignees :
 - le workflow API construit l'image Docker et la pousse dans
   `${region}-docker.pkg.dev/${project_id}/${project_id}-api`
 - le workflow web pousse le contenu de `web/dist` dans le repository generic
-  `${project_id}-web`, package `${project_id}-web`, version `${github.sha}`
+  `${project_id}-web`, package `${project_id}-web`, version `${GITHUB_REF_NAME#v}`
 
 Artifact Registry generic accepte les uploads par dossier, donc aucun zip n'est
 necessaire dans ce flux.
+
+## Versions deployees par Terraform
+
+Le root `definition` attend des versions explicites en entree :
+
+```hcl
+api_image_version    = "1.2.3"
+web_artifact_version = "1.2.3"
+```
+
+- `api_image_version` est utilise pour construire l'image Cloud Run
+  `${region}-docker.pkg.dev/${project_id}/${project_id}-api/${project_id}-api:<tag>`
+- `web_artifact_version` est utilise pendant `terraform apply` pour telecharger
+  la bonne version du package generic `${project_id}-web` puis synchroniser son
+  contenu dans le bucket statique GCS
+
+Le poste qui execute `terraform apply` doit donc avoir `gcloud` installe et
+authentifie, car Terraform appelle `gcloud artifacts generic download` puis
+`gcloud storage rsync` pour publier les fichiers web.
 
 ## CORS
 
@@ -159,6 +181,9 @@ cors_allowed_origins = [
 - Les mots de passe generes par Terraform sont stockes dans le state Terraform.
 - Le backend GCS doit donc rester prive.
 - La base Cloud SQL est la partie qui coutera le plus.
+- Pour conserver un petit tier partage comme `db-f1-micro`, il faut utiliser
+  l'edition `ENTERPRISE`. Avec PostgreSQL 16+, Google Cloud peut sinon basculer
+  par defaut sur `ENTERPRISE_PLUS`, qui refuse `db-f1-micro`.
 - Le bucket statique reste dans `definition` parce qu'il fait partie de l'infra
   consommee en production.
 - Les noms techniques restent standardises :

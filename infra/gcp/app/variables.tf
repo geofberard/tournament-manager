@@ -9,6 +9,26 @@ variable "region" {
   default     = "europe-west1"
 }
 
+variable "api_image_version" {
+  description = "Artifact Registry image tag to deploy on Cloud Run."
+  type        = string
+
+  validation {
+    condition     = trimspace(var.api_image_version) != ""
+    error_message = "api_image_version must not be empty."
+  }
+}
+
+variable "web_artifact_version" {
+  description = "Artifact Registry generic package version to publish to the static bucket."
+  type        = string
+
+  validation {
+    condition     = trimspace(var.web_artifact_version) != ""
+    error_message = "web_artifact_version must not be empty."
+  }
+}
+
 variable "cloud_run_cpu" {
   description = "Cloud Run CPU limit."
   type        = string
@@ -47,6 +67,17 @@ variable "database_tier" {
   description = "Cloud SQL machine tier."
   type        = string
   default     = "db-f1-micro"
+}
+
+variable "database_edition" {
+  description = "Cloud SQL edition."
+  type        = string
+  default     = "ENTERPRISE"
+
+  validation {
+    condition     = contains(["ENTERPRISE", "ENTERPRISE_PLUS"], var.database_edition)
+    error_message = "database_edition must be ENTERPRISE or ENTERPRISE_PLUS."
+  }
 }
 
 variable "database_version" {

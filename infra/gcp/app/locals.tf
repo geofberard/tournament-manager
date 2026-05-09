@@ -20,7 +20,7 @@ locals {
   web_artifact_package_name       = "${var.project_id}-web"
 
   artifact_registry_repository_url = "${var.region}-docker.pkg.dev/${var.project_id}/${local.api_artifact_repository_name}"
-  api_image_url                    = "${local.artifact_registry_repository_url}/${local.cloud_run_service_name}:latest"
+  api_image_url                    = "${local.artifact_registry_repository_url}/${local.cloud_run_service_name}:${var.api_image_version}"
 
   cloud_sql_jdbc_url = join("", [
     "jdbc:postgresql://google/",

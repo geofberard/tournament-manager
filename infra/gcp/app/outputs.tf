@@ -33,6 +33,16 @@ output "suggested_api_image" {
   value       = local.api_image_url
 }
 
+output "deployed_api_image_version" {
+  description = "Artifact Registry image tag deployed on Cloud Run."
+  value       = var.api_image_version
+}
+
+output "deployed_web_artifact_version" {
+  description = "Artifact Registry generic package version deployed to the static bucket."
+  value       = var.web_artifact_version
+}
+
 output "cloud_run_service_url" {
   description = "Public Cloud Run URL."
   value       = google_cloud_run_v2_service.api.uri
