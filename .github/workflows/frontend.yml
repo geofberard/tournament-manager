@@ -1,6 +1,10 @@
 name: Web - React
 on:
   push:
+    branches:
+      - main
+    tags:
+      - 'v*.*.*'
     paths:
       - 'web/**'
       - 'contract/**'
@@ -33,10 +37,15 @@ jobs:
           npm ci
           npm test
           npm run build
+      - name: Upload dist artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-dist
+          path: web/dist
 
   publish:
     name: Upload static build to Artifact Registry 🚀
-    if: github.ref_name == 'main'
+    if: startsWith(github.ref, 'refs/tags/v')
     concurrency: ci-web-${{ github.ref }}
     runs-on: ubuntu-latest
     environment: production
@@ -44,17 +53,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - name: Download dist artifact
+        uses: actions/download-artifact@v4
         with:
-          node-version: '22'
-          cache: npm
-          cache-dependency-path: web/package-lock.json
-      - name: Rebuild dist
-        working-directory: web
-        run: |
-          npm ci
-          npm run build
+          name: web-dist
+          path: web/dist
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
@@ -63,6 +66,8 @@ jobs:
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ env.GCP_PROJECT_ID }}
+      - name: Extract release version
+        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_ENV"
       - name: Upload dist directory to Artifact Registry
         working-directory: web
         run: |
@@ -71,5 +76,5 @@ jobs:
             --location="${GCP_REGION}" \
             --repository="${WEB_REPOSITORY}" \
             --package="${WEB_PACKAGE_NAME}" \
-            --version="${GITHUB_SHA}" \
+            --version="${VERSION}" \
             --source-directory="dist"
