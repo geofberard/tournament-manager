@@ -1,5 +1,5 @@
 project_id = "gberard-tournament-prod"
-region     = "europe-west9"
+region     = "europe-west1"
 
 cloud_run_cpu           = "1"
 cloud_run_memory        = "512Mi"

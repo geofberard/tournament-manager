@@ -115,7 +115,7 @@ La configuration GitHub la plus simple repose sur une cle JSON de service accoun
 Variables GitHub a definir dans le repository :
 
 - `GCP_PROJECT_ID` : l'id du projet GCP
-- `GCP_REGION` : la region Artifact Registry, par exemple `europe-west9`
+- `GCP_REGION` : la region Artifact Registry, par exemple `europe-west1`
 - `GCP_SA_KEY` : secret GitHub contenant la cle JSON du service account CI
 
 Exemple pour creer la cle apres le `terraform apply` du root `ci` :

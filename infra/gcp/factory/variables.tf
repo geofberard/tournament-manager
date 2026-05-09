@@ -6,5 +6,5 @@ variable "project_id" {
 variable "region" {
   description = "Artifact Registry region."
   type        = string
-  default     = "europe-west9"
+  default     = "europe-west1"
 }

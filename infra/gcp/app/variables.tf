@@ -6,7 +6,7 @@ variable "project_id" {
 variable "region" {
   description = "Deployment region."
   type        = string
-  default     = "europe-west9"
+  default     = "europe-west1"
 }
 
 variable "cloud_run_cpu" {
