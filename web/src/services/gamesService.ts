@@ -24,6 +24,8 @@ export type GamePayload = {
 
 export const listGames = async (): Promise<Game[]> => gamesApi.listGames()
 
+export const getGameById = async (gameId: string): Promise<Game> => gamesApi.getGameById({ gameId })
+
 export const createGame = async (gamePayload: GamePayload): Promise<Game> => {
   const createGameRequest: CreateGameRequest = {
     contestantIds: gamePayload.contestantIds,

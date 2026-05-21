@@ -7,6 +7,7 @@ import {
   ADMIN_HOME_PATH,
   ADMIN_LOGIN_PATH,
   PUBLIC_HOME_PATH,
+  TEAM_REFEREE_GAME_PATH,
   TEAM_HOME_PATH,
   TEAM_LOGIN_PATH,
   TEAM_RESULTS_PATH,
@@ -23,6 +24,7 @@ import { AdminPhasesView } from '../views/admin/AdminPhasesView'
 import { AdminTeamsView } from '../views/admin/AdminTeamsView'
 import { TeamGamesView } from '../views/team/TeamGamesView'
 import { TeamResultsView } from '../views/team/TeamResultsView'
+import { TeamRefereeGameView } from '../views/team/TeamRefereeGameView'
 
 type TeamProtectedLayoutProps = {
   currentTeam: NonNullable<ReturnType<typeof useTeamLogin>['currentTeam']>
@@ -144,6 +146,7 @@ const AppRoutes = ({ adminSession, teamSession }: AppRoutesProps) => {
         <Route index element={<Navigate to={TEAM_RESULTS_PATH} replace />} />
         <Route path="results" element={<TeamResultsView currentTeam={currentTeam ?? undefined!} />} />
         <Route path="games" element={<TeamGamesView currentTeam={currentTeam ?? undefined!} />} />
+        <Route path={TEAM_REFEREE_GAME_PATH} element={<TeamRefereeGameView />} />
       </Route>
 
       <Route

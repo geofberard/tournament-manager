@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "generate:api-client": "openapi-generator-cli generate -i ../contract/openapi.yaml -g typescript-fetch -o src/generated/api-client --additional-properties=typescriptThreePlus=true,useSingleRequestParameter=true,modelPropertyNaming=original",
+    "generate:api-client": "npx --yes @openapitools/openapi-generator-cli generate -i ../contract/openapi.yaml -g typescript-fetch -o src/generated/api-client --additional-properties=typescriptThreePlus=true,useSingleRequestParameter=true,modelPropertyNaming=original",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "test": "vitest run",

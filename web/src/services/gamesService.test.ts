@@ -1,8 +1,11 @@
-import { describe, expect, it, vi } from 'vitest'
-import { bulkCreateGames, bulkUpdateGames, deleteGame } from './gamesService'
+import { describe, expect, it, beforeEach, vi } from 'vitest'
+import { getGameById, listGames, bulkCreateGames, bulkUpdateGames, deleteGame } from './gamesService'
+import type { Game } from './apiClient'
 
 vi.mock('./apiClient', () => ({
   gamesApi: {
+    listGames: vi.fn(),
+    getGameById: vi.fn(),
     bulkCreateGames: vi.fn(),
     bulkUpdateGames: vi.fn(),
     deleteGame: vi.fn(),
@@ -11,10 +14,64 @@ vi.mock('./apiClient', () => ({
 }))
 
 import { gamesApi } from './apiClient'
+const listGamesMock = gamesApi.listGames as ReturnType<typeof vi.fn>
+const getGameByIdMock = gamesApi.getGameById as ReturnType<typeof vi.fn>
 
 const gamesApiMock = vi.mocked(gamesApi)
 
 describe('gamesService', () => {
+  beforeEach(() => {
+    listGamesMock.mockReset()
+    getGameByIdMock.mockReset()
+  })
+
+  it('should return games from gamesApi.listGames', async () => {
+    const games = [
+      {
+        id: 'game-1',
+        phase: { id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' },
+        name: undefined,
+        group: 'Poule A',
+        time: new Date('2026-05-01T18:30:00Z'),
+        court: 'Central',
+        status: 'scheduled',
+        contestants: new Set([{ id: 'team-1', name: 'Aigles' }]),
+        referee: undefined,
+        score: { pointsByTeam: { 'team-1': 0 } },
+      },
+    ] as Game[]
+
+    listGamesMock.mockResolvedValueOnce(games)
+
+    const result = await listGames()
+
+    expect(result).toBe(games)
+    expect(listGamesMock).toHaveBeenCalledOnce()
+  })
+
+  it('should call gamesApi.getGameById with the provided gameId', async () => {
+    const game = {
+      id: 'game-1',
+      phase: { id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' },
+      name: undefined,
+      group: 'Poule A',
+      time: new Date('2026-05-01T18:30:00Z'),
+      court: 'Central',
+      status: 'scheduled',
+      contestants: new Set([{ id: 'team-1', name: 'Aigles' }]),
+      referee: undefined,
+      score: { pointsByTeam: { 'team-1': 0 } },
+    } as Game
+
+    getGameByIdMock.mockResolvedValueOnce(game)
+
+    const result = await getGameById('game-1')
+
+    expect(result).toBe(game)
+    expect(getGameByIdMock).toHaveBeenCalledOnce()
+    expect(getGameByIdMock).toHaveBeenCalledWith({ gameId: 'game-1' })
+  })
+
   it('should delete a game through the API client', async () => {
     // GIVEN
     gamesApiMock.deleteGame.mockResolvedValueOnce(undefined)
