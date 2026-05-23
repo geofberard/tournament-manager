@@ -1,30 +1,23 @@
 # GCP Infrastructure
 
-Cette arborescence est maintenant decoupee en trois couches : `init`, `ci` et
-`definition`.
+Cette arborescence se decoupe en trois couches : `init`, `factory` et `app`.
 
 ## Structure
 
-- [`init/bootstrap.sh`](/Users/geoffrey.berard/lesfurets/_perso/tournament-manager/infra/gcp/init/bootstrap.sh) :
-  bootstrap minimal du projet GCP et du bucket de state Terraform partage
-- [`ci`](/Users/geoffrey.berard/lesfurets/_perso/tournament-manager/infra/gcp/ci) :
-  root Terraform dedie a la chaine CI, aux repositories Artifact Registry et au
-  service account GitHub Actions
-- [`definition`](/Users/geoffrey.berard/lesfurets/_perso/tournament-manager/infra/gcp/definition) :
-  root Terraform dedie a l'infrastructure applicative
+- `init/bootstrap.sh` : bootstrap minimal du projet GCP et du bucket de state Terraform partage
+- `factory` : root Terraform dedie a la CI, aux repositories Artifact Registry et au service account GitHub Actions
+- `app` : root Terraform dedie a l'infrastructure applicative Tournament Manager
 
 ## Vision
 
 - `init` prepare juste ce qu'il faut pour pouvoir lancer Terraform proprement
-- `ci` prepare ce qu'il faut pour que GitHub Actions publie les artefacts
-- `definition` deploie l'infrastructure qui consomme les artefacts publies par la CI
-- les deux roots Terraform partagent le meme bucket GCS de state avec des
-  prefixes differents
+- `factory` prepare ce qu'il faut pour que la CI publie l'image Docker de l'API et deploie le build statique du web
+- `app` deploie l'infrastructure applicative et consomme l'image API publiee par la CI
+- les roots Terraform partagent le meme bucket GCS de state avec des prefixes differents
 
 ## Bootstrap
 
-Le bootstrap est assure par
-[`infra/gcp/init/bootstrap.sh`](/Users/geoffrey.berard/lesfurets/_perso/tournament-manager/infra/gcp/init/bootstrap.sh).
+Le bootstrap est assure par `infra/gcp/init/bootstrap.sh`.
 
 Il :
 
@@ -58,58 +51,53 @@ Exemple :
 
 Si le projet existe deja, `--project-name` et `--billing-account` sont optionnels.
 
-## Root CI
+## Root Factory
 
-Le root Terraform CI est
-[`infra/gcp/ci`](/Users/geoffrey.berard/lesfurets/_perso/tournament-manager/infra/gcp/ci).
+Le root Terraform factory est `infra/gcp/factory`.
 
 Il cree :
 
 - le repository Artifact Registry Docker `<project-id>-api`
-- le repository Artifact Registry Generic `<project-id>-web`
 - le service account `github-actions-ci`
-- les droits `roles/artifactregistry.writer` pour ce service account
+- les droits Artifact Registry, Firebase Hosting, Terraform state et deploiement
+  applicatif pour ce service account
 
-Le backend GCS de ce root pointe vers :
+Le backend GCS de ce root pointe vers `factory/backend.hcl` avec le prefix
+`terraform/gcp-factory`.
 
-- [`ci/backend.hcl`](/Users/geoffrey.berard/lesfurets/_perso/tournament-manager/infra/gcp/ci/backend.hcl)
-  avec le prefix `terraform/gcp-ci`
+## Root App
 
-## Root Definition
-
-Le root Terraform applicatif est
-[`infra/gcp/definition`](/Users/geoffrey.berard/lesfurets/_perso/tournament-manager/infra/gcp/definition).
+Le root Terraform applicatif est `infra/gcp/app`.
 
 Il cree :
 
 - Secret Manager pour les secrets applicatifs
 - Cloud SQL PostgreSQL
 - Cloud Run pour l'API, en pointant sur un tag d'image fourni en variable
-- un bucket GCS public pour servir des fichiers statiques `html`, `css`, `js`,
-  images, etc.
-- la synchronisation du build web depuis Artifact Registry generic vers ce
-  bucket, pour une version fournie en variable
+- le service account runtime Cloud Run avec les droits Cloud SQL et Secret Manager
+- le projet Firebase et le site Firebase Hosting qui servira le web statique
 
-Le backend GCS de ce root pointe vers :
+Le build web est deployee par GitHub Actions avec Firebase Hosting. Terraform ne
+publie plus les fichiers statiques.
 
-- [`definition/backend.hcl`](/Users/geoffrey.berard/lesfurets/_perso/tournament-manager/infra/gcp/definition/backend.hcl)
-  avec le prefix `terraform/gcp-app`
+Le backend GCS de ce root pointe vers `app/backend.hcl` avec le prefix
+`terraform/gcp-app`.
 
 ## Ordre recommande
 
 1. lancer le bootstrap
 2. `gcloud auth application-default login`
-3. `cd infra/gcp/ci`
-4. ajuster `backend.hcl` et `terraform.tfvars` si besoin
+3. `cd infra/gcp/factory`
+4. ajuster `backend.hcl` et `terraform.tfvars`
 5. `terraform init -backend-config=backend.hcl`
 6. `terraform apply`
 7. creer une cle pour le service account CI et la mettre dans le secret GitHub `GCP_SA_KEY`
-8. laisser GitHub Actions pousser les artefacts
-9. `cd ../definition`
-10. ajuster `backend.hcl` et `terraform.tfvars` si besoin
-   en renseignant notamment `api_image_version` et `web_artifact_version`
+8. laisser GitHub Actions pousser l'image API
+9. `cd ../app`
+10. ajuster `backend.hcl` et `terraform.tfvars`, notamment `target_version`
 11. `terraform init -backend-config=backend.hcl`
 12. `terraform apply`
+13. le workflow release applique Terraform puis deploie le front
 
 ## GitHub Actions
 
@@ -121,7 +109,7 @@ Variables GitHub a definir dans le repository :
 - `GCP_REGION` : la region Artifact Registry, par exemple `europe-west1`
 - `GCP_SA_KEY` : secret GitHub contenant la cle JSON du service account CI
 
-Exemple pour creer la cle apres le `terraform apply` du root `ci` :
+Exemple pour creer la cle apres le `terraform apply` du root `factory` :
 
 ```bash
 gcloud iam service-accounts keys create github-actions-ci-key.json \
@@ -134,32 +122,84 @@ Ensuite, ajoute le contenu de `github-actions-ci-key.json` dans le secret GitHub
 
 Une fois ces variables renseignees :
 
-- le workflow API construit l'image Docker et la pousse dans
-  `${region}-docker.pkg.dev/${project_id}/${project_id}-api`
-- le workflow web pousse le contenu de `web/dist` dans le repository generic
-  `${project_id}-web`, package `${project_id}-web`, version `${GITHUB_REF_NAME#v}`
+- le workflow API construit l'image Docker et la pousse dans :
 
-Artifact Registry generic accepte les uploads par dossier, donc aucun zip n'est
-necessaire dans ce flux.
-
-## Versions deployees par Terraform
-
-Le root `definition` attend des versions explicites en entree :
-
-```hcl
-api_image_version    = "1.2.3"
-web_artifact_version = "1.2.3"
+```text
+${region}-docker.pkg.dev/${project_id}/${project_id}-api/${project_id}-api:${tag}
 ```
 
-- `api_image_version` est utilise pour construire l'image Cloud Run
-  `${region}-docker.pkg.dev/${project_id}/${project_id}-api/${project_id}-api:<tag>`
-- `web_artifact_version` est utilise pendant `terraform apply` pour telecharger
-  la bonne version du package generic `${project_id}-web` puis synchroniser son
-  contenu dans le bucket statique GCS
+- le workflow release demarre sur un tag `v*.*.*`, lance `terraform apply` dans
+  `infra/gcp/app` avec `target_version=${tag}`, puis deploie le front sur
+  Firebase Hosting.
 
-Le poste qui execute `terraform apply` doit donc avoir `gcloud` installe et
-authentifie, car Terraform appelle `gcloud artifacts generic download` puis
-`gcloud storage rsync` pour publier les fichiers web.
+- le workflow web reste un workflow de verification du front. Le deploiement
+  Firebase Hosting de production est sequence apres Terraform dans
+  `.github/workflows/release.yaml`.
+
+## Version API deployee par Terraform
+
+Le root `app` attend une version explicite en entree :
+
+```hcl
+target_version = "0.1.0"
+```
+
+`target_version` est utilise pour construire l'image Cloud Run :
+
+```text
+${region}-docker.pkg.dev/${project_id}/${project_id}-api/${project_id}-api:<tag>
+```
+
+Le front n'a plus de version consommee par Terraform. Son deploiement est une
+release Firebase Hosting effectuee par le workflow release.
+
+## Firebase Hosting
+
+Le front utilise `window.location.origin` par defaut pour appeler l'API. Sur
+Firebase Hosting, les appels `/api/...` sont donc repris par la rewrite Cloud Run.
+
+Le fichier `firebase.json` contient la configuration Hosting :
+
+```json
+{
+  "hosting": {
+    "site": "gberard-tournament-prod",
+    "public": "web/dist",
+    "rewrites": [
+      {
+        "source": "/api/**",
+        "run": {
+          "serviceId": "gberard-tournament-prod-api",
+          "region": "europe-west1"
+        }
+      },
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}
+```
+
+Le site par defaut est `https://<project-id>.web.app`, avec aussi
+`https://<project-id>.firebaseapp.com`.
+
+## Base Cloud SQL
+
+Pour reduire les couts hors usage, la base Cloud SQL peut etre arretee et
+demarree manuellement :
+
+```bash
+./infra/gcp/manage-db.sh stop
+./infra/gcp/manage-db.sh start
+```
+
+Il est possible de cibler un autre projet ou une autre instance :
+
+```bash
+./infra/gcp/manage-db.sh --project-id my-tournament-prod --instance my-db stop
+```
 
 ## CORS
 
@@ -173,15 +213,10 @@ Exemple :
 
 ```hcl
 cors_allowed_origins = [
-  "https://geofberard.github.io",
-  "https://gberard-tournament-prod-api-169213190968.europe-west1.run.app",
-  "https://storage.googleapis.com",
+  "https://<project-id>.web.app",
+  "https://<project-id>.firebaseapp.com",
 ]
 ```
-
-Important : pour une application servie depuis
-`https://storage.googleapis.com/<bucket>/index.html`, l'origin CORS a declarer
-reste `https://storage.googleapis.com` sans le chemin du bucket.
 
 ## Notes
 
@@ -191,11 +226,8 @@ reste `https://storage.googleapis.com` sans le chemin du bucket.
 - Pour conserver un petit tier partage comme `db-f1-micro`, il faut utiliser
   l'edition `ENTERPRISE`. Avec PostgreSQL 16+, Google Cloud peut sinon basculer
   par defaut sur `ENTERPRISE_PLUS`, qui refuse `db-f1-micro`.
-- Le bucket statique reste dans `definition` parce qu'il fait partie de l'infra
-  consommee en production.
-- Les noms techniques restent standardises :
-  repository Docker `<project-id>-api`, repository generic `<project-id>-web`,
-  service Cloud Run `<project-id>-api`, service account CI `github-actions-ci`,
-  service account runtime derive de `<project-id>-sa`, instance Cloud SQL
-  `<project-id>-db`, base `<project_id_avec_underscores>_db`, user
-  `<project_id_avec_underscores>`.
+- Les noms techniques restent standardises : repository Docker `<project-id>-api`,
+  site Firebase Hosting `<project-id>`, service Cloud Run `<project-id>-api`,
+  service account CI `github-actions-ci`, service account runtime derive de
+  `<project-id>-sa`, instance Cloud SQL `<project-id>-db`, base
+  `<project_id_avec_underscores>_db`, user `<project_id_avec_underscores>_admin`.

@@ -3,44 +3,29 @@ output "artifact_registry_repository_url" {
   value       = local.artifact_registry_repository_url
 }
 
-output "web_artifact_registry_repository_name" {
-  description = "Artifact Registry generic repository name for web build assets."
-  value       = local.web_artifact_repository_name
+output "firebase_hosting_site_id" {
+  description = "Firebase Hosting site id."
+  value       = google_firebase_hosting_site.web.site_id
 }
 
-output "web_artifact_registry_package_name" {
-  description = "Artifact Registry generic package name for uploaded web builds."
-  value       = local.web_artifact_package_name
-}
-
-output "static_bucket_name" {
-  description = "Public GCS bucket hosting static files."
-  value       = google_storage_bucket.static.name
-}
-
-output "static_bucket_url" {
-  description = "Direct GCS URL of the public static bucket."
-  value       = "gs://${google_storage_bucket.static.name}"
-}
-
-output "static_bucket_website_url" {
-  description = "Public website URL of the static bucket."
-  value       = "http://${google_storage_bucket.static.name}.storage.googleapis.com"
+output "firebase_hosting_default_url" {
+  description = "Default Firebase Hosting URL."
+  value       = google_firebase_hosting_site.web.default_url
 }
 
 output "suggested_api_image" {
-  description = "Suggested image path for the API container."
+  description = "Image path deployed on Cloud Run."
   value       = local.api_image_url
 }
 
 output "deployed_api_image_version" {
   description = "Artifact Registry image tag deployed on Cloud Run."
-  value       = var.api_image_version
+  value       = var.target_version
 }
 
-output "deployed_web_artifact_version" {
-  description = "Artifact Registry generic package version deployed to the static bucket."
-  value       = var.web_artifact_version
+output "deployed_target_version" {
+  description = "Artifact Registry Docker image tag deployed for the API."
+  value       = var.target_version
 }
 
 output "cloud_run_service_url" {
@@ -56,6 +41,16 @@ output "cloud_sql_connection_name" {
 output "cloud_sql_instance_name" {
   description = "Cloud SQL instance name."
   value       = google_sql_database_instance.database.name
+}
+
+output "database_name" {
+  description = "Cloud SQL database name."
+  value       = google_sql_database.database.name
+}
+
+output "database_username" {
+  description = "Cloud SQL application user."
+  value       = google_sql_user.application.name
 }
 
 output "admin_username" {

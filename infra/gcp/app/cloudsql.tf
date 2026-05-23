@@ -25,12 +25,12 @@ resource "google_sql_database_instance" "database" {
 }
 
 resource "google_sql_database" "database" {
-  name     = "${replace(local.database_instance_name, "-", "_")}"
+  name     = local.cloud_sql_database_name
   instance = google_sql_database_instance.database.name
 }
 
 resource "google_sql_user" "application" {
-  name     = "${replace(var.project_id, "-", "_")}_admin"
+  name     = local.cloud_sql_username
   instance = google_sql_database_instance.database.name
   password = random_password.database.result
 }

@@ -9,23 +9,13 @@ variable "region" {
   default     = "europe-west1"
 }
 
-variable "api_image_version" {
-  description = "Artifact Registry image tag to deploy on Cloud Run."
+variable "target_version" {
+  description = "Artifact Registry Docker image tag to deploy for the API."
   type        = string
 
   validation {
-    condition     = trimspace(var.api_image_version) != ""
-    error_message = "api_image_version must not be empty."
-  }
-}
-
-variable "web_artifact_version" {
-  description = "Artifact Registry generic package version to publish to the static bucket."
-  type        = string
-
-  validation {
-    condition     = trimspace(var.web_artifact_version) != ""
-    error_message = "web_artifact_version must not be empty."
+    condition     = trimspace(var.target_version) != ""
+    error_message = "target_version must not be empty."
   }
 }
 
@@ -61,6 +51,12 @@ variable "cors_allowed_origins" {
     condition     = length(var.cors_allowed_origins) > 0
     error_message = "cors_allowed_origins must contain at least one origin."
   }
+}
+
+variable "firebase_hosting_site_id" {
+  description = "Firebase Hosting site id. Defaults to the project id, which gives https://<project-id>.web.app."
+  type        = string
+  default     = null
 }
 
 variable "database_tier" {
@@ -102,16 +98,4 @@ variable "database_backups_enabled" {
   description = "Enable Cloud SQL automated backups."
   type        = bool
   default     = false
-}
-
-variable "static_bucket_main_page_suffix" {
-  description = "Main page served by the public static bucket."
-  type        = string
-  default     = "index.html"
-}
-
-variable "static_bucket_not_found_page" {
-  description = "404 page served by the public static bucket."
-  type        = string
-  default     = "404.html"
 }

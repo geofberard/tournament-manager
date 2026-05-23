@@ -139,13 +139,13 @@ State bucket: gs://$STATE_BUCKET
 
 Next steps:
   1. gcloud auth application-default login
-  2. cd infra/gcp/ci
+  2. cd infra/gcp/factory
   3. update backend.hcl and terraform.tfvars if needed
   4. terraform init -backend-config=backend.hcl
   5. terraform apply
-  6. create a service account key from the ci outputs and store it in GitHub secret GCP_SA_KEY
-  7. run the GitHub Actions workflows to publish the API image and web build
-  8. cd ../definition
+  6. create a service account key from the factory outputs and store it in GitHub secret GCP_SA_KEY
+  7. run the GitHub Actions release workflow to publish the API image and deploy the web build
+  8. cd ../app
   9. terraform init -backend-config=backend.hcl
  10. terraform apply
 EOF

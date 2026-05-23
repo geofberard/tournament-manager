@@ -18,17 +18,7 @@ output "api_artifact_registry_repository_url" {
   value       = local.api_artifact_registry_repository_url
 }
 
-output "web_artifact_repository_name" {
-  description = "Artifact Registry generic repository name for web build assets."
-  value       = google_artifact_registry_repository.web.repository_id
-}
-
-output "web_artifact_package_name" {
-  description = "Artifact Registry generic package name for uploaded web builds."
-  value       = local.web_artifact_package_name
-}
-
-output "web_artifact_registry_repository_url" {
-  description = "Artifact Registry generic repository base URL."
-  value       = local.web_artifact_registry_repository_url
+output "api_image_url" {
+  description = "Base API image URL without tag."
+  value       = local.api_image_url
 }
