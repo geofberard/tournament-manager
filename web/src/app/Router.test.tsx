@@ -17,6 +17,7 @@ import {
   TEAM_RESULTS_PATH,
 } from './routes'
 import * as useGamesModule from '../hooks/useGames'
+import * as useGameModule from '../hooks/useGame'
 import * as useRankingsModule from '../hooks/useRankings'
 import * as useTeamLoginModule from '../hooks/useTeamLogin'
 import * as useAdminSessionModule from '../hooks/useAdminSession'
@@ -37,6 +38,9 @@ vi.mock('../hooks/useTeams', () => ({
 
 vi.mock('../hooks/useGames', () => ({
   useGames: vi.fn(),
+}))
+
+vi.mock('../hooks/useGame', () => ({
   useGame: vi.fn(),
 }))
 
@@ -52,7 +56,7 @@ const useTeamLoginMock = vi.mocked(useTeamLoginModule.useTeamLogin)
 const useAdminSessionMock = vi.mocked(useAdminSessionModule.useAdminSession)
 const useTeamsMock = vi.mocked(useTeamsModule.useTeams)
 const useGamesMock = vi.mocked(useGamesModule.useGames)
-const useGameMock = vi.mocked(useGamesModule.useGame)
+const useGameMock = vi.mocked(useGameModule.useGame)
 const useRankingsMock = vi.mocked(useRankingsModule.useRankings)
 const usePhasesMock = vi.mocked(usePhasesModule.usePhases)
 

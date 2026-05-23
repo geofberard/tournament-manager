@@ -1,6 +1,6 @@
 import { CircularProgress, Divider, Stack, Typography } from '@mui/material'
 import { useParams } from 'react-router-dom'
-import { useGame } from '../../hooks/useGames'
+import { useGame } from '../../hooks/useGame'
 import { GameCounter } from '../../components/shared/GameCounter'
 
 const formatContestants = (game: any) =>

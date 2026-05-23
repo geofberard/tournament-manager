@@ -1,7 +1,7 @@
 import { renderHook, waitFor } from '@testing-library/react'
 import { SWRConfig } from 'swr'
 import { describe, expect, it, vi } from 'vitest'
-import { useGame, useGames } from './useGames'
+import { useGames } from './useGames'
 import { GameStatus } from '../generated/api-client'
 import * as gamesService from '../services/gamesService'
 
@@ -10,12 +10,10 @@ vi.mock('../services/gamesService', async () => {
   return {
     ...actual,
     listGames: vi.fn(),
-    getGameById: vi.fn(),
   }
 })
 
 const listGamesMock = vi.mocked(gamesService.listGames)
-const getGameByIdMock = vi.mocked(gamesService.getGameById)
 
 const createWrapper = () => {
   return function Wrapper({ children }: { children: React.ReactNode }) {
@@ -73,39 +71,5 @@ describe('useGames', () => {
 
     expect(result.current.games).toEqual([])
     expect(result.current.errorMessage).toBe('API indisponible')
-  })
-})
-
-describe('useGame', () => {
-  it('should load a single game by id', async () => {
-    getGameByIdMock.mockResolvedValueOnce({
-      id: 'game-1',
-      phase: { id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' },
-      group: 'Poule A',
-      time: new Date('2026-05-01T18:30:00Z'),
-      court: 'Central',
-      status: GameStatus.Scheduled,
-      contestants: new Set([{ id: 'team-2', name: 'Tigres' }]),
-      referee: undefined,
-      score: { pointsByTeam: {} },
-    })
-
-    const { result } = renderHook(() => useGame('game-1'), { wrapper: createWrapper() })
-
-    await waitFor(() => expect(result.current.isLoading).toBe(false))
-
-    expect(result.current.errorMessage).toBeNull()
-    expect(result.current.game?.id).toBe('game-1')
-  })
-
-  it('should expose the match error message when the single game request fails', async () => {
-    getGameByIdMock.mockRejectedValueOnce(new Error('Match introuvable'))
-
-    const { result } = renderHook(() => useGame('game-42'), { wrapper: createWrapper() })
-
-    await waitFor(() => expect(result.current.isLoading).toBe(false))
-
-    expect(result.current.game).toBeNull()
-    expect(result.current.errorMessage).toBe('Match introuvable')
   })
 })

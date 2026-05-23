@@ -5,7 +5,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { TeamRefereeGameView } from './TeamRefereeGameView'
 import type { Game } from '../../services/apiClient'
 
-vi.mock('../../hooks/useGames', () => ({
+vi.mock('../../hooks/useGame', () => ({
   useGame: vi.fn(),
 }))
 
@@ -18,8 +18,8 @@ describe('TeamRefereeGameView', () => {
   })
 
   beforeEach(async () => {
-    const useGames = await import('../../hooks/useGames')
-    useGameMock = vi.mocked(useGames.useGame)
+    const useGame = await import('../../hooks/useGame')
+    useGameMock = vi.mocked(useGame.useGame)
     useGameMock.mockReset()
   })
 
