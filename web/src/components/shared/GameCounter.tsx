@@ -116,7 +116,7 @@ export const GameCounter = ({ game }: GameCounterProps) => {
             <CounterBox
               team={team}
               score={(scores && scores[team.id]) ?? 0}
-              lastTeamPoint={lastTeamPoint === team.id}
+              highlight={lastTeamPoint === team.id}
               onChangeScore={updateScore}
             />
           </Box>

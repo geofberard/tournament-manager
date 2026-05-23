@@ -4,10 +4,10 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { CounterBox } from './CounterBox'
 import type { Team } from '../../generated/api-client'
 
-const renderBox = (team: Team, score: number, lastTeamPoint: boolean, onChangeScore: (teamId: string, delta: number) => void) =>
+const renderBox = (team: Team, score: number, highlight: boolean, onChangeScore: (teamId: string, delta: number) => void) =>
   render(
     <ThemeProvider theme={createTheme()}>
-      <CounterBox team={team} score={score} lastTeamPoint={lastTeamPoint} onChangeScore={onChangeScore} />
+      <CounterBox team={team} score={score} highlight={highlight} onChangeScore={onChangeScore} />
     </ThemeProvider>,
   )
 

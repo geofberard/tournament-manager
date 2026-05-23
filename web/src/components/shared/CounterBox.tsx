@@ -6,17 +6,17 @@ import { CounterButton } from "./CounterButton";
 type CounterBoxProps = {
   team: Team
   score: number
-  lastTeamPoint: boolean
+  highlight: boolean
   onChangeScore: (teamId: string, delta: number) => void
 }
 
-export const CounterBox = ({ team, score, lastTeamPoint, onChangeScore }: CounterBoxProps) =>{
+export const CounterBox = ({ team, score, highlight, onChangeScore }: CounterBoxProps) =>{
   return (
-    <Paper sx={{ width:'100%', flex: 1, backgroundColor: lastTeamPoint ? '#dcb96167' : '#ffffff', p: 3, textAlign: 'center' }}>
-      <Box sx={{ backgroundColor: lastTeamPoint ? '#ffffff' : '#90CAF9', p: 1.5, borderRadius: 1, mb: 2 }}>
+    <Paper sx={{ width:'100%', flex: 1, backgroundColor: highlight ? '#dcb96167' : '#ffffff', p: 3, textAlign: 'center' }}>
+      <Box sx={{ backgroundColor: highlight ? '#ffffff' : '#90CAF9', p: 1.5, borderRadius: 1, mb: 2 }}>
         <Stack direction="row" alignItems="center" spacing={2} justifyContent="center">
-          {lastTeamPoint ? <SportsVolleyballIcon sx={{ color: '#dcb961', fontSize: 30 }} /> : null}
-          <Typography variant="subtitle1" sx={{ fontWeight: 700, color: lastTeamPoint ? '#dcb961' : '#ffffff' }}>
+          {highlight ? <SportsVolleyballIcon sx={{ color: '#dcb961', fontSize: 30 }} /> : null}
+          <Typography variant="subtitle1" sx={{ fontWeight: 700, color: highlight ? '#dcb961' : '#ffffff' }}>
             {team.name}
           </Typography>
         </Stack>
