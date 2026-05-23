@@ -3,11 +3,6 @@ import { useParams } from 'react-router-dom'
 import { useGame } from '../../hooks/useGames'
 import { GameCounter } from '../../components/shared/GameCounter'
 
-const dateFormatter = new Intl.DateTimeFormat('fr-FR', {
-  dateStyle: 'medium',
-  timeStyle: 'short',
-})
-
 const formatContestants = (game: any) =>
   Array.from(game?.contestants || [])
     .map((team: any) => team?.name)
