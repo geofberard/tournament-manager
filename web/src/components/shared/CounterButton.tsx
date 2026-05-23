@@ -1,44 +1,36 @@
 import { Button } from "@mui/material";
+import type { Theme } from "@mui/material/styles";
 
 type CounterButtonProps = {
   action: "add" | "remove"
-  teamId: string
-  onChangeScore: (teamId: string, delta: number) => void
+  onClick: () => void
 }
 
-export const CounterButton = ({action, teamId, onChangeScore}: CounterButtonProps) => {
-  const onClickAction = () => {
-    action === "add"
-    ? onChangeScore(teamId, 1)
-    : onChangeScore(teamId, -1)
-  }
+export const CounterButton = ({action, onClick}: CounterButtonProps) => {
 
-  const sxButton = action === "add"
-    ? {
-        width: 80,
-        height: 80,
-        borderRadius: '50%',
-        backgroundColor: '#4CAF50',
-        color: 'white',
-        fontSize: '36px',
-        fontWeight: 700,
-        '&:hover': { backgroundColor: '#45A049' },
-      }
-    : {
-        width: 40,
-        height: 65,
-        borderRadius: '50%',
-        backgroundColor: '#f44336cf',
-        color: 'white',
-        fontSize: '36px',
-        fontWeight: 700,
-        '&:hover': { backgroundColor: '#D32F2F' },
-      }
+  const sxButton = {
+    borderRadius: '50%',
+    fontWeight: (theme: Theme) => theme.typography.h1.fontWeight,
+    fontSize: (theme: Theme) => theme.typography.h1.fontSize,
+    width: action === "add" ? 80 : 40,
+    height: action === "add" ? 80 : 65,
+    backgroundColor: (theme: Theme) => action === "add"
+    ? theme.palette.success.main
+      : theme.palette.danger.main,
+    color: (theme: Theme) => action === "add"
+      ? theme.palette.success.contrastText
+      : theme.palette.danger.contrastText,
+    '&:hover': {
+      backgroundColor: (theme: Theme) => action === "add"
+        ? theme.palette.success.dark
+        : theme.palette.danger.dark,
+    },
+  }
 
   return (
     <Button
       sx={sxButton}
-      onClick={onClickAction}
+      onClick={onClick}
     >
     {action === "add" ? "+" : "-"}
     </Button>
