@@ -1,7 +1,7 @@
 import { Button } from "@mui/material";
 
 type CounterButtonProps = {
-  action: string
+  action: "add" | "remove"
   teamId: string
   onChangeScore: (teamId: string, delta: number) => void
 }
