@@ -1,5 +1,5 @@
 import useSWR from 'swr'
-import { listGames, getGameById, type Game } from '../services/gamesService'
+import { listGames, type Game } from '../services/gamesService'
 
 const GAMES_KEY = '/api/games'
 

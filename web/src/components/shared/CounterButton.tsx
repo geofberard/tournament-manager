@@ -1,5 +1,4 @@
 import { Button } from "@mui/material";
-import { useEffect } from "react";
 
 type CounterButtonProps = {
   action: string
