@@ -19,6 +19,24 @@ const theme = createTheme(defaultTheme, {
       dark: '#a88933',
       contrastText: '#000000',
     },
+    success: {
+      light: '#81c784',
+      main: '#4CAF50',
+      dark: '#388E3C',
+      contrastText: '#ffffff',
+    },
+    danger: {
+      light: '#f44336cf',
+      main: '#f44336',
+      dark: '#d32f2f',
+      contrastText: '#ffffff',
+    },
+    info: {
+      light: '#2196F3',
+      main: '#1976D2',
+      dark: '#0D47A1',
+      contrastText: '#ffffff',
+    },
     background: {
       default: '#ffffff',
       paper: '#ffffff',
