@@ -1,48 +1,64 @@
 import { Box, Stack, Button } from "@mui/material"
 import SwapHorizIcon from "@mui/icons-material/SwapHoriz"
 import { type Game } from "../../services/apiClient"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { CounterBox } from "./CounterBox"
+import { useLocalStorage } from "../../hooks/useLocalStorage"
 
 type GameCounterProps = {
   game: Game
 }
 
-const buildGameStateStorageKey = (gameId: string | undefined) => {
-  return gameId ? `tournament-game-state-${gameId}` : null
-}
-
 export const GameCounter = ({ game }: GameCounterProps) => {
-  const [scores, setScores] = useState<Record<string, number>>({})
-  const [lastTeamPoint, setLastTeamPoint] = useState<string | null>(null)
-  const [switchSides, setSwitchSides] = useState<boolean>(false)
-
+  const { setLocalGameState, getLocalGameState, setLocalSwitchSides, getLocalSwitchSides } = useLocalStorage()
   const isFirstRender = useRef(true)
-  const contestants = Array.from(game?.contestants ?? []);
-  const gameStateStorageKey = buildGameStateStorageKey(game?.id)
+  const contestants = Array.from(game?.contestants ?? [])
 
-  // Load initial state from localStorage, or fallback to game score if available
-  useEffect(() => {
-    handleGameStateInitialLoad()
-    handleSwitchSidesInitialLoad()
-  }, [])
+  const initialGameState = useMemo(() => {
+    const stored = getLocalGameState(game)
+    if (!stored) {
+      return undefined
+    }
 
-  // Persist state to localStorage on changes (except for the initial load)
+    try {
+      return JSON.parse(stored) as {
+        scores?: Record<string, number>
+        lastTeamPoint?: string | null
+      }
+    } catch {
+      return undefined
+    }
+  }, [game, getLocalGameState])
+
+  const initialSwitchSides = useMemo(() => {
+    const stored = getLocalSwitchSides(game)
+    if (!stored) {
+      return false
+    }
+
+    try {
+      return (JSON.parse(stored) as { switchSides: boolean }).switchSides === true
+    } catch {
+      return false
+    }
+  }, [game, getLocalSwitchSides])
+
+  const [scores, setScores] = useState<Record<string, number>>(
+    () => initialGameState?.scores ?? game?.score?.pointsByTeam ?? {}
+  )
+  const [lastTeamPoint, setLastTeamPoint] = useState<string | null>(
+    () => initialGameState?.lastTeamPoint ?? null
+  )
+  const [switchSides, setSwitchSides] = useState<boolean>(() => initialSwitchSides)
+
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false
       return
     }
 
-    if (!gameStateStorageKey) {
-      return
-    }
-
-    globalThis.localStorage.setItem(
-      gameStateStorageKey,
-      JSON.stringify({ scores, lastTeamPoint }),
-    )
-  }, [scores])
+    setLocalGameState(game, scores, lastTeamPoint)
+  }, [game, scores, lastTeamPoint, setLocalGameState])
 
   const updateScore = (teamId: string, delta: number) => {
     setScores((prev) => {
@@ -60,40 +76,12 @@ export const GameCounter = ({ game }: GameCounterProps) => {
     }
   }
 
-  const handleGameStateInitialLoad = () => {
-    if (!gameStateStorageKey) {
-      return
-    }
-
-    const gameStateStored = globalThis.localStorage.getItem(gameStateStorageKey)
-
-    if (!gameStateStored) {
-      setScores(game?.score?.pointsByTeam)
-      return
-    }
-
-    const parsed = JSON.parse(gameStateStored) as {
-      scores?: Record<string, number>
-      lastTeamPoint?: string | null
-    }
-
-    setScores(parsed.scores ?? game?.score?.pointsByTeam ?? {})
-    setLastTeamPoint(parsed.lastTeamPoint ?? null)
-  }
-
-  const handleSwitchSidesInitialLoad = () => {
-    const switchSidesStored = globalThis.localStorage.getItem(`${gameStateStorageKey}-switch-sides`)
-    
-    if (!switchSidesStored) {
-      return
-    }
-
-    setSwitchSides(switchSidesStored === 'true')
-  }
-
   const handleSwitchSides = () => {
-    setSwitchSides((prev) => !prev)
-    globalThis.localStorage.setItem(`${gameStateStorageKey}-switch-sides`, JSON.stringify(!switchSides))
+    setSwitchSides((prev) => {
+      const next = !prev
+      setLocalSwitchSides(game, next)
+      return next
+    })
   }
 
   return (
