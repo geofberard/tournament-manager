@@ -1,6 +1,6 @@
 import { Box, Stack, Button } from "@mui/material"
 import SwapHorizIcon from "@mui/icons-material/SwapHoriz"
-import { type Game } from "../../services/apiClient"
+import { type Game, type Team } from "../../services/apiClient"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { CounterBox } from "./CounterBox"
 import { useLocalStorage } from "../../hooks/useLocalStorage"
@@ -111,7 +111,7 @@ export const GameCounter = ({ game }: GameCounterProps) => {
         flexWrap="wrap"
         alignItems="stretch"
       >
-        {(switchSides ? contestants.toReversed() : contestants).map((team: any) => (
+        {(switchSides ? contestants.toReversed() : contestants).map((team: Team) => (
           <Box key={team.id} sx={{ flex: 1, minWidth: { xs: "100%", sm: 280 } }}>
             <CounterBox
               team={team}

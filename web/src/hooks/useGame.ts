@@ -3,10 +3,10 @@ import { getGameById, type Game } from '../services/gamesService'
 
 const GAME_KEY = (gameId: string) => `/api/games/${gameId}`
 
-export function useGame(gameId?: string) {
+export function useGame(gameId: string) {
   const { data, error, isLoading } = useSWR<Game | null>(
-    gameId ? GAME_KEY(gameId) : null,
-    () => getGameById(gameId!),
+    GAME_KEY(gameId),
+    () => getGameById(gameId),
   )
 
   return {

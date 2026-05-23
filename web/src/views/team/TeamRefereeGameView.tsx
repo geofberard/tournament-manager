@@ -2,15 +2,17 @@ import { CircularProgress, Divider, Stack, Typography } from '@mui/material'
 import { useParams } from 'react-router-dom'
 import { useGame } from '../../hooks/useGame'
 import { GameCounter } from '../../components/shared/GameCounter'
+import type { Game } from '../../services/gamesService'
+import type { Team } from '../../services/teamsService'
 
-const formatContestants = (game: any) =>
+const formatContestants = (game: Game) =>
   Array.from(game?.contestants || [])
-    .map((team: any) => team?.name)
+    .map((team: Team) => team?.name)
     .join(' vs ')
 
 export const TeamRefereeGameView = () => {
   const { id } = useParams<{ id: string }>()
-  const { game, isLoading } = useGame(id)
+  const { game, isLoading } = useGame(id!)
 
   return (
     <Stack>
@@ -19,7 +21,7 @@ export const TeamRefereeGameView = () => {
         : (
           <Stack spacing={3}>
             <Typography variant="h2" sx={{ fontWeight: 700, textAlign: 'center' }}>
-              {formatContestants(game ?? {})}
+              {formatContestants(game!)}
             </Typography>
             <Stack spacing={0.5}>
               <Typography variant="subtitle1" sx={{ fontWeight: 500, textAlign: 'center' }}>
