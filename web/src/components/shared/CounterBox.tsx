@@ -12,7 +12,7 @@ type CounterBoxProps = {
 }
 
 export const CounterBox = ({ team, score, highlight, onChangeScore }: CounterBoxProps) => {
-  const themeValue = (highlightFn: (t: Theme) => any, normalFn: (t: Theme) => any) =>
+  const themeValue = (highlightFn: (t: Theme) => string | number, normalFn: (t: Theme) => string | number) =>
     (theme: Theme) => highlight ? highlightFn(theme) : normalFn(theme)
 
   const sxPaper = {
@@ -55,13 +55,15 @@ export const CounterBox = ({ team, score, highlight, onChangeScore }: CounterBox
   }
 
   const sxIcon = {
-    color: highlight ? (theme: Theme) => theme.palette.secondary.main : null,
+    color: highlight ? (theme: Theme) => theme.palette.secondary.main : undefined,
   }
 
   const onClickAction = (action: "add" | "remove") => {
-    action === "add"
-    ? onChangeScore(team.id, 1)
-    : onChangeScore(team.id, -1)
+    if (action === "add") {
+      onChangeScore(team.id, 1)
+    } else {
+      onChangeScore(team.id, -1)
+    }
   }
 
   return (
