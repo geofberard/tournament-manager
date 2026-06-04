@@ -1,4 +1,6 @@
 import { Button } from "@mui/material";
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
 import type { Theme } from "@mui/material/styles";
 
 type CounterButtonProps = {
@@ -15,7 +17,7 @@ export const CounterButton = ({action, onClick}: CounterButtonProps) => {
     width: action === "add" ? 80 : 40,
     height: action === "add" ? 80 : 65,
     backgroundColor: (theme: Theme) => action === "add"
-    ? theme.palette.success.main
+      ? theme.palette.success.main
       : theme.palette.danger.main,
     color: (theme: Theme) => action === "add"
       ? theme.palette.success.contrastText
@@ -32,7 +34,7 @@ export const CounterButton = ({action, onClick}: CounterButtonProps) => {
       sx={sxButton}
       onClick={onClick}
     >
-    {action === "add" ? "+" : "-"}
+      {action === "add" ? <AddIcon /> : <RemoveIcon />}
     </Button>
   );
 }
