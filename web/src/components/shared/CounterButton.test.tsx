@@ -9,32 +9,32 @@ describe('CounterButton', () => {
   })
 
   it('should render a plus button for add action', () => {
-    render(<CounterButton action="add" teamId="team-1" onChangeScore={vi.fn()} />)
+    render(<CounterButton action="add" onClick={vi.fn()} />)
 
     expect(screen.getByRole('button', { name: '+' })).toBeInTheDocument()
   })
 
   it('should render a minus button for remove action', () => {
-    render(<CounterButton action="remove" teamId="team-1" onChangeScore={vi.fn()} />)
+    render(<CounterButton action="remove" onClick={vi.fn()} />)
 
     expect(screen.getByRole('button', { name: '-' })).toBeInTheDocument()
   })
 
-  it('should call onChangeScore with +1 when add button is clicked', () => {
-    const onChangeScore = vi.fn()
-    render(<CounterButton action="add" teamId="team-1" onChangeScore={onChangeScore} />)
+  it('should call onClick when add button is clicked', () => {
+    const onClick = vi.fn()
+    render(<CounterButton action="add" onClick={onClick} />)
 
     fireEvent.click(screen.getByRole('button', { name: '+' }))
 
-    expect(onChangeScore).toHaveBeenCalledWith('team-1', 1)
+    expect(onClick).toHaveBeenCalledTimes(1)
   })
 
-  it('should call onChangeScore with -1 when remove button is clicked', () => {
-    const onChangeScore = vi.fn()
-    render(<CounterButton action="remove" teamId="team-1" onChangeScore={onChangeScore} />)
+  it('should call onClick when remove button is clicked', () => {
+    const onClick = vi.fn()
+    render(<CounterButton action="remove" onClick={onClick} />)
 
     fireEvent.click(screen.getByRole('button', { name: '-' }))
 
-    expect(onChangeScore).toHaveBeenCalledWith('team-1', -1)
+    expect(onClick).toHaveBeenCalledTimes(1)
   })
 })

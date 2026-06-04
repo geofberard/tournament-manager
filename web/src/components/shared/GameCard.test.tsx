@@ -99,11 +99,11 @@ describe('GameCard', () => {
     expect(screen.getByText('21 - -')).toBeInTheDocument()
   })
 
-  it('should render "Arbitrer le match" for scheduled games and navigate on click', () => {
+  it('should render "Arbitrer le match" for games in progress and navigate on click', () => {
     renderCard({
       ...baseGame,
       id: 'game-2',
-      status: GameStatus.Scheduled,
+      status: GameStatus.InProgress,
     })
 
     const button = screen.getByRole('button', { name: 'Arbitrer le match' })
@@ -116,15 +116,15 @@ describe('GameCard', () => {
     )
   })
 
-  it('should render "Continuer l\'arbitrage" for games in progress', () => {
+  it('should not render an arbitration button for scheduled games', () => {
     renderCard({
       ...baseGame,
-      status: GameStatus.InProgress,
+      status: GameStatus.Scheduled,
     })
 
     expect(
-      screen.getByRole('button', { name: "Continuer l'arbitrage" }),
-    ).toBeInTheDocument()
+      screen.queryByRole('button', { name: /Arbitrer le match|Continuer l'arbitrage/ }),
+    ).not.toBeInTheDocument()
   })
 
   it('should not render an arbitration button when the game is completed', () => {
