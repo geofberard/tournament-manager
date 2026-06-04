@@ -33,6 +33,8 @@ export const CounterButton = ({action, onClick}: CounterButtonProps) => {
     <Button
       sx={sxButton}
       onClick={onClick}
+      aria-label={action === "add" ? "+" : "-"}
+      title={action === "add" ? "Ajouter" : "Retirer"}
     >
       {action === "add" ? <AddIcon /> : <RemoveIcon />}
     </Button>
