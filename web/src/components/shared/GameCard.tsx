@@ -95,10 +95,10 @@ export const GameCard = ({ game }: GameCardProps) => {
             </Typography>
           ) : null}
 
-          {game.status === GameStatus.InProgress || game.status === GameStatus.Scheduled ? (
+          {game.status === GameStatus.InProgress ? (
             <Stack direction="row" justifyContent="flex-end">
               <Button variant="outlined" size="small" onClick={handleRefereeClick} color="success">
-                {game.status === GameStatus.Scheduled ? 'Arbitrer le match' : 'Continuer l\'arbitrage'}
+                Arbitrer le match
               </Button>
             </Stack>
           ) : null}
