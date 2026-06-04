@@ -18,14 +18,14 @@ export const CounterButton = ({action, onClick}: CounterButtonProps) => {
     height: action === "add" ? 80 : 65,
     backgroundColor: (theme: Theme) => action === "add"
       ? theme.palette.success.main
-      : theme.palette.danger.main,
+      : theme.palette.error.main,
     color: (theme: Theme) => action === "add"
       ? theme.palette.success.contrastText
-      : theme.palette.danger.contrastText,
+      : theme.palette.error.contrastText,
     '&:hover': {
       backgroundColor: (theme: Theme) => action === "add"
         ? theme.palette.success.dark
-        : theme.palette.danger.dark,
+        : theme.palette.error.dark,
     },
   }
 
