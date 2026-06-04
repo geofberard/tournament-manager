@@ -145,7 +145,7 @@ const AppRoutes = ({ adminSession, teamSession }: AppRoutesProps) => {
         <Route index element={<Navigate to={TEAM_RESULTS_PATH} replace />} />
         <Route path="results" element={<TeamResultsView currentTeam={currentTeam ?? undefined!} />} />
         <Route path="games" element={<TeamGamesView currentTeam={currentTeam ?? undefined!} />} />
-        <Route path="/team/referee/game/:id" element={<TeamRefereeGameView />} />
+        <Route path="referee/game/:id" element={<TeamRefereeGameView />} />
       </Route>
 
       <Route
