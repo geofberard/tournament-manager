@@ -1,6 +1,7 @@
-import { render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { ThemeProvider, createTheme } from '@mui/material'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import { SWRConfig } from 'swr'
 import { AdminPhasesView } from './AdminPhasesView'
 import * as usePhasesModule from '../../hooks/usePhases'
 
@@ -10,14 +11,28 @@ vi.mock('../../hooks/usePhases', () => ({
 
 const usePhasesMock = vi.mocked(usePhasesModule.usePhases)
 
+const renderView = () =>
+  render(
+    <SWRConfig value={{ provider: () => new Map(), dedupingInterval: 0 }}>
+      <ThemeProvider theme={createTheme()}>
+        <AdminPhasesView />
+      </ThemeProvider>
+    </SWRConfig>,
+  )
+
 describe('AdminPhasesView', () => {
-  it('should render the phases table', () => {
+  afterEach(() => {
+    cleanup()
+    vi.clearAllMocks()
+  })
+
+  it('should render phases as accordions', () => {
     usePhasesMock.mockReturnValue({
       errorMessage: null,
       isLoading: false,
       phases: [
         {
-          details: 'Premiere phase',
+          details: '# Premiere phase\n\nTexte en **gras**.\n\n- Matchs de poule',
           id: 'phase-1',
           name: 'Brassage',
           order: 1,
@@ -26,16 +41,15 @@ describe('AdminPhasesView', () => {
       ],
     })
 
-    render(
-      <ThemeProvider theme={createTheme()}>
-        <AdminPhasesView />
-      </ThemeProvider>,
-    )
+    renderView()
 
     expect(screen.getByRole('heading', { name: 'Phases' })).toBeInTheDocument()
     expect(screen.getByText('Brassage')).toBeInTheDocument()
-    expect(screen.getByText('phase-1')).toBeInTheDocument()
-    expect(screen.getByText('Premiere phase')).toBeInTheDocument()
+    expect(screen.getByText('Poules')).toBeInTheDocument()
+    expect(screen.getByText('Premiere phase').tagName).toBe('H4')
+    expect(screen.getByText('gras').tagName).toBe('STRONG')
+    expect(screen.getByText('Matchs de poule')).toBeInTheDocument()
+    expect(screen.queryByText('phase-1')).not.toBeInTheDocument()
   })
 
   it('should render an empty state when there are no phases', () => {
@@ -45,11 +59,7 @@ describe('AdminPhasesView', () => {
       phases: [],
     })
 
-    render(
-      <ThemeProvider theme={createTheme()}>
-        <AdminPhasesView />
-      </ThemeProvider>,
-    )
+    renderView()
 
     expect(screen.getByText('Aucune phase disponible.')).toBeInTheDocument()
   })
@@ -61,11 +71,7 @@ describe('AdminPhasesView', () => {
       phases: [],
     })
 
-    render(
-      <ThemeProvider theme={createTheme()}>
-        <AdminPhasesView />
-      </ThemeProvider>,
-    )
+    renderView()
 
     expect(screen.getByRole('progressbar')).toBeInTheDocument()
   })
@@ -77,12 +83,47 @@ describe('AdminPhasesView', () => {
       phases: [],
     })
 
-    render(
-      <ThemeProvider theme={createTheme()}>
-        <AdminPhasesView />
-      </ThemeProvider>,
-    )
+    renderView()
 
     expect(screen.getByText('Phases indisponibles')).toBeInTheDocument()
+  })
+
+  it('should open the creation drawer', () => {
+    usePhasesMock.mockReturnValue({
+      errorMessage: null,
+      isLoading: false,
+      phases: [],
+    })
+
+    renderView()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Ajouter une phase' }))
+
+    expect(screen.getByRole('heading', { name: 'Nouvelle phase' })).toBeInTheDocument()
+    expect(screen.getByRole('textbox', { name: 'Nom' })).toBeInTheDocument()
+  })
+
+  it('should open the update drawer with selected phase values', () => {
+    usePhasesMock.mockReturnValue({
+      errorMessage: null,
+      isLoading: false,
+      phases: [
+        {
+          details: 'Phase finale',
+          id: 'phase-2',
+          name: 'Finales',
+          order: 2,
+          type: 'BRACKET',
+        },
+      ],
+    })
+
+    renderView()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Editer' }))
+
+    expect(screen.getByRole('heading', { name: 'Modifier la phase' })).toBeInTheDocument()
+    expect(screen.getByDisplayValue('Finales')).toBeInTheDocument()
+    expect(screen.getByDisplayValue('Phase finale')).toBeInTheDocument()
   })
 })

@@ -2,12 +2,15 @@ import {
   AdminAuthApi,
   Configuration,
   GamesApi,
+  PhasesApi,
   StatisticsApi,
   TeamsApi,
+  type CreatePhaseRequest,
   type ContestantStats,
   type Game as ApiGame,
   type Phase as ApiPhase,
   type Team,
+  type UpdatePhaseRequest,
 } from '../generated/api-client'
 
 export type PhaseType = 'POOL' | 'BRACKET'
@@ -22,12 +25,13 @@ const apiConfiguration = new Configuration({
 const teamsApi = new TeamsApi(apiConfiguration)
 const adminAuthApi = new AdminAuthApi(apiConfiguration)
 const gamesApi = new GamesApi(apiConfiguration)
+const phasesApi = new PhasesApi(apiConfiguration)
 const statisticsApi = new StatisticsApi(apiConfiguration)
 
 export { adminAuthApi }
 export { teamsApi }
-export { gamesApi, statisticsApi }
-export type { ContestantStats, Team }
+export { gamesApi, phasesApi, statisticsApi }
+export type { ContestantStats, CreatePhaseRequest, Team, UpdatePhaseRequest }
 
 export const fetchJson = async <T>(path: string): Promise<T> => {
   const response = await fetch(path, {
