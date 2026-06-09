@@ -122,4 +122,4 @@ jobs:
           path: web/dist
 
       - name: Deploy to Firebase Hosting
-        run: npx --yes firebase-tools@latest deploy --project="${GCP_PROJECT_ID}" --only=hosting
+        run: npx --yes firebase-tools@latest deploy --project="${GCP_PROJECT_ID}" --only=hosting --config=infra/gcp/firebase.json

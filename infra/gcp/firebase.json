@@ -3,7 +3,7 @@
     "site": "gberard-tournament-prod",
     "public": "web/dist",
     "ignore": [
-      "firebase.json",
+      "infra/gcp/firebase.json",
       "**/.*",
       "**/node_modules/**"
     ],

@@ -1,5 +1,9 @@
 **/target/
 .mvn
+!api/.mvn/
+!api/.mvn/wrapper/
+!api/.mvn/wrapper/maven-wrapper.properties
+!api/.mvn/wrapper/maven-wrapper.jar
 node_modules
 back/src/main/resources/com/gberard/tournament/*.json
 front/dist/bundle.*

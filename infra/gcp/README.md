@@ -155,16 +155,21 @@ release Firebase Hosting effectuee par le workflow release.
 
 ## Firebase Hosting
 
-Le front utilise `window.location.origin` par defaut pour appeler l'API. Sur
-Firebase Hosting, les appels `/api/...` sont donc repris par la rewrite Cloud Run.
+Le front utilise des chemins relatifs vers l'API. Le client web appelle donc
+directement `/api/...`.
 
-Le fichier `firebase.json` contient la configuration Hosting :
+Le fichier `infra/gcp/firebase.json` contient la configuration Hosting :
 
 ```json
 {
   "hosting": {
     "site": "gberard-tournament-prod",
     "public": "web/dist",
+    "ignore": [
+      "infra/gcp/firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
     "rewrites": [
       {
         "source": "/api/**",
@@ -181,6 +186,9 @@ Le fichier `firebase.json` contient la configuration Hosting :
   }
 }
 ```
+
+Le workflow de release le passe explicitement a la CLI Firebase avec
+`--config=infra/gcp/firebase.json`.
 
 Le site par defaut est `https://<project-id>.web.app`, avec aussi
 `https://<project-id>.firebaseapp.com`.
