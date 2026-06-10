@@ -42,11 +42,19 @@ describe('AdminGamesView', () => {
     )
 
     expect(screen.getByRole('heading', { name: 'Matchs' })).toBeInTheDocument()
-    expect(screen.getByText('Finale')).toBeInTheDocument()
+    expect(screen.getByRole('columnheader', { name: /Heure/ })).toBeInTheDocument()
+    expect(screen.getByRole('columnheader', { name: /Phase/ })).toBeInTheDocument()
+    expect(screen.getByRole('columnheader', { name: /Groupe/ })).toBeInTheDocument()
+    expect(screen.getByRole('columnheader', { name: /Equipe 1/ })).toBeInTheDocument()
+    expect(screen.getByRole('columnheader', { name: /Score/ })).toBeInTheDocument()
+    expect(screen.getByRole('columnheader', { name: /Equipe 2/ })).toBeInTheDocument()
     expect(screen.getByText('Brassage')).toBeInTheDocument()
-    expect(screen.getByText('Tigres / Lynx')).toBeInTheDocument()
-    expect(screen.getByText('Tigres: 21 / Lynx: 18')).toBeInTheDocument()
-    expect(screen.getByText('game-1')).toBeInTheDocument()
+    expect(screen.getByText('Poule A')).toBeInTheDocument()
+    expect(screen.getByText('Tigres')).toBeInTheDocument()
+    expect(screen.getByText('Lynx')).toBeInTheDocument()
+    expect(screen.getByText('21 - 18')).toBeInTheDocument()
+    expect(screen.queryByText('Finale')).not.toBeInTheDocument()
+    expect(screen.queryByText('game-1')).not.toBeInTheDocument()
   })
 
   it('should render an empty state when there are no games', () => {
