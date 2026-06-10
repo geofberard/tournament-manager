@@ -34,3 +34,6 @@ front/dist/bundle.*
 *.tfstate
 *.tfstate.*
 *.tfplan
+
+### Codex ###
+AGENTS.md
