@@ -14,7 +14,7 @@ import { useSWRConfig } from 'swr'
 import { ManagePhaseForm } from '../../components/admin/ManagePhaseForm'
 import { PhaseAccordion } from '../../components/admin/PhaseAccordion'
 import { usePhases } from '../../hooks/usePhases'
-import { createPhase, updatePhase, type Phase, type PhasePayload } from '../../services/phasesService'
+import { createPhase, deletePhase, updatePhase, type Phase, type PhasePayload } from '../../services/phasesService'
 
 type PhaseDrawerMode = 'idle' | 'create' | 'update'
 
@@ -85,6 +85,23 @@ export const AdminPhasesView = () => {
     closeDrawer()
   }
 
+  const deleteSelectedPhase = async (phaseToDelete: Phase) => {
+    await deletePhase(phaseToDelete.id)
+    await mutate(
+      '/api/phases',
+      (currentPhases: Phase[] | undefined) => (currentPhases ?? []).filter((phase) => phase.id !== phaseToDelete.id),
+      { revalidate: false },
+    )
+
+    if (expandedPhaseId === phaseToDelete.id) {
+      setExpandedPhaseId(false)
+    }
+
+    if (selectedPhase?.id === phaseToDelete.id) {
+      closeDrawer()
+    }
+  }
+
   return (
     <Stack spacing={3}>
       <Stack alignItems={{ xs: 'stretch', sm: 'flex-start' }} direction={{ xs: 'column', sm: 'row' }} spacing={2}>
@@ -114,6 +131,7 @@ export const AdminPhasesView = () => {
               expanded={expandedPhaseId === phase.id}
               key={phase.id}
               onChange={handleAccordionChange(phase.id)}
+              onDelete={deleteSelectedPhase}
               onEdit={openUpdateDrawer}
               phase={phase}
             />

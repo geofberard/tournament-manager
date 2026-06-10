@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { ThemeProvider, createTheme } from '@mui/material'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { PhaseAccordion } from './PhaseAccordion'
@@ -14,16 +14,17 @@ const phase: Phase = {
 
 const renderPhaseView = (overrides: Partial<Phase> = {}) => {
   const onChange = vi.fn()
+  const onDelete = vi.fn().mockResolvedValue(undefined)
   const onEdit = vi.fn()
   const renderedPhase = { ...phase, ...overrides }
 
   render(
     <ThemeProvider theme={createTheme()}>
-      <PhaseAccordion expanded onChange={onChange} onEdit={onEdit} phase={renderedPhase} />
+      <PhaseAccordion expanded onChange={onChange} onDelete={onDelete} onEdit={onEdit} phase={renderedPhase} />
     </ThemeProvider>,
   )
 
-  return { onChange, onEdit, phase: renderedPhase }
+  return { onChange, onDelete, onEdit, phase: renderedPhase }
 }
 
 describe('PhaseAccordion', () => {
@@ -47,6 +48,18 @@ describe('PhaseAccordion', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Editer' }))
 
     expect(onEdit).toHaveBeenCalledWith(renderedPhase)
+  })
+
+  it('should expose the selected phase when deleting after confirmation', async () => {
+    const { onDelete, phase: renderedPhase } = renderPhaseView()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Supprimer' }))
+    const dialog = screen.getByRole('dialog', { name: 'Supprimer ?' })
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Supprimer' }))
+
+    await waitFor(() => {
+      expect(onDelete).toHaveBeenCalledWith(renderedPhase)
+    })
   })
 
   it('should render an empty details state', () => {

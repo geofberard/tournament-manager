@@ -1,15 +1,26 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { ThemeProvider, createTheme } from '@mui/material'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { SWRConfig } from 'swr'
 import { AdminPhasesView } from './AdminPhasesView'
 import * as usePhasesModule from '../../hooks/usePhases'
+import * as phasesServiceModule from '../../services/phasesService'
 
 vi.mock('../../hooks/usePhases', () => ({
   usePhases: vi.fn(),
 }))
 
+vi.mock('../../services/phasesService', async () => {
+  const actual = await vi.importActual<typeof import('../../services/phasesService')>('../../services/phasesService')
+
+  return {
+    ...actual,
+    deletePhase: vi.fn(),
+  }
+})
+
 const usePhasesMock = vi.mocked(usePhasesModule.usePhases)
+const deletePhaseMock = vi.mocked(phasesServiceModule.deletePhase)
 
 const renderView = () =>
   render(
@@ -125,5 +136,32 @@ describe('AdminPhasesView', () => {
     expect(screen.getByRole('heading', { name: 'Modifier la phase' })).toBeInTheDocument()
     expect(screen.getByDisplayValue('Finales')).toBeInTheDocument()
     expect(screen.getByDisplayValue('Phase finale')).toBeInTheDocument()
+  })
+
+  it('should delete a phase after confirmation', async () => {
+    deletePhaseMock.mockResolvedValueOnce(undefined)
+    usePhasesMock.mockReturnValue({
+      errorMessage: null,
+      isLoading: false,
+      phases: [
+        {
+          details: 'Phase finale',
+          id: 'phase-2',
+          name: 'Finales',
+          order: 2,
+          type: 'BRACKET',
+        },
+      ],
+    })
+
+    renderView()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Supprimer' }))
+    const dialog = screen.getByRole('dialog', { name: 'Supprimer ?' })
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Supprimer' }))
+
+    await waitFor(() => {
+      expect(deletePhaseMock).toHaveBeenCalledWith('phase-2')
+    })
   })
 })

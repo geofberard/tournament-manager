@@ -1,15 +1,19 @@
 import type { SyntheticEvent } from 'react'
+import type { MouseEvent } from 'react'
 import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
   Box,
-  Button,
   Chip,
+  IconButton,
   Stack,
   Typography,
 } from '@mui/material'
 import { accordionSummaryClasses } from '@mui/material/AccordionSummary'
+import EditIcon from '@mui/icons-material/Edit'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import { DeleteButton } from './DeleteButton'
 import { MarkdownContent } from '../shared/MarkdownContent'
 import type { Phase } from '../../services/phasesService'
 
@@ -21,11 +25,17 @@ const phaseTypeLabels: Record<Phase['type'], string> = {
 type PhaseAccordionProps = {
   expanded: boolean
   onChange: (event: SyntheticEvent, isExpanded: boolean) => void
+  onDelete: (phase: Phase) => Promise<void> | void
   onEdit: (phase: Phase) => void
   phase: Phase
 }
 
-export const PhaseAccordion = ({ expanded, onChange, onEdit, phase }: PhaseAccordionProps) => {
+export const PhaseAccordion = ({ expanded, onChange, onDelete, onEdit, phase }: PhaseAccordionProps) => {
+  const handleEditClick = (event: MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation()
+    onEdit(phase)
+  }
+
   return (
     <Accordion
       disableGutters
@@ -47,7 +57,7 @@ export const PhaseAccordion = ({ expanded, onChange, onEdit, phase }: PhaseAccor
       <AccordionSummary
         aria-label={`${phase.name} ${phaseTypeLabels[phase.type]}`}
         component="div"
-        expandIcon={<Typography aria-hidden="true">⌄</Typography>}
+        expandIcon={<ExpandMoreIcon />}
         sx={{
           bgcolor: 'background.default',
           minHeight: 56,
@@ -107,18 +117,20 @@ export const PhaseAccordion = ({ expanded, onChange, onEdit, phase }: PhaseAccor
               <Chip label={phaseTypeLabels[phase.type]} size="small" sx={{ flex: '0 0 auto' }} />
             </Stack>
           </Stack>
-          <Button
-            onClick={(event) => {
-              event.stopPropagation()
-              onEdit(phase)
-            }}
+          <Stack
+            alignItems="center"
+            direction="row"
+            onClick={(event) => event.stopPropagation()}
             onFocus={(event) => event.stopPropagation()}
-            size="small"
+            onMouseDown={(event) => event.stopPropagation()}
+            spacing={1}
             sx={{ flex: '0 0 auto' }}
-            variant="outlined"
           >
-            Editer
-          </Button>
+            <IconButton aria-label="Editer" onClick={handleEditClick} size="small">
+              <EditIcon fontSize="small" />
+            </IconButton>
+            <DeleteButton onConfirm={() => onDelete(phase)} />
+          </Stack>
         </Stack>
       </AccordionSummary>
       <AccordionDetails sx={{ borderTop: 1, borderColor: 'divider', p: 2 }}>

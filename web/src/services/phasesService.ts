@@ -17,3 +17,6 @@ export const createPhase = async (createPhaseRequest: PhasePayload): Promise<Pha
 
 export const updatePhase = async (phaseId: string, updatePhaseRequest: UpdatePhaseRequest): Promise<Phase> =>
   phasesApi.updatePhase({ phaseId, updatePhaseRequest }) as Promise<Phase>
+
+export const deletePhase = async (phaseId: string): Promise<void> =>
+  phasesApi.deletePhase({ phaseId })
