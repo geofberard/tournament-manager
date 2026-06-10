@@ -5,6 +5,7 @@ import { AdminLoginView } from './AdminLoginView'
 
 describe('AdminLoginView', () => {
   it('should call the login handler with credentials', async () => {
+    // GIVEN
     const onLogin = vi.fn().mockResolvedValue(undefined)
 
     render(
@@ -19,8 +20,11 @@ describe('AdminLoginView', () => {
     expect(passwordInput).not.toBeNull()
 
     fireEvent.change(passwordInput!, { target: { value: 'admin123' } })
+
+    // WHEN
     fireEvent.click(screen.getByRole('button', { name: 'Se connecter' }))
 
+    // THEN
     expect(onLogin).toHaveBeenCalledWith('admin', 'admin123')
   })
 })

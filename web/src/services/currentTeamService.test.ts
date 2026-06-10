@@ -16,60 +16,71 @@ describe('currentTeamService', () => {
   })
 
   it('should return the current team from local storage first', () => {
-    // Given
+    // GIVEN
     window.localStorage.setItem('team', JSON.stringify(team))
     document.cookie = `team=${JSON.stringify({ id: 'other', name: 'Other' })};path=/`
 
-    // When / Then
-    expect(getCurrentTeam()).toEqual(team)
+    // WHEN
+    const currentTeam = getCurrentTeam()
+
+    // THEN
+    expect(currentTeam).toEqual(team)
   })
 
   it('should migrate the current team from the legacy cookie when local storage is empty', () => {
-    // Given
+    // GIVEN
     document.cookie = `team=${JSON.stringify(team)};path=/`
 
-    // When
+    // WHEN
     const currentTeam = getCurrentTeam()
 
-    // Then
+    // THEN
     expect(currentTeam).toEqual(team)
     expect(window.localStorage.getItem('team')).toBe(JSON.stringify(team))
   })
 
   it('should return null when local storage contains invalid JSON', () => {
-    // Given
+    // GIVEN
     window.localStorage.setItem('team', '{invalid-json')
 
-    // When / Then
-    expect(getCurrentTeam()).toBeNull()
+    // WHEN
+    const currentTeam = getCurrentTeam()
+
+    // THEN
+    expect(currentTeam).toBeNull()
   })
 
   it('should return null when the legacy cookie contains invalid JSON', () => {
-    // Given
+    // GIVEN
     document.cookie = 'team={invalid-json;path=/'
 
-    // When / Then
-    expect(getCurrentTeam()).toBeNull()
+    // WHEN
+    const currentTeam = getCurrentTeam()
+
+    // THEN
+    expect(currentTeam).toBeNull()
   })
 
   it('should persist the current team in local storage and cookie', () => {
-    // When
+    // GIVEN
+
+    // WHEN
     setCurrentTeam(team)
 
-    // Then
+    // THEN
     expect(window.localStorage.getItem('team')).toBe(JSON.stringify(team))
     expect(document.cookie).toContain('team=')
     expect(decodeURIComponent(document.cookie)).toContain(JSON.stringify(team))
   })
 
   it('should clear the current team from local storage and cookie', () => {
-    // Given
+    // GIVEN
     setCurrentTeam(team)
 
-    // When
+    // WHEN
     clearCurrentTeam()
 
-    // Then
+    // THEN
     expect(window.localStorage.getItem('team')).toBeNull()
     expect(getCurrentTeam()).toBeNull()
     expect(decodeURIComponent(document.cookie)).not.toContain(JSON.stringify(team))

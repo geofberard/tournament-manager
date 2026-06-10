@@ -26,13 +26,16 @@ describe('usePhases', () => {
   })
 
   it('should load phases from the service', async () => {
+    // GIVEN
     listPhasesMock.mockResolvedValueOnce([
       { id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' },
       { id: 'phase-2', name: 'Principale', order: 2, type: 'BRACKET' },
     ])
 
+    // WHEN
     const { result } = renderHook(() => usePhases(), { wrapper: createWrapper() })
 
+    // THEN
     await waitFor(() => expect(result.current.isLoading).toBe(false))
 
     expect(result.current.errorMessage).toBeNull()
@@ -40,10 +43,13 @@ describe('usePhases', () => {
   })
 
   it('should expose the service error message when loading phases fails', async () => {
+    // GIVEN
     listPhasesMock.mockRejectedValueOnce(new Error('Phases indisponibles'))
 
+    // WHEN
     const { result } = renderHook(() => usePhases(), { wrapper: createWrapper() })
 
+    // THEN
     await waitFor(() => expect(result.current.isLoading).toBe(false))
 
     expect(result.current.phases).toEqual([])

@@ -9,6 +9,7 @@ describe('NavigationMenu', () => {
   })
 
   it('should render title, pages and action button from props', () => {
+    // WHEN
     render(
       <ThemeProvider theme={createTheme()}>
         <NavigationMenu
@@ -26,6 +27,7 @@ describe('NavigationMenu', () => {
       </ThemeProvider>,
     )
 
+    // THEN
     expect(screen.getByText('Espace équipe')).toBeInTheDocument()
     expect(screen.getByText('Tigres')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: "Changer d'équipe" })).toBeInTheDocument()
@@ -34,6 +36,7 @@ describe('NavigationMenu', () => {
   })
 
   it('should navigate from the mobile drawer', () => {
+    // GIVEN
     const onNavigate = vi.fn()
 
     render(
@@ -54,8 +57,11 @@ describe('NavigationMenu', () => {
     )
 
     fireEvent.click(screen.getAllByRole('button', { name: 'Ouvrir le menu' })[0])
+
+    // WHEN
     fireEvent.click(screen.getAllByText('Matchs')[0])
 
+    // THEN
     expect(onNavigate).toHaveBeenCalledWith('/games')
   })
 })

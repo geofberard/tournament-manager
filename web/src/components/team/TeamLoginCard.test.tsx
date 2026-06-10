@@ -25,61 +25,61 @@ const renderCard = (props?: Partial<React.ComponentProps<typeof TeamLoginCard>>)
 
 describe('TeamLoginCard', () => {
   it('should render the available teams in the select menu', () => {
-    // Given
+    // GIVEN
     renderCard()
 
-    // When
+    // WHEN
     fireEvent.mouseDown(screen.getByLabelText('Choisir une équipe'))
 
-    // Then
+    // THEN
     expect(screen.getByRole('option', { name: 'Aigles' })).toBeInTheDocument()
     expect(screen.getByRole('option', { name: 'Tigres' })).toBeInTheDocument()
   })
 
   it('should show the selected team summary', () => {
-    // Given
+    // WHEN
     renderCard({ currentTeam: teams[1] })
 
-    // Then
+    // THEN
     expect(screen.getByText('Équipe sélectionnée : Tigres')).toBeInTheDocument()
   })
 
   it('should forward selection changes', () => {
-    // Given
+    // GIVEN
     const onTeamChange = vi.fn()
     const { container } = renderCard({ onTeamChange })
     const selectInput = container.querySelector('input')
 
     expect(selectInput).not.toBeNull()
 
-    // When
+    // WHEN
     fireEvent.change(selectInput as HTMLInputElement, { target: { value: 'team-2' } })
 
-    // Then
+    // THEN
     expect(onTeamChange).toHaveBeenCalled()
   })
 
   it('should show an error message when loading fails', () => {
-    // Given
+    // WHEN
     renderCard({ errorMessage: 'API indisponible' })
 
-    // Then
+    // THEN
     expect(screen.getByText('API indisponible')).toBeInTheDocument()
   })
 
   it('should show a loading indicator while teams are loading', () => {
-    // Given
+    // WHEN
     renderCard({ isLoading: true })
 
-    // Then
+    // THEN
     expect(screen.getByRole('progressbar')).toBeInTheDocument()
   })
 
   it('should show an empty state when no team is available', () => {
-    // Given
+    // WHEN
     renderCard({ teams: [] })
 
-    // Then
+    // THEN
     expect(screen.getByText('Aucune équipe disponible.')).toBeInTheDocument()
   })
 })

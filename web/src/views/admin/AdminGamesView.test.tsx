@@ -13,6 +13,7 @@ const useGamesMock = vi.mocked(useGamesModule.useGames)
 
 describe('AdminGamesView', () => {
   it('should render the games table', () => {
+    // GIVEN
     useGamesMock.mockReturnValue({
       errorMessage: null,
       games: [
@@ -35,12 +36,14 @@ describe('AdminGamesView', () => {
       isLoading: false,
     })
 
+    // WHEN
     render(
       <ThemeProvider theme={createTheme()}>
         <AdminGamesView />
       </ThemeProvider>,
     )
 
+    // THEN
     expect(screen.getByRole('heading', { name: 'Matchs' })).toBeInTheDocument()
     expect(screen.getByRole('columnheader', { name: /Heure/ })).toBeInTheDocument()
     expect(screen.getByRole('columnheader', { name: /Phase/ })).toBeInTheDocument()
@@ -58,50 +61,59 @@ describe('AdminGamesView', () => {
   })
 
   it('should render an empty state when there are no games', () => {
+    // GIVEN
     useGamesMock.mockReturnValue({
       errorMessage: null,
       games: [],
       isLoading: false,
     })
 
+    // WHEN
     render(
       <ThemeProvider theme={createTheme()}>
         <AdminGamesView />
       </ThemeProvider>,
     )
 
+    // THEN
     expect(screen.getByText('Aucun match disponible.')).toBeInTheDocument()
   })
 
   it('should render the loading state', () => {
+    // GIVEN
     useGamesMock.mockReturnValue({
       errorMessage: null,
       games: [],
       isLoading: true,
     })
 
+    // WHEN
     render(
       <ThemeProvider theme={createTheme()}>
         <AdminGamesView />
       </ThemeProvider>,
     )
 
+    // THEN
     expect(screen.getByRole('progressbar')).toBeInTheDocument()
   })
 
   it('should render the error message', () => {
+    // GIVEN
     useGamesMock.mockReturnValue({
       errorMessage: 'Matchs indisponibles',
       games: [],
       isLoading: false,
     })
 
+    // WHEN
     render(
       <ThemeProvider theme={createTheme()}>
         <AdminGamesView />
       </ThemeProvider>,
     )
 
+    // THEN
     expect(screen.getByText('Matchs indisponibles')).toBeInTheDocument()
   })
 })

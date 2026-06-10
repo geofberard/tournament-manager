@@ -38,6 +38,7 @@ describe('AdminPhasesView', () => {
   })
 
   it('should render phases as accordions', () => {
+    // GIVEN
     usePhasesMock.mockReturnValue({
       errorMessage: null,
       isLoading: false,
@@ -52,8 +53,10 @@ describe('AdminPhasesView', () => {
       ],
     })
 
+    // WHEN
     renderView()
 
+    // THEN
     expect(screen.getByRole('heading', { name: 'Phases' })).toBeInTheDocument()
     expect(screen.getByText('Brassage')).toBeInTheDocument()
     expect(screen.getByText('Poules')).toBeInTheDocument()
@@ -64,42 +67,52 @@ describe('AdminPhasesView', () => {
   })
 
   it('should render an empty state when there are no phases', () => {
+    // GIVEN
     usePhasesMock.mockReturnValue({
       errorMessage: null,
       isLoading: false,
       phases: [],
     })
 
+    // WHEN
     renderView()
 
+    // THEN
     expect(screen.getByText('Aucune phase disponible.')).toBeInTheDocument()
   })
 
   it('should render the loading state', () => {
+    // GIVEN
     usePhasesMock.mockReturnValue({
       errorMessage: null,
       isLoading: true,
       phases: [],
     })
 
+    // WHEN
     renderView()
 
+    // THEN
     expect(screen.getByRole('progressbar')).toBeInTheDocument()
   })
 
   it('should render the error message', () => {
+    // GIVEN
     usePhasesMock.mockReturnValue({
       errorMessage: 'Phases indisponibles',
       isLoading: false,
       phases: [],
     })
 
+    // WHEN
     renderView()
 
+    // THEN
     expect(screen.getByText('Phases indisponibles')).toBeInTheDocument()
   })
 
   it('should open the creation drawer', () => {
+    // GIVEN
     usePhasesMock.mockReturnValue({
       errorMessage: null,
       isLoading: false,
@@ -108,13 +121,16 @@ describe('AdminPhasesView', () => {
 
     renderView()
 
+    // WHEN
     fireEvent.click(screen.getByRole('button', { name: 'Ajouter une phase' }))
 
+    // THEN
     expect(screen.getByRole('heading', { name: 'Nouvelle phase' })).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: 'Nom' })).toBeInTheDocument()
   })
 
   it('should open the update drawer with selected phase values', () => {
+    // GIVEN
     usePhasesMock.mockReturnValue({
       errorMessage: null,
       isLoading: false,
@@ -131,14 +147,17 @@ describe('AdminPhasesView', () => {
 
     renderView()
 
+    // WHEN
     fireEvent.click(screen.getByRole('button', { name: 'Editer' }))
 
+    // THEN
     expect(screen.getByRole('heading', { name: 'Modifier la phase' })).toBeInTheDocument()
     expect(screen.getByDisplayValue('Finales')).toBeInTheDocument()
     expect(screen.getByDisplayValue('Phase finale')).toBeInTheDocument()
   })
 
   it('should delete a phase after confirmation', async () => {
+    // GIVEN
     deletePhaseMock.mockResolvedValueOnce(undefined)
     usePhasesMock.mockReturnValue({
       errorMessage: null,
@@ -158,8 +177,11 @@ describe('AdminPhasesView', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Supprimer' }))
     const dialog = screen.getByRole('dialog', { name: 'Supprimer ?' })
+
+    // WHEN
     fireEvent.click(within(dialog).getByRole('button', { name: 'Supprimer' }))
 
+    // THEN
     await waitFor(() => {
       expect(deletePhaseMock).toHaveBeenCalledWith('phase-2')
     })

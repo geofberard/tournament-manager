@@ -22,18 +22,17 @@ const createWrapper = () => {
 
 describe('useTeams', () => {
   it('should load and sort teams alphabetically', async () => {
-    // Given
+    // GIVEN
     listTeamsMock.mockResolvedValueOnce([
       { id: 'team-2', name: 'Zebres' },
       { id: 'team-1', name: 'Aigles' },
     ])
 
-    // When
+    // WHEN
     const { result } = renderHook(() => useTeams(), { wrapper: createWrapper() })
 
+    // THEN
     await waitFor(() => expect(result.current.isLoading).toBe(false))
-
-    // Then
     expect(result.current.errorMessage).toBeNull()
     expect(result.current.teams).toEqual([
       { id: 'team-1', name: 'Aigles' },
@@ -42,15 +41,14 @@ describe('useTeams', () => {
   })
 
   it('should expose a readable error message when the request fails', async () => {
-    // Given
+    // GIVEN
     listTeamsMock.mockRejectedValueOnce(new Error('API indisponible'))
 
-    // When
+    // WHEN
     const { result } = renderHook(() => useTeams(), { wrapper: createWrapper() })
 
+    // THEN
     await waitFor(() => expect(result.current.isLoading).toBe(false))
-
-    // Then
     expect(result.current.teams).toEqual([])
     expect(result.current.errorMessage).toBe('API indisponible')
   })

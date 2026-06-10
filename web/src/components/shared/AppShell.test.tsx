@@ -9,6 +9,7 @@ describe('AppShell', () => {
   })
 
   it('should render the shared menu and page content', () => {
+    // WHEN
     render(
       <ThemeProvider theme={createTheme()}>
         <AppShell
@@ -28,6 +29,7 @@ describe('AppShell', () => {
       </ThemeProvider>,
     )
 
+    // THEN
     expect(screen.getByText('Espace équipe')).toBeInTheDocument()
     expect(screen.getByText('Contenu de page')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: "Changer d'équipe" })).toBeInTheDocument()
@@ -36,6 +38,7 @@ describe('AppShell', () => {
   })
 
   it('should open the mobile drawer and navigate from it', () => {
+    // GIVEN
     const onNavigate = vi.fn()
 
     render(
@@ -58,8 +61,11 @@ describe('AppShell', () => {
     )
 
     fireEvent.click(screen.getAllByRole('button', { name: 'Ouvrir le menu' })[0])
+
+    // WHEN
     fireEvent.click(screen.getAllByText('Matchs')[0])
 
+    // THEN
     expect(onNavigate).toHaveBeenCalledWith('/games')
   })
 })

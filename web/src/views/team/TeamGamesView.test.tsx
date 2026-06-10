@@ -16,18 +16,21 @@ describe('TeamGamesView', () => {
   })
 
   it('should render the two game sections', () => {
+    // GIVEN
     useGamesMock.mockReturnValue({
       errorMessage: null,
       games: [],
       isLoading: false,
     })
 
+    // WHEN
     render(
       <ThemeProvider theme={createTheme()}>
         <TeamGamesView currentTeam={{ id: 'team-2', name: 'Tigres' }} />
       </ThemeProvider>,
     )
 
+    // THEN
     expect(screen.getByRole('heading', { name: 'Prochains matchs' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Matchs terminés' })).toBeInTheDocument()
   })

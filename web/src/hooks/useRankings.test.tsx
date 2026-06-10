@@ -36,6 +36,7 @@ describe('useRankings', () => {
   })
 
   it('should load rankings from the service', async () => {
+    // GIVEN
     getTeamGroupMock.mockResolvedValueOnce({ id: 'Poule A' })
     listGroupRankingsMock.mockResolvedValueOnce([
       {
@@ -51,8 +52,10 @@ describe('useRankings', () => {
       },
     ])
 
+    // WHEN
     const { result } = renderHook(() => useRankings('team-1', 'phase-1'), { wrapper: createWrapper() })
 
+    // THEN
     await waitFor(() => expect(result.current.isLoading).toBe(false))
 
     expect(result.current.errorMessage).toBeNull()
@@ -73,10 +76,13 @@ describe('useRankings', () => {
   })
 
   it('should expose the service error message when the request fails', async () => {
+    // GIVEN
     getTeamGroupMock.mockRejectedValueOnce(new Error('Groupe indisponible'))
 
+    // WHEN
     const { result } = renderHook(() => useRankings('team-1', 'phase-1'), { wrapper: createWrapper() })
 
+    // THEN
     await waitFor(() => expect(result.current.isLoading).toBe(false))
 
     expect(result.current.rankings).toEqual([])
@@ -84,8 +90,10 @@ describe('useRankings', () => {
   })
 
   it('should stay idle while no phase is selected', async () => {
+    // WHEN
     const { result } = renderHook(() => useRankings('team-1', null), { wrapper: createWrapper() })
 
+    // THEN
     await waitFor(() => expect(result.current.isLoading).toBe(false))
 
     expect(getTeamGroupMock).not.toHaveBeenCalled()

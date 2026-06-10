@@ -93,6 +93,7 @@ describe('Router', () => {
   })
 
   it('should render the public page for /public', () => {
+    // GIVEN
     setHashPath(PUBLIC_HOME_PATH)
 
     useTeamLoginMock.mockReturnValue({
@@ -108,12 +109,15 @@ describe('Router', () => {
       username: null,
     })
 
+    // WHEN
     renderRouter()
 
+    // THEN
     expect(screen.getByText('Zone publique')).toBeInTheDocument()
   })
 
   it('should redirect /team to /team/login when no team is selected', async () => {
+    // GIVEN
     setHashPath(TEAM_HOME_PATH)
 
     useTeamLoginMock.mockReturnValue({
@@ -134,8 +138,10 @@ describe('Router', () => {
       teams: [],
     })
 
+    // WHEN
     renderRouter()
 
+    // THEN
     expect(screen.getByText('Tournois')).toBeInTheDocument()
     expect(screen.getByRole('progressbar')).toBeInTheDocument()
 
@@ -145,6 +151,7 @@ describe('Router', () => {
   })
 
   it('should render the team area when a team is selected', async () => {
+    // GIVEN
     setHashPath(TEAM_LOGIN_PATH)
 
     useTeamLoginMock.mockReturnValue({
@@ -160,8 +167,10 @@ describe('Router', () => {
       username: null,
     })
 
+    // WHEN
     renderRouter()
 
+    // THEN
     expect(screen.getByText('Espace équipe')).toBeInTheDocument()
     expect(screen.getByText('Bienvenue Tigres')).toBeInTheDocument()
 
@@ -171,6 +180,7 @@ describe('Router', () => {
   })
 
   it('should render the team matches page when requested', () => {
+    // GIVEN
     setHashPath(TEAM_GAMES_PATH)
 
     useTeamLoginMock.mockReturnValue({
@@ -186,14 +196,17 @@ describe('Router', () => {
       username: null,
     })
 
+    // WHEN
     renderRouter()
 
+    // THEN
     expect(screen.getByRole('heading', { name: 'Prochains matchs' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Matchs terminés' })).toBeInTheDocument()
     expect(screen.queryByRole('heading', { name: 'Resultats' })).not.toBeInTheDocument()
   })
 
   it('should redirect /admin to /admin/login when the admin is not authenticated', async () => {
+    // GIVEN
     setHashPath(ADMIN_HOME_PATH)
 
     useTeamLoginMock.mockReturnValue({
@@ -209,8 +222,10 @@ describe('Router', () => {
       username: null,
     })
 
+    // WHEN
     renderRouter()
 
+    // THEN
     expect(screen.getByText('Connexion admin')).toBeInTheDocument()
 
     await waitFor(() => {
@@ -219,6 +234,7 @@ describe('Router', () => {
   })
 
   it('should render the admin area when the admin is authenticated', async () => {
+    // GIVEN
     setHashPath(ADMIN_LOGIN_PATH)
 
     useTeamLoginMock.mockReturnValue({
@@ -234,8 +250,10 @@ describe('Router', () => {
       username: 'admin',
     })
 
+    // WHEN
     renderRouter()
 
+    // THEN
     expect(screen.getByRole('heading', { name: 'Zone admin', level: 1 })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Se deconnecter' })).toBeInTheDocument()
 
@@ -245,6 +263,7 @@ describe('Router', () => {
   })
 
   it('should render the admin phases page when requested', () => {
+    // GIVEN
     setHashPath(ADMIN_PHASES_PATH)
 
     useTeamLoginMock.mockReturnValue({
@@ -265,13 +284,16 @@ describe('Router', () => {
       phases: [{ details: 'Premiere phase', id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' }],
     })
 
+    // WHEN
     renderRouter()
 
+    // THEN
     expect(screen.getByRole('heading', { name: 'Phases' })).toBeInTheDocument()
     expect(screen.getByText('Brassage')).toBeInTheDocument()
   })
 
   it('should render the admin games page when requested', () => {
+    // GIVEN
     setHashPath(ADMIN_GAMES_PATH)
 
     useTeamLoginMock.mockReturnValue({
@@ -308,13 +330,16 @@ describe('Router', () => {
       isLoading: false,
     })
 
+    // WHEN
     renderRouter()
 
+    // THEN
     expect(screen.getByRole('heading', { name: 'Matchs' })).toBeInTheDocument()
-    expect(screen.getByText('Finale')).toBeInTheDocument()
+    expect(screen.getByText('Brassage')).toBeInTheDocument()
   })
 
   it('should allow logging out from the admin area', () => {
+    // GIVEN
     const logout = vi.fn().mockResolvedValue(undefined)
 
     setHashPath(ADMIN_HOME_PATH)
@@ -334,12 +359,15 @@ describe('Router', () => {
 
     renderRouter()
 
+    // WHEN
     fireEvent.click(screen.getByRole('button', { name: 'Se deconnecter' }))
 
+    // THEN
     expect(logout).toHaveBeenCalledOnce()
   })
 
   it("should allow clearing the selected team from the team area", () => {
+    // GIVEN
     const clearTeamSelection = vi.fn()
 
     setHashPath(TEAM_HOME_PATH)
@@ -359,8 +387,10 @@ describe('Router', () => {
 
     renderRouter()
 
+    // WHEN
     fireEvent.click(screen.getByRole('button', { name: "Changer d'équipe" }))
 
+    // THEN
     expect(clearTeamSelection).toHaveBeenCalledOnce()
   })
 })

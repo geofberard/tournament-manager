@@ -8,14 +8,18 @@ describe('DeleteButton', () => {
   })
 
   it('should call the confirm action after confirmation', async () => {
+    // GIVEN
     const handleConfirm = vi.fn().mockResolvedValue(undefined)
     render(<DeleteButton onConfirm={handleConfirm} />)
 
     fireEvent.click(screen.getByRole('button', { name: 'Supprimer' }))
     const dialog = screen.getByRole('dialog', { name: 'Supprimer ?' })
     expect(within(dialog).getByText('Confirmez-vous la suppression ?')).toBeInTheDocument()
+
+    // WHEN
     fireEvent.click(within(dialog).getByRole('button', { name: 'Supprimer' }))
 
+    // THEN
     await waitFor(() => {
       expect(handleConfirm).toHaveBeenCalled()
     })
@@ -25,12 +29,16 @@ describe('DeleteButton', () => {
   })
 
   it('should not call the confirm action when deletion is cancelled', async () => {
+    // GIVEN
     const handleConfirm = vi.fn().mockResolvedValue(undefined)
     render(<DeleteButton onConfirm={handleConfirm} />)
 
     fireEvent.click(screen.getByRole('button', { name: 'Supprimer' }))
+
+    // WHEN
     fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Annuler' }))
 
+    // THEN
     await waitFor(() => {
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
     })
@@ -38,13 +46,17 @@ describe('DeleteButton', () => {
   })
 
   it('should display an error when the confirm action fails', async () => {
+    // GIVEN
     const handleConfirm = vi.fn().mockRejectedValue(new Error('Boom'))
     render(<DeleteButton onConfirm={handleConfirm} />)
 
     fireEvent.click(screen.getByRole('button', { name: 'Supprimer' }))
     const dialog = screen.getByRole('dialog', { name: 'Supprimer ?' })
+
+    // WHEN
     fireEvent.click(within(dialog).getByRole('button', { name: 'Supprimer' }))
 
+    // THEN
     expect(await within(dialog).findByText('Impossible de supprimer pour le moment.')).toBeInTheDocument()
   })
 })

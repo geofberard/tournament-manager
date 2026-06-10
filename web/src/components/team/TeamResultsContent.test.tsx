@@ -22,6 +22,7 @@ describe('TeamResultsContent', () => {
   })
 
   it('should render pool rankings for the selected phase', () => {
+    // GIVEN
     useGamesMock.mockReturnValue({
       errorMessage: null,
       games: [],
@@ -34,6 +35,7 @@ describe('TeamResultsContent', () => {
       rankings: [],
     })
 
+    // WHEN
     render(
       <ThemeProvider theme={createTheme()}>
         <TeamResultsContent
@@ -43,6 +45,7 @@ describe('TeamResultsContent', () => {
       </ThemeProvider>,
     )
 
+    // THEN
     expect(screen.getByText('Poule A')).toBeInTheDocument()
     expect(screen.getByText("Les resultats ne sont pas encore disponibles.")).toBeInTheDocument()
   })

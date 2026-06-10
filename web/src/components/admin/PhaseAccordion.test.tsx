@@ -33,8 +33,10 @@ describe('PhaseAccordion', () => {
   })
 
   it('should render the phase summary and markdown details', () => {
+    // WHEN
     renderPhaseView()
 
+    // THEN
     expect(screen.getByText('1')).toBeInTheDocument()
     expect(screen.getByText('Brassage')).toBeInTheDocument()
     expect(screen.getByText('Poules')).toBeInTheDocument()
@@ -43,28 +45,37 @@ describe('PhaseAccordion', () => {
   })
 
   it('should expose the selected phase when editing', () => {
+    // GIVEN
     const { onEdit, phase: renderedPhase } = renderPhaseView()
 
+    // WHEN
     fireEvent.click(screen.getByRole('button', { name: 'Editer' }))
 
+    // THEN
     expect(onEdit).toHaveBeenCalledWith(renderedPhase)
   })
 
   it('should expose the selected phase when deleting after confirmation', async () => {
+    // GIVEN
     const { onDelete, phase: renderedPhase } = renderPhaseView()
 
     fireEvent.click(screen.getByRole('button', { name: 'Supprimer' }))
     const dialog = screen.getByRole('dialog', { name: 'Supprimer ?' })
+
+    // WHEN
     fireEvent.click(within(dialog).getByRole('button', { name: 'Supprimer' }))
 
+    // THEN
     await waitFor(() => {
       expect(onDelete).toHaveBeenCalledWith(renderedPhase)
     })
   })
 
   it('should render an empty details state', () => {
+    // WHEN
     renderPhaseView({ details: '' })
 
+    // THEN
     expect(screen.getByText('Aucun detail renseigne.')).toBeInTheDocument()
   })
 })

@@ -35,18 +35,23 @@ describe('ManagePhaseForm', () => {
   })
 
   it('should render the provided title and initial values', () => {
+    // WHEN
     renderForm()
 
+    // THEN
     expect(screen.getByRole('heading', { name: 'Titre personnalise' })).toBeInTheDocument()
     expect(screen.getByDisplayValue('Brassage')).toBeInTheDocument()
     expect(screen.getByDisplayValue('Details initiaux')).toBeInTheDocument()
   })
 
   it('should submit the trimmed phase payload', async () => {
+    // GIVEN
     const { onSubmit } = renderForm({ details: '  Details avec espaces  ', name: '  Brassage  ' })
 
+    // WHEN
     fireEvent.click(screen.getByRole('button', { name: 'Sauvegarder' }))
 
+    // THEN
     await waitFor(() =>
       expect(onSubmit).toHaveBeenCalledWith({
         details: 'Details avec espaces',
@@ -58,10 +63,13 @@ describe('ManagePhaseForm', () => {
   })
 
   it('should close when clicking cancel', () => {
+    // GIVEN
     const { onClose } = renderForm()
 
+    // WHEN
     fireEvent.click(screen.getByRole('button', { name: 'Annuler' }))
 
+    // THEN
     expect(onClose).toHaveBeenCalled()
   })
 })

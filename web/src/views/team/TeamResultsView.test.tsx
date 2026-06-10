@@ -29,6 +29,7 @@ describe('TeamResultsView', () => {
   })
 
   it('should render the team results page with tabs, details and rankings', () => {
+    // GIVEN
     useGamesMock.mockReturnValue({
       errorMessage: null,
       games: [],
@@ -52,12 +53,14 @@ describe('TeamResultsView', () => {
       rankings: [],
     })
 
+    // WHEN
     render(
       <ThemeProvider theme={createTheme()}>
         <TeamResultsView currentTeam={{ id: 'team-2', name: 'Tigres' }} />
       </ThemeProvider>,
     )
 
+    // THEN
     expect(screen.getByText('Bienvenue Tigres')).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Resultats' })).toBeInTheDocument()
     expect(screen.getByRole('tablist', { name: 'Phases du tournoi' })).toBeInTheDocument()
@@ -68,6 +71,7 @@ describe('TeamResultsView', () => {
   })
 
   it('should render a fallback message when the phase has no details', () => {
+    // GIVEN
     useGamesMock.mockReturnValue({
       errorMessage: null,
       games: [],
@@ -85,16 +89,19 @@ describe('TeamResultsView', () => {
       rankings: [],
     })
 
+    // WHEN
     render(
       <ThemeProvider theme={createTheme()}>
         <TeamResultsView currentTeam={{ id: 'team-2', name: 'Tigres' }} />
       </ThemeProvider>,
     )
 
+    // THEN
     expect(screen.getByText("Aucun detail n'est disponible pour cette phase.")).toBeInTheDocument()
   })
 
   it('should render bracket games inside the results page for bracket phases', () => {
+    // GIVEN
     useGamesMock.mockReturnValue({
       errorMessage: null,
       isLoading: false,
@@ -141,12 +148,14 @@ describe('TeamResultsView', () => {
       rankings: [],
     })
 
+    // WHEN
     render(
       <ThemeProvider theme={createTheme()}>
         <TeamResultsView currentTeam={{ id: 'team-2', name: 'Tigres' }} />
       </ThemeProvider>,
     )
 
+    // THEN
     expect(screen.queryByText("Les resultats ne sont pas encore disponibles.")).not.toBeInTheDocument()
     expect(screen.getAllByText(/Tigres vs|Aigles vs/).map((card) => card.textContent)).toEqual([
       'Aigles vs Tigres',

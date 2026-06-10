@@ -61,27 +61,35 @@ describe('GameList', () => {
   })
 
   it('should show an error state when games fail to load', () => {
+    // WHEN
     renderList({ errorMessage: 'API indisponible' })
 
+    // THEN
     expect(screen.getByText('API indisponible')).toBeInTheDocument()
   })
 
   it('should show the empty message when there is no game to display', () => {
+    // WHEN
     renderList({ emptyMessage: 'Aucun match pour le moment.' })
 
+    // THEN
     expect(screen.getByText('Aucun match pour le moment.')).toBeInTheDocument()
   })
 
   it('should not show the empty message while loading', () => {
+    // WHEN
     const { container } = renderList({ isLoading: true })
 
+    // THEN
     expect(screen.queryByText(/Aucun match/)).not.toBeInTheDocument()
     expect(container.firstChild).toBeEmptyDOMElement()
   })
 
   it('should render one card per game', () => {
+    // WHEN
     renderList({ games })
 
+    // THEN
     expect(screen.getByText('Aigles vs Tigres')).toBeInTheDocument()
     expect(screen.getByText('Tigres vs Lynx')).toBeInTheDocument()
   })

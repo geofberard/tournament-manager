@@ -19,27 +19,42 @@ describe('adminAuthService', () => {
   })
 
   it('should fetch the current admin session', async () => {
+    // GIVEN
     adminAuthApiMock.getAdminSession.mockResolvedValue({
       authenticated: true,
       username: 'admin',
     })
 
-    await expect(getAdminSession()).resolves.toEqual({
+    // WHEN
+    const sessionPromise = getAdminSession()
+
+    // THEN
+    await expect(sessionPromise).resolves.toEqual({
       authenticated: true,
       username: 'admin',
     })
   })
 
   it('should reject invalid credentials during login', async () => {
+    // GIVEN
     adminAuthApiMock.loginAdmin.mockRejectedValue(new ResponseError(new Response(null, { status: 401 })))
 
-    await expect(loginAdmin({ username: 'admin', password: 'wrong' })).rejects.toThrow('Identifiants invalides.')
+    // WHEN
+    const loginPromise = loginAdmin({ username: 'admin', password: 'wrong' })
+
+    // THEN
+    await expect(loginPromise).rejects.toThrow('Identifiants invalides.')
   })
 
   it('should call the logout endpoint', async () => {
+    // GIVEN
     adminAuthApiMock.logoutAdmin.mockResolvedValue(undefined)
 
-    await expect(logoutAdmin()).resolves.toBeUndefined()
+    // WHEN
+    const logoutPromise = logoutAdmin()
+
+    // THEN
+    await expect(logoutPromise).resolves.toBeUndefined()
     expect(adminAuthApiMock.logoutAdmin).toHaveBeenCalledOnce()
   })
 })

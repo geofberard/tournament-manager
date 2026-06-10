@@ -23,6 +23,7 @@ const createWrapper = () => {
 
 describe('useGames', () => {
   it('should load and sort games by ascending date', async () => {
+    // GIVEN
     listGamesMock.mockResolvedValueOnce([
       {
         id: 'game-2',
@@ -48,8 +49,10 @@ describe('useGames', () => {
       },
     ])
 
+    // WHEN
     const { result } = renderHook(() => useGames(), { wrapper: createWrapper() })
 
+    // THEN
     await waitFor(() => expect(result.current.isLoading).toBe(false))
 
     expect(result.current.errorMessage).toBeNull()
@@ -57,10 +60,13 @@ describe('useGames', () => {
   })
 
   it('should expose the service error message when the request fails', async () => {
+    // GIVEN
     listGamesMock.mockRejectedValueOnce(new Error('API indisponible'))
 
+    // WHEN
     const { result } = renderHook(() => useGames(), { wrapper: createWrapper() })
 
+    // THEN
     await waitFor(() => expect(result.current.isLoading).toBe(false))
 
     expect(result.current.games).toEqual([])

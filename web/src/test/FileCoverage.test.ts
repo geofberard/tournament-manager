@@ -56,10 +56,12 @@ describe('ensuring selected source files have associated tests', () => {
   const filesToCover = getFilesToCover()
 
   it.each(filesToCover)('should have a matching test file for %p', (sourcePath: string) => {
+    // WHEN
     const hasMatchingTest = getMatchingTestCandidates(sourcePath).some((testPath) =>
       existsSync(testPath),
     )
 
+    // THEN
     expect(hasMatchingTest).toBe(true)
   })
 })

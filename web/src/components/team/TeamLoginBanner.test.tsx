@@ -5,14 +5,14 @@ import { TeamLoginBanner } from './TeamLoginBanner'
 
 describe('TeamLoginBanner', () => {
   it('should render the tournament title and SCUF logo', () => {
-    // When
+    // WHEN
     render(
       <ThemeProvider theme={createTheme()}>
         <TeamLoginBanner />
       </ThemeProvider>,
     )
 
-    // Then
+    // THEN
     expect(screen.getByText('Tournois')).toBeInTheDocument()
     expect(screen.getByAltText('SCUF')).toBeInTheDocument()
   })

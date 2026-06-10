@@ -26,8 +26,10 @@ describe('useAdminSession', () => {
   })
 
   it('should initialize from the backend session', async () => {
+    // WHEN
     const { result } = renderHook(() => useAdminSession())
 
+    // THEN
     expect(result.current.isLoading).toBe(true)
 
     await waitFor(() => {
@@ -38,13 +40,16 @@ describe('useAdminSession', () => {
   })
 
   it('should update the authenticated state when logging in', async () => {
+    // GIVEN
     loginAdminMock.mockResolvedValue({
       authenticated: true,
       username: 'admin',
     })
 
+    // WHEN
     const { result } = renderHook(() => useAdminSession())
 
+    // THEN
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false)
     })
@@ -58,14 +63,17 @@ describe('useAdminSession', () => {
   })
 
   it('should clear the authenticated state when logging out', async () => {
+    // GIVEN
     getAdminSessionMock.mockResolvedValue({
       authenticated: true,
       username: 'admin',
     })
     logoutAdminMock.mockResolvedValue()
 
+    // WHEN
     const { result } = renderHook(() => useAdminSession())
 
+    // THEN
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false)
     })

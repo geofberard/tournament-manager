@@ -48,23 +48,29 @@ describe('RankingTable', () => {
   })
 
   it('should show an error state when rankings fail to load', () => {
+    // WHEN
     renderTable({ errorMessage: 'Resultats indisponibles' })
 
+    // THEN
     expect(screen.getByText('Resultats indisponibles')).toBeInTheDocument()
   })
 
   it('should show the empty state when no ranking is available', () => {
+    // WHEN
     renderTable()
 
+    // THEN
     expect(screen.getByText("Les resultats ne sont pas encore disponibles.")).toBeInTheDocument()
   })
 
   it('should render ranking rows and highlight the current team rank', () => {
+    // WHEN
     renderTable({ rankings })
 
     const aiglesRow = screen.getByText('Aigles').closest('tr')
     const tigresRow = screen.getByText('Tigres').closest('tr')
 
+    // THEN
     expect(aiglesRow).not.toBeNull()
     expect(tigresRow).not.toBeNull()
     expect(aiglesRow).not.toHaveClass('Mui-selected')

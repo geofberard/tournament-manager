@@ -29,75 +29,74 @@ describe('useTeamLogin', () => {
   })
 
   it('should initialize the current team from storage', () => {
-    // Given
+    // GIVEN
     getCurrentTeamMock.mockReturnValueOnce(teams[1])
 
-    // When
+    // WHEN
     const { result } = renderHook(() => useTeamLogin())
 
-    // Then
+    // THEN
     expect(result.current.currentTeam).toEqual(teams[1])
   })
 
   it('should persist the selected team', () => {
-    // Given
+    // GIVEN
     getCurrentTeamMock.mockReturnValueOnce(null)
-    const { result } = renderHook(() => useTeamLogin())
 
-    // When
+    // WHEN
+    const { result } = renderHook(() => useTeamLogin())
     act(() => {
       result.current.handleTeamChange(teams, createSelectEvent('team-2'))
     })
 
-    // Then
+    // THEN
     expect(result.current.currentTeam).toEqual(teams[1])
     expect(setCurrentTeamMock).toHaveBeenCalledWith(teams[1])
     expect(clearCurrentTeamMock).not.toHaveBeenCalled()
   })
 
   it('should clear the current team when the empty option is selected', () => {
-    // Given
+    // GIVEN
     getCurrentTeamMock.mockReturnValueOnce(teams[0])
-    const { result } = renderHook(() => useTeamLogin())
 
-    // When
+    // WHEN
+    const { result } = renderHook(() => useTeamLogin())
     act(() => {
       result.current.handleTeamChange(teams, createSelectEvent(''))
     })
 
-    // Then
+    // THEN
     expect(result.current.currentTeam).toBeNull()
     expect(clearCurrentTeamMock).toHaveBeenCalled()
   })
 
   it('should clear the current team when the selected id does not match any team', () => {
-    // Given
+    // GIVEN
     getCurrentTeamMock.mockReturnValueOnce(teams[0])
-    const { result } = renderHook(() => useTeamLogin())
 
-    // When
+    // WHEN
+    const { result } = renderHook(() => useTeamLogin())
     act(() => {
       result.current.handleTeamChange(teams, createSelectEvent('missing-team'))
     })
 
-    // Then
+    // THEN
     expect(result.current.currentTeam).toBeNull()
     expect(clearCurrentTeamMock).toHaveBeenCalled()
     expect(setCurrentTeamMock).not.toHaveBeenCalled()
   })
 
   it('should clear the current team selection explicitly', () => {
-    // Given
+    // GIVEN
     getCurrentTeamMock.mockReturnValueOnce(teams[0])
 
+    // WHEN
     const { result } = renderHook(() => useTeamLogin())
-
-    // When
     act(() => {
       result.current.clearTeamSelection()
     })
 
-    // Then
+    // THEN
     expect(result.current.currentTeam).toBeNull()
     expect(clearCurrentTeamMock).toHaveBeenCalledOnce()
   })

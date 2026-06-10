@@ -39,8 +39,10 @@ describe('GameCard', () => {
   })
 
   it('should render contestants, status, score and referee', () => {
+    // WHEN
     renderCard(baseGame)
 
+    // THEN
     expect(screen.getByText('Aigles vs Tigres')).toBeInTheDocument()
     expect(screen.getByText('Brassage')).toBeInTheDocument()
     expect(screen.getByText('Poule A')).toBeInTheDocument()
@@ -52,25 +54,30 @@ describe('GameCard', () => {
   })
 
   it('should render the match name when provided', () => {
+    // WHEN
     renderCard({
       ...baseGame,
       name: 'Finale',
     })
 
+    // THEN
     expect(screen.getByText('Finale')).toBeInTheDocument()
     expect(screen.getByText('Aigles vs Tigres')).toBeInTheDocument()
   })
 
   it('should omit the referee block when no referee is provided', () => {
+    // WHEN
     const { container } = renderCard({
       ...baseGame,
       referee: undefined,
     })
 
+    // THEN
     expect(container).not.toHaveTextContent('Arbitre:')
   })
 
   it('should render missing scores as dashes', () => {
+    // WHEN
     renderCard({
       ...baseGame,
       score: {
@@ -80,6 +87,7 @@ describe('GameCard', () => {
       },
     })
 
+    // THEN
     expect(screen.getByText('21 - -')).toBeInTheDocument()
   })
 })
