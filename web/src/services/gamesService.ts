@@ -1,5 +1,45 @@
+import type { CreateGameRequest, UpdateGameRequest } from '../generated/api-client'
 import { gamesApi, type Game } from './apiClient'
 
 export type { Game }
+export type GamePayload = {
+  contestantIds: Set<string>
+  court: string
+  group: string
+  name?: string
+  phaseId: string
+  refereeId?: string
+  status: UpdateGameRequest['status']
+  time: Date
+}
 
 export const listGames = async (): Promise<Game[]> => gamesApi.listGames()
+
+export const createGame = async (gamePayload: GamePayload): Promise<Game> => {
+  const createGameRequest: CreateGameRequest = {
+    contestantIds: gamePayload.contestantIds,
+    court: gamePayload.court,
+    group: gamePayload.group,
+    name: gamePayload.name,
+    phaseId: gamePayload.phaseId,
+    refereeId: gamePayload.refereeId,
+    time: gamePayload.time,
+  }
+
+  return gamesApi.createGame({ createGameRequest }) as Promise<Game>
+}
+
+export const updateGame = async (gameId: string, gamePayload: GamePayload): Promise<Game> => {
+  const updateGameRequest: UpdateGameRequest = {
+    contestantIds: gamePayload.contestantIds,
+    court: gamePayload.court,
+    group: gamePayload.group,
+    name: gamePayload.name,
+    phaseId: gamePayload.phaseId,
+    refereeId: gamePayload.refereeId,
+    status: gamePayload.status,
+    time: gamePayload.time,
+  }
+
+  return gamesApi.updateGame({ gameId, updateGameRequest }) as Promise<Game>
+}

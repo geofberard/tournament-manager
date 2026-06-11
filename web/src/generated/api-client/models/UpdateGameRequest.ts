@@ -80,7 +80,7 @@ export interface UpdateGameRequest {
      * @type {string}
      * @memberof UpdateGameRequest
      */
-    refereeId: string;
+    refereeId?: string;
 }
 
 
@@ -95,7 +95,6 @@ export function instanceOfUpdateGameRequest(value: object): value is UpdateGameR
     if (!('court' in value) || value['court'] === undefined) return false;
     if (!('status' in value) || value['status'] === undefined) return false;
     if (!('contestantIds' in value) || value['contestantIds'] === undefined) return false;
-    if (!('refereeId' in value) || value['refereeId'] === undefined) return false;
     return true;
 }
 
@@ -116,7 +115,7 @@ export function UpdateGameRequestFromJSONTyped(json: any, ignoreDiscriminator: b
         'court': json['court'],
         'status': GameStatusFromJSON(json['status']),
         'contestantIds': new Set(json['contestantIds']),
-        'refereeId': json['refereeId'],
+        'refereeId': json['refereeId'] == null ? undefined : json['refereeId'],
     };
 }
 
