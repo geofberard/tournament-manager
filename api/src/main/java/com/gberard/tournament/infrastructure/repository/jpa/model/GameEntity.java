@@ -73,6 +73,7 @@ public class GameEntity {
         GameEntity playerEntity = new GameEntity();
         playerEntity.id = game.id();
         playerEntity.phaseId = game.phase().id();
+        playerEntity.phase = PhaseEntity.toEntity(game.phase());
         playerEntity.name = game.name().orElse(null);
         playerEntity.groupId = game.group();
         playerEntity.time = game.time();

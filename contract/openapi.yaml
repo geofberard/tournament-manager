@@ -1045,7 +1045,6 @@ components:
         - court
         - status
         - contestantIds
-        - refereeId
       properties:
         phaseId:
           type: string
