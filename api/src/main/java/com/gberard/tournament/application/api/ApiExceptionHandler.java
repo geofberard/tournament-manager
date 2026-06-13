@@ -1,5 +1,6 @@
 package com.gberard.tournament.application.api;
 
+import com.gberard.tournament.domain.exception.PhaseInUseException;
 import com.gberard.tournament.domain.exception.TeamInUseException;
 import com.gberard.tournament.generated.model.ErrorResponse;
 import org.springframework.http.HttpStatus;
@@ -15,5 +16,12 @@ public class ApiExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .body(new ErrorResponse("TEAM_IN_USE", exception.getMessage()));
+    }
+
+    @ExceptionHandler(PhaseInUseException.class)
+    public ResponseEntity<ErrorResponse> handlePhaseInUse(PhaseInUseException exception) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse("PHASE_IN_USE", exception.getMessage()));
     }
 }

@@ -33,6 +33,11 @@ public class DBGameRepository extends DBRepository<Game, GameEntity> implements 
     }
 
     @Override
+    public boolean existsByPhaseId(String phaseId) {
+        return repository.existsByPhaseId(phaseId);
+    }
+
+    @Override
     public java.util.List<Game> findByTeamId(String teamId) {
         return repository.findByTeamsId(teamId).stream()
                 .map(GameEntity::toDomain)

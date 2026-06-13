@@ -11,6 +11,8 @@ public interface JpaGameRepository extends JpaRepository<GameEntity, String> {
 
     boolean existsByTeamsId(String teamId);
 
+    boolean existsByPhaseId(String phaseId);
+
     List<GameEntity> findByTeamsId(String teamId);
 
     List<GameEntity> findByGroupId(String groupId);

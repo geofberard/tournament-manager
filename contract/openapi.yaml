@@ -268,6 +268,19 @@ paths:
           description: Phase supprimée
         '404':
           $ref: '#/components/responses/NotFound'
+        '409':
+          description: |
+            La phase ne peut pas être supprimée car elle est encore référencée
+            par un ou plusieurs matchs.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                phaseUsedInGame:
+                  value:
+                    code: PHASE_IN_USE
+                    message: Phase phase_1 is still referenced by existing games
 
   /api/phases/{phaseId}/groups:
     parameters:

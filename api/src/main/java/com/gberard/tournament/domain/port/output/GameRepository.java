@@ -13,6 +13,8 @@ public interface GameRepository {
 
     boolean existsByTeamId(String teamId);
 
+    boolean existsByPhaseId(String phaseId);
+
     List<Game> findByTeamId(String teamId);
 
     List<Game> findByGroup(String group);
