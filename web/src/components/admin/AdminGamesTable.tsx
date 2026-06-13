@@ -2,6 +2,7 @@ import { Card, CardContent } from '@mui/material'
 import { DataGrid, type GridColDef, type GridRowSelectionModel } from '@mui/x-data-grid'
 import { useMemo } from 'react'
 import type { Game } from '../../services/gamesService'
+import { AdminGamesTableToolbar } from './AdminGamesTableToolbar'
 import { EditableGameScore } from './EditableGameScore'
 
 const dateFormatter = new Intl.DateTimeFormat('fr-FR', {
@@ -27,6 +28,8 @@ type AdminGameRow = {
 
 type AdminGamesTableProps = {
   games: Game[]
+  onBulkEdit: () => void
+  onBulkDelete: () => Promise<void>
   onGameClick: (game: Game) => void
   onScoreSave: (game: Game, pointsByTeam: Record<string, number>) => Promise<void>
   onSelectionChange: (gameIds: Set<string>) => void
@@ -70,6 +73,8 @@ const toAdminGameRow = (game: Game): AdminGameRow => {
 
 export const AdminGamesTable = ({
   games,
+  onBulkDelete,
+  onBulkEdit,
   onGameClick,
   onScoreSave,
   onSelectionChange,
@@ -218,11 +223,15 @@ export const AdminGamesTable = ({
           rowSelectionModel={rowSelectionModel}
           rows={rows}
           showToolbar
+          slots={{ toolbar: AdminGamesTableToolbar }}
           slotProps={{
             toolbar: {
               csvOptions: { disableToolbarButton: true },
+              onBulkDelete,
+              onBulkEdit,
               printOptions: { disableToolbarButton: true },
               quickFilterProps: { debounceMs: 0 },
+              selectedGameCount: selectedGameIds.size,
             },
           }}
           sx={{

@@ -27,11 +27,15 @@ const renderTable = (
   onScoreSave = vi.fn().mockResolvedValue(undefined),
   onSelectionChange = vi.fn(),
   selectedGameIds = new Set<string>(),
+  onBulkEdit = vi.fn(),
+  onBulkDelete = vi.fn().mockResolvedValue(undefined),
 ) =>
   render(
     <ThemeProvider theme={createTheme()}>
       <AdminGamesTable
         games={games}
+        onBulkDelete={onBulkDelete}
+        onBulkEdit={onBulkEdit}
         onGameClick={onGameClick}
         onScoreSave={onScoreSave}
         onSelectionChange={onSelectionChange}
@@ -113,5 +117,28 @@ describe('AdminGamesTable', () => {
     // THEN
     expect(onSelectionChange).toHaveBeenCalledWith(new Set(['game-1']))
     expect(onGameClick).not.toHaveBeenCalled()
+  })
+
+  it('should display selection actions in the toolbar', () => {
+    // GIVEN
+    const onBulkEdit = vi.fn()
+    const onBulkDelete = vi.fn().mockResolvedValue(undefined)
+    renderTable(
+      [game],
+      undefined,
+      undefined,
+      undefined,
+      new Set(['game-1']),
+      onBulkEdit,
+      onBulkDelete,
+    )
+
+    // WHEN
+    fireEvent.click(screen.getByRole('button', { name: 'Modifier les matchs selectionnes' }))
+
+    // THEN
+    expect(screen.getByText('1 match selectionne')).toBeInTheDocument()
+    expect(onBulkEdit).toHaveBeenCalledOnce()
+    expect(screen.getByRole('button', { name: 'Supprimer' })).toBeInTheDocument()
   })
 })

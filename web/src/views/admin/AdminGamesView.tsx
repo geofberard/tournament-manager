@@ -2,19 +2,16 @@ import {
   Alert,
   CircularProgress,
   Drawer,
-  IconButton,
   Stack,
   Typography,
   useMediaQuery,
   useTheme,
 } from '@mui/material'
-import EditIcon from '@mui/icons-material/Edit'
 import { useCallback, useState } from 'react'
 import { useSWRConfig } from 'swr'
 import { AdminCreateFab } from '../../components/admin/AdminCreateFab'
 import { AdminGamesTable } from '../../components/admin/AdminGamesTable'
 import { BulkUpdateGamesForm } from '../../components/admin/BulkUpdateGamesForm'
-import { DeleteButton } from '../../components/admin/DeleteButton'
 import { ManageGameForm } from '../../components/admin/ManageGameForm'
 import { GameStatus } from '../../generated/api-client'
 import { useGames } from '../../hooks/useGames'
@@ -230,31 +227,15 @@ export const AdminGamesView = () => {
           <CircularProgress />
         </Stack>
       ) : (
-        <Stack spacing={1}>
-          {selectedGameIds.size > 0 ? (
-            <Stack alignItems="center" direction="row" justifyContent="flex-end" spacing={1}>
-              <Typography color="text.secondary">
-                {selectedGameIds.size} match{selectedGameIds.size > 1 ? 's' : ''} selectionne
-                {selectedGameIds.size > 1 ? 's' : ''}
-              </Typography>
-              <IconButton
-                aria-label="Modifier les matchs selectionnes"
-                onClick={openBulkUpdateDrawer}
-                size="small"
-              >
-                <EditIcon fontSize="small" />
-              </IconButton>
-              <DeleteButton onConfirm={deleteSelectedGames} />
-            </Stack>
-          ) : null}
-          <AdminGamesTable
-            games={games}
-            onGameClick={openUpdateDrawer}
-            onScoreSave={saveGameScore}
-            onSelectionChange={setSelectedGameIds}
-            selectedGameIds={selectedGameIds}
-          />
-        </Stack>
+        <AdminGamesTable
+          games={games}
+          onBulkDelete={deleteSelectedGames}
+          onBulkEdit={openBulkUpdateDrawer}
+          onGameClick={openUpdateDrawer}
+          onScoreSave={saveGameScore}
+          onSelectionChange={setSelectedGameIds}
+          selectedGameIds={selectedGameIds}
+        />
       )}
 
       <AdminCreateFab
