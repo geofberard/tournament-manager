@@ -45,6 +45,9 @@ export const updateGame = async (gameId: string, gamePayload: GamePayload): Prom
   return gamesApi.updateGame({ gameId, updateGameRequest }) as Promise<Game>
 }
 
+export const deleteGame = async (gameId: string): Promise<void> =>
+  gamesApi.deleteGame({ gameId })
+
 export const upsertGameScore = async (
   gameId: string,
   pointsByTeam: Record<string, number>,

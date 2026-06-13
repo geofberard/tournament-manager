@@ -11,6 +11,7 @@ import {
 import { useCallback, useState } from 'react'
 import { useSWRConfig } from 'swr'
 import { AdminGamesTable } from '../../components/admin/AdminGamesTable'
+import { DeleteButton } from '../../components/admin/DeleteButton'
 import { ManageGameForm } from '../../components/admin/ManageGameForm'
 import { GameStatus } from '../../generated/api-client'
 import { useGames } from '../../hooks/useGames'
@@ -18,6 +19,7 @@ import { usePhases } from '../../hooks/usePhases'
 import { useTeams } from '../../hooks/useTeams'
 import {
   createGame,
+  deleteGame,
   deleteGameScore,
   updateGame,
   upsertGameScore,
@@ -61,6 +63,7 @@ export const AdminGamesView = () => {
   const { mutate } = useSWRConfig()
   const [drawerMode, setDrawerMode] = useState<GameDrawerMode>('idle')
   const [selectedGame, setSelectedGame] = useState<Game | null>(null)
+  const [selectedGameIds, setSelectedGameIds] = useState<Set<string>>(new Set())
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
   const saveGameScore = useCallback(
@@ -157,6 +160,36 @@ export const AdminGamesView = () => {
     closeDrawer()
   }
 
+  const deleteSelectedGames = async () => {
+    const gameIds = Array.from(selectedGameIds)
+    const deletionResults = await Promise.allSettled(gameIds.map((gameId) => deleteGame(gameId)))
+    const deletedGameIds = new Set(
+      gameIds.filter((_gameId, index) => deletionResults[index].status === 'fulfilled'),
+    )
+    const failedGameIds = new Set(
+      gameIds.filter((_gameId, index) => deletionResults[index].status === 'rejected'),
+    )
+
+    if (deletedGameIds.size > 0) {
+      await mutate(
+        '/api/games',
+        (currentGames: Game[] | undefined) =>
+          (currentGames ?? []).filter((game) => !deletedGameIds.has(game.id)),
+        { revalidate: false },
+      )
+    }
+
+    setSelectedGameIds(failedGameIds)
+
+    if (selectedGame && deletedGameIds.has(selectedGame.id)) {
+      closeDrawer()
+    }
+
+    if (failedGameIds.size > 0) {
+      throw new Error('Some games could not be deleted')
+    }
+  }
+
   return (
     <Stack spacing={3}>
       <Stack alignItems={{ xs: 'stretch', sm: 'flex-start' }} direction={{ xs: 'column', sm: 'row' }} spacing={2}>
@@ -178,7 +211,24 @@ export const AdminGamesView = () => {
           <CircularProgress />
         </Stack>
       ) : (
-        <AdminGamesTable games={games} onGameClick={openUpdateDrawer} onScoreSave={saveGameScore} />
+        <Stack spacing={1}>
+          {selectedGameIds.size > 0 ? (
+            <Stack alignItems="center" direction="row" justifyContent="flex-end" spacing={1}>
+              <Typography color="text.secondary">
+                {selectedGameIds.size} match{selectedGameIds.size > 1 ? 's' : ''} selectionne
+                {selectedGameIds.size > 1 ? 's' : ''}
+              </Typography>
+              <DeleteButton onConfirm={deleteSelectedGames} />
+            </Stack>
+          ) : null}
+          <AdminGamesTable
+            games={games}
+            onGameClick={openUpdateDrawer}
+            onScoreSave={saveGameScore}
+            onSelectionChange={setSelectedGameIds}
+            selectedGameIds={selectedGameIds}
+          />
+        </Stack>
       )}
 
       <Drawer

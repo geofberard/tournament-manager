@@ -25,6 +25,7 @@ vi.mock('../../services/gamesService', async (importOriginal) => {
 
   return {
     ...original,
+    deleteGame: vi.fn(),
     deleteGameScore: vi.fn(),
     updateGame: vi.fn(),
     upsertGameScore: vi.fn(),
@@ -34,6 +35,7 @@ vi.mock('../../services/gamesService', async (importOriginal) => {
 const useGamesMock = vi.mocked(useGamesModule.useGames)
 const usePhasesMock = vi.mocked(usePhasesModule.usePhases)
 const useTeamsMock = vi.mocked(useTeamsModule.useTeams)
+const deleteGameMock = vi.mocked(gamesServiceModule.deleteGame)
 const deleteGameScoreMock = vi.mocked(gamesServiceModule.deleteGameScore)
 const updateGameMock = vi.mocked(gamesServiceModule.updateGame)
 const upsertGameScoreMock = vi.mocked(gamesServiceModule.upsertGameScore)
@@ -76,6 +78,7 @@ describe('AdminGamesView', () => {
       ],
     })
     deleteGameScoreMock.mockResolvedValue(undefined)
+    deleteGameMock.mockResolvedValue(undefined)
     updateGameMock.mockResolvedValue(game)
     upsertGameScoreMock.mockResolvedValue(game.score)
   })
@@ -356,5 +359,59 @@ describe('AdminGamesView', () => {
     // THEN
     await waitFor(() => expect(deleteGameScoreMock).toHaveBeenCalledWith('game-1'))
     expect(upsertGameScoreMock).not.toHaveBeenCalled()
+  })
+
+  it('should delete selected games after confirmation', async () => {
+    // GIVEN
+    const secondGame = { ...game, id: 'game-2', name: 'Petite finale' }
+    useGamesMock.mockReturnValue({
+      errorMessage: null,
+      games: [game, secondGame],
+      isLoading: false,
+    })
+    render(
+      <ThemeProvider theme={createTheme()}>
+        <AdminGamesView />
+      </ThemeProvider>,
+    )
+    const gameCheckboxes = screen.getAllByRole('checkbox', { name: 'Selectionner le match' })
+    fireEvent.click(gameCheckboxes[0])
+    fireEvent.click(gameCheckboxes[1])
+
+    // WHEN
+    fireEvent.click(screen.getByRole('button', { name: 'Supprimer' }))
+    expect(screen.getByText('Confirmez-vous la suppression ?')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Supprimer' }))
+
+    // THEN
+    await waitFor(() => {
+      expect(deleteGameMock).toHaveBeenCalledWith('game-1')
+      expect(deleteGameMock).toHaveBeenCalledWith('game-2')
+    })
+    expect(screen.queryByText('2 matchs selectionnes')).not.toBeInTheDocument()
+  })
+
+  it('should keep failed deletions selected and display an error', async () => {
+    // GIVEN
+    useGamesMock.mockReturnValue({
+      errorMessage: null,
+      games: [game],
+      isLoading: false,
+    })
+    deleteGameMock.mockRejectedValueOnce(new Error('Boom'))
+    render(
+      <ThemeProvider theme={createTheme()}>
+        <AdminGamesView />
+      </ThemeProvider>,
+    )
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Selectionner le match' }))
+
+    // WHEN
+    fireEvent.click(screen.getByRole('button', { name: 'Supprimer' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Supprimer' }))
+
+    // THEN
+    expect(await screen.findByText('Impossible de supprimer pour le moment.')).toBeInTheDocument()
+    expect(screen.getByText('1 match selectionne')).toBeInTheDocument()
   })
 })

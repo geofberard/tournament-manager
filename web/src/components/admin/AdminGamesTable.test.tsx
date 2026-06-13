@@ -25,10 +25,18 @@ const renderTable = (
   games: Game[],
   onGameClick = vi.fn(),
   onScoreSave = vi.fn().mockResolvedValue(undefined),
+  onSelectionChange = vi.fn(),
+  selectedGameIds = new Set<string>(),
 ) =>
   render(
     <ThemeProvider theme={createTheme()}>
-      <AdminGamesTable games={games} onGameClick={onGameClick} onScoreSave={onScoreSave} />
+      <AdminGamesTable
+        games={games}
+        onGameClick={onGameClick}
+        onScoreSave={onScoreSave}
+        onSelectionChange={onSelectionChange}
+        selectedGameIds={selectedGameIds}
+      />
     </ThemeProvider>,
   )
 
@@ -90,6 +98,20 @@ describe('AdminGamesTable', () => {
 
     // THEN
     expect(screen.getByRole('textbox', { name: 'Score Tigres' })).toBeInTheDocument()
+    expect(onGameClick).not.toHaveBeenCalled()
+  })
+
+  it('should notify when a game is selected without opening it', () => {
+    // GIVEN
+    const onGameClick = vi.fn()
+    const onSelectionChange = vi.fn()
+    renderTable([game], onGameClick, undefined, onSelectionChange)
+
+    // WHEN
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Selectionner le match' }))
+
+    // THEN
+    expect(onSelectionChange).toHaveBeenCalledWith(new Set(['game-1']))
     expect(onGameClick).not.toHaveBeenCalled()
   })
 })

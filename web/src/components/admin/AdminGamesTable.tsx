@@ -1,5 +1,5 @@
 import { Card, CardContent } from '@mui/material'
-import { DataGrid, type GridColDef } from '@mui/x-data-grid'
+import { DataGrid, type GridColDef, type GridRowSelectionModel } from '@mui/x-data-grid'
 import { useMemo } from 'react'
 import type { Game } from '../../services/gamesService'
 import { EditableGameScore } from './EditableGameScore'
@@ -29,6 +29,8 @@ type AdminGamesTableProps = {
   games: Game[]
   onGameClick: (game: Game) => void
   onScoreSave: (game: Game, pointsByTeam: Record<string, number>) => Promise<void>
+  onSelectionChange: (gameIds: Set<string>) => void
+  selectedGameIds: Set<string>
 }
 
 const formatOptionalValue = (value?: string | null) => value?.trim() || '-'
@@ -66,8 +68,18 @@ const toAdminGameRow = (game: Game): AdminGameRow => {
   }
 }
 
-export const AdminGamesTable = ({ games, onGameClick, onScoreSave }: AdminGamesTableProps) => {
+export const AdminGamesTable = ({
+  games,
+  onGameClick,
+  onScoreSave,
+  onSelectionChange,
+  selectedGameIds,
+}: AdminGamesTableProps) => {
   const rows = useMemo(() => games.map(toAdminGameRow), [games])
+  const rowSelectionModel = useMemo<GridRowSelectionModel>(
+    () => ({ ids: selectedGameIds, type: 'include' }),
+    [selectedGameIds],
+  )
   const columns = useMemo<GridColDef<AdminGameRow>[]>(
     () => [
       {
@@ -163,7 +175,9 @@ export const AdminGamesTable = ({ games, onGameClick, onScoreSave }: AdminGamesT
       <CardContent sx={{ p: 0 }}>
         <DataGrid
           autoHeight
+          checkboxSelection
           columns={columns}
+          disableRowSelectionExcludeModel
           disableVirtualization={import.meta.env.MODE === 'test'}
           disableRowSelectionOnClick
           getRowHeight={() => 'auto'}
@@ -189,10 +203,19 @@ export const AdminGamesTable = ({ games, onGameClick, onScoreSave }: AdminGamesT
             },
           }}
           localeText={{
+            checkboxSelectionHeaderName: 'Selectionner les matchs',
+            checkboxSelectionSelectAllRows: 'Selectionner tous les matchs',
+            checkboxSelectionSelectRow: 'Selectionner le match',
+            checkboxSelectionUnselectAllRows: 'Deselectionner tous les matchs',
+            checkboxSelectionUnselectRow: 'Deselectionner le match',
             noRowsLabel: 'Aucun match disponible.',
           }}
           onRowClick={(params) => onGameClick(params.row.game)}
+          onRowSelectionModelChange={(selectionModel) =>
+            onSelectionChange(new Set(Array.from(selectionModel.ids, String)))
+          }
           pageSizeOptions={[10, 25, 50]}
+          rowSelectionModel={rowSelectionModel}
           rows={rows}
           showToolbar
           slotProps={{
