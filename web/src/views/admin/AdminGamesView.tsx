@@ -1,6 +1,5 @@
 import {
   Alert,
-  Button,
   CircularProgress,
   Drawer,
   IconButton,
@@ -12,6 +11,7 @@ import {
 import EditIcon from '@mui/icons-material/Edit'
 import { useCallback, useState } from 'react'
 import { useSWRConfig } from 'swr'
+import { AdminCreateFab } from '../../components/admin/AdminCreateFab'
 import { AdminGamesTable } from '../../components/admin/AdminGamesTable'
 import { BulkUpdateGamesForm } from '../../components/admin/BulkUpdateGamesForm'
 import { DeleteButton } from '../../components/admin/DeleteButton'
@@ -216,16 +216,11 @@ export const AdminGamesView = () => {
 
   return (
     <Stack spacing={3}>
-      <Stack alignItems={{ xs: 'stretch', sm: 'flex-start' }} direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-        <Stack spacing={1} sx={{ flex: 1 }}>
-          <Typography variant="h1">Matchs</Typography>
-          <Typography color="text.secondary">
-            Liste des matchs du tournoi avec toutes les informations actuellement exposees par l&apos;API.
-          </Typography>
-        </Stack>
-        <Button disabled={phases.length === 0 || teams.length < 2} onClick={openCreateDrawer} variant="contained">
-          Ajouter un match
-        </Button>
+      <Stack spacing={1}>
+        <Typography variant="h1">Matchs</Typography>
+        <Typography color="text.secondary">
+          Liste des matchs du tournoi avec toutes les informations actuellement exposees par l&apos;API.
+        </Typography>
       </Stack>
 
       {errorMessage ? <Alert severity="error">{errorMessage}</Alert> : null}
@@ -261,6 +256,12 @@ export const AdminGamesView = () => {
           />
         </Stack>
       )}
+
+      <AdminCreateFab
+        disabled={phases.length === 0 || teams.length < 2}
+        label="Ajouter un match"
+        onClick={openCreateDrawer}
+      />
 
       <Drawer
         anchor={isMobile ? 'bottom' : 'right'}

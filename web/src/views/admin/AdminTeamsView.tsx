@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import {
   Alert,
-  Button,
   CircularProgress,
   Drawer,
   Stack,
@@ -10,6 +9,7 @@ import {
   useTheme,
 } from '@mui/material'
 import { useSWRConfig } from 'swr'
+import { AdminCreateFab } from '../../components/admin/AdminCreateFab'
 import { ManageTeamForm } from '../../components/admin/ManageTeamForm'
 import { TeamList } from '../../components/admin/TeamList'
 import { useTeams } from '../../hooks/useTeams'
@@ -91,16 +91,11 @@ export const AdminTeamsView = () => {
 
   return (
     <Stack spacing={3}>
-      <Stack alignItems={{ xs: 'stretch', sm: 'flex-start' }} direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-        <Stack spacing={1} sx={{ flex: 1 }}>
-          <Typography variant="h1">Equipes</Typography>
-          <Typography color="text.secondary">
-            Gerez les equipes qui participent au tournoi.
-          </Typography>
-        </Stack>
-        <Button onClick={openCreateDrawer} variant="contained">
-          Ajouter une equipe
-        </Button>
+      <Stack spacing={1}>
+        <Typography variant="h1">Equipes</Typography>
+        <Typography color="text.secondary">
+          Gerez les equipes qui participent au tournoi.
+        </Typography>
       </Stack>
 
       {errorMessage ? <Alert severity="error">{errorMessage}</Alert> : null}
@@ -114,6 +109,8 @@ export const AdminTeamsView = () => {
       ) : (
         <TeamList onDelete={deleteSelectedTeam} onEdit={openUpdateDrawer} teams={teams} />
       )}
+
+      <AdminCreateFab label="Ajouter une equipe" onClick={openCreateDrawer} />
 
       <Drawer
         anchor={isMobile ? 'bottom' : 'right'}

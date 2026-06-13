@@ -2,7 +2,6 @@ import type { SyntheticEvent } from 'react'
 import { useState } from 'react'
 import {
   Alert,
-  Button,
   CircularProgress,
   Drawer,
   Stack,
@@ -11,6 +10,7 @@ import {
   useTheme,
 } from '@mui/material'
 import { useSWRConfig } from 'swr'
+import { AdminCreateFab } from '../../components/admin/AdminCreateFab'
 import { ManagePhaseForm } from '../../components/admin/ManagePhaseForm'
 import { PhaseAccordion } from '../../components/admin/PhaseAccordion'
 import { usePhases } from '../../hooks/usePhases'
@@ -104,16 +104,11 @@ export const AdminPhasesView = () => {
 
   return (
     <Stack spacing={3}>
-      <Stack alignItems={{ xs: 'stretch', sm: 'flex-start' }} direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-        <Stack spacing={1} sx={{ flex: 1 }}>
-          <Typography variant="h1">Phases</Typography>
-          <Typography color="text.secondary">
-            Liste des phases du tournoi avec toutes les informations actuellement exposees par l&apos;API.
-          </Typography>
-        </Stack>
-        <Button onClick={openCreateDrawer} variant="contained">
-          Ajouter une phase
-        </Button>
+      <Stack spacing={1}>
+        <Typography variant="h1">Phases</Typography>
+        <Typography color="text.secondary">
+          Liste des phases du tournoi avec toutes les informations actuellement exposees par l&apos;API.
+        </Typography>
       </Stack>
 
       {errorMessage ? <Alert severity="error">{errorMessage}</Alert> : null}
@@ -138,6 +133,8 @@ export const AdminPhasesView = () => {
           ))}
         </Stack>
       )}
+
+      <AdminCreateFab label="Ajouter une phase" onClick={openCreateDrawer} />
 
       <Drawer
         anchor={isMobile ? 'bottom' : 'right'}
