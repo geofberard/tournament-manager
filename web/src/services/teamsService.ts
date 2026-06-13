@@ -5,6 +5,7 @@ import {
   type Team,
   type UpdateTeamRequest,
 } from './apiClient'
+import { getApiErrorCode, UserFacingError } from './apiError'
 
 export type { Team }
 export type TeamPayload = CreateTeamRequest
@@ -21,8 +22,19 @@ export const createTeam = async (createTeamRequest: TeamPayload): Promise<Team> 
 export const updateTeam = async (teamId: string, updateTeamRequest: UpdateTeamRequest): Promise<Team> =>
   teamsApi.updateTeam({ teamId, updateTeamRequest })
 
-export const deleteTeam = async (teamId: string): Promise<void> =>
-  teamsApi.deleteTeam({ teamId })
+export const deleteTeam = async (teamId: string): Promise<void> => {
+  try {
+    await teamsApi.deleteTeam({ teamId })
+  } catch (error) {
+    if (await getApiErrorCode(error) === 'TEAM_IN_USE') {
+      throw new UserFacingError(
+        "Cette équipe ne peut pas être supprimée car elle participe à un ou plusieurs matchs.",
+      )
+    }
+
+    throw error
+  }
+}
 
 export const getTeamGroup = async (teamId: string, phaseId: string): Promise<Group> =>
   fetchJson<Group>(

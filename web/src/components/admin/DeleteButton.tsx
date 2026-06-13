@@ -11,6 +11,7 @@ import {
 } from '@mui/material'
 import type { MouseEvent } from 'react'
 import { useState } from 'react'
+import { UserFacingError } from '../../services/apiError'
 
 type DeleteButtonProps = {
   onConfirm: () => Promise<void> | void
@@ -19,7 +20,7 @@ type DeleteButtonProps = {
 export const DeleteButton = ({ onConfirm }: DeleteButtonProps) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
-  const [deleteError, setDeleteError] = useState(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
 
   const stopParentClick = (event: MouseEvent<HTMLElement>) => {
     event.preventDefault()
@@ -28,24 +29,28 @@ export const DeleteButton = ({ onConfirm }: DeleteButtonProps) => {
 
   const openDialog = (event: MouseEvent<HTMLButtonElement>) => {
     stopParentClick(event)
-    setDeleteError(false)
+    setDeleteError(null)
     setIsDialogOpen(true)
   }
 
   const closeDialog = () => {
-    setDeleteError(false)
+    setDeleteError(null)
     setIsDialogOpen(false)
   }
 
   const confirmDelete = async () => {
-    setDeleteError(false)
+    setDeleteError(null)
     setIsDeleting(true)
 
     try {
       await onConfirm()
       closeDialog()
-    } catch {
-      setDeleteError(true)
+    } catch (error) {
+      setDeleteError(
+        error instanceof UserFacingError
+          ? error.message
+          : 'Impossible de supprimer pour le moment.',
+      )
     } finally {
       setIsDeleting(false)
     }
@@ -73,7 +78,7 @@ export const DeleteButton = ({ onConfirm }: DeleteButtonProps) => {
           <DialogContentText>Confirmez-vous la suppression ?</DialogContentText>
           {deleteError ? (
             <Alert severity="error" sx={{ mt: 2 }}>
-              Impossible de supprimer pour le moment.
+              {deleteError}
             </Alert>
           ) : null}
         </DialogContent>

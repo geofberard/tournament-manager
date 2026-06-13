@@ -5,6 +5,7 @@ import { SWRConfig } from 'swr'
 import { AdminTeamsView } from './AdminTeamsView'
 import * as useTeamsModule from '../../hooks/useTeams'
 import * as teamsServiceModule from '../../services/teamsService'
+import { UserFacingError } from '../../services/apiError'
 
 vi.mock('../../hooks/useTeams', () => ({
   useTeams: vi.fn(),
@@ -190,7 +191,11 @@ describe('AdminTeamsView', () => {
       isLoading: false,
       teams: [{ id: 'team-1', name: 'Aigles' }],
     })
-    deleteTeamMock.mockRejectedValueOnce(new Error('Equipe utilisee'))
+    deleteTeamMock.mockRejectedValueOnce(
+      new UserFacingError(
+        "Cette équipe ne peut pas être supprimée car elle participe à un ou plusieurs matchs.",
+      ),
+    )
     renderView()
 
     fireEvent.click(screen.getByRole('button', { name: 'Supprimer' }))
@@ -200,6 +205,10 @@ describe('AdminTeamsView', () => {
     fireEvent.click(within(dialog).getByRole('button', { name: 'Supprimer' }))
 
     // THEN
-    expect(await within(dialog).findByText('Impossible de supprimer pour le moment.')).toBeInTheDocument()
+    expect(
+      await within(dialog).findByText(
+        "Cette équipe ne peut pas être supprimée car elle participe à un ou plusieurs matchs.",
+      ),
+    ).toBeInTheDocument()
   })
 })

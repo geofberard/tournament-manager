@@ -5,6 +5,7 @@ import {
   type Phase,
   type UpdatePhaseRequest,
 } from './apiClient'
+import { getApiErrorCode, UserFacingError } from './apiError'
 
 export type { Phase }
 export type PhasePayload = CreatePhaseRequest
@@ -18,5 +19,16 @@ export const createPhase = async (createPhaseRequest: PhasePayload): Promise<Pha
 export const updatePhase = async (phaseId: string, updatePhaseRequest: UpdatePhaseRequest): Promise<Phase> =>
   phasesApi.updatePhase({ phaseId, updatePhaseRequest }) as Promise<Phase>
 
-export const deletePhase = async (phaseId: string): Promise<void> =>
-  phasesApi.deletePhase({ phaseId })
+export const deletePhase = async (phaseId: string): Promise<void> => {
+  try {
+    await phasesApi.deletePhase({ phaseId })
+  } catch (error) {
+    if (await getApiErrorCode(error) === 'PHASE_IN_USE') {
+      throw new UserFacingError(
+        "Cette phase ne peut pas être supprimée car elle est utilisée par un ou plusieurs matchs.",
+      )
+    }
+
+    throw error
+  }
+}

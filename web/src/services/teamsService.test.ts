@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { createTeam, deleteTeam, listTeams, updateTeam } from './teamsService'
+import * as apiErrorModule from './apiError'
 
 vi.mock('./apiClient', () => ({
   fetchJson: vi.fn(),
@@ -14,6 +15,7 @@ vi.mock('./apiClient', () => ({
 import { teamsApi } from './apiClient'
 
 const teamsApiMock = vi.mocked(teamsApi)
+const getApiErrorCodeMock = vi.spyOn(apiErrorModule, 'getApiErrorCode')
 
 describe('teamsService', () => {
   it('should list teams through the API client', async () => {
@@ -62,5 +64,16 @@ describe('teamsService', () => {
 
     // THEN
     expect(teamsApiMock.deleteTeam).toHaveBeenCalledWith({ teamId: 'team-1' })
+  })
+
+  it('should explain when a team cannot be deleted because it participates in a game', async () => {
+    // GIVEN
+    teamsApiMock.deleteTeam.mockRejectedValueOnce(new Error('API error'))
+    getApiErrorCodeMock.mockResolvedValueOnce('TEAM_IN_USE')
+
+    // WHEN / THEN
+    await expect(deleteTeam('team-1')).rejects.toThrow(
+      "Cette équipe ne peut pas être supprimée car elle participe à un ou plusieurs matchs.",
+    )
   })
 })

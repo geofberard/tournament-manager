@@ -1,6 +1,7 @@
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { DeleteButton } from './DeleteButton'
+import { UserFacingError } from '../../services/apiError'
 
 describe('DeleteButton', () => {
   afterEach(() => {
@@ -58,5 +59,22 @@ describe('DeleteButton', () => {
 
     // THEN
     expect(await within(dialog).findByText('Impossible de supprimer pour le moment.')).toBeInTheDocument()
+  })
+
+  it('should display a user-facing deletion explanation', async () => {
+    // GIVEN
+    const handleConfirm = vi.fn().mockRejectedValue(
+      new UserFacingError('Cette équipe participe encore à un match.'),
+    )
+    render(<DeleteButton onConfirm={handleConfirm} />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Supprimer' }))
+    const dialog = screen.getByRole('dialog', { name: 'Supprimer ?' })
+
+    // WHEN
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Supprimer' }))
+
+    // THEN
+    expect(await within(dialog).findByText('Cette équipe participe encore à un match.')).toBeInTheDocument()
   })
 })

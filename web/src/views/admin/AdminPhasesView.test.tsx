@@ -5,6 +5,7 @@ import { SWRConfig } from 'swr'
 import { AdminPhasesView } from './AdminPhasesView'
 import * as usePhasesModule from '../../hooks/usePhases'
 import * as phasesServiceModule from '../../services/phasesService'
+import { UserFacingError } from '../../services/apiError'
 
 vi.mock('../../hooks/usePhases', () => ({
   usePhases: vi.fn(),
@@ -185,5 +186,42 @@ describe('AdminPhasesView', () => {
     await waitFor(() => {
       expect(deletePhaseMock).toHaveBeenCalledWith('phase-2')
     })
+  })
+
+  it('should explain when a phase used by a game cannot be deleted', async () => {
+    // GIVEN
+    deletePhaseMock.mockRejectedValueOnce(
+      new UserFacingError(
+        "Cette phase ne peut pas être supprimée car elle est utilisée par un ou plusieurs matchs.",
+      ),
+    )
+    usePhasesMock.mockReturnValue({
+      errorMessage: null,
+      isLoading: false,
+      phases: [
+        {
+          details: 'Phase finale',
+          id: 'phase-2',
+          name: 'Finales',
+          order: 2,
+          type: 'BRACKET',
+        },
+      ],
+    })
+
+    renderView()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Supprimer' }))
+    const dialog = screen.getByRole('dialog', { name: 'Supprimer ?' })
+
+    // WHEN
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Supprimer' }))
+
+    // THEN
+    expect(
+      await within(dialog).findByText(
+        "Cette phase ne peut pas être supprimée car elle est utilisée par un ou plusieurs matchs.",
+      ),
+    ).toBeInTheDocument()
   })
 })

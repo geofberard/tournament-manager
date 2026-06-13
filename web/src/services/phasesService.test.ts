@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { deletePhase, listPhases } from './phasesService'
+import * as apiErrorModule from './apiError'
 
 vi.mock('./apiClient', () => ({
   fetchJson: vi.fn(),
@@ -12,6 +13,7 @@ import { fetchJson, phasesApi } from './apiClient'
 
 const fetchJsonMock = vi.mocked(fetchJson)
 const phasesApiMock = vi.mocked(phasesApi)
+const getApiErrorCodeMock = vi.spyOn(apiErrorModule, 'getApiErrorCode')
 
 describe('phasesService', () => {
   it('should fetch phases from the API', async () => {
@@ -35,5 +37,16 @@ describe('phasesService', () => {
 
     // THEN
     expect(phasesApiMock.deletePhase).toHaveBeenCalledWith({ phaseId: 'phase-1' })
+  })
+
+  it('should explain when a phase cannot be deleted because it is used by a game', async () => {
+    // GIVEN
+    phasesApiMock.deletePhase.mockRejectedValueOnce(new Error('API error'))
+    getApiErrorCodeMock.mockResolvedValueOnce('PHASE_IN_USE')
+
+    // WHEN / THEN
+    await expect(deletePhase('phase-1')).rejects.toThrow(
+      "Cette phase ne peut pas être supprimée car elle est utilisée par un ou plusieurs matchs.",
+    )
   })
 })
