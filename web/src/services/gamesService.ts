@@ -1,5 +1,5 @@
-import type { CreateGameRequest, UpdateGameRequest } from '../generated/api-client'
-import { gamesApi, type Game } from './apiClient'
+import type { CreateGameRequest, GameScore, UpdateGameRequest } from '../generated/api-client'
+import { gamesApi, scoresApi, type Game } from './apiClient'
 
 export type { Game }
 export type GamePayload = {
@@ -43,3 +43,12 @@ export const updateGame = async (gameId: string, gamePayload: GamePayload): Prom
 
   return gamesApi.updateGame({ gameId, updateGameRequest }) as Promise<Game>
 }
+
+export const upsertGameScore = async (
+  gameId: string,
+  pointsByTeam: Record<string, number>,
+): Promise<GameScore> =>
+  scoresApi.upsertGameScore({
+    gameId,
+    upsertGameScoreRequest: { pointsByTeam },
+  })

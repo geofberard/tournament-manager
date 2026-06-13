@@ -1,10 +1,11 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ThemeProvider, createTheme } from '@mui/material'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { GameStatus } from '../../generated/api-client'
 import * as useGamesModule from '../../hooks/useGames'
 import * as usePhasesModule from '../../hooks/usePhases'
 import * as useTeamsModule from '../../hooks/useTeams'
+import * as gamesServiceModule from '../../services/gamesService'
 import { AdminGamesView } from './AdminGamesView'
 
 vi.mock('../../hooks/useGames', () => ({
@@ -19,9 +20,21 @@ vi.mock('../../hooks/useTeams', () => ({
   useTeams: vi.fn(),
 }))
 
+vi.mock('../../services/gamesService', async (importOriginal) => {
+  const original = await importOriginal<typeof import('../../services/gamesService')>()
+
+  return {
+    ...original,
+    updateGame: vi.fn(),
+    upsertGameScore: vi.fn(),
+  }
+})
+
 const useGamesMock = vi.mocked(useGamesModule.useGames)
 const usePhasesMock = vi.mocked(usePhasesModule.usePhases)
 const useTeamsMock = vi.mocked(useTeamsModule.useTeams)
+const updateGameMock = vi.mocked(gamesServiceModule.updateGame)
+const upsertGameScoreMock = vi.mocked(gamesServiceModule.upsertGameScore)
 
 const game = {
   contestants: new Set([
@@ -60,6 +73,8 @@ describe('AdminGamesView', () => {
         { id: 'team-3', name: 'Aigles' },
       ],
     })
+    updateGameMock.mockResolvedValue(game)
+    upsertGameScoreMock.mockResolvedValue(game.score)
   })
 
   it('should render the games table', () => {
@@ -89,9 +104,36 @@ describe('AdminGamesView', () => {
     expect(screen.getByText('Poule A')).toBeInTheDocument()
     expect(screen.getByText('Tigres')).toBeInTheDocument()
     expect(screen.getByText('Lynx')).toBeInTheDocument()
-    expect(screen.getByText('21 - 18')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Modifier le score de Tigres' })).toHaveTextContent('21')
+    expect(screen.getByRole('button', { name: 'Modifier le score de Lynx' })).toHaveTextContent('18')
     expect(screen.queryByText('Finale')).not.toBeInTheDocument()
     expect(screen.queryByText('game-1')).not.toBeInTheDocument()
+  })
+
+  it('should render an empty symbol instead of a score when the game is not completed', () => {
+    // GIVEN
+    useGamesMock.mockReturnValue({
+      errorMessage: null,
+      games: [
+        {
+          ...game,
+          score: { pointsByTeam: {} },
+          status: GameStatus.Scheduled,
+        },
+      ],
+      isLoading: false,
+    })
+
+    // WHEN
+    render(
+      <ThemeProvider theme={createTheme()}>
+        <AdminGamesView />
+      </ThemeProvider>,
+    )
+
+    // THEN
+    expect(screen.getByText('∅')).toBeInTheDocument()
+    expect(screen.queryByText('- - -')).not.toBeInTheDocument()
   })
 
   it('should render an empty state when there are no games', () => {
@@ -111,6 +153,52 @@ describe('AdminGamesView', () => {
 
     // THEN
     expect(screen.getByText('Aucun match disponible.')).toBeInTheDocument()
+  })
+
+  it('should edit the score without opening the game drawer', async () => {
+    // GIVEN
+    const scheduledGame = {
+      ...game,
+      score: { pointsByTeam: {} },
+      status: GameStatus.Scheduled,
+    }
+    useGamesMock.mockReturnValue({
+      errorMessage: null,
+      games: [scheduledGame],
+      isLoading: false,
+    })
+    updateGameMock.mockResolvedValue({
+      ...scheduledGame,
+      status: GameStatus.Completed,
+    })
+    upsertGameScoreMock.mockResolvedValue({
+      pointsByTeam: { 'team-1': 21, 'team-2': 18 },
+    })
+
+    render(
+      <ThemeProvider theme={createTheme()}>
+        <AdminGamesView />
+      </ThemeProvider>,
+    )
+
+    // WHEN
+    fireEvent.click(screen.getByRole('button', { name: 'Modifier le score de Tigres contre Lynx' }))
+    fireEvent.change(screen.getByRole('textbox', { name: 'Score Tigres' }), { target: { value: '21' } })
+    fireEvent.change(screen.getByRole('textbox', { name: 'Score Lynx' }), { target: { value: '18' } })
+    fireEvent.keyDown(screen.getByRole('textbox', { name: 'Score Lynx' }), { key: 'Enter' })
+
+    // THEN
+    await waitFor(() => {
+      expect(upsertGameScoreMock).toHaveBeenCalledWith('game-1', {
+        'team-1': 21,
+        'team-2': 18,
+      })
+    })
+    expect(updateGameMock).toHaveBeenCalledWith(
+      'game-1',
+      expect.objectContaining({ status: GameStatus.Completed }),
+    )
+    expect(screen.queryByRole('heading', { name: 'Modifier le match' })).not.toBeInTheDocument()
   })
 
   it('should render the loading state', () => {

@@ -3,6 +3,7 @@ import {
   Configuration,
   GamesApi,
   PhasesApi,
+  ScoresApi,
   StatisticsApi,
   TeamsApi,
   type CreatePhaseRequest,
@@ -26,11 +27,12 @@ const teamsApi = new TeamsApi(apiConfiguration)
 const adminAuthApi = new AdminAuthApi(apiConfiguration)
 const gamesApi = new GamesApi(apiConfiguration)
 const phasesApi = new PhasesApi(apiConfiguration)
+const scoresApi = new ScoresApi(apiConfiguration)
 const statisticsApi = new StatisticsApi(apiConfiguration)
 
 export { adminAuthApi }
 export { teamsApi }
-export { gamesApi, phasesApi, statisticsApi }
+export { gamesApi, phasesApi, scoresApi, statisticsApi }
 export type { ContestantStats, CreatePhaseRequest, Team, UpdatePhaseRequest }
 
 export const fetchJson = async <T>(path: string): Promise<T> => {
