@@ -39,5 +39,5 @@ CREATE TABLE game_teams
     team_id VARCHAR(255),
     PRIMARY KEY (game_id, team_id),
     FOREIGN KEY (game_id) REFERENCES games (id) ON DELETE CASCADE,
-    FOREIGN KEY (team_id) REFERENCES teams (id) ON DELETE CASCADE
+    FOREIGN KEY (team_id) REFERENCES teams (id)
 );

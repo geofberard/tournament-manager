@@ -11,6 +11,8 @@ public interface GameRepository {
 
     Optional<Game> findById(String id);
 
+    boolean existsByTeamId(String teamId);
+
     List<Game> findByTeamId(String teamId);
 
     List<Game> findByGroup(String group);

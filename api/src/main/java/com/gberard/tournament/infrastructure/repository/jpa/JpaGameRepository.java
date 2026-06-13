@@ -9,6 +9,8 @@ import java.util.List;
 @Repository
 public interface JpaGameRepository extends JpaRepository<GameEntity, String> {
 
+    boolean existsByTeamsId(String teamId);
+
     List<GameEntity> findByTeamsId(String teamId);
 
     List<GameEntity> findByGroupId(String groupId);
