@@ -2,6 +2,8 @@
 /* eslint-disable */
 export * from './AdminLoginRequest';
 export * from './AdminSession';
+export * from './BulkGameChanges';
+export * from './BulkUpdateGamesRequest';
 export * from './ContestantStats';
 export * from './CreateGameRequest';
 export * from './CreatePhaseRequest';

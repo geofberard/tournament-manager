@@ -25,6 +25,7 @@ vi.mock('../../services/gamesService', async (importOriginal) => {
 
   return {
     ...original,
+    bulkUpdateGames: vi.fn(),
     deleteGame: vi.fn(),
     deleteGameScore: vi.fn(),
     updateGame: vi.fn(),
@@ -35,6 +36,7 @@ vi.mock('../../services/gamesService', async (importOriginal) => {
 const useGamesMock = vi.mocked(useGamesModule.useGames)
 const usePhasesMock = vi.mocked(usePhasesModule.usePhases)
 const useTeamsMock = vi.mocked(useTeamsModule.useTeams)
+const bulkUpdateGamesMock = vi.mocked(gamesServiceModule.bulkUpdateGames)
 const deleteGameMock = vi.mocked(gamesServiceModule.deleteGame)
 const deleteGameScoreMock = vi.mocked(gamesServiceModule.deleteGameScore)
 const updateGameMock = vi.mocked(gamesServiceModule.updateGame)
@@ -77,6 +79,7 @@ describe('AdminGamesView', () => {
         { id: 'team-3', name: 'Aigles' },
       ],
     })
+    bulkUpdateGamesMock.mockResolvedValue([game])
     deleteGameScoreMock.mockResolvedValue(undefined)
     deleteGameMock.mockResolvedValue(undefined)
     updateGameMock.mockResolvedValue(game)
@@ -388,6 +391,47 @@ describe('AdminGamesView', () => {
       expect(deleteGameMock).toHaveBeenCalledWith('game-1')
       expect(deleteGameMock).toHaveBeenCalledWith('game-2')
     })
+    expect(screen.queryByText('2 matchs selectionnes')).not.toBeInTheDocument()
+  })
+
+  it('should bulk update selected games from the drawer', async () => {
+    // GIVEN
+    const secondGame = { ...game, id: 'game-2', name: 'Petite finale' }
+    const updatedGames = [
+      { ...game, court: 'Central' },
+      { ...secondGame, court: 'Central' },
+    ]
+    useGamesMock.mockReturnValue({
+      errorMessage: null,
+      games: [game, secondGame],
+      isLoading: false,
+    })
+    bulkUpdateGamesMock.mockResolvedValue(updatedGames)
+    render(
+      <ThemeProvider theme={createTheme()}>
+        <AdminGamesView />
+      </ThemeProvider>,
+    )
+    const gameCheckboxes = screen.getAllByRole('checkbox', { name: 'Selectionner le match' })
+    fireEvent.click(gameCheckboxes[0])
+    fireEvent.click(gameCheckboxes[1])
+
+    // WHEN
+    fireEvent.click(screen.getByRole('button', { name: 'Modifier les matchs selectionnes' }))
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Modifier le terrain' }))
+    fireEvent.change(screen.getByRole('textbox', { name: 'Terrain' }), {
+      target: { value: 'Central' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Modifier les matchs' }))
+
+    // THEN
+    await waitFor(() =>
+      expect(bulkUpdateGamesMock).toHaveBeenCalledWith(
+        new Set(['game-1', 'game-2']),
+        { court: 'Central' },
+      ),
+    )
+    expect(screen.queryByRole('heading', { name: 'Modifier 2 matchs' })).not.toBeInTheDocument()
     expect(screen.queryByText('2 matchs selectionnes')).not.toBeInTheDocument()
   })
 

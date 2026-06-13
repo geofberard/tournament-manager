@@ -3,14 +3,17 @@ import {
   Button,
   CircularProgress,
   Drawer,
+  IconButton,
   Stack,
   Typography,
   useMediaQuery,
   useTheme,
 } from '@mui/material'
+import EditIcon from '@mui/icons-material/Edit'
 import { useCallback, useState } from 'react'
 import { useSWRConfig } from 'swr'
 import { AdminGamesTable } from '../../components/admin/AdminGamesTable'
+import { BulkUpdateGamesForm } from '../../components/admin/BulkUpdateGamesForm'
 import { DeleteButton } from '../../components/admin/DeleteButton'
 import { ManageGameForm } from '../../components/admin/ManageGameForm'
 import { GameStatus } from '../../generated/api-client'
@@ -18,16 +21,18 @@ import { useGames } from '../../hooks/useGames'
 import { usePhases } from '../../hooks/usePhases'
 import { useTeams } from '../../hooks/useTeams'
 import {
+  bulkUpdateGames,
   createGame,
   deleteGame,
   deleteGameScore,
   updateGame,
   upsertGameScore,
   type Game,
+  type BulkGameChanges,
   type GamePayload,
 } from '../../services/gamesService'
 
-type GameDrawerMode = 'idle' | 'create' | 'update'
+type GameDrawerMode = 'idle' | 'bulk-update' | 'create' | 'update'
 
 const emptyGameForm = (): GamePayload => ({
   contestantIds: new Set(),
@@ -110,6 +115,11 @@ export const AdminGamesView = () => {
     setDrawerMode('update')
   }
 
+  const openBulkUpdateDrawer = () => {
+    setSelectedGame(null)
+    setDrawerMode('bulk-update')
+  }
+
   const saveCreatedGame = async (gamePayload: GamePayload) => {
     const newGame = await createGame(gamePayload)
     const score = gamePayload.pointsByTeam
@@ -157,6 +167,20 @@ export const AdminGamesView = () => {
         (currentGames ?? []).map((game) => (game.id === gameWithScore.id ? gameWithScore : game)),
       { revalidate: false },
     )
+    closeDrawer()
+  }
+
+  const saveBulkUpdatedGames = async (changes: BulkGameChanges) => {
+    const updatedGames = await bulkUpdateGames(selectedGameIds, changes)
+    const updatedGamesById = new Map(updatedGames.map((game) => [game.id, game]))
+
+    await mutate(
+      '/api/games',
+      (currentGames: Game[] | undefined) =>
+        (currentGames ?? []).map((game) => updatedGamesById.get(game.id) ?? game),
+      { revalidate: false },
+    )
+    setSelectedGameIds(new Set())
     closeDrawer()
   }
 
@@ -218,6 +242,13 @@ export const AdminGamesView = () => {
                 {selectedGameIds.size} match{selectedGameIds.size > 1 ? 's' : ''} selectionne
                 {selectedGameIds.size > 1 ? 's' : ''}
               </Typography>
+              <IconButton
+                aria-label="Modifier les matchs selectionnes"
+                onClick={openBulkUpdateDrawer}
+                size="small"
+              >
+                <EditIcon fontSize="small" />
+              </IconButton>
               <DeleteButton onConfirm={deleteSelectedGames} />
             </Stack>
           ) : null}
@@ -264,6 +295,15 @@ export const AdminGamesView = () => {
             phases={phases}
             teams={teams}
             titleLabel="Modifier le match"
+          />
+        ) : null}
+        {drawerMode === 'bulk-update' ? (
+          <BulkUpdateGamesForm
+            gameCount={selectedGameIds.size}
+            onClose={closeDrawer}
+            onSubmit={saveBulkUpdatedGames}
+            phases={phases}
+            teams={teams}
           />
         ) : null}
       </Drawer>

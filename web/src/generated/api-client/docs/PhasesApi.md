@@ -147,6 +147,7 @@ No authorization required
 |-------------|-------------|------------------|
 | **204** | Phase supprimée |  -  |
 | **404** | Ressource introuvable |  -  |
+| **409** | La phase ne peut pas être supprimée car elle est encore référencée par un ou plusieurs matchs.  |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 

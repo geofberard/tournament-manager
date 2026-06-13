@@ -4,6 +4,7 @@ All URIs are relative to *http://localhost:3000*
 
 | Method | HTTP request | Description |
 |------------- | ------------- | -------------|
+| [**bulkUpdateGames**](GamesApi.md#bulkupdategamesoperation) | **POST** /api/games/bulk-update | Modifier plusieurs matchs |
 | [**createGame**](GamesApi.md#creategameoperation) | **POST** /api/games | Créer un match |
 | [**deleteGame**](GamesApi.md#deletegame) | **DELETE** /api/games/{gameId} | Supprimer un match |
 | [**getGameById**](GamesApi.md#getgamebyid) | **GET** /api/games/{gameId} | Lire un match |
@@ -12,13 +13,82 @@ All URIs are relative to *http://localhost:3000*
 
 
 
+## bulkUpdateGames
+
+> Array&lt;Game&gt; bulkUpdateGames(bulkUpdateGamesRequest)
+
+Modifier plusieurs matchs
+
+Applique les mêmes modifications partielles à plusieurs matchs.  Seuls les champs présents dans &#x60;changes&#x60; sont modifiés. Le score n\&#39;est pas modifiable par cette opération et reste géré via &#x60;/games/{gameId}/score&#x60;.  L\&#39;opération est atomique : si un match ou une ressource référencée est introuvable, aucun match n\&#39;est modifié.
+
+### Example
+
+```ts
+import {
+  Configuration,
+  GamesApi,
+} from '';
+import type { BulkUpdateGamesOperationRequest } from '';
+
+async function example() {
+  console.log("🚀 Testing  SDK...");
+  const api = new GamesApi();
+
+  const body = {
+    // BulkUpdateGamesRequest | Matchs ciblés et modifications à leur appliquer
+    bulkUpdateGamesRequest: {"gameIds":["game_1","game_2"],"changes":{"time":"2026-03-15T19:00:00Z","court":"Court B"}},
+  } satisfies BulkUpdateGamesOperationRequest;
+
+  try {
+    const data = await api.bulkUpdateGames(body);
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// Run the test
+example().catch(console.error);
+```
+
+### Parameters
+
+
+| Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **bulkUpdateGamesRequest** | [BulkUpdateGamesRequest](BulkUpdateGamesRequest.md) | Matchs ciblés et modifications à leur appliquer | |
+
+### Return type
+
+[**Array&lt;Game&gt;**](Game.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+- **Content-Type**: `application/json`
+- **Accept**: `application/json`
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Matchs mis à jour |  -  |
+| **400** | Requête invalide |  -  |
+| **404** | Ressource introuvable |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
+
+
 ## createGame
 
 > Game createGame(createGameRequest)
 
 Créer un match
 
-Crée un nouveau match.  Le match référence un ensemble d\&#39;équipes participantes, représenté côté contrat par un tableau sans doublon (&#x60;uniqueItems: true&#x60;).  Dans cette première version : - un match contient au moins 2 équipes - les équipes doivent déjà exister - le score n\&#39;est pas fourni ici ; il est géré via &#x60;/games/{gameId}/score&#x60; 
+Crée un nouveau match.  Le match référence un ensemble d\&#39;équipes participantes, représenté côté contrat par un tableau sans doublon (&#x60;uniqueItems: true&#x60;).  Dans cette première version : - un match contient au moins 2 équipes - les équipes doivent déjà exister - le score n\&#39;est pas fourni ici ; il est géré via &#x60;/games/{gameId}/score&#x60;
 
 ### Example
 
