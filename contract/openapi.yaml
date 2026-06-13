@@ -400,6 +400,50 @@ paths:
                     code: TEAM_NOT_FOUND
                     message: One or more teams do not exist
 
+  /api/games/bulk-update:
+    post:
+      tags: [Games]
+      operationId: bulkUpdateGames
+      summary: Modifier plusieurs matchs
+      description: |
+        Applique les mêmes modifications partielles à plusieurs matchs.
+
+        Seuls les champs présents dans `changes` sont modifiés. Le score n'est
+        pas modifiable par cette opération et reste géré via
+        `/games/{gameId}/score`.
+
+        L'opération est atomique : si un match ou une ressource référencée est
+        introuvable, aucun match n'est modifié.
+      requestBody:
+        required: true
+        description: Matchs ciblés et modifications à leur appliquer
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkUpdateGamesRequest'
+            examples:
+              updateTimeAndCourt:
+                value:
+                  gameIds:
+                    - game_1
+                    - game_2
+                  changes:
+                    time: '2026-03-15T19:00:00Z'
+                    court: Court B
+      responses:
+        '200':
+          description: Matchs mis à jour
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Game'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
   /api/games/{gameId}:
     parameters:
       - $ref: '#/components/parameters/GameId'
@@ -1100,6 +1144,60 @@ components:
         refereeId:
           type: string
           nullable: true
+
+    BulkUpdateGamesRequest:
+      type: object
+      description: Payload utilisé pour appliquer les mêmes modifications à plusieurs matchs.
+      required:
+        - gameIds
+        - changes
+      properties:
+        gameIds:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          description: Identifiants des matchs à modifier.
+          items:
+            type: string
+            minLength: 1
+        changes:
+          $ref: '#/components/schemas/BulkGameChanges'
+
+    BulkGameChanges:
+      type: object
+      description: |
+        Modifications partielles à appliquer à chaque match ciblé.
+
+        Une propriété absente conserve la valeur actuelle. `clearName` et
+        `clearReferee` permettent d'effacer explicitement les valeurs
+        optionnelles correspondantes.
+      properties:
+        phaseId:
+          type: string
+          minLength: 1
+        name:
+          type: string
+          minLength: 1
+        clearName:
+          type: boolean
+          default: false
+        group:
+          type: string
+          minLength: 1
+        time:
+          type: string
+          format: date-time
+        court:
+          type: string
+          minLength: 1
+        status:
+          $ref: '#/components/schemas/GameStatus'
+        refereeId:
+          type: string
+          minLength: 1
+        clearReferee:
+          type: boolean
+          default: false
 
     ContestantStats:
       type: object

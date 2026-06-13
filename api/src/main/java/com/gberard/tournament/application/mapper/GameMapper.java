@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import com.gberard.tournament.domain.model.GameBuilder;
+import com.gberard.tournament.generated.model.BulkGameChanges;
 import com.gberard.tournament.generated.model.CreateGameRequest;
 import com.gberard.tournament.generated.model.GameStatus;
 import com.gberard.tournament.generated.model.Team;
@@ -74,6 +75,41 @@ public final class GameMapper {
 
         if (!existingContestantIds.equals(updatedContestantIds)) {
             updatedGame.eraseScore();
+        }
+
+        return updatedGame.build();
+    }
+
+    public static com.gberard.tournament.domain.model.Game applyChanges(
+            com.gberard.tournament.domain.model.Game existingGame,
+            BulkGameChanges changes,
+            com.gberard.tournament.domain.model.Phase phase,
+            Optional<com.gberard.tournament.domain.model.Team> referee
+    ) {
+        var updatedGame = GameBuilder.from(existingGame);
+
+        if (phase != null) {
+            updatedGame.phase(phase);
+        }
+        if (changes.getName() != null) {
+            updatedGame.name(changes.getName());
+        } else if (Boolean.TRUE.equals(changes.getClearName())) {
+            updatedGame.eraseName();
+        }
+        if (changes.getGroup() != null) {
+            updatedGame.group(changes.getGroup());
+        }
+        if (changes.getTime() != null) {
+            updatedGame.time(changes.getTime().toLocalDateTime());
+        }
+        if (changes.getCourt() != null) {
+            updatedGame.court(changes.getCourt());
+        }
+        if (changes.getStatus() != null) {
+            updatedGame.isFinished(GameStatus.COMPLETED.equals(changes.getStatus()));
+        }
+        if (referee != null) {
+            updatedGame.refereeId(referee);
         }
 
         return updatedGame.build();
