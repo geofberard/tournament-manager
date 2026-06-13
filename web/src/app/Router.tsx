@@ -20,6 +20,7 @@ import { AdminGamesView } from '../views/admin/AdminGamesView'
 import { AdminLoginView } from '../views/admin/AdminLoginView'
 import { AdminView } from '../views/admin/AdminView'
 import { AdminPhasesView } from '../views/admin/AdminPhasesView'
+import { AdminTeamsView } from '../views/admin/AdminTeamsView'
 import { TeamGamesView } from '../views/team/TeamGamesView'
 import { TeamResultsView } from '../views/team/TeamResultsView'
 
@@ -172,6 +173,7 @@ const AppRoutes = ({ adminSession, teamSession }: AppRoutesProps) => {
         <Route index element={<AdminView username={username} />} />
         <Route path="games" element={<AdminGamesView />} />
         <Route path="phases" element={<AdminPhasesView />} />
+        <Route path="teams" element={<AdminTeamsView />} />
       </Route>
 
       <Route path="*" element={<Navigate to={PUBLIC_HOME_PATH} replace />} />

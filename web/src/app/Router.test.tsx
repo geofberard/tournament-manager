@@ -7,6 +7,7 @@ import {
   ADMIN_HOME_PATH,
   ADMIN_LOGIN_PATH,
   ADMIN_PHASES_PATH,
+  ADMIN_TEAMS_PATH,
   PUBLIC_HOME_PATH,
   TEAM_GAMES_PATH,
   TEAM_HOME_PATH,
@@ -336,6 +337,36 @@ describe('Router', () => {
     // THEN
     expect(screen.getByRole('heading', { name: 'Matchs' })).toBeInTheDocument()
     expect(screen.getByText('Brassage')).toBeInTheDocument()
+  })
+
+  it('should render the admin teams page when requested', () => {
+    // GIVEN
+    setHashPath(ADMIN_TEAMS_PATH)
+
+    useTeamLoginMock.mockReturnValue({
+      clearTeamSelection: vi.fn(),
+      currentTeam: null,
+      handleTeamChange: vi.fn(),
+    })
+    useAdminSessionMock.mockReturnValue({
+      isAuthenticated: true,
+      isLoading: false,
+      login: vi.fn(),
+      logout: vi.fn(),
+      username: 'admin',
+    })
+    useTeamsMock.mockReturnValue({
+      errorMessage: null,
+      isLoading: false,
+      teams: [{ id: 'team-1', name: 'Aigles' }],
+    })
+
+    // WHEN
+    renderRouter()
+
+    // THEN
+    expect(screen.getByRole('heading', { name: 'Equipes' })).toBeInTheDocument()
+    expect(screen.getByText('Aigles')).toBeInTheDocument()
   })
 
   it('should allow logging out from the admin area', () => {

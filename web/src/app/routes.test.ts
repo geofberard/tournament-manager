@@ -5,6 +5,7 @@ import {
   ADMIN_HOME_PATH,
   ADMIN_LOGIN_PATH,
   ADMIN_PHASES_PATH,
+  ADMIN_TEAMS_PATH,
   PUBLIC_HOME_PATH,
   TEAM_GAMES_PATH,
   TEAM_HOME_PATH,
@@ -24,6 +25,7 @@ describe('routes', () => {
       '/team/login',
       '/admin',
       '/admin/phases',
+      '/admin/teams',
       '/admin/games',
       '/admin/login',
     ]
@@ -37,6 +39,7 @@ describe('routes', () => {
       TEAM_LOGIN_PATH,
       ADMIN_HOME_PATH,
       ADMIN_PHASES_PATH,
+      ADMIN_TEAMS_PATH,
       ADMIN_GAMES_PATH,
       ADMIN_LOGIN_PATH,
     ]
@@ -64,6 +67,7 @@ describe('routes', () => {
     const expectedRoutes = [
       { label: 'Accueil', path: '/admin' },
       { label: 'Phases', path: '/admin/phases' },
+      { label: 'Equipes', path: '/admin/teams' },
       { label: 'Matchs', path: '/admin/games' },
     ]
 
