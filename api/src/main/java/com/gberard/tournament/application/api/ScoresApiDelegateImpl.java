@@ -28,7 +28,10 @@ public class ScoresApiDelegateImpl implements ScoresApiDelegate {
 
     @Override
     public ResponseEntity<Void> deleteGameScore(String gameId) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        Game matchingGame = findGameOrThrow(gameId);
+        gameService.update(GameBuilder.from(matchingGame).eraseScore().build());
+
+        return ResponseEntity.noContent().build();
     }
 
     @Override

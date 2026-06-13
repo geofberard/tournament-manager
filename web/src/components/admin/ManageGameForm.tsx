@@ -4,12 +4,10 @@ import {
   Alert,
   Box,
   Button,
-  Checkbox,
   Divider,
   FormControl,
   FormHelperText,
   InputLabel,
-  ListItemText,
   MenuItem,
   Select,
   Stack,
@@ -54,6 +52,10 @@ export const ManageGameForm = ({
   titleLabel,
 }: ManageGameFormProps) => {
   const [formValue, setFormValue] = useState<GamePayload>(initialValue)
+  const [contestantIds, setContestantIds] = useState<string[]>(() => {
+    const initialContestantIds = [...initialValue.contestantIds]
+    return [initialContestantIds[0] ?? '', initialContestantIds[1] ?? '']
+  })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
 
@@ -67,26 +69,71 @@ export const ManageGameForm = ({
       setFormValue((currentValue) => ({ ...currentValue, [field]: event.target.value }))
     }
 
-  const handleContestantsChange = (event: SelectChangeEvent<string[]>) => {
+  const handleContestantChange = (index: number) => (event: SelectChangeEvent) => {
+    const previousTeamId = contestantIds[index]
+    const updatedContestantIds = [...contestantIds]
+    updatedContestantIds[index] = event.target.value
+    setContestantIds(updatedContestantIds)
+
+    setFormValue((currentValue) => {
+      const pointsByTeam = previousTeamId
+        ? Object.fromEntries(
+            Object.entries(currentValue.pointsByTeam ?? {}).filter(([teamId]) => teamId !== previousTeamId),
+          )
+        : currentValue.pointsByTeam
+
+      return {
+        ...currentValue,
+        contestantIds: new Set(updatedContestantIds.filter(Boolean)),
+        pointsByTeam: pointsByTeam && Object.keys(pointsByTeam).length > 0 ? pointsByTeam : null,
+      }
+    })
+  }
+
+  const handleScoreChange = (teamId: string) => (event: ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value
-    const contestantIds = typeof value === 'string' ? value.split(',') : value
 
-    if (contestantIds.length > 2) {
-      return
-    }
+    setFormValue((currentValue) => {
+      const pointsByTeam = { ...(currentValue.pointsByTeam ?? {}) }
 
-    setFormValue((currentValue) => ({
-      ...currentValue,
-      contestantIds: new Set(contestantIds),
-    }))
+      if (value === '') {
+        delete pointsByTeam[teamId]
+      } else {
+        pointsByTeam[teamId] = Number(value)
+      }
+
+      return {
+        ...currentValue,
+        pointsByTeam: Object.keys(pointsByTeam).length > 0 ? pointsByTeam : null,
+      }
+    })
   }
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setSubmitError(null)
 
-    if (formValue.contestantIds.size !== 2) {
+    if (contestantIds.some((teamId) => !teamId) || new Set(contestantIds).size !== 2) {
       setSubmitError('Selectionnez exactement deux equipes.')
+      return
+    }
+
+    const scoreCount = contestantIds.filter(
+      (teamId) => formValue.pointsByTeam?.[teamId] !== undefined,
+    ).length
+
+    if (scoreCount === 1) {
+      setSubmitError('Renseignez le score des deux equipes ou laissez les deux scores vides.')
+      return
+    }
+
+    if (
+      formValue.pointsByTeam &&
+      Object.values(formValue.pointsByTeam).some(
+        (score) => !Number.isSafeInteger(score) || score < 0,
+      )
+    ) {
+      setSubmitError('Les scores doivent etre des nombres entiers positifs ou nuls.')
       return
     }
 
@@ -98,6 +145,12 @@ export const ManageGameForm = ({
         court: formValue.court.trim(),
         group: formValue.group.trim(),
         name: formValue.name?.trim() || undefined,
+        pointsByTeam:
+          scoreCount === 2
+            ? Object.fromEntries(
+                contestantIds.map((teamId) => [teamId, formValue.pointsByTeam![teamId]]),
+              )
+            : null,
         refereeId: formValue.refereeId || undefined,
       })
     } catch (error) {
@@ -167,38 +220,58 @@ export const ManageGameForm = ({
 
         <TextField fullWidth label="Nom" onChange={handleTextChange('name')} value={formValue.name ?? ''} />
 
-        <FormControl fullWidth required>
-          <InputLabel id="game-contestants-label">Equipes</InputLabel>
-          <Select
-            label="Equipes"
-            labelId="game-contestants-label"
-            multiple
-            onChange={handleContestantsChange}
-            renderValue={(selected) =>
-              teams
-                .filter((team) => selected.includes(team.id))
-                .map((team) => team.name)
-                .join(', ')
-            }
-            value={[...formValue.contestantIds]}
-          >
-            {teams.map((team) => {
-              const isSelected = formValue.contestantIds.has(team.id)
+        <Stack spacing={1.5}>
+          <Stack spacing={0.5}>
+            <Typography fontWeight={700}>Equipes et score</Typography>
+            <Typography color="text.secondary" variant="body2">
+              Le score est facultatif, mais doit etre renseigne pour les deux equipes.
+            </Typography>
+          </Stack>
 
-              return (
-                <MenuItem
-                  disabled={formValue.contestantIds.size === 2 && !isSelected}
-                  key={team.id}
-                  value={team.id}
-                >
-                  <Checkbox checked={isSelected} />
-                  <ListItemText primary={team.name} />
-                </MenuItem>
-              )
-            })}
-          </Select>
-          <FormHelperText>Selectionnez exactement 2 equipes.</FormHelperText>
-        </FormControl>
+          {[0, 1].map((index) => {
+            const teamId = contestantIds[index] ?? ''
+            const otherTeamId = contestantIds[index === 0 ? 1 : 0]
+            const score = teamId ? formValue.pointsByTeam?.[teamId] : undefined
+
+            return (
+              <Box
+                key={index}
+                sx={{
+                  alignItems: 'start',
+                  display: 'grid',
+                  gap: 1.5,
+                  gridTemplateColumns: { xs: '1fr', sm: 'minmax(0, 1fr) 130px' },
+                }}
+              >
+                <FormControl fullWidth required>
+                  <InputLabel id={`game-contestant-${index}-label`}>Equipe {index + 1}</InputLabel>
+                  <Select
+                    label={`Equipe ${index + 1}`}
+                    labelId={`game-contestant-${index}-label`}
+                    onChange={handleContestantChange(index)}
+                    value={teamId}
+                  >
+                    {teams.map((team) => (
+                      <MenuItem disabled={team.id === otherTeamId} key={team.id} value={team.id}>
+                        {team.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                <TextField
+                  disabled={!teamId}
+                  fullWidth
+                  label={`Score Equipe ${index + 1}`}
+                  onChange={teamId ? handleScoreChange(teamId) : undefined}
+                  slotProps={{ htmlInput: { min: 0 } }}
+                  type="number"
+                  value={score ?? ''}
+                />
+              </Box>
+            )
+          })}
+          <FormHelperText>Selectionnez exactement 2 equipes differentes.</FormHelperText>
+        </Stack>
 
         <FormControl fullWidth>
           <InputLabel id="game-referee-label">Arbitre</InputLabel>

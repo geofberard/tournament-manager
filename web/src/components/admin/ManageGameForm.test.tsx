@@ -17,6 +17,10 @@ const initialValue: GamePayload = {
   group: 'Poule A',
   name: 'Match test',
   phaseId: 'phase-1',
+  pointsByTeam: {
+    'team-1': 21,
+    'team-2': 18,
+  },
   refereeId: 'team-1',
   status: GameStatus.Scheduled,
   time: new Date(2026, 4, 3, 10, 30),
@@ -57,7 +61,10 @@ describe('ManageGameForm', () => {
     expect(screen.getByDisplayValue('Poule A')).toBeInTheDocument()
     expect(screen.getByDisplayValue('Terrain 1')).toBeInTheDocument()
     expect(screen.getByDisplayValue('Match test')).toBeInTheDocument()
-    expect(screen.getByText('Tigres, Lynx')).toBeInTheDocument()
+    expect(screen.getByRole('combobox', { name: 'Equipe 1' })).toHaveTextContent('Tigres')
+    expect(screen.getByRole('combobox', { name: 'Equipe 2' })).toHaveTextContent('Lynx')
+    expect(screen.getByRole('spinbutton', { name: 'Score Equipe 1' })).toHaveValue(21)
+    expect(screen.getByRole('spinbutton', { name: 'Score Equipe 2' })).toHaveValue(18)
   })
 
   it('should submit a trimmed game payload', async () => {
@@ -87,24 +94,101 @@ describe('ManageGameForm', () => {
     const { onSubmit } = renderForm({ contestantIds: new Set(['team-1']) })
 
     // WHEN
-    fireEvent.click(screen.getByRole('button', { name: 'Sauvegarder' }))
+    fireEvent.submit(screen.getByRole('button', { name: 'Sauvegarder' }).closest('form')!)
 
     // THEN
     expect(await screen.findByText('Selectionnez exactement deux equipes.')).toBeInTheDocument()
     expect(onSubmit).not.toHaveBeenCalled()
   })
 
-  it('should disable unselected teams when two contestants are selected', () => {
+  it('should disable the other selected team in each team selector', () => {
     // GIVEN
     renderForm()
 
     // WHEN
-    fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Equipes' }))
+    fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Equipe 1' }))
 
     // THEN
     expect(screen.getByRole('option', { name: 'Tigres' })).toBeEnabled()
-    expect(screen.getByRole('option', { name: 'Lynx' })).toBeEnabled()
-    expect(screen.getByRole('option', { name: 'Aigles' })).toHaveAttribute('aria-disabled', 'true')
+    expect(screen.getByRole('option', { name: 'Lynx' })).toHaveAttribute('aria-disabled', 'true')
+    expect(screen.getByRole('option', { name: 'Aigles' })).toBeEnabled()
+  })
+
+  it('should clear the previous team score when changing a contestant', () => {
+    // GIVEN
+    renderForm()
+    fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Equipe 1' }))
+
+    // WHEN
+    fireEvent.click(screen.getByRole('option', { name: 'Aigles' }))
+
+    // THEN
+    expect(screen.getByRole('spinbutton', { name: 'Score Equipe 1' })).toHaveValue(null)
+    expect(screen.getByRole('spinbutton', { name: 'Score Equipe 2' })).toHaveValue(18)
+  })
+
+  it('should require both scores when one score is provided', async () => {
+    // GIVEN
+    const { onSubmit } = renderForm({ pointsByTeam: null })
+    fireEvent.change(screen.getByRole('spinbutton', { name: 'Score Equipe 1' }), {
+      target: { value: '12' },
+    })
+
+    // WHEN
+    fireEvent.click(screen.getByRole('button', { name: 'Sauvegarder' }))
+
+    // THEN
+    expect(
+      await screen.findByText('Renseignez le score des deux equipes ou laissez les deux scores vides.'),
+    ).toBeInTheDocument()
+    expect(onSubmit).not.toHaveBeenCalled()
+  })
+
+  it('should submit scores linked to selected teams', async () => {
+    // GIVEN
+    const { onSubmit } = renderForm({ pointsByTeam: null })
+    fireEvent.change(screen.getByRole('spinbutton', { name: 'Score Equipe 1' }), {
+      target: { value: '12' },
+    })
+    fireEvent.change(screen.getByRole('spinbutton', { name: 'Score Equipe 2' }), {
+      target: { value: '9' },
+    })
+
+    // WHEN
+    fireEvent.click(screen.getByRole('button', { name: 'Sauvegarder' }))
+
+    // THEN
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith({
+        ...initialValue,
+        pointsByTeam: {
+          'team-1': 12,
+          'team-2': 9,
+        },
+      }),
+    )
+  })
+
+  it('should submit an empty score when both score fields are cleared', async () => {
+    // GIVEN
+    const { onSubmit } = renderForm()
+    fireEvent.change(screen.getByRole('spinbutton', { name: 'Score Equipe 1' }), {
+      target: { value: '' },
+    })
+    fireEvent.change(screen.getByRole('spinbutton', { name: 'Score Equipe 2' }), {
+      target: { value: '' },
+    })
+
+    // WHEN
+    fireEvent.click(screen.getByRole('button', { name: 'Sauvegarder' }))
+
+    // THEN
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith({
+        ...initialValue,
+        pointsByTeam: null,
+      }),
+    )
   })
 
   it('should display the submission error and enable retry', async () => {

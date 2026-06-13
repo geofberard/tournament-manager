@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import com.gberard.tournament.domain.model.GameBuilder;
 import com.gberard.tournament.generated.model.CreateGameRequest;
 import com.gberard.tournament.generated.model.GameStatus;
 import com.gberard.tournament.generated.model.Team;
@@ -48,24 +49,34 @@ public final class GameMapper {
     }
 
     public static com.gberard.tournament.domain.model.Game toDomain(
-            String id,
+            com.gberard.tournament.domain.model.Game existingGame,
             UpdateGameRequest request,
             com.gberard.tournament.domain.model.Phase phase,
             Set<com.gberard.tournament.domain.model.Team> contestants,
             Optional<com.gberard.tournament.domain.model.Team> referee
     ) {
-        return new com.gberard.tournament.domain.model.Game(
-                id,
-                phase,
-                Optional.ofNullable(request.getName()),
-                request.getGroup(),
-                request.getTime().toLocalDateTime(),
-                request.getCourt(),
-                List.copyOf(contestants),
-                referee,
-                GameStatus.COMPLETED.equals(request.getStatus()),
-                Optional.empty()
-        );
+        var updatedGame = GameBuilder.from(existingGame)
+                .phase(phase)
+                .name(Optional.ofNullable(request.getName()))
+                .group(request.getGroup())
+                .time(request.getTime().toLocalDateTime())
+                .court(request.getCourt())
+                .contestants(List.copyOf(contestants))
+                .refereeId(referee)
+                .isFinished(GameStatus.COMPLETED.equals(request.getStatus()));
+
+        Set<String> existingContestantIds = existingGame.contestants().stream()
+                .map(com.gberard.tournament.domain.model.Team::id)
+                .collect(toSet());
+        Set<String> updatedContestantIds = contestants.stream()
+                .map(com.gberard.tournament.domain.model.Team::id)
+                .collect(toSet());
+
+        if (!existingContestantIds.equals(updatedContestantIds)) {
+            updatedGame.eraseScore();
+        }
+
+        return updatedGame.build();
     }
 
     private static GameStatus resolveStatus(com.gberard.tournament.domain.model.Game game) {

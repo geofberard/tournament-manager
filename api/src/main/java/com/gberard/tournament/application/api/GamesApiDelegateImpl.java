@@ -74,6 +74,7 @@ public class GamesApiDelegateImpl implements GamesApiDelegate {
 
     @Override
     public ResponseEntity<Game> updateGame(String gameId, UpdateGameRequest updateGameRequest) {
+        var existingGame = findGameOrThrow(gameId);
         Set<Team> contestants = updateGameRequest.getContestantIds().stream()
                 .map(this::findTeamOrThrow)
                 .collect(toSet());
@@ -83,7 +84,7 @@ public class GamesApiDelegateImpl implements GamesApiDelegate {
 
         Phase phase = findPhaseOrThrow(updateGameRequest.getPhaseId());
 
-        var newGame = gameService.create(GameMapper.toDomain(gameId, updateGameRequest, phase, contestants, referee));
+        var newGame = gameService.update(GameMapper.toDomain(existingGame, updateGameRequest, phase, contestants, referee));
 
         return ResponseEntity.ok(GameMapper.toApi(newGame));
     }

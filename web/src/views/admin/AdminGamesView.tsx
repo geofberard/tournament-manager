@@ -18,6 +18,7 @@ import { usePhases } from '../../hooks/usePhases'
 import { useTeams } from '../../hooks/useTeams'
 import {
   createGame,
+  deleteGameScore,
   updateGame,
   upsertGameScore,
   type Game,
@@ -32,6 +33,7 @@ const emptyGameForm = (): GamePayload => ({
   group: '',
   name: '',
   phaseId: '',
+  pointsByTeam: null,
   refereeId: undefined,
   status: GameStatus.Scheduled,
   time: new Date(),
@@ -43,6 +45,10 @@ const toGamePayload = (game: Game): GamePayload => ({
   group: game.group,
   name: game.name,
   phaseId: game.phase.id,
+  pointsByTeam:
+    game.score?.pointsByTeam && Object.keys(game.score.pointsByTeam).length > 0
+      ? { ...game.score.pointsByTeam }
+      : null,
   refereeId: game.referee?.id,
   status: game.status,
   time: game.time,
@@ -59,7 +65,6 @@ export const AdminGamesView = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
   const saveGameScore = useCallback(
     async (game: Game, pointsByTeam: Record<string, number>) => {
-      const score = await upsertGameScore(game.id, pointsByTeam)
       const completedGame =
         game.status === GameStatus.Completed
           ? game
@@ -67,6 +72,7 @@ export const AdminGamesView = () => {
               ...toGamePayload(game),
               status: GameStatus.Completed,
             })
+      const score = await upsertGameScore(game.id, pointsByTeam)
 
       await mutate(
         '/api/games',
@@ -103,9 +109,18 @@ export const AdminGamesView = () => {
 
   const saveCreatedGame = async (gamePayload: GamePayload) => {
     const newGame = await createGame(gamePayload)
-    await mutate('/api/games', (currentGames: Game[] | undefined) => [...(currentGames ?? []), newGame], {
-      revalidate: false,
-    })
+    const score = gamePayload.pointsByTeam
+      ? await upsertGameScore(newGame.id, gamePayload.pointsByTeam)
+      : null
+    const createdGame = score
+      ? { ...newGame, score, status: GameStatus.InProgress }
+      : newGame
+
+    await mutate(
+      '/api/games',
+      (currentGames: Game[] | undefined) => [...(currentGames ?? []), createdGame],
+      { revalidate: false },
+    )
     closeDrawer()
   }
 
@@ -115,10 +130,28 @@ export const AdminGamesView = () => {
     }
 
     const updatedGame = await updateGame(selectedGame.id, gamePayload)
+    let score = updatedGame.score
+
+    if (gamePayload.pointsByTeam) {
+      score = await upsertGameScore(selectedGame.id, gamePayload.pointsByTeam)
+    } else if (selectedGame.score?.pointsByTeam && Object.keys(selectedGame.score.pointsByTeam).length > 0) {
+      await deleteGameScore(selectedGame.id)
+      score = { pointsByTeam: {} }
+    }
+
+    const gameWithScore = {
+      ...updatedGame,
+      score,
+      status:
+        gamePayload.pointsByTeam && updatedGame.status !== GameStatus.Completed
+          ? GameStatus.InProgress
+          : updatedGame.status,
+    }
+
     await mutate(
       '/api/games',
       (currentGames: Game[] | undefined) =>
-        (currentGames ?? []).map((game) => (game.id === updatedGame.id ? updatedGame : game)),
+        (currentGames ?? []).map((game) => (game.id === gameWithScore.id ? gameWithScore : game)),
       { revalidate: false },
     )
     closeDrawer()

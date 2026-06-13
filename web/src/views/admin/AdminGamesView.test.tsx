@@ -25,6 +25,7 @@ vi.mock('../../services/gamesService', async (importOriginal) => {
 
   return {
     ...original,
+    deleteGameScore: vi.fn(),
     updateGame: vi.fn(),
     upsertGameScore: vi.fn(),
   }
@@ -33,6 +34,7 @@ vi.mock('../../services/gamesService', async (importOriginal) => {
 const useGamesMock = vi.mocked(useGamesModule.useGames)
 const usePhasesMock = vi.mocked(usePhasesModule.usePhases)
 const useTeamsMock = vi.mocked(useTeamsModule.useTeams)
+const deleteGameScoreMock = vi.mocked(gamesServiceModule.deleteGameScore)
 const updateGameMock = vi.mocked(gamesServiceModule.updateGame)
 const upsertGameScoreMock = vi.mocked(gamesServiceModule.upsertGameScore)
 
@@ -73,6 +75,7 @@ describe('AdminGamesView', () => {
         { id: 'team-3', name: 'Aigles' },
       ],
     })
+    deleteGameScoreMock.mockResolvedValue(undefined)
     updateGameMock.mockResolvedValue(game)
     upsertGameScoreMock.mockResolvedValue(game.score)
   })
@@ -282,6 +285,76 @@ describe('AdminGamesView', () => {
     expect(screen.getByRole('heading', { name: 'Modifier le match' })).toBeInTheDocument()
     expect(screen.getByDisplayValue('Finale')).toBeInTheDocument()
     expect(screen.getByDisplayValue('Terrain 1')).toBeInTheDocument()
+    expect(screen.getByRole('spinbutton', { name: 'Score Equipe 1' })).toHaveValue(21)
+    expect(screen.getByRole('spinbutton', { name: 'Score Equipe 2' })).toHaveValue(18)
     expect(screen.getByRole('combobox', { name: 'Statut' })).toBeInTheDocument()
+  })
+
+  it('should preserve and save the score when updating game information', async () => {
+    // GIVEN
+    useGamesMock.mockReturnValue({
+      errorMessage: null,
+      games: [game],
+      isLoading: false,
+    })
+    render(
+      <ThemeProvider theme={createTheme()}>
+        <AdminGamesView />
+      </ThemeProvider>,
+    )
+    fireEvent.click(screen.getByRole('row', { name: /Brassage Poule A Tigres 21 - 18 Lynx/ }))
+
+    // WHEN
+    fireEvent.change(screen.getByDisplayValue(/2026-05-03T/), {
+      target: { value: '2026-05-03T11:30' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Sauvegarder' }))
+
+    // THEN
+    await waitFor(() => {
+      expect(updateGameMock).toHaveBeenCalledWith(
+        'game-1',
+        expect.objectContaining({
+          pointsByTeam: {
+            'team-1': 21,
+            'team-2': 18,
+          },
+          time: new Date('2026-05-03T11:30'),
+        }),
+      )
+    })
+    expect(upsertGameScoreMock).toHaveBeenCalledWith('game-1', {
+      'team-1': 21,
+      'team-2': 18,
+    })
+    expect(deleteGameScoreMock).not.toHaveBeenCalled()
+  })
+
+  it('should delete the score when both score fields are cleared', async () => {
+    // GIVEN
+    useGamesMock.mockReturnValue({
+      errorMessage: null,
+      games: [game],
+      isLoading: false,
+    })
+    render(
+      <ThemeProvider theme={createTheme()}>
+        <AdminGamesView />
+      </ThemeProvider>,
+    )
+    fireEvent.click(screen.getByRole('row', { name: /Brassage Poule A Tigres 21 - 18 Lynx/ }))
+    fireEvent.change(screen.getByRole('spinbutton', { name: 'Score Equipe 1' }), {
+      target: { value: '' },
+    })
+    fireEvent.change(screen.getByRole('spinbutton', { name: 'Score Equipe 2' }), {
+      target: { value: '' },
+    })
+
+    // WHEN
+    fireEvent.click(screen.getByRole('button', { name: 'Sauvegarder' }))
+
+    // THEN
+    await waitFor(() => expect(deleteGameScoreMock).toHaveBeenCalledWith('game-1'))
+    expect(upsertGameScoreMock).not.toHaveBeenCalled()
   })
 })

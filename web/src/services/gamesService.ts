@@ -8,6 +8,7 @@ export type GamePayload = {
   group: string
   name?: string
   phaseId: string
+  pointsByTeam: Record<string, number> | null
   refereeId?: string
   status: UpdateGameRequest['status']
   time: Date
@@ -52,3 +53,6 @@ export const upsertGameScore = async (
     gameId,
     upsertGameScoreRequest: { pointsByTeam },
   })
+
+export const deleteGameScore = async (gameId: string): Promise<void> =>
+  scoresApi.deleteGameScore({ gameId })
