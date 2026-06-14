@@ -1,4 +1,5 @@
 import type {
+  BulkCreateGamesRequest,
   BulkGameChanges,
   CreateGameRequest,
   GameScore,
@@ -8,6 +9,7 @@ import { gamesApi, scoresApi, type Game } from './apiClient'
 
 export type { Game }
 export type { BulkGameChanges }
+export type PoolGamesPayload = BulkCreateGamesRequest
 export type GamePayload = {
   contestantIds: Set<string>
   court: string
@@ -58,6 +60,9 @@ export const bulkUpdateGames = async (
   gamesApi.bulkUpdateGames({
     bulkUpdateGamesRequest: { changes, gameIds },
   }) as Promise<Game[]>
+
+export const bulkCreateGames = async (bulkCreateGamesRequest: PoolGamesPayload): Promise<Game[]> =>
+  gamesApi.bulkCreateGames({ bulkCreateGamesRequest }) as Promise<Game[]>
 
 export const deleteGame = async (gameId: string): Promise<void> =>
   gamesApi.deleteGame({ gameId })

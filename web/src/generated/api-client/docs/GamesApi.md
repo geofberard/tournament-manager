@@ -4,6 +4,7 @@ All URIs are relative to *http://localhost:3000*
 
 | Method | HTTP request | Description |
 |------------- | ------------- | -------------|
+| [**bulkCreateGames**](GamesApi.md#bulkcreategamesoperation) | **POST** /api/games/bulk-create | Créer les matchs d\&#39;une poule |
 | [**bulkUpdateGames**](GamesApi.md#bulkupdategamesoperation) | **POST** /api/games/bulk-update | Modifier plusieurs matchs |
 | [**createGame**](GamesApi.md#creategameoperation) | **POST** /api/games | Créer un match |
 | [**deleteGame**](GamesApi.md#deletegame) | **DELETE** /api/games/{gameId} | Supprimer un match |
@@ -11,6 +12,75 @@ All URIs are relative to *http://localhost:3000*
 | [**listGames**](GamesApi.md#listgames) | **GET** /api/games | Lister les matchs |
 | [**updateGame**](GamesApi.md#updategameoperation) | **PUT** /api/games/{gameId} | Modifier un match |
 
+
+
+## bulkCreateGames
+
+> Array&lt;Game&gt; bulkCreateGames(bulkCreateGamesRequest)
+
+Créer les matchs d\&#39;une poule
+
+Génère toutes les rencontres aller simple d\&#39;une poule, puis les planifie séquentiellement sur un terrain unique.  Chaque paire d\&#39;équipes se rencontre exactement une fois. Lorsque &#x60;assignReferees&#x60; vaut &#x60;true&#x60;, une équipe non participante est désignée comme arbitre pour chaque match.  L\&#39;opération est atomique et refuse de créer un calendrier si la poule contient déjà des matchs dans la phase demandée.
+
+### Example
+
+```ts
+import {
+  Configuration,
+  GamesApi,
+} from '';
+import type { BulkCreateGamesOperationRequest } from '';
+
+async function example() {
+  console.log("🚀 Testing  SDK...");
+  const api = new GamesApi();
+
+  const body = {
+    // BulkCreateGamesRequest | Paramètres de génération et de planification de la poule
+    bulkCreateGamesRequest: {"phaseId":"phase_1","group":"Poule A","startTime":"2026-06-20T09:00:00Z","gameDurationMinutes":12,"breakDurationMinutes":3,"court":"Terrain 1","teamIds":["team_1","team_2","team_3","team_4"],"assignReferees":true},
+  } satisfies BulkCreateGamesOperationRequest;
+
+  try {
+    const data = await api.bulkCreateGames(body);
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// Run the test
+example().catch(console.error);
+```
+
+### Parameters
+
+
+| Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **bulkCreateGamesRequest** | [BulkCreateGamesRequest](BulkCreateGamesRequest.md) | Paramètres de génération et de planification de la poule | |
+
+### Return type
+
+[**Array&lt;Game&gt;**](Game.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+- **Content-Type**: `application/json`
+- **Accept**: `application/json`
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **201** | Matchs de la poule créés |  -  |
+| **400** | Requête invalide |  -  |
+| **404** | Ressource introuvable |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
 
 
 ## bulkUpdateGames
@@ -416,4 +486,3 @@ No authorization required
 | **404** | Ressource introuvable |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-

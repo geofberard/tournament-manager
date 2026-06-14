@@ -9,6 +9,7 @@ apis/index.ts
 docs/AdminAuthApi.md
 docs/AdminLoginRequest.md
 docs/AdminSession.md
+docs/BulkCreateGamesRequest.md
 docs/BulkGameChanges.md
 docs/BulkUpdateGamesRequest.md
 docs/ContestantStats.md
@@ -35,6 +36,7 @@ docs/UpsertGameScoreRequest.md
 index.ts
 models/AdminLoginRequest.ts
 models/AdminSession.ts
+models/BulkCreateGamesRequest.ts
 models/BulkGameChanges.ts
 models/BulkUpdateGamesRequest.ts
 models/ContestantStats.ts

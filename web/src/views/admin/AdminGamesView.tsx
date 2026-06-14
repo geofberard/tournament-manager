@@ -7,11 +7,14 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material'
+import AddIcon from '@mui/icons-material/Add'
+import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd'
 import { useCallback, useState } from 'react'
 import { useSWRConfig } from 'swr'
-import { AdminCreateFab } from '../../components/admin/AdminCreateFab'
+import { AdminCreateSpeedDial } from '../../components/admin/AdminCreateSpeedDial'
 import { AdminGamesTable } from '../../components/admin/AdminGamesTable'
 import { BulkUpdateGamesForm } from '../../components/admin/BulkUpdateGamesForm'
+import { CreatePoolGamesForm } from '../../components/admin/CreatePoolGamesForm'
 import { ManageGameForm } from '../../components/admin/ManageGameForm'
 import { GameStatus } from '../../generated/api-client'
 import { useGames } from '../../hooks/useGames'
@@ -19,6 +22,7 @@ import { usePhases } from '../../hooks/usePhases'
 import { useTeams } from '../../hooks/useTeams'
 import {
   bulkUpdateGames,
+  bulkCreateGames,
   createGame,
   deleteGame,
   deleteGameScore,
@@ -27,9 +31,10 @@ import {
   type Game,
   type BulkGameChanges,
   type GamePayload,
+  type PoolGamesPayload,
 } from '../../services/gamesService'
 
-type GameDrawerMode = 'idle' | 'bulk-update' | 'create' | 'update'
+type GameDrawerMode = 'idle' | 'bulk-create' | 'bulk-update' | 'create' | 'update'
 
 const emptyGameForm = (): GamePayload => ({
   contestantIds: new Set(),
@@ -41,6 +46,17 @@ const emptyGameForm = (): GamePayload => ({
   refereeId: undefined,
   status: GameStatus.Scheduled,
   time: new Date(),
+})
+
+const emptyPoolGamesForm = (phases: ReturnType<typeof usePhases>['phases']): PoolGamesPayload => ({
+  assignReferees: false,
+  breakDurationMinutes: 5,
+  court: '',
+  gameDurationMinutes: 15,
+  group: '',
+  phaseId: phases.find((phase) => phase.type === 'POOL')?.id ?? '',
+  startTime: new Date(),
+  teamIds: new Set(),
 })
 
 const toGamePayload = (game: Game): GamePayload => ({
@@ -102,9 +118,9 @@ export const AdminGamesView = () => {
     setSelectedGame(null)
   }
 
-  const openCreateDrawer = () => {
+  const openCreateDrawer = (mode: 'bulk-create' | 'create') => {
     setSelectedGame(null)
-    setDrawerMode('create')
+    setDrawerMode(mode)
   }
 
   const openUpdateDrawer = (game: Game) => {
@@ -129,6 +145,16 @@ export const AdminGamesView = () => {
     await mutate(
       '/api/games',
       (currentGames: Game[] | undefined) => [...(currentGames ?? []), createdGame],
+      { revalidate: false },
+    )
+    closeDrawer()
+  }
+
+  const saveCreatedPoolGames = async (payload: PoolGamesPayload) => {
+    const createdGames = await bulkCreateGames(payload)
+    await mutate(
+      '/api/games',
+      (currentGames: Game[] | undefined) => [...(currentGames ?? []), ...createdGames],
       { revalidate: false },
     )
     closeDrawer()
@@ -238,10 +264,21 @@ export const AdminGamesView = () => {
         />
       )}
 
-      <AdminCreateFab
+      <AdminCreateSpeedDial
+        actions={[
+          {
+            icon: <AddIcon />,
+            label: 'Creer un match',
+            onClick: () => openCreateDrawer('create'),
+          },
+          {
+            icon: <PlaylistAddIcon />,
+            label: "Creer les matchs d'une poule",
+            onClick: () => openCreateDrawer('bulk-create'),
+          },
+        ]}
         disabled={phases.length === 0 || teams.length < 2}
-        label="Ajouter un match"
-        onClick={openCreateDrawer}
+        label="Ajouter des matchs"
       />
 
       <Drawer
@@ -266,6 +303,15 @@ export const AdminGamesView = () => {
             phases={phases}
             teams={teams}
             titleLabel="Nouveau match"
+          />
+        ) : null}
+        {drawerMode === 'bulk-create' ? (
+          <CreatePoolGamesForm
+            initialValue={emptyPoolGamesForm(phases)}
+            onClose={closeDrawer}
+            onSubmit={saveCreatedPoolGames}
+            phases={phases}
+            teams={teams}
           />
         ) : null}
         {drawerMode === 'update' && selectedGame ? (

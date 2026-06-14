@@ -25,6 +25,7 @@ vi.mock('../../services/gamesService', async (importOriginal) => {
 
   return {
     ...original,
+    bulkCreateGames: vi.fn(),
     bulkUpdateGames: vi.fn(),
     deleteGame: vi.fn(),
     deleteGameScore: vi.fn(),
@@ -33,9 +34,21 @@ vi.mock('../../services/gamesService', async (importOriginal) => {
   }
 })
 
+vi.mock('swr', async (importOriginal) => {
+  const original = await importOriginal<typeof import('swr')>()
+
+  return {
+    ...original,
+    useSWRConfig: () => ({
+      mutate: vi.fn().mockResolvedValue(undefined),
+    }),
+  }
+})
+
 const useGamesMock = vi.mocked(useGamesModule.useGames)
 const usePhasesMock = vi.mocked(usePhasesModule.usePhases)
 const useTeamsMock = vi.mocked(useTeamsModule.useTeams)
+const bulkCreateGamesMock = vi.mocked(gamesServiceModule.bulkCreateGames)
 const bulkUpdateGamesMock = vi.mocked(gamesServiceModule.bulkUpdateGames)
 const deleteGameMock = vi.mocked(gamesServiceModule.deleteGame)
 const deleteGameScoreMock = vi.mocked(gamesServiceModule.deleteGameScore)
@@ -80,6 +93,7 @@ describe('AdminGamesView', () => {
       ],
     })
     bulkUpdateGamesMock.mockResolvedValue([game])
+    bulkCreateGamesMock.mockResolvedValue([game])
     deleteGameScoreMock.mockResolvedValue(undefined)
     deleteGameMock.mockResolvedValue(undefined)
     updateGameMock.mockResolvedValue(game)
@@ -248,7 +262,7 @@ describe('AdminGamesView', () => {
     expect(screen.getByText('Matchs indisponibles')).toBeInTheDocument()
   })
 
-  it('should open the creation drawer', () => {
+  it('should choose and open the single game creation form', () => {
     // GIVEN
     useGamesMock.mockReturnValue({
       errorMessage: null,
@@ -263,12 +277,56 @@ describe('AdminGamesView', () => {
     )
 
     // WHEN
-    fireEvent.click(screen.getByRole('button', { name: 'Ajouter un match' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Ajouter des matchs' }))
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Creer un match' }))
 
     // THEN
     expect(screen.getByRole('heading', { name: 'Nouveau match' })).toBeInTheDocument()
     expect(screen.queryByRole('combobox', { name: 'Statut' })).not.toBeInTheDocument()
   })
+
+  it('should create all pool games from the dedicated form', async () => {
+    // GIVEN
+    useGamesMock.mockReturnValue({
+      errorMessage: null,
+      games: [],
+      isLoading: false,
+    })
+    render(
+      <ThemeProvider theme={createTheme()}>
+        <AdminGamesView />
+      </ThemeProvider>,
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Ajouter des matchs' }))
+    fireEvent.click(screen.getByRole('menuitem', { name: "Creer les matchs d'une poule" }))
+    fireEvent.change(screen.getByRole('textbox', { name: 'Poule' }), {
+      target: { value: 'Poule A' },
+    })
+    fireEvent.change(screen.getByRole('textbox', { name: 'Terrain' }), {
+      target: { value: 'Terrain 1' },
+    })
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Tigres' }))
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Lynx' }))
+
+    // WHEN
+    fireEvent.click(screen.getByRole('button', { name: 'Creer les matchs' }))
+
+    // THEN
+    await waitFor(() =>
+      expect(bulkCreateGamesMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          assignReferees: false,
+          breakDurationMinutes: 5,
+          court: 'Terrain 1',
+          gameDurationMinutes: 15,
+          group: 'Poule A',
+          phaseId: 'phase-1',
+          teamIds: new Set(['team-1', 'team-2']),
+        }),
+      ),
+    )
+    expect(screen.queryByRole('heading', { name: "Matchs d'une poule" })).not.toBeInTheDocument()
+  }, 10_000)
 
   it('should open the update drawer with selected game values', () => {
     // GIVEN

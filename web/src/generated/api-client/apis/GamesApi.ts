@@ -15,6 +15,7 @@
 
 import * as runtime from '../runtime';
 import type {
+  BulkCreateGamesRequest,
   BulkUpdateGamesRequest,
   CreateGameRequest,
   ErrorResponse,
@@ -22,6 +23,8 @@ import type {
   UpdateGameRequest,
 } from '../models/index';
 import {
+    BulkCreateGamesRequestFromJSON,
+    BulkCreateGamesRequestToJSON,
     BulkUpdateGamesRequestFromJSON,
     BulkUpdateGamesRequestToJSON,
     CreateGameRequestFromJSON,
@@ -33,6 +36,10 @@ import {
     UpdateGameRequestFromJSON,
     UpdateGameRequestToJSON,
 } from '../models/index';
+
+export interface BulkCreateGamesOperationRequest {
+    bulkCreateGamesRequest: BulkCreateGamesRequest;
+}
 
 export interface BulkUpdateGamesOperationRequest {
     bulkUpdateGamesRequest: BulkUpdateGamesRequest;
@@ -59,6 +66,55 @@ export interface UpdateGameOperationRequest {
  *
  */
 export class GamesApi extends runtime.BaseAPI {
+
+    /**
+     * Creates request options for bulkCreateGames without sending the request
+     */
+    async bulkCreateGamesRequestOpts(requestParameters: BulkCreateGamesOperationRequest): Promise<runtime.RequestOpts> {
+        if (requestParameters['bulkCreateGamesRequest'] == null) {
+            throw new runtime.RequiredError(
+                'bulkCreateGamesRequest',
+                'Required parameter "bulkCreateGamesRequest" was null or undefined when calling bulkCreateGames().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+
+        let urlPath = `/api/games/bulk-create`;
+
+        return {
+            path: urlPath,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: BulkCreateGamesRequestToJSON(requestParameters['bulkCreateGamesRequest']),
+        };
+    }
+
+    /**
+     * Génère toutes les rencontres aller simple d\'une poule, puis les planifie séquentiellement sur un terrain unique.  Chaque paire d\'équipes se rencontre exactement une fois. Lorsque `assignReferees` vaut `true`, une équipe non participante est désignée comme arbitre pour chaque match.  L\'opération est atomique et refuse de créer un calendrier si la poule contient déjà des matchs dans la phase demandée.
+     * Créer les matchs d\'une poule
+     */
+    async bulkCreateGamesRaw(requestParameters: BulkCreateGamesOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<Game>>> {
+        const requestOptions = await this.bulkCreateGamesRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(GameFromJSON));
+    }
+
+    /**
+     * Génère toutes les rencontres aller simple d\'une poule, puis les planifie séquentiellement sur un terrain unique.  Chaque paire d\'équipes se rencontre exactement une fois. Lorsque `assignReferees` vaut `true`, une équipe non participante est désignée comme arbitre pour chaque match.  L\'opération est atomique et refuse de créer un calendrier si la poule contient déjà des matchs dans la phase demandée.
+     * Créer les matchs d\'une poule
+     */
+    async bulkCreateGames(requestParameters: BulkCreateGamesOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<Game>> {
+        const response = await this.bulkCreateGamesRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
 
     /**
      * Creates request options for bulkUpdateGames without sending the request
