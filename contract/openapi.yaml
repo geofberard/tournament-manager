@@ -444,6 +444,57 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
+  /api/games/bulk-create:
+    post:
+      tags: [Games]
+      operationId: bulkCreateGames
+      summary: Créer les matchs d'une poule
+      description: |
+        Génère toutes les rencontres aller simple d'une poule, puis les
+        planifie séquentiellement sur un terrain unique.
+
+        Chaque paire d'équipes se rencontre exactement une fois. Lorsque
+        `assignReferees` vaut `true`, une équipe non participante est désignée
+        comme arbitre pour chaque match.
+
+        L'opération est atomique et refuse de créer un calendrier si la poule
+        contient déjà des matchs dans la phase demandée.
+      requestBody:
+        required: true
+        description: Paramètres de génération et de planification de la poule
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkCreateGamesRequest'
+            examples:
+              default:
+                value:
+                  phaseId: phase_1
+                  group: Poule A
+                  startTime: '2026-06-20T09:00:00Z'
+                  gameDurationMinutes: 12
+                  breakDurationMinutes: 3
+                  court: Terrain 1
+                  teamIds:
+                    - team_1
+                    - team_2
+                    - team_3
+                    - team_4
+                  assignReferees: true
+      responses:
+        '201':
+          description: Matchs de la poule créés
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Game'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
   /api/games/{gameId}:
     parameters:
       - $ref: '#/components/parameters/GameId'
@@ -1162,6 +1213,57 @@ components:
             minLength: 1
         changes:
           $ref: '#/components/schemas/BulkGameChanges'
+
+    BulkCreateGamesRequest:
+      type: object
+      description: Paramètres de création du calendrier d'une poule sur un terrain.
+      required:
+        - phaseId
+        - group
+        - startTime
+        - gameDurationMinutes
+        - breakDurationMinutes
+        - court
+        - teamIds
+        - assignReferees
+      properties:
+        phaseId:
+          type: string
+          minLength: 1
+          description: Identifiant de la phase de poules
+        group:
+          type: string
+          minLength: 1
+          description: Nom ou identifiant de la poule
+        startTime:
+          type: string
+          format: date-time
+          description: Heure de début du premier match
+        gameDurationMinutes:
+          type: integer
+          format: int32
+          minimum: 1
+          description: Durée d'un match en minutes
+        breakDurationMinutes:
+          type: integer
+          format: int32
+          minimum: 0
+          description: Temps entre deux matchs en minutes
+        court:
+          type: string
+          minLength: 1
+          description: Terrain utilisé par tous les matchs
+        teamIds:
+          type: array
+          minItems: 2
+          uniqueItems: true
+          description: Équipes de la poule
+          items:
+            type: string
+            minLength: 1
+        assignReferees:
+          type: boolean
+          description: Attribuer une équipe non participante comme arbitre
 
     BulkGameChanges:
       type: object

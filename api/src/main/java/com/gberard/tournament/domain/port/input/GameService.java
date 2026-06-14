@@ -20,4 +20,6 @@ public interface GameService {
 
     List<Game> findByTeam(Team team);
 
+    List<Game> findByGroupAndPhase(String group, String phaseId);
+
 }

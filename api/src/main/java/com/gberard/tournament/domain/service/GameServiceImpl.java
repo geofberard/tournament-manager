@@ -46,4 +46,9 @@ public class GameServiceImpl implements GameService {
     public List<Game> findAll() {
         return gameRepository.findAll();
     }
+
+    @Override
+    public List<Game> findByGroupAndPhase(String group, String phaseId) {
+        return gameRepository.findByGroupAndPhaseId(group, phaseId);
+    }
 }

@@ -4,6 +4,8 @@ import static java.util.stream.Collectors.*;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
 
+import java.time.Duration;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -16,11 +18,14 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.gberard.tournament.application.mapper.GameMapper;
 import com.gberard.tournament.domain.model.Phase;
+import com.gberard.tournament.domain.model.PhaseType;
 import com.gberard.tournament.domain.model.Team;
 import com.gberard.tournament.domain.port.input.GameService;
 import com.gberard.tournament.domain.port.input.PhaseService;
 import com.gberard.tournament.domain.port.input.TeamService;
+import com.gberard.tournament.domain.service.PoolGamePlanningService;
 import com.gberard.tournament.generated.api.GamesApiDelegate;
+import com.gberard.tournament.generated.model.BulkCreateGamesRequest;
 import com.gberard.tournament.generated.model.BulkGameChanges;
 import com.gberard.tournament.generated.model.BulkUpdateGamesRequest;
 import com.gberard.tournament.generated.model.CreateGameRequest;
@@ -40,6 +45,45 @@ public class GamesApiDelegateImpl implements GamesApiDelegate {
 
     @Autowired
     public PhaseService phaseService;
+
+    @Autowired
+    public PoolGamePlanningService poolGamePlanningService;
+
+    @Override
+    @Transactional
+    public ResponseEntity<List<Game>> bulkCreateGames(BulkCreateGamesRequest request) {
+        Phase phase = findPhaseOrThrow(request.getPhaseId());
+        validateBulkCreateRequest(request, phase);
+
+        if (!gameService.findByGroupAndPhase(request.getGroup(), phase.id()).isEmpty()) {
+            throw new ResponseStatusException(
+                    BAD_REQUEST,
+                    "Group " + request.getGroup() + " already contains games in phase " + phase.id()
+            );
+        }
+
+        List<Team> teams = request.getTeamIds().stream()
+                .map(this::findTeamOrThrow)
+                .toList();
+
+        List<com.gberard.tournament.domain.model.Game> plannedGames = poolGamePlanningService.plan(
+                phase,
+                request.getGroup(),
+                teams,
+                request.getStartTime().withOffsetSameInstant(ZoneOffset.UTC).toLocalDateTime(),
+                Duration.ofMinutes(request.getGameDurationMinutes()),
+                Duration.ofMinutes(request.getBreakDurationMinutes()),
+                request.getCourt(),
+                request.getAssignReferees()
+        );
+
+        List<Game> createdGames = plannedGames.stream()
+                .map(gameService::create)
+                .map(GameMapper::toApi)
+                .toList();
+
+        return ResponseEntity.status(CREATED).body(createdGames);
+    }
 
     @Override
     @Transactional
@@ -149,6 +193,27 @@ public class GamesApiDelegateImpl implements GamesApiDelegate {
                 && changes.getRefereeId() == null
                 && !Boolean.TRUE.equals(changes.getClearReferee())) {
             throw new ResponseStatusException(BAD_REQUEST, "At least one change is required");
+        }
+    }
+
+    private void validateBulkCreateRequest(BulkCreateGamesRequest request, Phase phase) {
+        if (phase.type() != PhaseType.POOL) {
+            throw new ResponseStatusException(BAD_REQUEST, "Games can only be generated for a pool phase");
+        }
+        if (request.getTeamIds().size() < 2) {
+            throw new ResponseStatusException(BAD_REQUEST, "At least two teams are required");
+        }
+        if (request.getAssignReferees() && request.getTeamIds().size() < 3) {
+            throw new ResponseStatusException(
+                    BAD_REQUEST,
+                    "At least three teams are required to assign team referees"
+            );
+        }
+        if (request.getGameDurationMinutes() < 1) {
+            throw new ResponseStatusException(BAD_REQUEST, "Game duration must be positive");
+        }
+        if (request.getBreakDurationMinutes() < 0) {
+            throw new ResponseStatusException(BAD_REQUEST, "Break duration must not be negative");
         }
     }
 }
