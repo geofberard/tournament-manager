@@ -12,6 +12,7 @@ Name | Type
 `clearName` | boolean
 `group` | string
 `time` | Date
+`timeOffsetMinutes` | number
 `court` | string
 `status` | [GameStatus](GameStatus.md)
 `refereeId` | string
@@ -29,6 +30,7 @@ const example = {
   "clearName": null,
   "group": null,
   "time": null,
+  "timeOffsetMinutes": null,
   "court": null,
   "status": null,
   "refereeId": null,
@@ -47,5 +49,4 @@ console.log(exampleParsed)
 ```
 
 [[Back to top]](#) [[Back to API list]](../README.md#api-endpoints) [[Back to Model list]](../README.md#models) [[Back to README]](../README.md)
-
 

@@ -183,11 +183,15 @@ public class GamesApiDelegateImpl implements GamesApiDelegate {
         if (changes.getRefereeId() != null && Boolean.TRUE.equals(changes.getClearReferee())) {
             throw new ResponseStatusException(BAD_REQUEST, "refereeId and clearReferee cannot be used together");
         }
+        if (changes.getTime() != null && changes.getTimeOffsetMinutes() != null) {
+            throw new ResponseStatusException(BAD_REQUEST, "time and timeOffsetMinutes cannot be used together");
+        }
         if (changes.getPhaseId() == null
                 && changes.getName() == null
                 && !Boolean.TRUE.equals(changes.getClearName())
                 && changes.getGroup() == null
                 && changes.getTime() == null
+                && changes.getTimeOffsetMinutes() == null
                 && changes.getCourt() == null
                 && changes.getStatus() == null
                 && changes.getRefereeId() == null

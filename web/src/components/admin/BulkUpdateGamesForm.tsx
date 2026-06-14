@@ -29,6 +29,7 @@ type BulkField =
   | 'refereeId'
   | 'status'
   | 'time'
+  | 'timeOffsetMinutes'
 
 type BulkUpdateGamesFormProps = {
   gameCount: number
@@ -66,15 +67,24 @@ export const BulkUpdateGamesForm = ({
     refereeId: '',
     status: GameStatus.Scheduled,
     time: new Date(),
+    timeOffsetMinutes: '',
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const timeOffsetMinutes = Number(values.timeOffsetMinutes)
+  const isTimeOffsetInvalid =
+    enabledFields.has('timeOffsetMinutes') &&
+    (values.timeOffsetMinutes === '' ||
+      !Number.isInteger(timeOffsetMinutes) ||
+      timeOffsetMinutes === 0)
 
   const toggleField = (field: BulkField) => (_event: ChangeEvent<HTMLInputElement>, checked: boolean) => {
     setEnabledFields((currentFields) => {
       const updatedFields = new Set(currentFields)
       if (checked) {
         updatedFields.add(field)
+        if (field === 'time') updatedFields.delete('timeOffsetMinutes')
+        if (field === 'timeOffsetMinutes') updatedFields.delete('time')
       } else {
         updatedFields.delete(field)
       }
@@ -101,6 +111,9 @@ export const BulkUpdateGamesForm = ({
     if (enabledFields.has('phaseId')) changes.phaseId = values.phaseId
     if (enabledFields.has('group')) changes.group = values.group.trim()
     if (enabledFields.has('time')) changes.time = values.time
+    if (enabledFields.has('timeOffsetMinutes')) {
+      changes.timeOffsetMinutes = timeOffsetMinutes
+    }
     if (enabledFields.has('court')) changes.court = values.court.trim()
     if (enabledFields.has('status')) changes.status = values.status
     if (enabledFields.has('name')) {
@@ -122,11 +135,16 @@ export const BulkUpdateGamesForm = ({
     }
   }
 
-  const fieldControl = (field: BulkField, label: string, control: ReactNode) => (
+  const fieldControl = (
+    field: BulkField,
+    label: string,
+    control: ReactNode,
+    actionLabel = `Modifier ${label.toLowerCase()}`,
+  ) => (
     <Box>
       <FormControlLabel
         control={<Checkbox checked={enabledFields.has(field)} onChange={toggleField(field)} />}
-        label={`Modifier ${label.toLowerCase()}`}
+        label={actionLabel}
       />
       <Box sx={{ pl: 4 }}>{control}</Box>
     </Box>
@@ -202,6 +220,33 @@ export const BulkUpdateGamesForm = ({
         )}
 
         {fieldControl(
+          'timeOffsetMinutes',
+          "le decalage de l'heure",
+          <TextField
+            disabled={!enabledFields.has('timeOffsetMinutes')}
+            error={isTimeOffsetInvalid}
+            fullWidth
+            helperText={
+              isTimeOffsetInvalid
+                ? 'Saisissez un nombre entier different de zero.'
+                : 'Utilisez une valeur positive pour retarder les matchs, negative pour les avancer.'
+            }
+            label="Decalage en minutes"
+            onChange={(event) =>
+              setValues((currentValues) => ({
+                ...currentValues,
+                timeOffsetMinutes: event.target.value,
+              }))
+            }
+            required={enabledFields.has('timeOffsetMinutes')}
+            slotProps={{ htmlInput: { step: 1 } }}
+            type="number"
+            value={values.timeOffsetMinutes}
+          />,
+          "Décaler l'heure",
+        )}
+
+        {fieldControl(
           'court',
           'le terrain',
           <TextField
@@ -273,7 +318,11 @@ export const BulkUpdateGamesForm = ({
 
       <Stack direction="row" justifyContent="flex-end" spacing={1.5} sx={{ p: 2 }}>
         <Button onClick={onClose}>Annuler</Button>
-        <Button disabled={enabledFields.size === 0 || isSubmitting} type="submit" variant="contained">
+        <Button
+          disabled={enabledFields.size === 0 || isTimeOffsetInvalid || isSubmitting}
+          type="submit"
+          variant="contained"
+        >
           {isSubmitting ? 'Modification...' : 'Modifier les matchs'}
         </Button>
       </Stack>

@@ -101,6 +101,8 @@ public final class GameMapper {
         }
         if (changes.getTime() != null) {
             updatedGame.time(changes.getTime().toLocalDateTime());
+        } else if (changes.getTimeOffsetMinutes() != null) {
+            updatedGame.time(existingGame.time().plusMinutes(changes.getTimeOffsetMinutes()));
         }
         if (changes.getCourt() != null) {
             updatedGame.court(changes.getCourt());

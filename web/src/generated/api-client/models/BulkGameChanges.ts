@@ -63,6 +63,12 @@ export interface BulkGameChanges {
      */
     time?: Date;
     /**
+     * Nombre de minutes à ajouter à l'heure actuelle du match. Peut être négatif.
+     * @type {number}
+     * @memberof BulkGameChanges
+     */
+    timeOffsetMinutes?: number;
+    /**
      *
      * @type {string}
      * @memberof BulkGameChanges
@@ -112,6 +118,7 @@ export function BulkGameChangesFromJSONTyped(json: any, ignoreDiscriminator: boo
         'clearName': json['clearName'] == null ? undefined : json['clearName'],
         'group': json['group'] == null ? undefined : json['group'],
         'time': json['time'] == null ? undefined : (new Date(json['time'])),
+        'timeOffsetMinutes': json['timeOffsetMinutes'] == null ? undefined : json['timeOffsetMinutes'],
         'court': json['court'] == null ? undefined : json['court'],
         'status': json['status'] == null ? undefined : GameStatusFromJSON(json['status']),
         'refereeId': json['refereeId'] == null ? undefined : json['refereeId'],
@@ -135,10 +142,10 @@ export function BulkGameChangesToJSONTyped(value?: BulkGameChanges | null, ignor
         'clearName': value['clearName'],
         'group': value['group'],
         'time': value['time'] == null ? value['time'] : value['time'].toISOString(),
+        'timeOffsetMinutes': value['timeOffsetMinutes'],
         'court': value['court'],
         'status': GameStatusToJSON(value['status']),
         'refereeId': value['refereeId'],
         'clearReferee': value['clearReferee'],
     };
 }
-

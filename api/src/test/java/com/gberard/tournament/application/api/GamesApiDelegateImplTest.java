@@ -199,6 +199,56 @@ class GamesApiDelegateImplTest {
     }
 
     @Test
+    void shouldShiftEverySelectedGameByTheRequestedNumberOfMinutes() {
+        // GIVEN
+        Game firstGame = gameBuilder()
+                .id("game-1")
+                .time(LocalDateTime.parse("2026-06-20T14:30:00"))
+                .build();
+        Game secondGame = gameBuilder()
+                .id("game-2")
+                .time(LocalDateTime.parse("2026-06-20T16:00:00"))
+                .build();
+        var request = new BulkUpdateGamesRequest(
+                Set.of(firstGame.id(), secondGame.id()),
+                new BulkGameChanges().timeOffsetMinutes(-15)
+        );
+        when(gameService.findById(firstGame.id())).thenReturn(Optional.of(firstGame));
+        when(gameService.findById(secondGame.id())).thenReturn(Optional.of(secondGame));
+        when(gameService.update(any(Game.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // WHEN
+        gamesApiDelegate.bulkUpdateGames(request);
+
+        // THEN
+        var gameCaptor = ArgumentCaptor.forClass(Game.class);
+        verify(gameService, org.mockito.Mockito.times(2)).update(gameCaptor.capture());
+        assertThat(gameCaptor.getAllValues())
+                .extracting(Game::time)
+                .containsExactlyInAnyOrder(
+                        LocalDateTime.parse("2026-06-20T14:15:00"),
+                        LocalDateTime.parse("2026-06-20T15:45:00")
+                );
+    }
+
+    @Test
+    void shouldRejectAnAbsoluteTimeCombinedWithATimeOffset() {
+        // GIVEN
+        var request = new BulkUpdateGamesRequest(
+                Set.of("game-1"),
+                new BulkGameChanges()
+                        .time(OffsetDateTime.parse("2026-06-20T14:30:00Z"))
+                        .timeOffsetMinutes(15)
+        );
+
+        // WHEN / THEN
+        assertThatThrownBy(() -> gamesApiDelegate.bulkUpdateGames(request))
+                .isInstanceOf(ResponseStatusException.class)
+                .hasMessageContaining("time and timeOffsetMinutes cannot be used together");
+        verify(gameService, never()).findById(any());
+    }
+
+    @Test
     void shouldResolveReferencesBeforeApplyingBulkChanges() {
         // GIVEN
         Game game = gameBuilder().id("game-1").build();

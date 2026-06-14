@@ -60,6 +60,67 @@ describe('BulkUpdateGamesForm', () => {
     await waitFor(() => expect(onSubmit).toHaveBeenCalledWith({ clearName: true }))
   })
 
+  it.each([
+    ['retard', '20', 20],
+    ['avance', '-10', -10],
+  ])('should submit a %s in minutes', async (_label, inputValue, expectedOffset) => {
+    // GIVEN
+    const onSubmit = vi.fn().mockResolvedValue(undefined)
+    renderForm(onSubmit)
+
+    // WHEN
+    fireEvent.click(screen.getByRole('checkbox', { name: "Décaler l'heure" }))
+    fireEvent.change(screen.getByRole('spinbutton', { name: 'Decalage en minutes' }), {
+      target: { value: inputValue },
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Modifier les matchs' }))
+
+    // THEN
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith({ timeOffsetMinutes: expectedOffset }),
+    )
+  })
+
+  it('should make the date replacement and time offset mutually exclusive', () => {
+    // GIVEN
+    renderForm()
+    const replaceTimeCheckbox = screen.getByRole('checkbox', {
+      name: 'Modifier la date et heure',
+    })
+    const offsetTimeCheckbox = screen.getByRole('checkbox', {
+      name: "Décaler l'heure",
+    })
+
+    // WHEN
+    fireEvent.click(replaceTimeCheckbox)
+    fireEvent.click(offsetTimeCheckbox)
+
+    // THEN
+    expect(replaceTimeCheckbox).not.toBeChecked()
+    expect(offsetTimeCheckbox).toBeChecked()
+  })
+
+  it('should require a non-zero integer time offset', () => {
+    // GIVEN
+    renderForm()
+    fireEvent.click(screen.getByRole('checkbox', { name: "Décaler l'heure" }))
+    const offsetInput = screen.getByRole('spinbutton', { name: 'Decalage en minutes' })
+    const submitButton = screen.getByRole('button', { name: 'Modifier les matchs' })
+
+    // WHEN / THEN
+    expect(submitButton).toBeDisabled()
+    expect(screen.getByText('Saisissez un nombre entier different de zero.')).toBeInTheDocument()
+
+    fireEvent.change(offsetInput, { target: { value: '1.5' } })
+    expect(submitButton).toBeDisabled()
+
+    fireEvent.change(offsetInput, { target: { value: '0' } })
+    expect(submitButton).toBeDisabled()
+
+    fireEvent.change(offsetInput, { target: { value: '-1' } })
+    expect(submitButton).toBeEnabled()
+  })
+
   it('should display an API error and keep the form open', async () => {
     // GIVEN
     renderForm(vi.fn().mockRejectedValue(new Error('Modification impossible')))

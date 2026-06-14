@@ -1289,6 +1289,10 @@ components:
         time:
           type: string
           format: date-time
+        timeOffsetMinutes:
+          type: integer
+          format: int32
+          description: Nombre de minutes à ajouter à l'heure actuelle du match. Peut être négatif.
         court:
           type: string
           minLength: 1
