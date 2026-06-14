@@ -1,18 +1,45 @@
-import { CircularProgress, Divider, Stack, Typography } from '@mui/material'
-import { useParams } from 'react-router-dom'
+import { Chip, CircularProgress, Divider, Stack, Typography } from '@mui/material'
+import { Navigate, useParams } from 'react-router-dom'
 import { useGame } from '../../hooks/useGame'
 import { GameCounter } from '../../components/shared/GameCounter'
 import type { Game } from '../../services/gamesService'
 import type { Team } from '../../services/teamsService'
+import type { Theme } from "@mui/material/styles";
+import RoomOutlinedIcon from '@mui/icons-material/RoomOutlined';
+import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
+import AccountTreeOutlinedIcon from '@mui/icons-material/AccountTreeOutlined';
 
 const formatContestants = (game: Game) =>
   Array.from(game?.contestants || [])
     .map((team: Team) => team?.name)
-    .join(' vs ')
+    .join(' VS ')
 
 export const TeamRefereeGameView = () => {
-  const { id } = useParams<{ id: string }>()
-  const { game, isLoading } = useGame(id!)
+  const { id } = useParams<{ id?: string }>()
+
+  // If no ID is provided, redirect to the list of games
+  if (!id) {
+    return <Navigate to="/team/games" replace />
+  }
+
+  const { game, isLoading } = useGame(id)
+
+  // If no game is found, redirect to the list of games
+  if (!isLoading && !game) {
+    return <Navigate to="/team/games" replace />
+  }
+
+  const sxHeader = {
+    backgroundColor: (theme: Theme) => `${theme.palette.primary.dark}`,
+    color: (theme: Theme) => `${theme.palette.primary.contrastText}`,
+    p: 2,
+    borderRadius: 1
+  }
+
+  const sxChip = {
+    backgroundColor: (theme: Theme) => `${theme.palette.primary.contrastText}`,
+    color: (theme: Theme) => `${theme.palette.primary.main}`,
+  }
 
   return (
     <Stack>
@@ -20,16 +47,24 @@ export const TeamRefereeGameView = () => {
         ? (<CircularProgress />)
         : (
           <Stack spacing={3}>
-            <Typography variant="h2" sx={{ fontWeight: 700, textAlign: 'center' }}>
-              {formatContestants(game!)}
-            </Typography>
-            <Stack spacing={0.5}>
-              <Typography variant="subtitle1" sx={{ fontWeight: 500, textAlign: 'center' }}>
-                {game?.court ? `${game.court}` : 'Terrain inconnu'} - {game?.time ? new Date(game.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '--:--'}
+            <Stack spacing={3} sx={sxHeader}>
+              <Typography variant="h2" sx={{ fontWeight: 700, textAlign: 'center' }}>
+                {formatContestants(game!)}
               </Typography>
-              <Typography variant="body2" sx={{ fontWeight: 500, textAlign: 'center'}}>
-                {game?.phase ? `Phase: ${game.phase.name}` : 'Phase inconnue'}
-              </Typography>
+              <Stack direction="row" flexWrap="wrap" alignItems="center" justifyContent="center" gap={1}>
+                <Chip
+                  avatar={<RoomOutlinedIcon />}
+                  label={game?.court ? game?.court : 'Terrain inconnu'}
+                  sx={sxChip} />
+                <Chip
+                  avatar={<AccessTimeOutlinedIcon />}
+                  label={game?.time ? new Date(game?.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '--:--'}
+                  sx={sxChip} />
+                <Chip
+                  avatar={<AccountTreeOutlinedIcon />}
+                  label={game?.phase ? game?.phase.name : 'Phase inconnue'}
+                  sx={sxChip} />
+              </Stack>
             </Stack>
 
             <Divider />

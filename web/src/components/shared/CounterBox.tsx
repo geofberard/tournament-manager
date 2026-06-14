@@ -12,58 +12,53 @@ type CounterBoxProps = {
 }
 
 export const CounterBox = ({ team, score, highlight, onChangeScore }: CounterBoxProps) => {
-  const themeValue = (highlightFn: (t: Theme) => string | number, normalFn: (t: Theme) => string | number) =>
-    (theme: Theme) => highlight ? highlightFn(theme) : normalFn(theme)
-
-  const sxPaper = {
+  const sxPaper = (theme: Theme) => ({
     width: '100%',
     flex: 1,
-    backgroundColor: themeValue(
-      (t) => t.palette.secondary.main,
-      (t) => t.palette.background.paper,
-    ),
     p: 3,
     textAlign: 'center',
-  }
+    borderRadius: '20px',
+    border: `2px solid ${theme.palette.divider}`,
+    backgroundColor: theme.palette.background.paper,
+    boxShadow: theme.shadows[3],
+    transition: theme.transitions.create(['border-color', 'background-color', 'box-shadow'], {
+      duration: theme.transitions.duration.short,
+    }),
+    '&:hover': {
+      boxShadow: theme.shadows[6],
+    },
+    ...(highlight && {
+      borderColor: theme.palette.secondary.main,
+      backgroundColor: theme.palette.action.selected,
+    }),
+  })
 
-  const sxBox = {
-    backgroundColor: themeValue(
-      (t) => t.palette.background.paper,
-      (t) => t.palette.info.light,
-    ),
-    p: 1.5,
-    borderRadius: 1,
+  const sxBox = (theme: Theme) => ({
+    p: 2,
+    borderRadius: theme.shape.borderRadius,
     mb: 2,
-  }
+    backgroundColor: highlight ? theme.palette.background.default : theme.palette.action.hover,
+  })
 
-  const sxTeamName = {
+  const sxTeamName = (theme: Theme) => ({
     fontWeight: 700,
-    color: themeValue(
-      (t) => t.palette.secondary.main,
-      (t) => t.palette.info.contrastText,
-    ),
-  }
+    color: theme.palette.text.primary,
+  })
 
-  const sxScoreText = {
+  const sxScoreText = (theme: Theme) => ({
     fontWeight: 900,
-    fontSize: '80px',
+    fontSize: '4.5rem',
+    lineHeight: 1,
     mb: 2,
-    color: themeValue(
-      (t) => t.palette.secondary.contrastText,
-      (t) => t.palette.info.dark,
-    ),
-  }
+    color: highlight ? theme.palette.primary.dark : theme.palette.text.primary,
+  })
 
-  const sxIcon = {
-    color: highlight ? (theme: Theme) => theme.palette.secondary.main : undefined,
-  }
+  const sxIcon = (theme: Theme) => ({
+    color: highlight ? theme.palette.secondary.main : theme.palette.text.secondary,
+  })
 
   const onClickAction = (action: "add" | "remove") => {
-    if (action === "add") {
-      onChangeScore(team.id, 1)
-    } else {
-      onChangeScore(team.id, -1)
-    }
+    onChangeScore(team.id, action === "add" ? 1 : -1)
   }
 
   return (

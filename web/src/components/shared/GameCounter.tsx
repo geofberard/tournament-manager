@@ -1,9 +1,10 @@
-import { Box, Stack, Button } from "@mui/material"
+import { Box, Stack, Button, Typography } from "@mui/material"
 import SwapHorizIcon from "@mui/icons-material/SwapHoriz"
+import SaveIcon from '@mui/icons-material/Save';
 import { type Game, type Team } from "../../services/apiClient"
-import { useEffect, useMemo, useRef, useState } from "react"
 import { CounterBox } from "./CounterBox"
 import { usePersistedState } from "../../hooks/usePersistedState"
+import type { Theme } from "@mui/material/styles";
 
 type GameCounterProps = {
   game: Game
@@ -27,11 +28,11 @@ export const GameCounter = ({ game }: GameCounterProps) => {
 
   const updateScore = (teamId: string, delta: number) => {
     const current = scores[teamId] ?? 0
-      const next = Math.max(0, current + delta)
+    const next = Math.max(0, current + delta)
 
     setScores({
       ...scores,
-        [teamId]: next,
+      [teamId]: next,
     })
 
     if (delta > 0) {
@@ -50,23 +51,26 @@ export const GameCounter = ({ game }: GameCounterProps) => {
 
   return (
     <Stack spacing={2}>
-      <Stack
-        direction="row"
-        display={{xs: "none", sm: "flex"}}
-        alignItems="center"
-        justifyContent="flex-end"
-        flexWrap="wrap"
-        spacing={1}
-      >
-        <Button
-          variant="outlined"
-          size="small"
-          startIcon={<SwapHorizIcon />}
-          onClick={handleSwitchSides}
-          sx={{ textTransform: "none" }}
+      <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={1} sx={{ border: '1px solid #ccc', borderRadius: 2, p: 1 }}>
+        <Typography width={{ xs: "100%", sm: "70%" }} sx={{ fontWeight: 500, fontSize: "0.875rem", fontFamily: (t: Theme) => t.typography.fontFamily }}>
+          Renseignez les scores pour chaque équipe. Cliquez sur "Valider le score" une fois le match terminé.
+        </Typography>
+        <Stack
+          display={{xs: "none", sm: "flex"}}
+          alignItems="center"
+          flexWrap="wrap"
+          spacing={1}
         >
-          changer de côté
-        </Button>
+          <Button
+            variant="outlined"
+            size="small"
+            startIcon={<SwapHorizIcon />}
+            onClick={handleSwitchSides}
+            sx={{ textTransform: "none" }}
+          >
+            changer de côté
+          </Button>
+        </Stack>
       </Stack>
 
       <Stack
@@ -85,6 +89,23 @@ export const GameCounter = ({ game }: GameCounterProps) => {
             />
           </Box>
         ))}
+      </Stack>
+
+      <Stack
+        direction="row"
+        alignItems="center"
+        justifyContent="flex-end"
+        flexWrap="wrap"
+        spacing={1}
+      >
+        <Button
+          variant="contained"
+          size="small"
+          startIcon={<SaveIcon />}
+          onClick={handleSaveScores}
+        >
+          Valider le score
+        </Button>
       </Stack>
     </Stack>
   )
