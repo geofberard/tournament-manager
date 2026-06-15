@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material'
 import { Router } from './app/Router'
+import { AlertProvider } from './app/AlertContext'
 
 const defaultTheme = createTheme()
 
@@ -48,8 +49,10 @@ const theme = createTheme(defaultTheme, {
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Router />
+      <AlertProvider>
+        <CssBaseline />
+        <Router />
+      </AlertProvider>
     </ThemeProvider>
   </StrictMode>,
 )
