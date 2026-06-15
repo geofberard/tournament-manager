@@ -5,6 +5,9 @@ import { type Game, type Team } from "../../services/apiClient"
 import { CounterBox } from "./CounterBox"
 import { usePersistedState } from "../../hooks/usePersistedState"
 import type { Theme } from "@mui/material/styles";
+import { upsertGameScore } from '../../services/gamesService'
+import { useNavigate } from "react-router-dom";
+import { useAlert } from '../../hooks/useAlert';
 
 type GameCounterProps = {
   game: Game
@@ -24,6 +27,7 @@ export const GameCounter = ({ game }: GameCounterProps) => {
     false as boolean
   )
 
+  const { showAlert } = useAlert();
   const contestants = Array.from(game?.contestants ?? [])
 
   const updateScore = (teamId: string, delta: number) => {
@@ -45,8 +49,18 @@ export const GameCounter = ({ game }: GameCounterProps) => {
     setSwitchSides(nextSwitchSides)
   }
 
-  const handleSaveScores = () => {
-    // TODO : handle upsertGameScore
+  const navigate = useNavigate()
+
+  const handleSaveScores = async () => {
+    try {
+      await upsertGameScore(game.id, scores)
+      showAlert('Score enregistré avec succes', 'success');
+      navigate('/team/games', {
+        replace: true,
+      })
+    } catch (error) {
+      showAlert('Une erreur est survenue lors de la sauvegarde du score.', 'error');
+    }
   }
 
   return (
