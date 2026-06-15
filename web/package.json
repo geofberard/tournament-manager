@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "generate:api-client": "npx --yes @openapitools/openapi-generator-cli generate -i ../contract/openapi.yaml -g typescript-fetch -o src/generated/api-client --additional-properties=typescriptThreePlus=true,useSingleRequestParameter=true,modelPropertyNaming=original",
+    "generate:api-client": "openapi-generator-cli generate -i ../contract/openapi.yaml -g typescript-fetch -o src/generated/api-client --additional-properties=typescriptThreePlus=true,useSingleRequestParameter=true,modelPropertyNaming=original",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "test": "vitest run",
@@ -27,6 +27,7 @@
   },
   "devDependencies": {
     "@eslint/js": "9.39.4",
+    "@openapitools/openapi-generator-cli": "2.21.5",
     "@testing-library/jest-dom": "6.9.1",
     "@testing-library/react": "16.3.2",
     "@types/node": "24.12.0",

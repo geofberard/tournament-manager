@@ -29,6 +29,9 @@ front/dist/bundle.*
 ### MacOS ###
 .DS_Store
 
+### Web ###
+web/src/generated/
+
 ### Terraform ###
 .terraform/
 *.tfstate
