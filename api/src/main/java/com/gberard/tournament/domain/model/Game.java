@@ -10,7 +10,7 @@ import java.util.Optional;
 public final class Game implements Identified {
     private final String id;
     private final Phase phase;
-    private final Optional<String> name;
+    private final Optional<String> subgroup;
     private final String group;
     private final LocalDateTime time;
     private final String court;
@@ -22,7 +22,7 @@ public final class Game implements Identified {
     public Game(
             String id,
             Phase phase,
-            Optional<String> name,
+            Optional<String> subgroup,
             String group,
             LocalDateTime time,
             String court,
@@ -33,7 +33,7 @@ public final class Game implements Identified {
     ) {
         this.id = id;
         this.phase = Objects.requireNonNull(phase, "phase must not be null");
-        this.name = Objects.requireNonNull(name, "name must not be null");
+        this.subgroup = Objects.requireNonNull(subgroup, "subgroup must not be null");
         this.group = Objects.requireNonNull(group, "group must not be null");
         this.time = Objects.requireNonNull(time, "time must not be null");
         this.court = Objects.requireNonNull(court, "court must not be null");
@@ -60,8 +60,8 @@ public final class Game implements Identified {
         return group;
     }
 
-    public Optional<String> name() {
-        return name;
+    public Optional<String> subgroup() {
+        return subgroup;
     }
 
     public String court() {
@@ -85,23 +85,23 @@ public final class Game implements Identified {
     }
 
     public Game withScore(SimpleScore newScore) {
-        return new Game(id, phase, name, group, time, court, contestants, refereeId, isFinished, Optional.of(newScore));
+        return new Game(id, phase, subgroup, group, time, court, contestants, refereeId, isFinished, Optional.of(newScore));
     }
 
     public Game withoutScore() {
-        return new Game(id, phase, name, group, time, court, contestants, refereeId, isFinished, Optional.empty());
+        return new Game(id, phase, subgroup, group, time, court, contestants, refereeId, isFinished, Optional.empty());
     }
 
     public Game finishWithScore(SimpleScore newScore) {
-        return new Game(id, phase, name, group, time, court, contestants, refereeId, true, Optional.of(newScore));
+        return new Game(id, phase, subgroup, group, time, court, contestants, refereeId, true, Optional.of(newScore));
     }
 
     public Game markAsFinished() {
-        return new Game(id, phase, name, group, time, court, contestants, refereeId, true, score);
+        return new Game(id, phase, subgroup, group, time, court, contestants, refereeId, true, score);
     }
 
     public Game markAsScheduled() {
-        return new Game(id, phase, name, group, time, court, contestants, refereeId, false, score);
+        return new Game(id, phase, subgroup, group, time, court, contestants, refereeId, false, score);
     }
 
     @Override
@@ -114,7 +114,7 @@ public final class Game implements Identified {
         }
         return Objects.equals(id, game.id)
                 && Objects.equals(phase, game.phase)
-                && Objects.equals(name, game.name)
+                && Objects.equals(subgroup, game.subgroup)
                 && Objects.equals(group, game.group)
                 && Objects.equals(time, game.time)
                 && Objects.equals(court, game.court)
@@ -126,7 +126,7 @@ public final class Game implements Identified {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, phase, name, group, time, court, contestants, refereeId, isFinished, score);
+        return Objects.hash(id, phase, subgroup, group, time, court, contestants, refereeId, isFinished, score);
     }
 
     @Override
@@ -134,7 +134,7 @@ public final class Game implements Identified {
         return "Game[" +
                 "id=" + id +
                 ", phase=" + phase +
-                ", name=" + name +
+                ", subgroup=" + subgroup +
                 ", group=" + group +
                 ", time=" + time +
                 ", court=" + court +

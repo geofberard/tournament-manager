@@ -22,7 +22,7 @@ CREATE TABLE games
 (
     id          VARCHAR(255) PRIMARY KEY,
     phase_id    VARCHAR(255) NOT NULL,
-    name        VARCHAR(255),
+    subgroup    VARCHAR(255),
     group_id    VARCHAR(255) NOT NULL,
     time        TIMESTAMP    NOT NULL,
     court       VARCHAR(255) NOT NULL,

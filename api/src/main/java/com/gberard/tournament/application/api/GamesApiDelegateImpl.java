@@ -177,8 +177,8 @@ public class GamesApiDelegateImpl implements GamesApiDelegate {
     }
 
     private void validateChanges(BulkGameChanges changes) {
-        if (changes.getName() != null && Boolean.TRUE.equals(changes.getClearName())) {
-            throw new ResponseStatusException(BAD_REQUEST, "name and clearName cannot be used together");
+        if (changes.getSubgroup() != null && Boolean.TRUE.equals(changes.getClearSubgroup())) {
+            throw new ResponseStatusException(BAD_REQUEST, "subgroup and clearSubgroup cannot be used together");
         }
         if (changes.getRefereeId() != null && Boolean.TRUE.equals(changes.getClearReferee())) {
             throw new ResponseStatusException(BAD_REQUEST, "refereeId and clearReferee cannot be used together");
@@ -187,8 +187,8 @@ public class GamesApiDelegateImpl implements GamesApiDelegate {
             throw new ResponseStatusException(BAD_REQUEST, "time and timeOffsetMinutes cannot be used together");
         }
         if (changes.getPhaseId() == null
-                && changes.getName() == null
-                && !Boolean.TRUE.equals(changes.getClearName())
+                && changes.getSubgroup() == null
+                && !Boolean.TRUE.equals(changes.getClearSubgroup())
                 && changes.getGroup() == null
                 && changes.getTime() == null
                 && changes.getTimeOffsetMinutes() == null

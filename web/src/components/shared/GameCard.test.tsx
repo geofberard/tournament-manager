@@ -15,7 +15,7 @@ const renderCard = (game: Game) =>
 const baseGame: Game = {
   id: 'game-1',
   phase: { id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' },
-  name: undefined,
+  subgroup: undefined,
   group: 'Poule A',
   time: new Date('2026-05-01T18:30:00Z'),
   court: 'Central',
@@ -53,15 +53,15 @@ describe('GameCard', () => {
     expect(screen.getByText(/Terrain Central/)).toBeInTheDocument()
   })
 
-  it('should render the match name when provided', () => {
+  it('should render the match subgroup when provided', () => {
     // WHEN
     renderCard({
       ...baseGame,
-      name: 'Finale',
+      subgroup: '1/2',
     })
 
     // THEN
-    expect(screen.getByText('Finale')).toBeInTheDocument()
+    expect(screen.getByText('1/2')).toBeInTheDocument()
     expect(screen.getByText('Aigles vs Tigres')).toBeInTheDocument()
   })
 

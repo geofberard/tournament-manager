@@ -13,7 +13,7 @@ const game: Game = {
   court: 'Terrain 1',
   group: 'Poule A',
   id: 'game-1',
-  name: 'Finale',
+  subgroup: '1/2',
   phase: { id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' },
   referee: { id: 'team-3', name: 'Aigles' },
   score: { pointsByTeam: { 'team-1': 21, 'team-2': 18 } },

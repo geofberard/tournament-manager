@@ -15,7 +15,7 @@ type AdminGameRow = {
   game: Game
   group: string
   id: string
-  name: string
+  subgroup: string
   phase: string
   referee: string
   score: string
@@ -59,7 +59,7 @@ const toAdminGameRow = (game: Game): AdminGameRow => {
     game,
     group: game.group,
     id: game.id,
-    name: formatOptionalValue(game.name),
+    subgroup: formatOptionalValue(game.subgroup),
     phase: game.phase.name,
     referee: formatOptionalValue(game.referee?.name),
     score: hasScore ? formatGameScore(team1Score, team2Score) : '∅',
@@ -138,10 +138,12 @@ export const AdminGamesTable = ({
         minWidth: 170,
       },
       {
-        field: 'name',
+        field: 'subgroup',
         flex: 1,
-        headerName: 'Nom',
+        headerName: 'Sous-groupe',
         minWidth: 150,
+        type: 'singleSelect',
+        valueOptions: [...new Set(rows.map((row) => row.subgroup))],
       },
       {
         field: 'court',
@@ -191,7 +193,7 @@ export const AdminGamesTable = ({
               columnVisibilityModel: {
                 court: false,
                 id: false,
-                name: false,
+                subgroup: false,
                 referee: false,
                 status: false,
                 teams: false,

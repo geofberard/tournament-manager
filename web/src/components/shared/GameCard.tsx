@@ -50,9 +50,9 @@ export const GameCard = ({ game }: GameCardProps) => {
         <Stack spacing={1.5}>
           <Stack direction="row" justifyContent="space-between" spacing={2}>
             <Stack spacing={0.5}>
-              {game.name ? (
+              {game.subgroup ? (
                 <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-                  {game.name}
+                  {game.subgroup}
                 </Typography>
               ) : null}
               <Typography variant="body2" color="text.secondary">

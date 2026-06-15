@@ -31,7 +31,7 @@ Le tableau final rassemble les equipes qualifiees pour les matchs a elimination 
 
 Consultez le **tableau final** pour suivre l''avancement des rencontres.', 3, 'BRACKET');
 
-INSERT INTO games (id, phase_id, name, group_id, time, court, is_finished, score_data)
+INSERT INTO games (id, phase_id, subgroup, group_id, time, court, is_finished, score_data)
 VALUES ('game_1', 'phase_1', NULL, 'Poule A', '2022-11-01 11:00:00', 'Terrain1', TRUE, '23-18'),
        ('game_2', 'phase_1', NULL, 'Poule A', '2022-11-01 11:00:00', 'Terrain2', TRUE, '20-21'),
        ('game_3', 'phase_1', NULL, 'Poule B', '2022-11-01 11:00:00', 'Terrain3', TRUE, '19-23'),
@@ -44,10 +44,10 @@ VALUES ('game_1', 'phase_1', NULL, 'Poule A', '2022-11-01 11:00:00', 'Terrain1',
        ('game_10', 'phase_2', NULL, 'Poule B', '2022-11-01 11:40:00', 'Terrain2', FALSE, '18-24'),
        ('game_11', 'phase_2', NULL, 'Poule A', '2022-11-01 12:00:00', 'Terrain3', FALSE, '12-9'),
        ('game_12', 'phase_2', NULL, 'Poule B', '2022-11-01 12:00:00', 'Terrain4', FALSE, '16-14'),
-       ('game_13', 'phase_3', 'Demi-finale 1', 'Bracket principal', '2022-11-01 12:20:00', 'Terrain1', FALSE, NULL),
-       ('game_14', 'phase_3', 'Demi-finale 2', 'Bracket principal', '2022-11-01 12:20:00', 'Terrain2', FALSE, NULL),
-       ('game_15', 'phase_3', 'Petite finale', 'Bracket principal', '2022-11-01 12:40:00', 'Terrain1', FALSE, NULL),
-       ('game_16', 'phase_3', 'Finale', 'Bracket principal', '2022-11-01 12:40:00', 'Terrain2', FALSE, NULL);
+       ('game_13', 'phase_3', '1/2', 'Principale', '2022-11-01 12:20:00', 'Terrain1', FALSE, NULL),
+       ('game_14', 'phase_3', '1/2', 'Principale', '2022-11-01 12:20:00', 'Terrain2', FALSE, NULL),
+       ('game_15', 'phase_3', 'Finales', 'Consolante', '2022-11-01 12:40:00', 'Terrain1', FALSE, NULL),
+       ('game_16', 'phase_3', 'Finales', 'Principale', '2022-11-01 12:40:00', 'Terrain2', FALSE, NULL);
 
 INSERT INTO game_teams (game_id, team_id)
 VALUES ('game_1', 'team_1'),

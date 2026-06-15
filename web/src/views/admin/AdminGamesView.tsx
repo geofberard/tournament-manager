@@ -40,7 +40,7 @@ const emptyGameForm = (): GamePayload => ({
   contestantIds: new Set(),
   court: '',
   group: '',
-  name: '',
+  subgroup: '',
   phaseId: '',
   pointsByTeam: null,
   refereeId: undefined,
@@ -63,7 +63,7 @@ const toGamePayload = (game: Game): GamePayload => ({
   contestantIds: new Set(Array.from(game.contestants, (team) => team.id)),
   court: game.court,
   group: game.group,
-  name: game.name,
+  subgroup: game.subgroup,
   phaseId: game.phase.id,
   pointsByTeam:
     game.score?.pointsByTeam && Object.keys(game.score.pointsByTeam).length > 0

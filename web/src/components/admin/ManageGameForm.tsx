@@ -60,7 +60,7 @@ export const ManageGameForm = ({
   const [submitError, setSubmitError] = useState<string | null>(null)
 
   const handleTextChange =
-    (field: keyof Pick<GamePayload, 'court' | 'group' | 'name'>) => (event: ChangeEvent<HTMLInputElement>) => {
+    (field: keyof Pick<GamePayload, 'court' | 'group' | 'subgroup'>) => (event: ChangeEvent<HTMLInputElement>) => {
       setFormValue((currentValue) => ({ ...currentValue, [field]: event.target.value }))
     }
 
@@ -144,7 +144,7 @@ export const ManageGameForm = ({
         ...formValue,
         court: formValue.court.trim(),
         group: formValue.group.trim(),
-        name: formValue.name?.trim() || undefined,
+        subgroup: formValue.subgroup?.trim() || undefined,
         pointsByTeam:
           scoreCount === 2
             ? Object.fromEntries(
@@ -218,7 +218,13 @@ export const ManageGameForm = ({
           value={formValue.court}
         />
 
-        <TextField fullWidth label="Nom" onChange={handleTextChange('name')} value={formValue.name ?? ''} />
+        <TextField
+          fullWidth
+          helperText="Laissez vide pour les matchs de poule."
+          label="Sous-groupe"
+          onChange={handleTextChange('subgroup')}
+          value={formValue.subgroup ?? ''}
+        />
 
         <Stack spacing={1.5}>
           <Stack spacing={0.5}>

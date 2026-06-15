@@ -53,11 +53,11 @@ describe('BulkUpdateGamesForm', () => {
     renderForm(onSubmit)
 
     // WHEN
-    fireEvent.click(screen.getByRole('checkbox', { name: 'Modifier le nom' }))
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Modifier le sous-groupe' }))
     fireEvent.click(screen.getByRole('button', { name: 'Modifier les matchs' }))
 
     // THEN
-    await waitFor(() => expect(onSubmit).toHaveBeenCalledWith({ clearName: true }))
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledWith({ clearSubgroup: true }))
   })
 
   it.each([

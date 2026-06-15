@@ -63,7 +63,7 @@ const game = {
   court: 'Terrain 1',
   group: 'Poule A',
   id: 'game-1',
-  name: 'Finale',
+  subgroup: '1/2',
   phase: { id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' as const },
   referee: { id: 'team-3', name: 'Aigles' },
   score: { pointsByTeam: { 'team-1': 21, 'team-2': 18 } },
@@ -347,7 +347,7 @@ describe('AdminGamesView', () => {
 
     // THEN
     expect(screen.getByRole('heading', { name: 'Modifier le match' })).toBeInTheDocument()
-    expect(screen.getByDisplayValue('Finale')).toBeInTheDocument()
+    expect(screen.getByDisplayValue('1/2')).toBeInTheDocument()
     expect(screen.getByDisplayValue('Terrain 1')).toBeInTheDocument()
     expect(screen.getByRole('spinbutton', { name: 'Score Equipe 1' })).toHaveValue(21)
     expect(screen.getByRole('spinbutton', { name: 'Score Equipe 2' })).toHaveValue(18)
@@ -424,7 +424,7 @@ describe('AdminGamesView', () => {
 
   it('should delete selected games after confirmation', async () => {
     // GIVEN
-    const secondGame = { ...game, id: 'game-2', name: 'Petite finale' }
+    const secondGame = { ...game, id: 'game-2', subgroup: 'Finales' }
     useGamesMock.mockReturnValue({
       errorMessage: null,
       games: [game, secondGame],
@@ -454,7 +454,7 @@ describe('AdminGamesView', () => {
 
   it('should bulk update selected games from the drawer', async () => {
     // GIVEN
-    const secondGame = { ...game, id: 'game-2', name: 'Petite finale' }
+    const secondGame = { ...game, id: 'game-2', subgroup: 'Finales' }
     const updatedGames = [
       { ...game, court: 'Central' },
       { ...secondGame, court: 'Central' },

@@ -14,7 +14,7 @@ export type GamePayload = {
   contestantIds: Set<string>
   court: string
   group: string
-  name?: string
+  subgroup?: string
   phaseId: string
   pointsByTeam: Record<string, number> | null
   refereeId?: string
@@ -29,7 +29,7 @@ export const createGame = async (gamePayload: GamePayload): Promise<Game> => {
     contestantIds: gamePayload.contestantIds,
     court: gamePayload.court,
     group: gamePayload.group,
-    name: gamePayload.name,
+    subgroup: gamePayload.subgroup,
     phaseId: gamePayload.phaseId,
     refereeId: gamePayload.refereeId,
     time: gamePayload.time,
@@ -43,7 +43,7 @@ export const updateGame = async (gameId: string, gamePayload: GamePayload): Prom
     contestantIds: gamePayload.contestantIds,
     court: gamePayload.court,
     group: gamePayload.group,
-    name: gamePayload.name,
+    subgroup: gamePayload.subgroup,
     phaseId: gamePayload.phaseId,
     refereeId: gamePayload.refereeId,
     status: gamePayload.status,

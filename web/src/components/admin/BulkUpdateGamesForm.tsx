@@ -24,7 +24,7 @@ import type { Team } from '../../services/teamsService'
 type BulkField =
   | 'court'
   | 'group'
-  | 'name'
+  | 'subgroup'
   | 'phaseId'
   | 'refereeId'
   | 'status'
@@ -62,7 +62,7 @@ export const BulkUpdateGamesForm = ({
   const [values, setValues] = useState({
     court: '',
     group: '',
-    name: '',
+    subgroup: '',
     phaseId: '',
     refereeId: '',
     status: GameStatus.Scheduled,
@@ -93,7 +93,7 @@ export const BulkUpdateGamesForm = ({
   }
 
   const handleTextChange =
-    (field: 'court' | 'group' | 'name') => (event: ChangeEvent<HTMLInputElement>) => {
+    (field: 'court' | 'group' | 'subgroup') => (event: ChangeEvent<HTMLInputElement>) => {
       setValues((currentValues) => ({ ...currentValues, [field]: event.target.value }))
     }
 
@@ -116,9 +116,9 @@ export const BulkUpdateGamesForm = ({
     }
     if (enabledFields.has('court')) changes.court = values.court.trim()
     if (enabledFields.has('status')) changes.status = values.status
-    if (enabledFields.has('name')) {
-      if (values.name.trim()) changes.name = values.name.trim()
-      else changes.clearName = true
+    if (enabledFields.has('subgroup')) {
+      if (values.subgroup.trim()) changes.subgroup = values.subgroup.trim()
+      else changes.clearSubgroup = true
     }
     if (enabledFields.has('refereeId')) {
       if (values.refereeId) changes.refereeId = values.refereeId
@@ -260,15 +260,15 @@ export const BulkUpdateGamesForm = ({
         )}
 
         {fieldControl(
-          'name',
-          'le nom',
+          'subgroup',
+          'le sous-groupe',
           <TextField
-            disabled={!enabledFields.has('name')}
+            disabled={!enabledFields.has('subgroup')}
             fullWidth
-            helperText="Laissez vide pour effacer le nom."
-            label="Nom"
-            onChange={handleTextChange('name')}
-            value={values.name}
+            helperText="Laissez vide pour effacer le sous-groupe."
+            label="Sous-groupe"
+            onChange={handleTextChange('subgroup')}
+            value={values.subgroup}
           />,
         )}
 

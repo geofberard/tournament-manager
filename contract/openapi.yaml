@@ -933,13 +933,13 @@ components:
           examples: [game_1]
         phase:
           $ref: '#/components/schemas/Phase'
-        name:
+        subgroup:
           type: string
           nullable: true
           description: |
-            Intitule optionnel du match pour les cas particuliers,
-            par exemple `Finale` ou `Match de Barrage`.
-          examples: [Finale]
+            Sous-groupe optionnel permettant de regrouper les matchs d'un tableau,
+            par exemple `1/8`, `1/4` ou `1/2`. Ce champ reste vide pour les matchs de poule.
+          examples: [1/4]
         group:
           type: string
           minLength: 1
@@ -1105,13 +1105,13 @@ components:
           minLength: 1
           description: Identifiant de la phase du match
           examples: [phase_1]
-        name:
+        subgroup:
           type: string
           nullable: true
           description: |
-            Intitule optionnel du match pour les cas particuliers,
-            par exemple `Finale` ou `Match de Barrage`.
-          examples: [Match de Barrage]
+            Sous-groupe optionnel permettant de regrouper les matchs d'un tableau,
+            par exemple `1/8`, `1/4` ou `1/2`. Ce champ reste vide pour les matchs de poule.
+          examples: [1/4]
         group:
           type: string
           minLength: 1
@@ -1159,13 +1159,13 @@ components:
           minLength: 1
           description: Identifiant de la phase du match
           examples: [phase_2]
-        name:
+        subgroup:
           type: string
           nullable: true
           description: |
-            Intitule optionnel du match pour les cas particuliers,
-            par exemple `Finale` ou `Match de Barrage`.
-          examples: [Finale]
+            Sous-groupe optionnel permettant de regrouper les matchs d'un tableau,
+            par exemple `1/8`, `1/4` ou `1/2`. Ce champ reste vide pour les matchs de poule.
+          examples: [1/2]
         group:
           type: string
           minLength: 1
@@ -1270,17 +1270,17 @@ components:
       description: |
         Modifications partielles à appliquer à chaque match ciblé.
 
-        Une propriété absente conserve la valeur actuelle. `clearName` et
+        Une propriété absente conserve la valeur actuelle. `clearSubgroup` et
         `clearReferee` permettent d'effacer explicitement les valeurs
         optionnelles correspondantes.
       properties:
         phaseId:
           type: string
           minLength: 1
-        name:
+        subgroup:
           type: string
           minLength: 1
-        clearName:
+        clearSubgroup:
           type: boolean
           default: false
         group:

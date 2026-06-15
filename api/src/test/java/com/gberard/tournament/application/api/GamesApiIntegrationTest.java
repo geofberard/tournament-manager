@@ -20,6 +20,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class GamesApiIntegrationTest {
@@ -85,6 +86,7 @@ class GamesApiIntegrationTest {
         games.forEach(game -> {
             assertEquals("phase_1", game.path("phase").path("id").asText());
             assertEquals("Poule integration bulk", game.path("group").asText());
+            assertTrue(game.path("subgroup").isNull());
             assertEquals("Terrain integration", game.path("court").asText());
             assertFalse(game.path("referee").isNull());
             assertFalse(contestantIds(game).contains(game.path("referee").path("id").asText()));
