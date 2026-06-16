@@ -30,7 +30,7 @@ describe('gamesService', () => {
       {
         id: 'game-1',
         phase: { id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' },
-        name: undefined,
+        subgroup: undefined,
         group: 'Poule A',
         time: new Date('2026-05-01T18:30:00Z'),
         court: 'Central',

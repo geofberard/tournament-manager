@@ -14,6 +14,11 @@ const formatContestants = (game: Game) =>
     .map((team: Team) => team?.name)
     .join(' VS ')
 
+const timeFormatter = new Intl.DateTimeFormat('fr-FR', {
+  hour: '2-digit',
+  minute: '2-digit',
+})
+
 export const TeamRefereeGameView = () => {
   const { id } = useParams<{ id?: string }>()
   const { game, isLoading } = useGame(id) ?? { game: null, isLoading: false }
@@ -52,7 +57,7 @@ export const TeamRefereeGameView = () => {
                   sx={sxChip} />
                 <Chip
                   avatar={<AccessTimeOutlinedIcon />}
-                  label={game?.time ? new Date(game?.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '--:--'}
+                  label={game?.time ? timeFormatter.format(new Date(game.time)) : '--:--'}
                   sx={sxChip} />
                 <Chip
                   avatar={<AccountTreeOutlinedIcon />}
