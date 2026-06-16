@@ -2,7 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material'
 import { Router } from './app/Router'
-import { AlertProvider } from './app/AlertContext'
+import { AlertProvider } from './app/AlertProvider'
 
 const defaultTheme = createTheme()
 

@@ -1,20 +1,14 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Snackbar, Alert } from '@mui/material';
 import type { SnackbarCloseReason } from '@mui/material';
-
-type AlertSeverity = 'success' | 'info' | 'warning' | 'error';
-
-type AlertContextType = {
-  showAlert: (message: string, severity?: AlertSeverity) => void;
-};
+import { AlertContext } from './AlertContext';
+import type { AlertSeverity } from './AlertContext';
 
 type AlertState = {
   open: boolean;
   message: string;
   severity: AlertSeverity;
 };
-
-export const AlertContext = createContext<AlertContextType | null>(null);
 
 export const AlertProvider = ({ children }: { children: React.ReactNode }) => {
   const [alert, setAlert] = useState<AlertState>({
@@ -28,7 +22,7 @@ export const AlertProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const handleClose = (
-    event: Event | React.SyntheticEvent<any, Event> | undefined,
+    event: Event | React.SyntheticEvent<Element, Event> | undefined,
     reason?: SnackbarCloseReason
   ) => {
     if (reason === 'clickaway') return;

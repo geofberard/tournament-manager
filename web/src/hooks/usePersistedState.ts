@@ -8,7 +8,7 @@ export function usePersistedState <T>(key: string, initialValue: T): [T, (value:
 
   useEffect(() => {
     localStorage.setItem(key, JSON.stringify(state))
-  }, [state])
+  }, [key, state])
 
   return [state, setState]
 }

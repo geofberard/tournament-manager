@@ -59,6 +59,7 @@ export const GameCounter = ({ game }: GameCounterProps) => {
         replace: true,
       })
     } catch (error) {
+      console.error('Error saving game score:', error);
       showAlert('Une erreur est survenue lors de la sauvegarde du score.', 'error');
     }
   }
