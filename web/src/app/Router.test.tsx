@@ -1,6 +1,7 @@
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ThemeProvider, createTheme } from '@mui/material'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { AlertProvider } from '../app/AlertProvider'
 import { Router } from './Router'
 import type { Game } from '../services/apiClient'
 import {
@@ -63,7 +64,9 @@ const usePhasesMock = vi.mocked(usePhasesModule.usePhases)
 const renderRouter = () =>
   render(
     <ThemeProvider theme={createTheme()}>
-      <Router />
+      <AlertProvider>
+        <Router />
+      </AlertProvider>
     </ThemeProvider>,
   )
 
@@ -476,8 +479,8 @@ describe('Router', () => {
 
     renderRouter()
 
-    expect(screen.getByRole('heading', { name: 'Tigres vs Lions' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Tigres VS Lions' })).toBeInTheDocument()
     expect(screen.getByText(/Terrain 1/)).toBeInTheDocument()
-    expect(screen.getByText(/Phase: Phase Finale/)).toBeInTheDocument()
+    expect(screen.getByText(/Phase Finale/)).toBeInTheDocument()
   })
 })

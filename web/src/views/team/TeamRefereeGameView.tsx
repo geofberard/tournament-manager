@@ -16,15 +16,10 @@ const formatContestants = (game: Game) =>
 
 export const TeamRefereeGameView = () => {
   const { id } = useParams<{ id?: string }>()
-  const { game, isLoading } = useGame(id!)
+  const { game, isLoading } = useGame(id) ?? { game: null, isLoading: false }
 
   // If no ID is provided, redirect to the list of games
-  if (!id) {
-    return <Navigate to="/team/games" replace />
-  }
-
-  // If no game is found, redirect to the list of games
-  if (!isLoading && !game) {
+  if (!id || !isLoading && !game) {
     return <Navigate to="/team/games" replace />
   }
 

@@ -50,16 +50,17 @@ const getMatchingTestCandidates = (sourcePath: string) => {
 const getFilesToCover = () =>
   includedDirectories
     .flatMap((directoryName) => collectSourceFiles(join(srcDirectory, directoryName)))
-    .filter((absolutePath) => !excludedFiles.has(relative(srcDirectory, absolutePath)))
+    .map((absolutePath) => relative(srcDirectory, absolutePath).replace(/\\/g, '/'))
+    .filter((relativePath) => !excludedFiles.has(relativePath))
+    .map((relativePath) => join(srcDirectory, relativePath))
 
 describe('ensuring selected source files have associated tests', () => {
   const filesToCover = getFilesToCover()
 
   it.each(filesToCover)('should have a matching test file for %p', (sourcePath: string) => {
     // WHEN
-    const hasMatchingTest = getMatchingTestCandidates(sourcePath).some((testPath) =>
-      existsSync(testPath),
-    )
+    const matchingTestCandidates = getMatchingTestCandidates(sourcePath)
+    const hasMatchingTest = matchingTestCandidates.some((testPath) => existsSync(testPath))
 
     // THEN
     expect(hasMatchingTest).toBe(true)

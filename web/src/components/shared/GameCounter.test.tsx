@@ -1,13 +1,19 @@
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ThemeProvider, createTheme } from '@mui/material'
+import { MemoryRouter } from 'react-router-dom'
 import { afterEach, describe, expect, it, beforeEach, vi } from 'vitest'
+import { AlertProvider } from '../../app/AlertProvider'
 import { GameCounter } from './GameCounter'
 import type { Game } from '../../services/apiClient'
 
 const renderCounter = (game: Game) =>
   render(
     <ThemeProvider theme={createTheme()}>
-      <GameCounter game={game} />
+      <MemoryRouter initialEntries={['/']}>
+        <AlertProvider>
+          <GameCounter game={game} />
+        </AlertProvider>
+      </MemoryRouter>
     </ThemeProvider>,
   )
 
