@@ -11,41 +11,23 @@ import {
   TEAM_HOME_PATH,
   TEAM_LOGIN_PATH,
   TEAM_RESULTS_PATH,
+  TEAM_REFEREE_GAME_PATH,
   teamRoutes,
 } from './routes'
 
 describe('routes', () => {
   it('should expose the expected route paths', () => {
-    // GIVEN
-    const expectedPaths = [
-      '/public',
-      '/team',
-      '/team/results',
-      '/team/games',
-      '/team/login',
-      '/admin',
-      '/admin/phases',
-      '/admin/teams',
-      '/admin/games',
-      '/admin/login',
-    ]
-
-    // WHEN
-    const paths = [
-      PUBLIC_HOME_PATH,
-      TEAM_HOME_PATH,
-      TEAM_RESULTS_PATH,
-      TEAM_GAMES_PATH,
-      TEAM_LOGIN_PATH,
-      ADMIN_HOME_PATH,
-      ADMIN_PHASES_PATH,
-      ADMIN_TEAMS_PATH,
-      ADMIN_GAMES_PATH,
-      ADMIN_LOGIN_PATH,
-    ]
-
-    // THEN
-    expect(paths).toEqual(expectedPaths)
+    expect(PUBLIC_HOME_PATH).toBe('/public')
+    expect(TEAM_HOME_PATH).toBe('/team')
+    expect(TEAM_RESULTS_PATH).toBe('/team/results')
+    expect(TEAM_GAMES_PATH).toBe('/team/games')
+    expect(TEAM_LOGIN_PATH).toBe('/team/login')
+    expect(ADMIN_HOME_PATH).toBe('/admin')
+    expect(ADMIN_GAMES_PATH).toBe('/admin/games')
+    expect(ADMIN_TEAMS_PATH).toBe('/admin/teams')
+    expect(ADMIN_LOGIN_PATH).toBe('/admin/login')
+    expect(ADMIN_PHASES_PATH).toBe('/admin/phases')
+    expect(TEAM_REFEREE_GAME_PATH).toBe('/team/referee/game/:id')
   })
 
   it('should register the team navigation entries', () => {

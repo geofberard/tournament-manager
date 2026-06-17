@@ -1,5 +1,6 @@
 import { cleanup, render, screen } from '@testing-library/react'
 import { ThemeProvider, createTheme } from '@mui/material'
+import { MemoryRouter } from 'react-router-dom'
 import { afterEach, describe, expect, it } from 'vitest'
 import { GameList } from './GameList'
 import { GameStatus } from '../../generated/api-client'
@@ -8,12 +9,14 @@ import type { Game } from '../../services/gamesService'
 const renderList = (props?: Partial<React.ComponentProps<typeof GameList>>) =>
   render(
     <ThemeProvider theme={createTheme()}>
-      <GameList
-        errorMessage={null}
-        games={[]}
-        isLoading={false}
-        {...props}
-      />
+      <MemoryRouter>
+        <GameList
+          errorMessage={null}
+          games={[]}
+          isLoading={false}
+          {...props}
+        />
+      </MemoryRouter>
     </ThemeProvider>,
   )
 

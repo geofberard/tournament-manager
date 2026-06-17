@@ -1,4 +1,5 @@
 import {
+  Button,
   Card,
   CardContent,
   Chip,
@@ -6,7 +7,9 @@ import {
   Stack,
   Typography,
 } from '@mui/material'
+import { useNavigate } from 'react-router-dom'
 import { GameStatus } from '../../generated/api-client'
+import { TEAM_REFEREE_GAME_PATH } from '../../app/routes'
 import type { Game } from '../../services/gamesService'
 
 type GameCardProps = {
@@ -44,6 +47,12 @@ const formatScore = (game: Game) => {
 }
 
 export const GameCard = ({ game }: GameCardProps) => {
+  const navigate = useNavigate()
+
+  const handleRefereeClick = () => {
+    navigate(TEAM_REFEREE_GAME_PATH.replace(':id', game.id))
+  }
+
   return (
     <Card variant="outlined">
       <CardContent>
@@ -84,6 +93,14 @@ export const GameCard = ({ game }: GameCardProps) => {
             <Typography variant="body2" color="text.secondary">
               Arbitre: {game.referee.name}
             </Typography>
+          ) : null}
+
+          {game.status === GameStatus.InProgress ? (
+            <Stack direction="row" justifyContent="flex-end">
+              <Button variant="outlined" size="small" onClick={handleRefereeClick} color="success">
+                Arbitrer le match
+              </Button>
+            </Stack>
           ) : null}
         </Stack>
       </CardContent>

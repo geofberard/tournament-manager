@@ -1,9 +1,16 @@
-import { cleanup, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { ThemeProvider, createTheme } from '@mui/material'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { GameCard } from './GameCard'
 import { GameStatus } from '../../generated/api-client'
+import { TEAM_REFEREE_GAME_PATH } from '../../app/routes'
 import type { Game } from '../../services/gamesService'
+
+const navigateMock = vi.fn()
+
+vi.mock('react-router-dom', () => ({
+  useNavigate: () => navigateMock,
+}))
 
 const renderCard = (game: Game) =>
   render(
@@ -36,6 +43,7 @@ const baseGame: Game = {
 describe('GameCard', () => {
   afterEach(() => {
     cleanup()
+    navigateMock.mockClear()
   })
 
   it('should render contestants, status, score and referee', () => {
@@ -89,5 +97,44 @@ describe('GameCard', () => {
 
     // THEN
     expect(screen.getByText('21 - -')).toBeInTheDocument()
+  })
+
+  it('should render "Arbitrer le match" for games in progress and navigate on click', () => {
+    renderCard({
+      ...baseGame,
+      id: 'game-2',
+      status: GameStatus.InProgress,
+    })
+
+    const button = screen.getByRole('button', { name: 'Arbitrer le match' })
+    expect(button).toBeInTheDocument()
+
+    fireEvent.click(button)
+
+    expect(navigateMock).toHaveBeenCalledWith(
+      TEAM_REFEREE_GAME_PATH.replace(':id', 'game-2'),
+    )
+  })
+
+  it('should not render an arbitration button for scheduled games', () => {
+    renderCard({
+      ...baseGame,
+      status: GameStatus.Scheduled,
+    })
+
+    expect(
+      screen.queryByRole('button', { name: /Arbitrer le match|Continuer l'arbitrage/ }),
+    ).not.toBeInTheDocument()
+  })
+
+  it('should not render an arbitration button when the game is completed', () => {
+    renderCard({
+      ...baseGame,
+      status: GameStatus.Completed,
+    })
+
+    expect(
+      screen.queryByRole('button', { name: /Arbitrer le match|Continuer l'arbitrage/ }),
+    ).not.toBeInTheDocument()
   })
 })

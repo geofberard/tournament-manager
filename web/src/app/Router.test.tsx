@@ -1,7 +1,9 @@
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ThemeProvider, createTheme } from '@mui/material'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { AlertProvider } from '../app/AlertProvider'
 import { Router } from './Router'
+import type { Game } from '../services/apiClient'
 import {
   ADMIN_GAMES_PATH,
   ADMIN_HOME_PATH,
@@ -9,12 +11,14 @@ import {
   ADMIN_PHASES_PATH,
   ADMIN_TEAMS_PATH,
   PUBLIC_HOME_PATH,
+  TEAM_REFEREE_GAME_PATH,
   TEAM_GAMES_PATH,
   TEAM_HOME_PATH,
   TEAM_LOGIN_PATH,
   TEAM_RESULTS_PATH,
 } from './routes'
 import * as useGamesModule from '../hooks/useGames'
+import * as useGameModule from '../hooks/useGame'
 import * as useRankingsModule from '../hooks/useRankings'
 import * as useTeamLoginModule from '../hooks/useTeamLogin'
 import * as useAdminSessionModule from '../hooks/useAdminSession'
@@ -37,6 +41,10 @@ vi.mock('../hooks/useGames', () => ({
   useGames: vi.fn(),
 }))
 
+vi.mock('../hooks/useGame', () => ({
+  useGame: vi.fn(),
+}))
+
 vi.mock('../hooks/useRankings', () => ({
   useRankings: vi.fn(),
 }))
@@ -49,13 +57,16 @@ const useTeamLoginMock = vi.mocked(useTeamLoginModule.useTeamLogin)
 const useAdminSessionMock = vi.mocked(useAdminSessionModule.useAdminSession)
 const useTeamsMock = vi.mocked(useTeamsModule.useTeams)
 const useGamesMock = vi.mocked(useGamesModule.useGames)
+const useGameMock = vi.mocked(useGameModule.useGame)
 const useRankingsMock = vi.mocked(useRankingsModule.useRankings)
 const usePhasesMock = vi.mocked(usePhasesModule.usePhases)
 
 const renderRouter = () =>
   render(
     <ThemeProvider theme={createTheme()}>
-      <Router />
+      <AlertProvider>
+        <Router />
+      </AlertProvider>
     </ThemeProvider>,
   )
 
@@ -74,6 +85,11 @@ describe('Router', () => {
       errorMessage: null,
       games: [],
       isLoading: false,
+    })
+    useGameMock.mockReturnValue({
+      game: null,
+      isLoading: false,
+      errorMessage: null,
     })
     useRankingsMock.mockReturnValue({
       groupName: 'Poule A',
@@ -423,5 +439,48 @@ describe('Router', () => {
 
     // THEN
     expect(clearTeamSelection).toHaveBeenCalledOnce()
+  })
+
+  it('should render the referee game view when navigating to referee path', () => {
+    const sampleGame: Game = {
+      id: 'game-1',
+      phase: { id: 'phase-1', name: 'Phase Finale', order: 1, type: 'POOL' },
+      group: 'poule-a',
+      time: new Date(),
+      court: 'Terrain 1',
+      status: 'scheduled',
+      contestants: new Set([
+        { id: 'team-2', name: 'Tigres' },
+        { id: 'team-3', name: 'Lions' },
+      ]),
+      score: { pointsByTeam: { 'team-2': 0, 'team-3': 0 } },
+    }
+
+    setHashPath(TEAM_REFEREE_GAME_PATH.replace(':id', 'game-1'))
+
+    useTeamLoginMock.mockReturnValue({
+      clearTeamSelection: vi.fn(),
+      currentTeam: { id: 'team-2', name: 'Tigres' },
+      handleTeamChange: vi.fn(),
+    })
+    useAdminSessionMock.mockReturnValue({
+      isAuthenticated: false,
+      isLoading: false,
+      login: vi.fn(),
+      logout: vi.fn(),
+      username: null,
+    })
+
+    useGameMock.mockReturnValue({
+      game: sampleGame,
+      isLoading: false,
+      errorMessage: null,
+    })
+
+    renderRouter()
+
+    expect(screen.getByRole('heading', { name: 'Tigres VS Lions' })).toBeInTheDocument()
+    expect(screen.getByText(/Terrain 1/)).toBeInTheDocument()
+    expect(screen.getByText(/Phase Finale/)).toBeInTheDocument()
   })
 })

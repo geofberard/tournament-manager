@@ -1,5 +1,6 @@
 import { cleanup, render, screen } from '@testing-library/react'
 import { ThemeProvider, createTheme } from '@mui/material'
+import { MemoryRouter } from 'react-router-dom'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { TeamResultsView } from './TeamResultsView'
 import { GameStatus } from '../../generated/api-client'
@@ -56,7 +57,9 @@ describe('TeamResultsView', () => {
     // WHEN
     render(
       <ThemeProvider theme={createTheme()}>
-        <TeamResultsView currentTeam={{ id: 'team-2', name: 'Tigres' }} />
+        <MemoryRouter>
+          <TeamResultsView currentTeam={{ id: 'team-2', name: 'Tigres' }} />
+        </MemoryRouter>
       </ThemeProvider>,
     )
 
@@ -92,7 +95,9 @@ describe('TeamResultsView', () => {
     // WHEN
     render(
       <ThemeProvider theme={createTheme()}>
-        <TeamResultsView currentTeam={{ id: 'team-2', name: 'Tigres' }} />
+        <MemoryRouter>
+          <TeamResultsView currentTeam={{ id: 'team-2', name: 'Tigres' }} />
+        </MemoryRouter>
       </ThemeProvider>,
     )
 
@@ -151,7 +156,9 @@ describe('TeamResultsView', () => {
     // WHEN
     render(
       <ThemeProvider theme={createTheme()}>
-        <TeamResultsView currentTeam={{ id: 'team-2', name: 'Tigres' }} />
+        <MemoryRouter>
+          <TeamResultsView currentTeam={{ id: 'team-2', name: 'Tigres' }} />
+        </MemoryRouter>
       </ThemeProvider>,
     )
 
