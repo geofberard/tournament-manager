@@ -31,6 +31,7 @@ public class TestUtils {
                 .time(LocalDateTime.of(2022, AUGUST, 29, 10, 30))
                 .contestants(List.of(TEAM_A, TEAM_B))
                 .court("court")
+                .position(1000L)
                 .isFinished(true)
                 .eraseScore();
     }

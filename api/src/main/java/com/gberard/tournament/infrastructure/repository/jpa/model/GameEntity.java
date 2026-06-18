@@ -4,6 +4,8 @@ import com.gberard.tournament.domain.model.Game;
 import com.gberard.tournament.domain.model.Team;
 import com.gberard.tournament.infrastructure.serializer.score.DepthOneScoreRaw;
 import jakarta.persistence.*;
+import org.hibernate.annotations.Generated;
+import org.hibernate.generator.EventType;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,6 +21,10 @@ public class GameEntity {
 
     @Column(name = "time")
     private LocalDateTime time;
+
+    @Generated(event = EventType.INSERT)
+    @Column(name = "position", nullable = false, insertable = false, updatable = false)
+    private Long position;
 
     @Column(name = "phase_id", nullable = false)
     private String phaseId;
@@ -63,6 +69,7 @@ public class GameEntity {
                 entity.groupId,
                 entity.time,
                 entity.court,
+                entity.position,
                 teams,
                 Optional.ofNullable(entity.referee).map(TeamEntity::toDomain),
                 entity.isFinished,
@@ -78,6 +85,7 @@ public class GameEntity {
         playerEntity.groupId = game.group();
         playerEntity.time = game.time();
         playerEntity.court = game.court();
+        playerEntity.position = game.position();
         playerEntity.teams = game.contestants().stream().map(TeamEntity::toEntity).toList();
         playerEntity.referee = game.refereeId().map(TeamEntity::toEntity).orElse(null);
         playerEntity.isFinished = game.isFinished();

@@ -922,6 +922,7 @@ components:
         - group
         - time
         - court
+        - position
         - status
         - contestants
         - score
@@ -955,6 +956,16 @@ components:
           minLength: 1
           description: Nom ou libellé du terrain
           examples: [Court A]
+        position:
+          type: integer
+          format: int64
+          minimum: 1
+          description: |
+            Position globale du match dans l'ordre de jeu du tournoi.
+
+            Cette valeur est attribuée automatiquement à la création si elle
+            n'est pas fournie par le client.
+          examples: [1000]
         status:
           $ref: '#/components/schemas/GameStatus'
         contestants:

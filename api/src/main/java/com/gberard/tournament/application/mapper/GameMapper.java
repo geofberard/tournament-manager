@@ -22,6 +22,7 @@ public final class GameMapper {
                 .subgroup(game.subgroup().orElse(null))
                 .group(game.group())
                 .court(game.court())
+                .position(game.position())
                 .contestants(game.contestants().stream().map(TeamMapper::toApi).collect(toSet()))
                 .referee(game.refereeId().map(TeamMapper::toApi).orElse(null))
                 .time(game.time().atOffset(java.time.ZoneOffset.UTC))
@@ -42,6 +43,7 @@ public final class GameMapper {
                 request.getGroup(),
                 request.getTime().toLocalDateTime(),
                 request.getCourt(),
+                null,
                 List.copyOf(contestants),
                 referee,
                 false,
@@ -62,6 +64,7 @@ public final class GameMapper {
                 .group(request.getGroup())
                 .time(request.getTime().toLocalDateTime())
                 .court(request.getCourt())
+                .position(existingGame.position())
                 .contestants(List.copyOf(contestants))
                 .refereeId(referee)
                 .isFinished(GameStatus.COMPLETED.equals(request.getStatus()));

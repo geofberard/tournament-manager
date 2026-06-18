@@ -22,4 +22,5 @@ public interface JpaGameRepository extends JpaRepository<GameEntity, String> {
     List<GameEntity> findByGroupIdAndPhaseId(String groupId, String phaseId);
 
     List<GameEntity> findByTeamsIdAndPhaseId(String teamId, String phaseId);
+
 }

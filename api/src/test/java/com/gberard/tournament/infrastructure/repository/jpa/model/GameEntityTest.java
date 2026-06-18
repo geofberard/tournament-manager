@@ -25,6 +25,7 @@ class GameEntityTest {
                 "Poule A",
                 LocalDateTime.of(2026, 6, 11, 18, 30),
                 "Terrain 1",
+                1000L,
                 List.of(new Team("team_1", "Tigres"), new Team("team_2", "Lynx")),
                 Optional.empty(),
                 false,
