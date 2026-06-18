@@ -7,6 +7,7 @@ import com.gberard.tournament.domain.port.output.GameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,13 +18,13 @@ public class GameServiceImpl implements GameService {
     public GameRepository gameRepository;
 
     @Override
-    public Game create(Game player) {
-        return gameRepository.save(player);
+    public Game create(Game game) {
+        return gameRepository.save(game);
     }
 
     @Override
-    public Game update(Game player) {
-        return gameRepository.save(player);
+    public Game update(Game game) {
+        return gameRepository.save(validatePosition(game));
     }
 
     @Override
@@ -44,11 +45,21 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public List<Game> findAll() {
-        return gameRepository.findAll();
+        return gameRepository.findAll().stream()
+                .sorted(Comparator.comparing(Game::position, Comparator.nullsLast(Long::compareTo)))
+                .toList();
     }
 
     @Override
     public List<Game> findByGroupAndPhase(String group, String phaseId) {
         return gameRepository.findByGroupAndPhaseId(group, phaseId);
+    }
+
+    private Game validatePosition(Game game) {
+        if (game.position() <= 0) {
+            throw new IllegalArgumentException("position must be positive");
+        }
+
+        return game;
     }
 }

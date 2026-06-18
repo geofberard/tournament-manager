@@ -77,6 +77,7 @@ public class PoolGamePlanningService {
                 group,
                 plannedGame.time(),
                 court,
+                null,
                 plannedGame.teamPair().teams(),
                 plannedGame.referee(),
                 false,

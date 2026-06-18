@@ -13,6 +13,7 @@ public class GameBuilder {
     private String group = "A";
     private LocalDateTime time;
     private String court;
+    private Long position;
     private List<Team> contestants;
     private Optional<Team> refereeId = Optional.empty();
     private Boolean isFinished;
@@ -35,6 +36,7 @@ public class GameBuilder {
                 .group(game.group())
                 .time(game.time())
                 .court(game.court())
+                .position(game.position())
                 .contestants(game.contestants())
                 .refereeId(game.refereeId())
                 .isFinished(game.isFinished())
@@ -81,6 +83,11 @@ public class GameBuilder {
         return this;
     }
 
+    public GameBuilder position(Long position) {
+        this.position = position;
+        return this;
+    }
+
     public GameBuilder contestants(List<Team> contestants) {
         this.contestants = contestants;
         return this;
@@ -115,6 +122,6 @@ public class GameBuilder {
     }
 
     public Game build() {
-        return new Game(id, phase, subgroup, group, time, court, contestants, refereeId, isFinished, score);
+        return new Game(id, phase, subgroup, group, time, court, position, contestants, refereeId, isFinished, score);
     }
 }

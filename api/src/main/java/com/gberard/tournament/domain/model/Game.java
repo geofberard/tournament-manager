@@ -14,6 +14,7 @@ public final class Game implements Identified {
     private final String group;
     private final LocalDateTime time;
     private final String court;
+    private final Long position;
     private final List<Team> contestants;
     private final Optional<Team> refereeId;
     private final Boolean isFinished;
@@ -26,6 +27,7 @@ public final class Game implements Identified {
             String group,
             LocalDateTime time,
             String court,
+            Long position,
             List<Team> contestants,
             Optional<Team> refereeId,
             Boolean isFinished,
@@ -37,6 +39,7 @@ public final class Game implements Identified {
         this.group = Objects.requireNonNull(group, "group must not be null");
         this.time = Objects.requireNonNull(time, "time must not be null");
         this.court = Objects.requireNonNull(court, "court must not be null");
+        this.position = position;
         this.contestants = List.copyOf(Objects.requireNonNull(contestants, "contestants must not be null"));
         this.refereeId = Objects.requireNonNull(refereeId, "refereeId must not be null");
         this.isFinished = Objects.requireNonNull(isFinished, "isFinished must not be null");
@@ -68,6 +71,10 @@ public final class Game implements Identified {
         return court;
     }
 
+    public Long position() {
+        return position;
+    }
+
     public List<Team> contestants() {
         return contestants;
     }
@@ -85,23 +92,23 @@ public final class Game implements Identified {
     }
 
     public Game withScore(SimpleScore newScore) {
-        return new Game(id, phase, subgroup, group, time, court, contestants, refereeId, isFinished, Optional.of(newScore));
+        return new Game(id, phase, subgroup, group, time, court, position, contestants, refereeId, isFinished, Optional.of(newScore));
     }
 
     public Game withoutScore() {
-        return new Game(id, phase, subgroup, group, time, court, contestants, refereeId, isFinished, Optional.empty());
+        return new Game(id, phase, subgroup, group, time, court, position, contestants, refereeId, isFinished, Optional.empty());
     }
 
     public Game finishWithScore(SimpleScore newScore) {
-        return new Game(id, phase, subgroup, group, time, court, contestants, refereeId, true, Optional.of(newScore));
+        return new Game(id, phase, subgroup, group, time, court, position, contestants, refereeId, true, Optional.of(newScore));
     }
 
     public Game markAsFinished() {
-        return new Game(id, phase, subgroup, group, time, court, contestants, refereeId, true, score);
+        return new Game(id, phase, subgroup, group, time, court, position, contestants, refereeId, true, score);
     }
 
     public Game markAsScheduled() {
-        return new Game(id, phase, subgroup, group, time, court, contestants, refereeId, false, score);
+        return new Game(id, phase, subgroup, group, time, court, position, contestants, refereeId, false, score);
     }
 
     @Override
@@ -118,6 +125,7 @@ public final class Game implements Identified {
                 && Objects.equals(group, game.group)
                 && Objects.equals(time, game.time)
                 && Objects.equals(court, game.court)
+                && Objects.equals(position, game.position)
                 && Objects.equals(contestants, game.contestants)
                 && Objects.equals(refereeId, game.refereeId)
                 && Objects.equals(isFinished, game.isFinished)
@@ -126,7 +134,7 @@ public final class Game implements Identified {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, phase, subgroup, group, time, court, contestants, refereeId, isFinished, score);
+        return Objects.hash(id, phase, subgroup, group, time, court, position, contestants, refereeId, isFinished, score);
     }
 
     @Override
@@ -138,6 +146,7 @@ public final class Game implements Identified {
                 ", group=" + group +
                 ", time=" + time +
                 ", court=" + court +
+                ", position=" + position +
                 ", contestants=" + contestants +
                 ", refereeId=" + refereeId +
                 ", isFinished=" + isFinished +
