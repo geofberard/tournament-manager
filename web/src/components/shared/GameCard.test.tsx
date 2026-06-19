@@ -73,6 +73,18 @@ describe('GameCard', () => {
     expect(screen.getByText('Aigles vs Tigres')).toBeInTheDocument()
   })
 
+  it('should render the court without a fallback time when no time is planned', () => {
+    // WHEN
+    renderCard({
+      ...baseGame,
+      time: undefined,
+    })
+
+    // THEN
+    expect(screen.queryByText(/Horaire a definir/)).not.toBeInTheDocument()
+    expect(screen.getByText('Terrain Central')).toBeInTheDocument()
+  })
+
   it('should omit the referee block when no referee is provided', () => {
     // WHEN
     const { container } = renderCard({

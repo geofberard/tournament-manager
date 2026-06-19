@@ -16,6 +16,7 @@ import {
 } from '@mui/material'
 import type { SelectChangeEvent } from '@mui/material/Select'
 import { GameStatus } from '../../generated/api-client'
+import { fromDateTimeLocalValue, toDateTimeLocalValue } from '../../services/dateTimeLocal'
 import type { Phase } from '../../services/phasesService'
 import type { GamePayload } from '../../services/gamesService'
 import type { Team } from '../../services/teamsService'
@@ -35,11 +36,6 @@ const statusLabels = {
   [GameStatus.InProgress]: 'En cours',
   [GameStatus.Completed]: 'Termine',
   [GameStatus.Canceled]: 'Annule',
-}
-
-const toDateTimeLocalValue = (date: Date) => {
-  const offset = date.getTimezoneOffset()
-  return new Date(date.getTime() - offset * 60_000).toISOString().slice(0, 16)
 }
 
 export const ManageGameForm = ({
@@ -202,9 +198,9 @@ export const ManageGameForm = ({
           fullWidth
           label="Date et heure"
           onChange={(event) =>
-            setFormValue((currentValue) => ({ ...currentValue, time: new Date(event.target.value) }))
+            setFormValue((currentValue) => ({ ...currentValue, time: fromDateTimeLocalValue(event.target.value) }))
           }
-          required
+          helperText="Laissez vide si l'horaire n'est pas encore defini."
           slotProps={{ inputLabel: { shrink: true } }}
           type="datetime-local"
           value={toDateTimeLocalValue(formValue.time)}

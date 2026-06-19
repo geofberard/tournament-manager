@@ -2,15 +2,12 @@ import { Alert, CircularProgress, Stack, Typography } from '@mui/material'
 import { GameList } from '../../components/shared/GameList'
 import { GameStatus } from '../../generated/api-client'
 import { useGames } from '../../hooks/useGames'
-import type { Game } from '../../services/gamesService'
+import { sortGamesByPosition } from '../../services/gameOrdering'
 import type { Team } from '../../services/teamsService'
 
 type TeamGamesViewProps = {
   currentTeam: Team
 }
-
-const sortGamesChronologically = (games: Game[]) =>
-  [...games].sort((leftGame, rightGame) => leftGame.time.getTime() - rightGame.time.getTime())
 
 export const TeamGamesView = ({ currentTeam }: TeamGamesViewProps) => {
   const { errorMessage: gamesErrorMessage, games, isLoading: isGamesLoading } = useGames()
@@ -18,10 +15,10 @@ export const TeamGamesView = ({ currentTeam }: TeamGamesViewProps) => {
   const teamGames = games.filter((game) =>
     Array.from(game.contestants).some((team) => team.id === currentTeam.id),
   )
-  const upcomingGames = sortGamesChronologically(
+  const upcomingGames = sortGamesByPosition(
     teamGames.filter((game) => game.status !== GameStatus.Completed),
   )
-  const completedGames = sortGamesChronologically(
+  const completedGames = sortGamesByPosition(
     teamGames.filter((game) => game.status === GameStatus.Completed),
   )
 

@@ -18,6 +18,7 @@ import {
   Typography,
 } from '@mui/material'
 import type { SelectChangeEvent } from '@mui/material/Select'
+import { fromDateTimeLocalValue, toDateTimeLocalValue } from '../../services/dateTimeLocal'
 import type { PoolGamesPayload } from '../../services/gamesService'
 import type { Phase } from '../../services/phasesService'
 import type { Team } from '../../services/teamsService'
@@ -28,11 +29,6 @@ type CreatePoolGamesFormProps = {
   onSubmit: (payload: PoolGamesPayload) => Promise<void>
   phases: Phase[]
   teams: Team[]
-}
-
-const toDateTimeLocalValue = (date: Date) => {
-  const offset = date.getTimezoneOffset()
-  return new Date(date.getTime() - offset * 60_000).toISOString().slice(0, 16)
 }
 
 export const CreatePoolGamesForm = ({
@@ -94,11 +90,17 @@ export const CreatePoolGamesForm = ({
       setSubmitError('Selectionnez au moins trois equipes pour attribuer les arbitres.')
       return
     }
-    if (!Number.isSafeInteger(formValue.gameDurationMinutes) || formValue.gameDurationMinutes < 1) {
+    if (
+      formValue.startTime &&
+      (!Number.isSafeInteger(formValue.gameDurationMinutes) || (formValue.gameDurationMinutes ?? 0) < 1)
+    ) {
       setSubmitError('La duree des matchs doit etre un nombre entier positif.')
       return
     }
-    if (!Number.isSafeInteger(formValue.breakDurationMinutes) || formValue.breakDurationMinutes < 0) {
+    if (
+      formValue.startTime &&
+      (!Number.isSafeInteger(formValue.breakDurationMinutes) || (formValue.breakDurationMinutes ?? -1) < 0)
+    ) {
       setSubmitError('Le temps entre les matchs doit etre un nombre entier positif ou nul.')
       return
     }
@@ -107,7 +109,9 @@ export const CreatePoolGamesForm = ({
     try {
       await onSubmit({
         ...formValue,
+        breakDurationMinutes: formValue.startTime ? formValue.breakDurationMinutes : undefined,
         court: formValue.court.trim(),
+        gameDurationMinutes: formValue.startTime ? formValue.gameDurationMinutes : undefined,
         group: formValue.group.trim(),
       })
     } catch (error) {
@@ -163,10 +167,10 @@ export const CreatePoolGamesForm = ({
           onChange={(event) =>
             setFormValue((currentValue) => ({
               ...currentValue,
-              startTime: new Date(event.target.value),
+              startTime: fromDateTimeLocalValue(event.target.value),
             }))
           }
-          required
+          helperText="Laissez vide si les horaires ne sont pas encore fixes."
           slotProps={{ inputLabel: { shrink: true } }}
           type="datetime-local"
           value={toDateTimeLocalValue(formValue.startTime)}
@@ -175,21 +179,23 @@ export const CreatePoolGamesForm = ({
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
           <TextField
             fullWidth
+            disabled={!formValue.startTime}
             label="Duree d'un match (min)"
             onChange={handleNumberChange('gameDurationMinutes')}
-            required
+            required={Boolean(formValue.startTime)}
             slotProps={{ htmlInput: { min: 1 } }}
             type="number"
-            value={formValue.gameDurationMinutes}
+            value={formValue.startTime ? formValue.gameDurationMinutes : ''}
           />
           <TextField
             fullWidth
+            disabled={!formValue.startTime}
             label="Temps entre les matchs (min)"
             onChange={handleNumberChange('breakDurationMinutes')}
-            required
+            required={Boolean(formValue.startTime)}
             slotProps={{ htmlInput: { min: 0 } }}
             type="number"
-            value={formValue.breakDurationMinutes}
+            value={formValue.startTime ? formValue.breakDurationMinutes : ''}
           />
         </Stack>
 

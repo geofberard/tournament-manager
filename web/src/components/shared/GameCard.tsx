@@ -21,6 +21,12 @@ const dateFormatter = new Intl.DateTimeFormat('fr-FR', {
   timeStyle: 'short',
 })
 
+const formatGameSchedule = (game: Game) => {
+  const courtLabel = `Terrain ${game.court}`
+
+  return game.time ? `${dateFormatter.format(game.time)} - ${courtLabel}` : courtLabel
+}
+
 const statusLabelByValue: Record<string, string> = {
   [GameStatus.Completed]: 'Termine',
   [GameStatus.InProgress]: 'En cours',
@@ -80,7 +86,7 @@ export const GameCard = ({ game }: GameCardProps) => {
           </Stack>
 
           <Typography variant="body2" color="text.secondary">
-            {dateFormatter.format(game.time)} - Terrain {game.court}
+            {formatGameSchedule(game)}
           </Typography>
 
           <Divider />

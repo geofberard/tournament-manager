@@ -100,6 +100,19 @@ describe('BulkUpdateGamesForm', () => {
     expect(offsetTimeCheckbox).toBeChecked()
   })
 
+  it('should submit a request to clear planned times', async () => {
+    // GIVEN
+    const onSubmit = vi.fn().mockResolvedValue(undefined)
+    renderForm(onSubmit)
+
+    // WHEN
+    fireEvent.click(screen.getByRole('checkbox', { name: "Effacer l'heure" }))
+    fireEvent.click(screen.getByRole('button', { name: 'Modifier les matchs' }))
+
+    // THEN
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledWith({ clearTime: true }))
+  })
+
   it('should require a non-zero integer time offset', () => {
     // GIVEN
     renderForm()

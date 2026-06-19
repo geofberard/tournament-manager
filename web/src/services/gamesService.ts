@@ -19,7 +19,7 @@ export type GamePayload = {
   pointsByTeam: Record<string, number> | null
   refereeId?: string
   status: UpdateGameRequest['status']
-  time: Date
+  time?: Date
 }
 
 export const listGames = async (): Promise<Game[]> => gamesApi.listGames()

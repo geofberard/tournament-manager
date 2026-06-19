@@ -62,6 +62,15 @@ describe('AdminGamesTable', () => {
     expect(screen.queryByText('Finale')).not.toBeInTheDocument()
   })
 
+  it('should render games without a planned time', () => {
+    // WHEN
+    renderTable([{ ...game, time: undefined }])
+
+    // THEN
+    expect(screen.getByText('__/__/____ __:__')).toBeInTheDocument()
+    expect(screen.queryByText('Horaire a definir')).not.toBeInTheDocument()
+  })
+
   it('should render an empty state', () => {
     // WHEN
     renderTable([])

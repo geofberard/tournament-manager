@@ -316,11 +316,12 @@ describe('AdminGamesView', () => {
       expect(bulkCreateGamesMock).toHaveBeenCalledWith(
         expect.objectContaining({
           assignReferees: false,
-          breakDurationMinutes: 5,
+          breakDurationMinutes: undefined,
           court: 'Terrain 1',
-          gameDurationMinutes: 15,
+          gameDurationMinutes: undefined,
           group: 'Poule A',
           phaseId: 'phase-1',
+          startTime: undefined,
           teamIds: new Set(['team-1', 'team-2']),
         }),
       ),
