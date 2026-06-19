@@ -37,7 +37,7 @@ public final class Game implements Identified {
         this.phase = Objects.requireNonNull(phase, "phase must not be null");
         this.subgroup = Objects.requireNonNull(subgroup, "subgroup must not be null");
         this.group = Objects.requireNonNull(group, "group must not be null");
-        this.time = Objects.requireNonNull(time, "time must not be null");
+        this.time = time;
         this.court = Objects.requireNonNull(court, "court must not be null");
         this.position = position;
         this.contestants = List.copyOf(Objects.requireNonNull(contestants, "contestants must not be null"));

@@ -14,7 +14,6 @@ public record PlannedGame(
 
     public PlannedGame {
         Objects.requireNonNull(teamPair, "teamPair must not be null");
-        Objects.requireNonNull(time, "time must not be null");
         Objects.requireNonNull(referee, "referee must not be null");
         if (referee.filter(teamPair::contains).isPresent()) {
             throw new IllegalArgumentException("A contestant cannot referee its own game");

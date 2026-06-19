@@ -70,9 +70,11 @@ public class GamesApiDelegateImpl implements GamesApiDelegate {
                 phase,
                 request.getGroup(),
                 teams,
-                request.getStartTime().withOffsetSameInstant(ZoneOffset.UTC).toLocalDateTime(),
-                Duration.ofMinutes(request.getGameDurationMinutes()),
-                Duration.ofMinutes(request.getBreakDurationMinutes()),
+                request.getStartTime() == null
+                        ? null
+                        : request.getStartTime().withOffsetSameInstant(ZoneOffset.UTC).toLocalDateTime(),
+                request.getGameDurationMinutes() == null ? null : Duration.ofMinutes(request.getGameDurationMinutes()),
+                request.getBreakDurationMinutes() == null ? null : Duration.ofMinutes(request.getBreakDurationMinutes()),
                 request.getCourt(),
                 request.getAssignReferees()
         );
@@ -94,6 +96,12 @@ public class GamesApiDelegateImpl implements GamesApiDelegate {
         List<com.gberard.tournament.domain.model.Game> existingGames = bulkUpdateGamesRequest.getGameIds().stream()
                 .map(this::findGameOrThrow)
                 .toList();
+        if (changes.getTimeOffsetMinutes() != null && existingGames.stream().anyMatch(game -> game.time() == null)) {
+            throw new ResponseStatusException(
+                    BAD_REQUEST,
+                    "timeOffsetMinutes cannot be used on games without time"
+            );
+        }
         Phase phase = changes.getPhaseId() == null ? null : findPhaseOrThrow(changes.getPhaseId());
         Optional<Team> referee = changes.getRefereeId() != null
                 ? Optional.of(findTeamOrThrow(changes.getRefereeId()))
@@ -186,11 +194,18 @@ public class GamesApiDelegateImpl implements GamesApiDelegate {
         if (changes.getTime() != null && changes.getTimeOffsetMinutes() != null) {
             throw new ResponseStatusException(BAD_REQUEST, "time and timeOffsetMinutes cannot be used together");
         }
+        if (changes.getTime() != null && Boolean.TRUE.equals(changes.getClearTime())) {
+            throw new ResponseStatusException(BAD_REQUEST, "time and clearTime cannot be used together");
+        }
+        if (changes.getTimeOffsetMinutes() != null && Boolean.TRUE.equals(changes.getClearTime())) {
+            throw new ResponseStatusException(BAD_REQUEST, "timeOffsetMinutes and clearTime cannot be used together");
+        }
         if (changes.getPhaseId() == null
                 && changes.getSubgroup() == null
                 && !Boolean.TRUE.equals(changes.getClearSubgroup())
                 && changes.getGroup() == null
                 && changes.getTime() == null
+                && !Boolean.TRUE.equals(changes.getClearTime())
                 && changes.getTimeOffsetMinutes() == null
                 && changes.getCourt() == null
                 && changes.getStatus() == null
@@ -212,6 +227,15 @@ public class GamesApiDelegateImpl implements GamesApiDelegate {
                     BAD_REQUEST,
                     "At least three teams are required to assign team referees"
             );
+        }
+        if (request.getStartTime() == null) {
+            return;
+        }
+        if (request.getGameDurationMinutes() == null) {
+            throw new ResponseStatusException(BAD_REQUEST, "Game duration is required when start time is provided");
+        }
+        if (request.getBreakDurationMinutes() == null) {
+            throw new ResponseStatusException(BAD_REQUEST, "Break duration is required when start time is provided");
         }
         if (request.getGameDurationMinutes() < 1) {
             throw new ResponseStatusException(BAD_REQUEST, "Game duration must be positive");

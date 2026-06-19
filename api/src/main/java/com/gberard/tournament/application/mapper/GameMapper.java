@@ -25,7 +25,7 @@ public final class GameMapper {
                 .position(game.position())
                 .contestants(game.contestants().stream().map(TeamMapper::toApi).collect(toSet()))
                 .referee(game.refereeId().map(TeamMapper::toApi).orElse(null))
-                .time(game.time().atOffset(java.time.ZoneOffset.UTC))
+                .time(game.time() == null ? null : game.time().atOffset(java.time.ZoneOffset.UTC))
                 .status(resolveStatus(game))
                 .score(game.score().map(score -> GameScoreMapper.toApi(score, game.contestants())).orElse(null));
     }
@@ -41,7 +41,7 @@ public final class GameMapper {
                 phase,
                 Optional.ofNullable(request.getSubgroup()),
                 request.getGroup(),
-                request.getTime().toLocalDateTime(),
+                request.getTime() == null ? null : request.getTime().toLocalDateTime(),
                 request.getCourt(),
                 null,
                 List.copyOf(contestants),
@@ -62,7 +62,7 @@ public final class GameMapper {
                 .phase(phase)
                 .subgroup(Optional.ofNullable(request.getSubgroup()))
                 .group(request.getGroup())
-                .time(request.getTime().toLocalDateTime())
+                .time(request.getTime() == null ? null : request.getTime().toLocalDateTime())
                 .court(request.getCourt())
                 .position(existingGame.position())
                 .contestants(List.copyOf(contestants))
@@ -104,6 +104,8 @@ public final class GameMapper {
         }
         if (changes.getTime() != null) {
             updatedGame.time(changes.getTime().toLocalDateTime());
+        } else if (Boolean.TRUE.equals(changes.getClearTime())) {
+            updatedGame.time(null);
         } else if (changes.getTimeOffsetMinutes() != null) {
             updatedGame.time(existingGame.time().plusMinutes(changes.getTimeOffsetMinutes()));
         }
