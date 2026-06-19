@@ -163,7 +163,7 @@ Le fichier `infra/gcp/firebase.json` contient la configuration Hosting :
 ```json
 {
   "hosting": {
-    "site": "gberard-tournament-prod",
+    "site": "tournois-scuf-2026",
     "public": "web/dist",
     "ignore": [
       "infra/gcp/firebase.json",
@@ -174,7 +174,7 @@ Le fichier `infra/gcp/firebase.json` contient la configuration Hosting :
       {
         "source": "/api/**",
         "run": {
-          "serviceId": "gberard-tournament-prod-api",
+          "serviceId": "tournois-scuf-2026-api",
           "region": "europe-west1"
         }
       },

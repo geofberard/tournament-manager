@@ -1,2 +1,2 @@
-project_id = "gberard-tournament-prod"
+project_id = "tournois-scuf-2026"
 region     = "europe-west1"

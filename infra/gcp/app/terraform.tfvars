@@ -1,4 +1,4 @@
-project_id = "gberard-tournament-prod"
+project_id = "tournois-scuf-2026"
 region     = "europe-west1"
 
 target_version = "0.1.0"
@@ -10,11 +10,11 @@ cloud_run_max_instances = 2
 
 cors_allowed_origins = [
   "https://geofberard.github.io",
-  "https://gberard-tournament-prod.web.app",
-  "https://gberard-tournament-prod.firebaseapp.com",
+  "https://tournois-scuf-2026.web.app",
+  "https://tournois-scuf-2026.firebaseapp.com",
 ]
 
-firebase_hosting_site_id = "gberard-tournament-prod"
+firebase_hosting_site_id = "tournois-scuf-2026"
 
 database_tier                = "db-f1-micro"
 database_edition             = "ENTERPRISE"

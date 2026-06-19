@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "site": "gberard-tournament-prod",
+    "site": "tournois-scuf-2026",
     "public": "web/dist",
     "ignore": [
       "infra/gcp/firebase.json",
@@ -11,7 +11,7 @@
       {
         "source": "/api/**",
         "run": {
-          "serviceId": "gberard-tournament-prod-api",
+          "serviceId": "tournois-scuf-2026-api",
           "region": "europe-west1"
         }
       },

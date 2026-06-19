@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-DEFAULT_PROJECT_ID="gberard-tournament-prod"
+DEFAULT_PROJECT_ID="tournois-scuf-2026"
 PROJECT_ID="$DEFAULT_PROJECT_ID"
 INSTANCE_NAME=""
 COMMAND=""
@@ -19,7 +19,7 @@ Commands:
   stop   Stop the Cloud SQL instance by setting activation policy to NEVER.
 
 Defaults:
-  project-id: gberard-tournament-prod
+  project-id: tournois-scuf-2026
   instance:   <project-id>-db
 USAGE
 }
