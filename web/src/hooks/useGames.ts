@@ -1,12 +1,10 @@
 import useSWR from 'swr'
 import { listGames, type Game } from '../services/gamesService'
+import { sortGamesByPosition } from '../services/gameOrdering'
 
 const GAMES_KEY = '/api/games'
 
-const sortGamesByTime = (games: Game[]) =>
-  [...games].sort((gameA, gameB) => gameA.time.getTime() - gameB.time.getTime())
-
-const loadGames = async () => sortGamesByTime(await listGames())
+const loadGames = async () => sortGamesByPosition(await listGames())
 
 export function useGames() {
   const { data, error, isLoading } = useSWR<Game[]>(GAMES_KEY, loadGames)

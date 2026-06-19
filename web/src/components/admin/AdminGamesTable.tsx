@@ -17,13 +17,15 @@ type AdminGameRow = {
   id: string
   subgroup: string
   phase: string
+  position: number | null
   referee: string
   score: string
   status: string
   team1: string
   team2: string
   teams: string
-  time: Date
+  time?: Date
+  timeLabel: string
 }
 
 type AdminGamesTableProps = {
@@ -37,6 +39,7 @@ type AdminGamesTableProps = {
 }
 
 const formatOptionalValue = (value?: string | null) => value?.trim() || '-'
+const unsetTimeLabel = '__/__/____ __:__'
 
 const getTeamScore = (game: Game, teamId?: string) =>
   teamId && game.score?.pointsByTeam ? (game.score.pointsByTeam[teamId] ?? null) : null
@@ -61,13 +64,15 @@ const toAdminGameRow = (game: Game): AdminGameRow => {
     id: game.id,
     subgroup: formatOptionalValue(game.subgroup),
     phase: game.phase.name,
+    position: game.position ?? null,
     referee: formatOptionalValue(game.referee?.name),
     score: hasScore ? formatGameScore(team1Score, team2Score) : '∅',
     status: game.status,
     team1: formatOptionalValue(team1?.name),
     team2: formatOptionalValue(team2?.name),
     teams: teams.map((team) => team.name).join(' / '),
-    time: game.time,
+    time: game.time ?? undefined,
+    timeLabel: game.time ? dateFormatter.format(game.time) : unsetTimeLabel,
   }
 }
 
@@ -88,12 +93,15 @@ export const AdminGamesTable = ({
   const columns = useMemo<GridColDef<AdminGameRow>[]>(
     () => [
       {
-        field: 'time',
+        field: 'timeLabel',
         flex: 1,
         headerName: 'Heure',
         minWidth: 170,
-        type: 'dateTime',
-        valueFormatter: (value: Date) => dateFormatter.format(value),
+      },
+      {
+        field: 'position',
+        headerName: 'Position',
+        type: 'number',
       },
       {
         field: 'phase',
@@ -193,6 +201,7 @@ export const AdminGamesTable = ({
               columnVisibilityModel: {
                 court: false,
                 id: false,
+                position: false,
                 subgroup: false,
                 referee: false,
                 status: false,
@@ -207,6 +216,9 @@ export const AdminGamesTable = ({
             },
             pagination: {
               paginationModel: { pageSize: 25 },
+            },
+            sorting: {
+              sortModel: [{ field: 'position', sort: 'asc' }],
             },
           }}
           localeText={{

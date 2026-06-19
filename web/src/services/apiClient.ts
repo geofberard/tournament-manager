@@ -18,7 +18,7 @@ import {
 
 export type PhaseType = 'POOL' | 'BRACKET'
 export type Phase = ApiPhase & { type: PhaseType }
-export type Game = Omit<ApiGame, 'phase'> & { phase: Phase }
+export type Game = Omit<ApiGame, 'phase' | 'position'> & { phase: Phase; position?: number }
 
 const apiConfiguration = new Configuration({
   basePath: '',

@@ -20,6 +20,7 @@ import { GameStatus } from '../../generated/api-client'
 import { useGames } from '../../hooks/useGames'
 import { usePhases } from '../../hooks/usePhases'
 import { useTeams } from '../../hooks/useTeams'
+import { sortGamesByPosition } from '../../services/gameOrdering'
 import {
   bulkUpdateGames,
   bulkCreateGames,
@@ -45,7 +46,7 @@ const emptyGameForm = (): GamePayload => ({
   pointsByTeam: null,
   refereeId: undefined,
   status: GameStatus.Scheduled,
-  time: new Date(),
+  time: undefined,
 })
 
 const emptyPoolGamesForm = (phases: ReturnType<typeof usePhases>['phases']): PoolGamesPayload => ({
@@ -55,7 +56,7 @@ const emptyPoolGamesForm = (phases: ReturnType<typeof usePhases>['phases']): Poo
   gameDurationMinutes: 15,
   group: '',
   phaseId: phases.find((phase) => phase.type === 'POOL')?.id ?? '',
-  startTime: new Date(),
+  startTime: undefined,
   teamIds: new Set(),
 })
 
@@ -71,7 +72,7 @@ const toGamePayload = (game: Game): GamePayload => ({
       : null,
   refereeId: game.referee?.id,
   status: game.status,
-  time: game.time,
+  time: game.time ?? undefined,
 })
 
 export const AdminGamesView = () => {
@@ -98,14 +99,16 @@ export const AdminGamesView = () => {
       await mutate(
         '/api/games',
         (currentGames: Game[] | undefined) =>
-          (currentGames ?? []).map((currentGame) =>
-            currentGame.id === game.id
-              ? {
-                  ...completedGame,
-                  score,
-                  status: GameStatus.Completed,
-                }
-              : currentGame,
+          sortGamesByPosition(
+            (currentGames ?? []).map((currentGame) =>
+              currentGame.id === game.id
+                ? {
+                    ...completedGame,
+                    score,
+                    status: GameStatus.Completed,
+                  }
+                : currentGame,
+            ),
           ),
         { revalidate: false },
       )
@@ -144,7 +147,7 @@ export const AdminGamesView = () => {
 
     await mutate(
       '/api/games',
-      (currentGames: Game[] | undefined) => [...(currentGames ?? []), createdGame],
+      (currentGames: Game[] | undefined) => sortGamesByPosition([...(currentGames ?? []), createdGame]),
       { revalidate: false },
     )
     closeDrawer()
@@ -154,7 +157,7 @@ export const AdminGamesView = () => {
     const createdGames = await bulkCreateGames(payload)
     await mutate(
       '/api/games',
-      (currentGames: Game[] | undefined) => [...(currentGames ?? []), ...createdGames],
+      (currentGames: Game[] | undefined) => sortGamesByPosition([...(currentGames ?? []), ...createdGames]),
       { revalidate: false },
     )
     closeDrawer()
@@ -187,7 +190,7 @@ export const AdminGamesView = () => {
     await mutate(
       '/api/games',
       (currentGames: Game[] | undefined) =>
-        (currentGames ?? []).map((game) => (game.id === gameWithScore.id ? gameWithScore : game)),
+        sortGamesByPosition((currentGames ?? []).map((game) => (game.id === gameWithScore.id ? gameWithScore : game))),
       { revalidate: false },
     )
     closeDrawer()
@@ -200,7 +203,7 @@ export const AdminGamesView = () => {
     await mutate(
       '/api/games',
       (currentGames: Game[] | undefined) =>
-        (currentGames ?? []).map((game) => updatedGamesById.get(game.id) ?? game),
+        sortGamesByPosition((currentGames ?? []).map((game) => updatedGamesById.get(game.id) ?? game)),
       { revalidate: false },
     )
     setSelectedGameIds(new Set())

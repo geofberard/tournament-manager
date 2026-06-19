@@ -17,6 +17,7 @@ import type { ChangeEvent, FormEvent, ReactNode } from 'react'
 import { useState } from 'react'
 import type { SelectChangeEvent } from '@mui/material/Select'
 import { GameStatus } from '../../generated/api-client'
+import { fromDateTimeLocalValue, toDateTimeLocalValue } from '../../services/dateTimeLocal'
 import type { BulkGameChanges } from '../../services/gamesService'
 import type { Phase } from '../../services/phasesService'
 import type { Team } from '../../services/teamsService'
@@ -29,6 +30,7 @@ type BulkField =
   | 'refereeId'
   | 'status'
   | 'time'
+  | 'clearTime'
   | 'timeOffsetMinutes'
 
 type BulkUpdateGamesFormProps = {
@@ -44,11 +46,6 @@ const statusLabels = {
   [GameStatus.InProgress]: 'En cours',
   [GameStatus.Completed]: 'Termine',
   [GameStatus.Canceled]: 'Annule',
-}
-
-const toDateTimeLocalValue = (date: Date) => {
-  const offset = date.getTimezoneOffset()
-  return new Date(date.getTime() - offset * 60_000).toISOString().slice(0, 16)
 }
 
 export const BulkUpdateGamesForm = ({
@@ -83,8 +80,18 @@ export const BulkUpdateGamesForm = ({
       const updatedFields = new Set(currentFields)
       if (checked) {
         updatedFields.add(field)
-        if (field === 'time') updatedFields.delete('timeOffsetMinutes')
-        if (field === 'timeOffsetMinutes') updatedFields.delete('time')
+        if (field === 'time') {
+          updatedFields.delete('clearTime')
+          updatedFields.delete('timeOffsetMinutes')
+        }
+        if (field === 'clearTime') {
+          updatedFields.delete('time')
+          updatedFields.delete('timeOffsetMinutes')
+        }
+        if (field === 'timeOffsetMinutes') {
+          updatedFields.delete('clearTime')
+          updatedFields.delete('time')
+        }
       } else {
         updatedFields.delete(field)
       }
@@ -111,6 +118,7 @@ export const BulkUpdateGamesForm = ({
     if (enabledFields.has('phaseId')) changes.phaseId = values.phaseId
     if (enabledFields.has('group')) changes.group = values.group.trim()
     if (enabledFields.has('time')) changes.time = values.time
+    if (enabledFields.has('clearTime')) changes.clearTime = true
     if (enabledFields.has('timeOffsetMinutes')) {
       changes.timeOffsetMinutes = timeOffsetMinutes
     }
@@ -209,7 +217,7 @@ export const BulkUpdateGamesForm = ({
             onChange={(event) =>
               setValues((currentValues) => ({
                 ...currentValues,
-                time: new Date(event.target.value),
+                time: fromDateTimeLocalValue(event.target.value) ?? new Date(),
               }))
             }
             required={enabledFields.has('time')}
@@ -217,6 +225,15 @@ export const BulkUpdateGamesForm = ({
             type="datetime-local"
             value={toDateTimeLocalValue(values.time)}
           />,
+        )}
+
+        {fieldControl(
+          'clearTime',
+          "l'heure planifiee",
+          <Alert severity="info" sx={{ display: enabledFields.has('clearTime') ? 'flex' : 'none' }}>
+            L&apos;heure sera effacee sur tous les matchs selectionnes.
+          </Alert>,
+          "Effacer l'heure",
         )}
 
         {fieldControl(

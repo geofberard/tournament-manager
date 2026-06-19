@@ -3,7 +3,7 @@ import { GameList } from '../shared/GameList'
 import { RankingTable } from '../shared/RankingTable'
 import { useGames } from '../../hooks/useGames'
 import { useRankings } from '../../hooks/useRankings'
-import type { Game } from '../../services/gamesService'
+import { sortGamesByPosition } from '../../services/gameOrdering'
 import type { Phase } from '../../services/phasesService'
 import type { Team } from '../../services/teamsService'
 
@@ -11,9 +11,6 @@ type TeamResultsContentProps = {
   currentTeam: Team
   selectedPhase: Phase | null
 }
-
-const sortGamesChronologically = (games: Game[]) =>
-  [...games].sort((leftGame, rightGame) => leftGame.time.getTime() - rightGame.time.getTime())
 
 export const TeamResultsContent = ({ currentTeam, selectedPhase }: TeamResultsContentProps) => {
   const { errorMessage: gamesErrorMessage, games, isLoading: isGamesLoading } = useGames()
@@ -47,7 +44,7 @@ export const TeamResultsContent = ({ currentTeam, selectedPhase }: TeamResultsCo
     )
   }
 
-  const teamBracketGames = sortGamesChronologically(
+  const teamBracketGames = sortGamesByPosition(
     games.filter(
       (game) =>
         game.phase.id === selectedPhase.id &&
