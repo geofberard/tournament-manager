@@ -920,7 +920,6 @@ components:
         - id
         - phase
         - group
-        - time
         - court
         - position
         - status
@@ -949,7 +948,8 @@ components:
         time:
           type: string
           format: date-time
-          description: Date et heure prévues du match
+          nullable: true
+          description: Date et heure prévues du match, si elles sont connues.
           examples: ['2026-03-15T18:30:00Z']
         court:
           type: string
@@ -1107,7 +1107,6 @@ components:
       required:
         - phaseId
         - group
-        - time
         - court
         - contestantIds
       properties:
@@ -1131,7 +1130,8 @@ components:
         time:
           type: string
           format: date-time
-          description: Date et heure prévues du match
+          nullable: true
+          description: Date et heure prévues du match, si elles sont connues.
           examples: ['2026-03-15T18:30:00Z']
         court:
           type: string
@@ -1160,7 +1160,6 @@ components:
       required:
         - phaseId
         - group
-        - time
         - court
         - status
         - contestantIds
@@ -1185,7 +1184,8 @@ components:
         time:
           type: string
           format: date-time
-          description: Nouvelle date et heure prévues du match
+          nullable: true
+          description: Nouvelle date et heure prévues du match. `null` supprime l'heure planifiée.
           examples: ['2026-03-15T19:00:00Z']
         court:
           type: string
@@ -1231,9 +1231,6 @@ components:
       required:
         - phaseId
         - group
-        - startTime
-        - gameDurationMinutes
-        - breakDurationMinutes
         - court
         - teamIds
         - assignReferees
@@ -1249,17 +1246,18 @@ components:
         startTime:
           type: string
           format: date-time
-          description: Heure de début du premier match
+          nullable: true
+          description: Heure de début du premier match, si les matchs doivent être planifiés.
         gameDurationMinutes:
           type: integer
           format: int32
           minimum: 1
-          description: Durée d'un match en minutes
+          description: Durée d'un match en minutes. Requise quand `startTime` est renseigné.
         breakDurationMinutes:
           type: integer
           format: int32
           minimum: 0
-          description: Temps entre deux matchs en minutes
+          description: Temps entre deux matchs en minutes. Requis quand `startTime` est renseigné.
         court:
           type: string
           minLength: 1
@@ -1300,6 +1298,10 @@ components:
         time:
           type: string
           format: date-time
+          nullable: true
+        clearTime:
+          type: boolean
+          default: false
         timeOffsetMinutes:
           type: integer
           format: int32

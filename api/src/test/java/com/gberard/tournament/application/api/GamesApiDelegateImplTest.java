@@ -42,6 +42,7 @@ import com.gberard.tournament.domain.service.PoolGamePlanningService;
 import com.gberard.tournament.generated.model.BulkCreateGamesRequest;
 import com.gberard.tournament.generated.model.BulkGameChanges;
 import com.gberard.tournament.generated.model.BulkUpdateGamesRequest;
+import com.gberard.tournament.generated.model.CreateGameRequest;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -151,6 +152,41 @@ class GamesApiDelegateImplTest {
     }
 
     @Test
+    void shouldCreateEveryPlannedGameWithoutTimeForAPool() {
+        // GIVEN
+        var request = bulkCreateRequestWithoutTime(false, TEAM_A.id(), TEAM_B.id());
+        Game plannedGame = gameBuilder()
+                .id("game-1")
+                .group(request.getGroup())
+                .time(null)
+                .contestants(List.of(TEAM_A, TEAM_B))
+                .build();
+        when(phaseService.findById(PHASE_A.id())).thenReturn(Optional.of(PHASE_A));
+        when(gameService.findByGroupAndPhase(request.getGroup(), PHASE_A.id())).thenReturn(List.of());
+        when(teamService.findById(TEAM_A.id())).thenReturn(Optional.of(TEAM_A));
+        when(teamService.findById(TEAM_B.id())).thenReturn(Optional.of(TEAM_B));
+        when(poolGamePlanningService.plan(
+                eq(PHASE_A),
+                eq("Poule A"),
+                eq(List.of(TEAM_A, TEAM_B)),
+                eq(null),
+                eq(null),
+                eq(null),
+                eq("Terrain 1"),
+                eq(false)
+        )).thenReturn(List.of(plannedGame));
+        when(gameService.create(any(Game.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // WHEN
+        var response = gamesApiDelegate.bulkCreateGames(request);
+
+        // THEN
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(response.getBody()).extracting(com.gberard.tournament.generated.model.Game::getTime)
+                .containsExactly((OffsetDateTime) null);
+    }
+
+    @Test
     void shouldNotCreateAnyGameWhenATeamDoesNotExist() {
         // GIVEN
         var request = bulkCreateRequest(false, TEAM_A.id(), "unknown");
@@ -196,6 +232,29 @@ class GamesApiDelegateImplTest {
                     assertThat(game.group()).isEqualTo("A");
                 });
         assertThat(response.getBody()).hasSize(2);
+    }
+
+    @Test
+    void shouldClearTimeWhenBulkUpdatingSelectedGames() {
+        // GIVEN
+        Game game = gameBuilder()
+                .id("game-1")
+                .time(LocalDateTime.parse("2026-06-20T14:30:00"))
+                .build();
+        var request = new BulkUpdateGamesRequest(
+                Set.of(game.id()),
+                new BulkGameChanges().clearTime(true)
+        );
+        when(gameService.findById(game.id())).thenReturn(Optional.of(game));
+        when(gameService.update(any(Game.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // WHEN
+        gamesApiDelegate.bulkUpdateGames(request);
+
+        // THEN
+        var gameCaptor = ArgumentCaptor.forClass(Game.class);
+        verify(gameService).update(gameCaptor.capture());
+        assertThat(gameCaptor.getValue().time()).isNull();
     }
 
     @Test
@@ -272,6 +331,28 @@ class GamesApiDelegateImplTest {
     }
 
     @Test
+    void shouldCreateGameWithoutTime() {
+        // GIVEN
+        var request = new CreateGameRequest()
+                .phaseId(PHASE_A.id())
+                .group("A")
+                .time(null)
+                .court("Terrain 1")
+                .contestantIds(Set.of(TEAM_A.id(), TEAM_B.id()));
+        when(teamService.findById(TEAM_A.id())).thenReturn(Optional.of(TEAM_A));
+        when(teamService.findById(TEAM_B.id())).thenReturn(Optional.of(TEAM_B));
+        when(phaseService.findById(PHASE_A.id())).thenReturn(Optional.of(PHASE_A));
+        when(gameService.create(any(Game.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // WHEN
+        var response = gamesApiDelegate.createGame(request);
+
+        // THEN
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(response.getBody().getTime()).isNull();
+    }
+
+    @Test
     void shouldNotUpdateAnyGameWhenASelectedGameDoesNotExist() {
         // GIVEN
         Game game = gameBuilder().id("game-1").build();
@@ -302,12 +383,16 @@ class GamesApiDelegateImplTest {
     }
 
     private BulkCreateGamesRequest bulkCreateRequest(boolean assignReferees, String... teamIds) {
+        return bulkCreateRequestWithoutTime(assignReferees, teamIds)
+                .startTime(OffsetDateTime.parse("2026-06-20T11:00:00+02:00"))
+                .gameDurationMinutes(12)
+                .breakDurationMinutes(3);
+    }
+
+    private BulkCreateGamesRequest bulkCreateRequestWithoutTime(boolean assignReferees, String... teamIds) {
         return new BulkCreateGamesRequest(
                 PHASE_A.id(),
                 "Poule A",
-                OffsetDateTime.parse("2026-06-20T11:00:00+02:00"),
-                12,
-                3,
                 "Terrain 1",
                 new LinkedHashSet<>(List.of(teamIds)),
                 assignReferees

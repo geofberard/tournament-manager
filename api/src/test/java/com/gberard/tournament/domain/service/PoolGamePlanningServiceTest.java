@@ -82,6 +82,27 @@ class PoolGamePlanningServiceTest {
     }
 
     @Test
+    void shouldCreateGamesWithoutTimeWhenStartTimeIsMissing() {
+        // GIVEN
+        List<Team> teams = List.of(TEAM_A, TEAM_B, TEAM_C);
+
+        // WHEN
+        List<Game> games = planningService.plan(
+                PHASE_A,
+                "Poule A",
+                teams,
+                null,
+                null,
+                null,
+                "Terrain 1",
+                false
+        );
+
+        // THEN
+        assertThat(games).hasSize(3).allSatisfy(game -> assertThat(game.time()).isNull());
+    }
+
+    @Test
     void shouldGenerateTheRoundRobinFromTheShuffledTeamOrder() {
         // GIVEN
         List<Team> teams = List.of(TEAM_A, TEAM_B, TEAM_C, TEAM_D);

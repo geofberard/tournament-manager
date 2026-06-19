@@ -48,12 +48,16 @@ public class PoolGamePlanningService {
 
         List<Team> shuffledTeams = teamOrderRandomizer.shuffle(teams);
         List<TeamPair> teamPairs = teamPairGenerator.generate(shuffledTeams);
-        List<PlannedGame> plannedGames = timeScheduler.schedule(
-                teamPairs,
-                startTime,
-                gameDuration,
-                breakDuration
-        );
+        List<PlannedGame> plannedGames = startTime == null
+                ? teamPairs.stream()
+                        .map(teamPair -> new PlannedGame(teamPair, null, Optional.empty()))
+                        .toList()
+                : timeScheduler.schedule(
+                        teamPairs,
+                        startTime,
+                        gameDuration,
+                        breakDuration
+                );
 
         if (assignReferees) {
             plannedGames = refereeAllocator.allocate(plannedGames, shuffledTeams);
