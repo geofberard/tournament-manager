@@ -100,6 +100,47 @@ link_billing_account() {
     --billing-account "$BILLING_ACCOUNT"
 }
 
+retry() {
+  local label="$1"
+  shift
+
+  local attempt=1
+  local max_attempts=6
+  local delay_seconds=5
+
+  until "$@"; do
+    local status=$?
+
+    if [[ "$attempt" -ge "$max_attempts" ]]; then
+      echo "$label failed after $attempt attempts." >&2
+      return "$status"
+    fi
+
+    echo "$label failed on attempt $attempt. Retrying in ${delay_seconds}s..." >&2
+    sleep "$delay_seconds"
+
+    attempt=$((attempt + 1))
+    delay_seconds=$((delay_seconds * 2))
+  done
+}
+
+ensure_state_bucket() {
+  if gcloud storage buckets describe "gs://${STATE_BUCKET}" --project "$PROJECT_ID" >/dev/null 2>&1; then
+    return 0
+  fi
+
+  gcloud storage buckets create "gs://${STATE_BUCKET}" \
+    --project "$PROJECT_ID" \
+    --location "$REGION" \
+    --uniform-bucket-level-access
+}
+
+enable_state_bucket_versioning() {
+  gcloud storage buckets update "gs://${STATE_BUCKET}" \
+    --project "$PROJECT_ID" \
+    --versioning
+}
+
 if project_exists; then
   echo "Project $PROJECT_ID already exists."
 else
@@ -111,23 +152,15 @@ fi
 
 gcloud config set project "$PROJECT_ID" >/dev/null
 
-gcloud services enable \
+retry "Enabling project services" gcloud services enable \
   cloudbilling.googleapis.com \
   cloudresourcemanager.googleapis.com \
   serviceusage.googleapis.com \
   storage.googleapis.com \
   --project "$PROJECT_ID"
 
-if ! gcloud storage buckets describe "gs://${STATE_BUCKET}" --project "$PROJECT_ID" >/dev/null 2>&1; then
-  gcloud storage buckets create "gs://${STATE_BUCKET}" \
-    --project "$PROJECT_ID" \
-    --location "$REGION" \
-    --uniform-bucket-level-access
-fi
-
-gcloud storage buckets update "gs://${STATE_BUCKET}" \
-  --project "$PROJECT_ID" \
-  --versioning
+retry "Creating or finding state bucket" ensure_state_bucket
+retry "Enabling state bucket versioning" enable_state_bucket_versioning
 
 cat <<EOF
 Bootstrap complete.
