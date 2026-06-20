@@ -41,6 +41,24 @@ export const RankingTable = ({
         <TableBody>
           {rankings.map((entry, index) => {
             const isSelected = entry.contestant.id === currentTeamId
+            const rankingIndex = index + 1
+            const isTop3 = rankingIndex <= 3
+            let colorChip
+
+            switch (rankingIndex) {
+              case 1:
+                colorChip = '#ffc107a6'
+                break
+              case 2:
+                colorChip = '#9e9e9ea6'
+                break
+              case 3:
+                colorChip = '#b57c59a6'
+                break
+              default:
+                colorChip = 'default'
+                break
+            }
 
             return (
               <TableRow
@@ -54,11 +72,10 @@ export const RankingTable = ({
               >
                 <TableCell align="center" sx={{ width: 72 }}>
                   <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                    {isSelected ? (
-                      <Chip size="small" color="primary" label={index + 1} />
-                    ) : (
-                      <Typography variant="body2">{index + 1}</Typography>
-                    )}
+                    {isTop3 ?
+                      <Chip size="small" sx={{ backgroundColor: colorChip }} label={rankingIndex} />
+                      : <Typography variant="body2">{rankingIndex}</Typography>
+                    }
                   </Box>
                 </TableCell>
                 <TableCell>{entry.contestant.name}</TableCell>
