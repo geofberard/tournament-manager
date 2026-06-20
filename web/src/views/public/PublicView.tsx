@@ -9,6 +9,7 @@ import { GroupRankingCard } from '../../components/shared/GroupRankingCard'
 import { PitchStatus } from '../../components/shared/PitchStatus'
 import { QrCodeButton } from '../../components/shared/QrCodeButton'
 import { TerrainMapButton } from '../../components/shared/TerrainMapButton'
+import { BuvetteButton } from '../../components/shared/BuvetteButton'
 
 export const PublicView = () => {
   const { phases, isLoading: isPhasesLoading, errorMessage: phasesError } = usePhases()
@@ -49,7 +50,8 @@ export const PublicView = () => {
   return (
     <Stack spacing={4} direction={{ xs: 'column', md: 'row' }} sx={{ maxWidth: 1200, mx: 'auto', py: { xs: 4, md: 8 }, px: 2 }}>
 
-      {/* Map and QR code buttons */}
+      {/* Buvette, map and QR code buttons */}
+      <BuvetteButton />
       <TerrainMapButton />
       <QrCodeButton />
 
