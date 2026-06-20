@@ -55,7 +55,7 @@ export const GameCard = ({ game, currentTeam }: GameCardProps) => {
   }
 
   const teams = Array.from(game.contestants);
-  const isReferee = !teams.some(team => team.id === currentTeam.id)
+  const isReferee = game.referee?.id === currentTeam.id
   const isCompleted = game.status === GameStatus.Completed;
 
   let winnerIndex = -1;
