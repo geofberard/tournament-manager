@@ -50,3 +50,4 @@ jobs:
         with:
           name: web-dist
           path: web/dist
+          if-no-files-found: error

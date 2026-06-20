@@ -119,7 +119,11 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: web-dist
-          path: web/dist
+          path: infra/gcp/web/dist
+
+      - name: Verify web build
+        run: test -f infra/gcp/web/dist/index.html
 
       - name: Deploy to Firebase Hosting
-        run: npx --yes firebase-tools@latest deploy --project="${GCP_PROJECT_ID}" --only=hosting --config=infra/gcp/firebase.json
+        working-directory: infra/gcp
+        run: npx --yes firebase-tools@latest deploy --project="${GCP_PROJECT_ID}" --only=hosting --config=firebase.json

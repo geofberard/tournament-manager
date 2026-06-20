@@ -166,7 +166,7 @@ Le fichier `infra/gcp/firebase.json` contient la configuration Hosting :
     "site": "tournois-scuf-2026",
     "public": "web/dist",
     "ignore": [
-      "infra/gcp/firebase.json",
+      "firebase.json",
       "**/.*",
       "**/node_modules/**"
     ],
@@ -187,8 +187,8 @@ Le fichier `infra/gcp/firebase.json` contient la configuration Hosting :
 }
 ```
 
-Le workflow de release le passe explicitement a la CLI Firebase avec
-`--config=infra/gcp/firebase.json`.
+Le workflow de release telecharge le build dans `infra/gcp/web/dist`, puis
+execute la CLI Firebase depuis `infra/gcp` avec `--config=firebase.json`.
 
 Le site par defaut est `https://<project-id>.web.app`, avec aussi
 `https://<project-id>.firebaseapp.com`.

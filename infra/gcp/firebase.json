@@ -3,7 +3,7 @@
     "site": "tournois-scuf-2026",
     "public": "web/dist",
     "ignore": [
-      "infra/gcp/firebase.json",
+      "firebase.json",
       "**/.*",
       "**/node_modules/**"
     ],
