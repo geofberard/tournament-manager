@@ -114,21 +114,63 @@ describe('GameCard', () => {
     expect(screen.getByText('21 - -')).toBeInTheDocument()
   })
 
-  it('should render "Arbitrer le match" for games in progress and navigate on click', () => {
+  it('should render the arbitration action next to the alert and navigate on click', () => {
     renderCard({
       ...baseGame,
       id: 'game-2',
       status: GameStatus.InProgress,
+      referee: { id: 'team-1', name: 'Aigles' },
     })
 
-    const button = screen.getByRole('button', { name: 'Arbitrer le match' })
-    expect(button).toBeInTheDocument()
+    const alert = screen.getByRole('alert')
+    expect(alert).toHaveTextContent('Votre équipe arbitre ce match')
+    const button = screen.getByRole('button', { name: "Accéder à l'arbitrage" })
+    expect(alert).not.toContainElement(button)
 
     fireEvent.click(button)
 
     expect(navigateMock).toHaveBeenCalledWith(
       TEAM_REFEREE_GAME_PATH.replace(':id', 'game-2'),
     )
+  })
+
+  it('should not render an arbitration action for a team that is not the referee', () => {
+    renderCard({
+      ...baseGame,
+      status: GameStatus.InProgress,
+    })
+
+    expect(screen.getByRole('alert')).toHaveTextContent('Vous serez arbitré par Pantheres')
+    expect(screen.queryByRole('button')).not.toBeInTheDocument()
+  })
+
+  it('should render a score action when teams must referee themselves', () => {
+    renderCard({
+      ...baseGame,
+      id: 'game-3',
+      referee: undefined,
+      status: GameStatus.InProgress,
+    })
+
+    expect(screen.getByRole('alert')).toHaveTextContent("Les équipes doivent s'auto-arbitrer")
+    const button = screen.getByRole('button', { name: 'Saisir le score' })
+
+    fireEvent.click(button)
+
+    expect(navigateMock).toHaveBeenCalledWith(
+      TEAM_REFEREE_GAME_PATH.replace(':id', 'game-3'),
+    )
+  })
+
+  it('should explain auto-arbitration without allowing score entry before the game starts', () => {
+    renderCard({
+      ...baseGame,
+      referee: undefined,
+      status: GameStatus.Scheduled,
+    })
+
+    expect(screen.getByRole('alert')).toHaveTextContent("Les équipes doivent s'auto-arbitrer")
+    expect(screen.queryByRole('button', { name: 'Saisir le score' })).not.toBeInTheDocument()
   })
 
   it('should not render an arbitration button for scheduled games', () => {
@@ -138,7 +180,7 @@ describe('GameCard', () => {
     })
 
     expect(
-      screen.queryByRole('button', { name: /Arbitrer le match|Continuer l'arbitrage/ }),
+      screen.queryByRole('button', { name: /Accéder à l'arbitrage|Continuer l'arbitrage/ }),
     ).not.toBeInTheDocument()
   })
 
@@ -149,7 +191,7 @@ describe('GameCard', () => {
     })
 
     expect(
-      screen.queryByRole('button', { name: /Arbitrer le match|Continuer l'arbitrage/ }),
+      screen.queryByRole('button', { name: /Accéder à l'arbitrage|Continuer l'arbitrage/ }),
     ).not.toBeInTheDocument()
   })
 })
