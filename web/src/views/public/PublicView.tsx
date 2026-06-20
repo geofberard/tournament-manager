@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Alert, CircularProgress, Stack, Typography, Box, Paper, Divider, Tabs, Tab } from '@mui/material'
+import { Alert, CircularProgress, Stack, Typography, Box, Paper, Divider, Tabs, Tab, Button, Dialog, DialogContent, IconButton } from '@mui/material'
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered'
 import StadiumIcon from '@mui/icons-material/Stadium'
 import { usePhases } from '../../hooks/usePhases'
@@ -7,6 +7,7 @@ import { usePhaseGroups } from '../../hooks/useGroupRankings'
 import { useGames } from '../../hooks/useGames'
 import { GroupRankingCard } from '../../components/shared/GroupRankingCard'
 import { PitchStatus } from '../../components/shared/PitchStatus'
+import { QrCodeButton } from '../../components/shared/QrCodeButton'
 
 export const PublicView = () => {
   const { phases, isLoading: isPhasesLoading, errorMessage: phasesError } = usePhases()
@@ -46,6 +47,9 @@ export const PublicView = () => {
 
   return (
     <Stack spacing={4} direction={{ xs: 'column', md: 'row' }} sx={{ maxWidth: 1200, mx: 'auto', py: { xs: 4, md: 8 }, px: 2 }}>
+
+      {/* QR code button */}
+      <QrCodeButton />
 
       {/* Zone Gauche : Classements */}
       <Stack sx={{ width: { xs: '100%', md: '60%' }, gap: 3 }}>
