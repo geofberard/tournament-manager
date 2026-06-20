@@ -7,7 +7,7 @@ const groupFetcher = async ([, phaseId, teamId]: readonly [string, string, strin
 const rankingsFetcher = async ([, phaseId, groupId]: readonly [string, string, string]) =>
   listGroupRankings(groupId, phaseId)
 
-export function useRankings(teamId: string, phaseId: string | null) {
+export function useTeamRankings(teamId: string, phaseId: string | null) {
   const { data: group, error: groupError, isLoading: isGroupLoading } = useSWR<Group>(
     teamId && phaseId ? ['/api/phases/team-group', phaseId, teamId] : null,
     groupFetcher,

@@ -6,7 +6,7 @@ import { TeamResultsView } from './TeamResultsView'
 import { GameStatus } from '../../generated/api-client'
 import * as useGamesModule from '../../hooks/useGames'
 import * as usePhasesModule from '../../hooks/usePhases'
-import * as useRankingsModule from '../../hooks/useRankings'
+import * as useTeamRankingsModule from '../../hooks/useTeamRankings'
 
 vi.mock('../../hooks/useGames', () => ({
   useGames: vi.fn(),
@@ -16,13 +16,13 @@ vi.mock('../../hooks/usePhases', () => ({
   usePhases: vi.fn(),
 }))
 
-vi.mock('../../hooks/useRankings', () => ({
-  useRankings: vi.fn(),
+vi.mock('../../hooks/useTeamRankings', () => ({
+  useTeamRankings: vi.fn(),
 }))
 
 const useGamesMock = vi.mocked(useGamesModule.useGames)
 const usePhasesMock = vi.mocked(usePhasesModule.usePhases)
-const useRankingsMock = vi.mocked(useRankingsModule.useRankings)
+const useTeamRankingsMock = vi.mocked(useTeamRankingsModule.useTeamRankings)
 
 describe('TeamResultsView', () => {
   afterEach(() => {
@@ -47,7 +47,7 @@ describe('TeamResultsView', () => {
         type: 'POOL',
       }],
     })
-    useRankingsMock.mockReturnValue({
+    useTeamRankingsMock.mockReturnValue({
       groupName: 'Poule A',
       errorMessage: null,
       isLoading: false,
@@ -85,7 +85,7 @@ describe('TeamResultsView', () => {
       isLoading: false,
       phases: [{ id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' }],
     })
-    useRankingsMock.mockReturnValue({
+    useTeamRankingsMock.mockReturnValue({
       groupName: 'Poule A',
       errorMessage: null,
       isLoading: false,
@@ -148,7 +148,7 @@ describe('TeamResultsView', () => {
       isLoading: false,
       phases: [{ id: 'phase-2', name: 'Bracket final', order: 2, type: 'BRACKET' }],
     })
-    useRankingsMock.mockReturnValue({
+    useTeamRankingsMock.mockReturnValue({
       groupName: null,
       errorMessage: null,
       isLoading: false,
