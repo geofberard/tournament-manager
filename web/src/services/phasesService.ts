@@ -5,6 +5,7 @@ import {
   type Phase,
   type UpdatePhaseRequest,
 } from './apiClient'
+import { type Group } from '../services/teamsService'
 import { getApiErrorCode, UserFacingError } from './apiError'
 
 export type { Phase }
@@ -32,3 +33,8 @@ export const deletePhase = async (phaseId: string): Promise<void> => {
     throw error
   }
 }
+
+export const listPhaseGroups = async (phaseId: string): Promise<Group[]> =>
+  fetchJson<Group[]>(
+    `/api/phases/${encodeURIComponent(phaseId)}/groups`,
+  )
