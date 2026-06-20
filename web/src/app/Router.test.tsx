@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AlertProvider } from '../app/AlertProvider'
 import { Router } from './Router'
 import type { Game } from '../services/apiClient'
+import { GameStatus } from '../generated/api-client'
 import {
   ADMIN_GAMES_PATH,
   ADMIN_HOME_PATH,
@@ -211,6 +212,27 @@ describe('Router', () => {
       login: vi.fn(),
       logout: vi.fn(),
       username: null,
+    })
+
+    useGamesMock.mockReturnValue({
+      errorMessage: null,
+      games: [
+        {
+          id: 'game-1',
+          phase: { id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' },
+          group: 'Poule A',
+          status: GameStatus.Scheduled,
+          contestants: new Set([{ id: 'team-2', name: 'Tigres' }]),
+        },
+        {
+          id: 'game-2',
+          phase: { id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' },
+          group: 'Poule A',
+          status: GameStatus.Completed,
+          contestants: new Set([{ id: 'team-2', name: 'Tigres' }]),
+        },
+      ] as Game[],
+      isLoading: false,
     })
 
     // WHEN

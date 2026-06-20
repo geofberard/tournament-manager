@@ -1,7 +1,9 @@
 import { cleanup, render, screen } from '@testing-library/react'
 import { ThemeProvider, createTheme } from '@mui/material'
+import { MemoryRouter } from 'react-router-dom'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { TeamGamesView } from './TeamGamesView'
+import { GameStatus, type Game } from '../../generated/api-client'
 import * as useGamesModule from '../../hooks/useGames'
 
 vi.mock('../../hooks/useGames', () => ({
@@ -19,14 +21,31 @@ describe('TeamGamesView', () => {
     // GIVEN
     useGamesMock.mockReturnValue({
       errorMessage: null,
-      games: [],
+      games: [
+        {
+          id: 'game-1',
+          phase: { id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' },
+          group: 'Poule A',
+          status: GameStatus.Scheduled,
+          contestants: new Set([{ id: 'team-2', name: 'Tigres' }]),
+        },
+        {
+          id: 'game-2',
+          phase: { id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' },
+          group: 'Poule A',
+          status: GameStatus.Completed,
+          contestants: new Set([{ id: 'team-2', name: 'Tigres' }]),
+        },
+      ] as Game[],
       isLoading: false,
     })
 
     // WHEN
     render(
       <ThemeProvider theme={createTheme()}>
-        <TeamGamesView currentTeam={{ id: 'team-2', name: 'Tigres' }} />
+        <MemoryRouter>
+          <TeamGamesView currentTeam={{ id: 'team-2', name: 'Tigres' }} />
+        </MemoryRouter>
       </ThemeProvider>,
     )
 
