@@ -80,12 +80,8 @@ export const PublicView = () => {
             <Alert severity="info" variant="outlined">Aucun groupe n'est disponible pour cette phase.</Alert>
           ) : (
             groups.map(group => (
-              // TODO: Créer un composant pour afficher le classement du groupe
-              <Box key={group.id} mb={2}>
-                <Typography variant="h6" fontWeight="bold" sx={{ mb: 1 }}>
-                  {group.id}
-                </Typography>
-              </Box>
+              <GroupRankingCard key={group.id} groupId={group.id} phaseId={selectedPhase.id} />
+
             ))
           )}
         </Paper>
