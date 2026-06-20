@@ -70,8 +70,8 @@ const renderRouter = () =>
     </ThemeProvider>,
   )
 
-const setHashPath = (path: string) => {
-  window.location.hash = `#${path}`
+const setPath = (path: string) => {
+  window.history.replaceState({}, '', path)
 }
 
 describe('Router', () => {
@@ -106,12 +106,12 @@ describe('Router', () => {
 
   afterEach(() => {
     cleanup()
-    window.location.hash = ''
+    window.history.replaceState({}, '', '/')
   })
 
   it('should render the public page for /public', () => {
     // GIVEN
-    setHashPath(PUBLIC_HOME_PATH)
+    setPath(PUBLIC_HOME_PATH)
 
     useTeamLoginMock.mockReturnValue({
       clearTeamSelection: vi.fn(),
@@ -135,7 +135,7 @@ describe('Router', () => {
 
   it('should redirect /team to /team/login when no team is selected', async () => {
     // GIVEN
-    setHashPath(TEAM_HOME_PATH)
+    setPath(TEAM_HOME_PATH)
 
     useTeamLoginMock.mockReturnValue({
       clearTeamSelection: vi.fn(),
@@ -163,13 +163,13 @@ describe('Router', () => {
     expect(screen.getByRole('progressbar')).toBeInTheDocument()
 
     await waitFor(() => {
-      expect(window.location.hash).toBe(`#${TEAM_LOGIN_PATH}`)
+      expect(window.location.pathname).toBe(TEAM_LOGIN_PATH)
     })
   })
 
   it('should render the team area when a team is selected', async () => {
     // GIVEN
-    setHashPath(TEAM_LOGIN_PATH)
+    setPath(TEAM_LOGIN_PATH)
 
     useTeamLoginMock.mockReturnValue({
       clearTeamSelection: vi.fn(),
@@ -192,13 +192,13 @@ describe('Router', () => {
     expect(screen.getByText('Bienvenue Tigres')).toBeInTheDocument()
 
     await waitFor(() => {
-      expect(window.location.hash).toBe(`#${TEAM_RESULTS_PATH}`)
+      expect(window.location.pathname).toBe(TEAM_RESULTS_PATH)
     })
   })
 
   it('should render the team matches page when requested', () => {
     // GIVEN
-    setHashPath(TEAM_GAMES_PATH)
+    setPath(TEAM_GAMES_PATH)
 
     useTeamLoginMock.mockReturnValue({
       clearTeamSelection: vi.fn(),
@@ -224,7 +224,7 @@ describe('Router', () => {
 
   it('should redirect /admin to /admin/login when the admin is not authenticated', async () => {
     // GIVEN
-    setHashPath(ADMIN_HOME_PATH)
+    setPath(ADMIN_HOME_PATH)
 
     useTeamLoginMock.mockReturnValue({
       clearTeamSelection: vi.fn(),
@@ -246,13 +246,13 @@ describe('Router', () => {
     expect(screen.getByText('Connexion admin')).toBeInTheDocument()
 
     await waitFor(() => {
-      expect(window.location.hash).toBe(`#${ADMIN_LOGIN_PATH}`)
+      expect(window.location.pathname).toBe(ADMIN_LOGIN_PATH)
     })
   })
 
   it('should render the admin area when the admin is authenticated', async () => {
     // GIVEN
-    setHashPath(ADMIN_LOGIN_PATH)
+    setPath(ADMIN_LOGIN_PATH)
 
     useTeamLoginMock.mockReturnValue({
       clearTeamSelection: vi.fn(),
@@ -275,13 +275,13 @@ describe('Router', () => {
     expect(screen.getByRole('button', { name: 'Se deconnecter' })).toBeInTheDocument()
 
     await waitFor(() => {
-      expect(window.location.hash).toBe(`#${ADMIN_HOME_PATH}`)
+      expect(window.location.pathname).toBe(ADMIN_HOME_PATH)
     })
   })
 
   it('should render the admin phases page when requested', () => {
     // GIVEN
-    setHashPath(ADMIN_PHASES_PATH)
+    setPath(ADMIN_PHASES_PATH)
 
     useTeamLoginMock.mockReturnValue({
       clearTeamSelection: vi.fn(),
@@ -311,7 +311,7 @@ describe('Router', () => {
 
   it('should render the admin games page when requested', () => {
     // GIVEN
-    setHashPath(ADMIN_GAMES_PATH)
+    setPath(ADMIN_GAMES_PATH)
 
     useTeamLoginMock.mockReturnValue({
       clearTeamSelection: vi.fn(),
@@ -357,7 +357,7 @@ describe('Router', () => {
 
   it('should render the admin teams page when requested', () => {
     // GIVEN
-    setHashPath(ADMIN_TEAMS_PATH)
+    setPath(ADMIN_TEAMS_PATH)
 
     useTeamLoginMock.mockReturnValue({
       clearTeamSelection: vi.fn(),
@@ -389,7 +389,7 @@ describe('Router', () => {
     // GIVEN
     const logout = vi.fn().mockResolvedValue(undefined)
 
-    setHashPath(ADMIN_HOME_PATH)
+    setPath(ADMIN_HOME_PATH)
 
     useTeamLoginMock.mockReturnValue({
       clearTeamSelection: vi.fn(),
@@ -417,7 +417,7 @@ describe('Router', () => {
     // GIVEN
     const clearTeamSelection = vi.fn()
 
-    setHashPath(TEAM_HOME_PATH)
+    setPath(TEAM_HOME_PATH)
 
     useTeamLoginMock.mockReturnValue({
       clearTeamSelection,
@@ -456,7 +456,7 @@ describe('Router', () => {
       score: { pointsByTeam: { 'team-2': 0, 'team-3': 0 } },
     }
 
-    setHashPath(TEAM_REFEREE_GAME_PATH.replace(':id', 'game-1'))
+    setPath(TEAM_REFEREE_GAME_PATH.replace(':id', 'game-1'))
 
     useTeamLoginMock.mockReturnValue({
       clearTeamSelection: vi.fn(),

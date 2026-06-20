@@ -1,5 +1,5 @@
 import { CircularProgress, Stack } from '@mui/material'
-import { HashRouter, Navigate, Outlet, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
+import { BrowserRouter, Navigate, Outlet, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import scufLogo from '../assets/scuf-logo.svg'
 import { AppShell } from '../components/shared/AppShell'
 import {
@@ -188,8 +188,8 @@ export const Router = () => {
   const adminSession = useAdminSession()
 
   return (
-    <HashRouter>
+    <BrowserRouter>
       <AppRoutes adminSession={adminSession} teamSession={teamSession} />
-    </HashRouter>
+    </BrowserRouter>
   )
 }
