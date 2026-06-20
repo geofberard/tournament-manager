@@ -26,6 +26,7 @@ import { TeamGamesView } from '../views/team/TeamGamesView'
 import { TeamResultsView } from '../views/team/TeamResultsView'
 import { TeamRefereeGameView } from '../views/team/TeamRefereeGameView'
 import { TeamTerrainView } from '../views/team/TeamTerrainView'
+import { TeamBuvetteView } from '../views/team/TeamBuvetteView'
 
 type TeamProtectedLayoutProps = {
   currentTeam: NonNullable<ReturnType<typeof useTeamLogin>['currentTeam']>
@@ -149,6 +150,7 @@ const AppRoutes = ({ adminSession, teamSession }: AppRoutesProps) => {
         <Route path="results" element={<TeamResultsView currentTeam={currentTeam ?? undefined!} />} />
         <Route path="games" element={<TeamGamesView currentTeam={currentTeam ?? undefined!} />} />
         <Route path="terrains" element={<TeamTerrainView />} />
+        <Route path="buvette" element={<TeamBuvetteView />} />
         <Route path="referee/game/:id" element={<TeamRefereeGameView />} />
       </Route>
 

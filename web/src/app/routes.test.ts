@@ -12,6 +12,7 @@ import {
   TEAM_LOGIN_PATH,
   TEAM_RESULTS_PATH,
   TEAM_TERRAINS_PATH,
+  TEAM_BUVETTE_PATH,
   TEAM_REFEREE_GAME_PATH,
   teamRoutes,
 } from './routes'
@@ -23,6 +24,7 @@ describe('routes', () => {
     expect(TEAM_RESULTS_PATH).toBe('/team/results')
     expect(TEAM_GAMES_PATH).toBe('/team/games')
     expect(TEAM_TERRAINS_PATH).toBe('/team/terrains')
+    expect(TEAM_BUVETTE_PATH).toBe('/team/buvette')
     expect(TEAM_LOGIN_PATH).toBe('/team/login')
     expect(ADMIN_HOME_PATH).toBe('/admin')
     expect(ADMIN_GAMES_PATH).toBe('/admin/games')
@@ -38,6 +40,7 @@ describe('routes', () => {
       { label: 'Resultats', path: '/team/results' },
       { label: 'Matchs', path: '/team/games' },
       { label: 'Terrains', path: '/team/terrains' },
+      { label: 'Buvette', path: '/team/buvette' },
     ]
 
     // WHEN
