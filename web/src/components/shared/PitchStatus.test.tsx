@@ -50,9 +50,8 @@ describe('PitchStatus', () => {
     expect(screen.getByText('Aigles vs Lions')).toBeInTheDocument()
     expect(screen.getByText(/Tigres vs Ours/)).toBeInTheDocument()
 
-    // Terrain 2
-    expect(screen.getByText('Terrain 2')).toBeInTheDocument()
-    expect(screen.getAllByText('Aucun match en cours').length).toBeGreaterThan(0)
-    expect(screen.getAllByText('Aucun match à venir').length).toBeGreaterThan(0)
+    // Terrain 2 only has a completed game, so it should not be displayed
+    expect(screen.queryByText('Terrain 2')).not.toBeInTheDocument()
+    expect(screen.queryByText('Loups vs Renards')).not.toBeInTheDocument()
   })
 })
