@@ -18,7 +18,7 @@ describe('PitchStatus', () => {
         time: new Date('2026-06-18T10:00:00Z'),
         contestants: new Set([{ id: 't1', name: 'Aigles' }, { id: 't2', name: 'Lions' }]),
         group: 'Poule A',
-        phase: { id: 'phase-1', type: 'POOL', name: 'Phase 1' },
+        phase: { id: 'phase-1', type: 'POOL', name: 'Phase 1', order: 1 },
         score: { pointsByTeam: {} },
       },
       {
@@ -28,7 +28,7 @@ describe('PitchStatus', () => {
         time: new Date('2026-06-18T12:00:00Z'),
         contestants: new Set([{ id: 't3', name: 'Tigres' }, { id: 't4', name: 'Ours' }]),
         group: 'Poule B',
-        phase: { id: 'phase-1', type: 'POOL', name: 'Phase 1' },
+        phase: { id: 'phase-1', type: 'POOL', name: 'Phase 1', order: 1 },
         score: { pointsByTeam: {} },
       },
       {
@@ -38,7 +38,7 @@ describe('PitchStatus', () => {
         time: new Date('2026-06-18T08:00:00Z'),
         contestants: new Set([{ id: 't5', name: 'Loups' }, { id: 't6', name: 'Renards' }]),
         group: 'Poule C',
-        phase: { id: 'phase-1', type: 'POOL', name: 'Phase 1' },
+        phase: { id: 'phase-1', type: 'POOL', name: 'Phase 1', order: 1 },
         score: { pointsByTeam: {} },
       },
     ]
