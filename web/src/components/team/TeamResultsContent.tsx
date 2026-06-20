@@ -4,7 +4,6 @@ import { RankingTable } from '../shared/RankingTable'
 import { useGames } from '../../hooks/useGames'
 import { sortGamesByPosition } from '../../services/gameOrdering'
 import { useTeamRankings } from '../../hooks/useTeamRankings'
-import type { Game } from '../../services/gamesService'
 import type { Phase } from '../../services/phasesService'
 import type { Team } from '../../services/teamsService'
 
