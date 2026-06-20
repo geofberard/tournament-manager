@@ -106,9 +106,6 @@ export const AdminPhasesView = () => {
     <Stack spacing={3}>
       <Stack spacing={1}>
         <Typography variant="h1">Phases</Typography>
-        <Typography color="text.secondary">
-          Liste des phases du tournoi avec toutes les informations actuellement exposees par l&apos;API.
-        </Typography>
       </Stack>
 
       {errorMessage ? <Alert severity="error">{errorMessage}</Alert> : null}

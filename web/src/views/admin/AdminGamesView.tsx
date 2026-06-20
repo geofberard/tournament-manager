@@ -244,9 +244,6 @@ export const AdminGamesView = () => {
     <Stack spacing={3}>
       <Stack spacing={1}>
         <Typography variant="h1">Matchs</Typography>
-        <Typography color="text.secondary">
-          Liste des matchs du tournoi avec toutes les informations actuellement exposees par l&apos;API.
-        </Typography>
       </Stack>
 
       {errorMessage ? <Alert severity="error">{errorMessage}</Alert> : null}

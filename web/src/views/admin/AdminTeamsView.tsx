@@ -92,10 +92,7 @@ export const AdminTeamsView = () => {
   return (
     <Stack spacing={3}>
       <Stack spacing={1}>
-        <Typography variant="h1">Equipes</Typography>
-        <Typography color="text.secondary">
-          Gerez les equipes qui participent au tournoi.
-        </Typography>
+        <Typography variant="h1">Équipes</Typography>
       </Stack>
 
       {errorMessage ? <Alert severity="error">{errorMessage}</Alert> : null}
