@@ -8,6 +8,7 @@ import { useGames } from '../../hooks/useGames'
 import { GroupRankingCard } from '../../components/shared/GroupRankingCard'
 import { PitchStatus } from '../../components/shared/PitchStatus'
 import { QrCodeButton } from '../../components/shared/QrCodeButton'
+import { TerrainMapButton } from '../../components/shared/TerrainMapButton'
 
 export const PublicView = () => {
   const { phases, isLoading: isPhasesLoading, errorMessage: phasesError } = usePhases()
@@ -48,7 +49,8 @@ export const PublicView = () => {
   return (
     <Stack spacing={4} direction={{ xs: 'column', md: 'row' }} sx={{ maxWidth: 1200, mx: 'auto', py: { xs: 4, md: 8 }, px: 2 }}>
 
-      {/* QR code button */}
+      {/* Map and QR code buttons */}
+      <TerrainMapButton />
       <QrCodeButton />
 
       {/* Zone Gauche : Classements */}
