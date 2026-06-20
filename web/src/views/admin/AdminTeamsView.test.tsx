@@ -57,7 +57,7 @@ describe('AdminTeamsView', () => {
     renderView()
 
     // THEN
-    expect(screen.getByRole('heading', { name: 'Equipes' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Équipes' })).toBeInTheDocument()
     expect(screen.getByText('Aigles')).toBeInTheDocument()
     expect(screen.getByText('Tigres')).toBeInTheDocument()
   })

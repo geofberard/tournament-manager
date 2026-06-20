@@ -381,7 +381,7 @@ describe('Router', () => {
     renderRouter()
 
     // THEN
-    expect(screen.getByRole('heading', { name: 'Equipes' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Équipes' })).toBeInTheDocument()
     expect(screen.getByText('Aigles')).toBeInTheDocument()
   })
 
