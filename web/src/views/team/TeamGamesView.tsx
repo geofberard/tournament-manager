@@ -3,6 +3,7 @@ import { GameList } from '../../components/shared/GameList'
 import { GameStatus } from '../../generated/api-client'
 import { useGames } from '../../hooks/useGames'
 import { sortGamesByPosition } from '../../services/gameOrdering'
+import { getDisplayedGameStatus } from '../../services/gameStatus'
 import type { Team } from '../../services/teamsService'
 import SportsIcon from '@mui/icons-material/Sports';
 
@@ -16,17 +17,18 @@ export const TeamGamesView = ({ currentTeam }: TeamGamesViewProps) => {
   const teamGames = games.filter((game) =>
     Array.from(game.contestants).some((team) => team.id === currentTeam.id),
   )
+  const displayedStatus = (game: (typeof games)[number]) => getDisplayedGameStatus(game, games)
   const teamOngoingRefereeGames = games.filter((game) =>
-    game.referee?.id === currentTeam.id && game.status === GameStatus.InProgress,
+    game.referee?.id === currentTeam.id && displayedStatus(game) === 'in_progress',
   )
   const teamUpcomingRefereeGames = games.filter((game) =>
-    game.referee?.id === currentTeam.id && game.status === GameStatus.Scheduled,
+    game.referee?.id === currentTeam.id && displayedStatus(game) === 'scheduled',
   )
   const ongoingGames = sortGamesByPosition(
-    teamGames.filter((game) => game.status === GameStatus.InProgress),
+    teamGames.filter((game) => displayedStatus(game) === 'in_progress'),
   )
   const upcomingGames = sortGamesByPosition(
-    [...teamGames.filter((game) => game.status === GameStatus.Scheduled), ...teamUpcomingRefereeGames],
+    [...teamGames.filter((game) => displayedStatus(game) === 'scheduled'), ...teamUpcomingRefereeGames],
   )
   const completedGames = sortGamesByPosition(
     teamGames.filter((game) => game.status === GameStatus.Completed),
@@ -61,6 +63,7 @@ export const TeamGamesView = ({ currentTeam }: TeamGamesViewProps) => {
           emptyMessage="Aucun match à arbitrer n'est enregistré pour cette equipe."
           errorMessage={gamesErrorMessage}
           games={teamOngoingRefereeGames}
+          allGames={games}
           isLoading={isGamesLoading}
           currentTeam={currentTeam}
         />
@@ -81,6 +84,7 @@ export const TeamGamesView = ({ currentTeam }: TeamGamesViewProps) => {
             emptyMessage="Aucun match en cours n'est enregistré pour cette equipe."
             errorMessage={gamesErrorMessage}
             games={ongoingGames}
+            allGames={games}
             isLoading={isGamesLoading}
             currentTeam={currentTeam}
           />
@@ -101,6 +105,7 @@ export const TeamGamesView = ({ currentTeam }: TeamGamesViewProps) => {
             emptyMessage="Aucun match a venir n'est encore planifie pour cette equipe."
             errorMessage={gamesErrorMessage}
             games={upcomingGames}
+            allGames={games}
             isLoading={isGamesLoading}
             currentTeam={currentTeam}
           />
@@ -115,6 +120,7 @@ export const TeamGamesView = ({ currentTeam }: TeamGamesViewProps) => {
           emptyMessage="Aucun match termine pour cette equipe."
           errorMessage={gamesErrorMessage}
           games={completedGames}
+          allGames={games}
           isLoading={isGamesLoading}
           currentTeam={currentTeam}
         />

@@ -9,7 +9,6 @@ import java.util.Set;
 import com.gberard.tournament.domain.model.GameBuilder;
 import com.gberard.tournament.generated.model.BulkGameChanges;
 import com.gberard.tournament.generated.model.CreateGameRequest;
-import com.gberard.tournament.generated.model.GameStatus;
 import com.gberard.tournament.generated.model.Team;
 import com.gberard.tournament.generated.model.UpdateGameRequest;
 
@@ -26,7 +25,7 @@ public final class GameMapper {
                 .contestants(game.contestants().stream().map(TeamMapper::toApi).collect(toSet()))
                 .referee(game.refereeId().map(TeamMapper::toApi).orElse(null))
                 .time(game.time() == null ? null : game.time().atOffset(java.time.ZoneOffset.UTC))
-                .status(resolveStatus(game))
+                .status(com.gberard.tournament.generated.model.GameStatus.valueOf(game.status().name()))
                 .score(game.score().map(score -> GameScoreMapper.toApi(score, game.contestants())).orElse(null));
     }
 
@@ -46,7 +45,7 @@ public final class GameMapper {
                 null,
                 List.copyOf(contestants),
                 referee,
-                false,
+                com.gberard.tournament.domain.model.GameStatus.SCHEDULED,
                 Optional.empty()
         );
     }
@@ -66,8 +65,7 @@ public final class GameMapper {
                 .court(request.getCourt())
                 .position(existingGame.position())
                 .contestants(List.copyOf(contestants))
-                .refereeId(referee)
-                .isFinished(GameStatus.COMPLETED.equals(request.getStatus()));
+                .refereeId(referee);
 
         Set<String> existingContestantIds = existingGame.contestants().stream()
                 .map(com.gberard.tournament.domain.model.Team::id)
@@ -112,9 +110,6 @@ public final class GameMapper {
         if (changes.getCourt() != null) {
             updatedGame.court(changes.getCourt());
         }
-        if (changes.getStatus() != null) {
-            updatedGame.isFinished(GameStatus.COMPLETED.equals(changes.getStatus()));
-        }
         if (referee != null) {
             updatedGame.refereeId(referee);
         }
@@ -122,15 +117,4 @@ public final class GameMapper {
         return updatedGame.build();
     }
 
-    private static GameStatus resolveStatus(com.gberard.tournament.domain.model.Game game) {
-        if (game.isFinished()) {
-            return GameStatus.COMPLETED;
-        }
-
-        if (game.score().isPresent()) {
-            return GameStatus.IN_PROGRESS;
-        }
-
-        return GameStatus.SCHEDULED;
-    }
 }

@@ -79,12 +79,11 @@ public class GamesApiDelegateImpl implements GamesApiDelegate {
                 request.getAssignReferees()
         );
 
-        List<Game> createdGames = plannedGames.stream()
+        List<com.gberard.tournament.domain.model.Game> createdGames = plannedGames.stream()
                 .map(gameService::create)
-                .map(GameMapper::toApi)
                 .toList();
 
-        return ResponseEntity.status(CREATED).body(createdGames);
+        return ResponseEntity.status(CREATED).body(toApi(createdGames));
     }
 
     @Override
@@ -107,13 +106,12 @@ public class GamesApiDelegateImpl implements GamesApiDelegate {
                 ? Optional.of(findTeamOrThrow(changes.getRefereeId()))
                 : Boolean.TRUE.equals(changes.getClearReferee()) ? Optional.empty() : null;
 
-        List<Game> updatedGames = existingGames.stream()
+        List<com.gberard.tournament.domain.model.Game> updatedGames = existingGames.stream()
                 .map(game -> GameMapper.applyChanges(game, changes, phase, referee))
                 .map(gameService::update)
-                .map(GameMapper::toApi)
                 .toList();
 
-        return ResponseEntity.ok(updatedGames);
+        return ResponseEntity.ok(toApi(updatedGames));
     }
 
     @Override
@@ -129,7 +127,7 @@ public class GamesApiDelegateImpl implements GamesApiDelegate {
 
         var newGame = gameService.create(GameMapper.toDomain(createGameRequest, phase, contestants, referee));
 
-        return ResponseEntity.status(CREATED).body(GameMapper.toApi(newGame));
+        return ResponseEntity.status(CREATED).body(toApi(newGame));
     }
 
     @Override
@@ -140,16 +138,13 @@ public class GamesApiDelegateImpl implements GamesApiDelegate {
 
     @Override
     public ResponseEntity<Game> getGameById(String gameId) {
-        return ResponseEntity.ok(GameMapper.toApi(findGameOrThrow(gameId)));
+        return ResponseEntity.ok(toApi(findGameOrThrow(gameId)));
     }
 
     @Override
     public ResponseEntity<List<Game>> listGames() {
-        List<Game> games = gameService.findAll().stream()
-                .map(GameMapper::toApi)
-                .toList();
-
-        return ResponseEntity.ok(games);
+        List<com.gberard.tournament.domain.model.Game> games = gameService.findAll();
+        return ResponseEntity.ok(toApi(games));
     }
 
     @Override
@@ -166,7 +161,17 @@ public class GamesApiDelegateImpl implements GamesApiDelegate {
 
         var newGame = gameService.update(GameMapper.toDomain(existingGame, updateGameRequest, phase, contestants, referee));
 
-        return ResponseEntity.ok(GameMapper.toApi(newGame));
+        return ResponseEntity.ok(toApi(newGame));
+    }
+
+    private Game toApi(com.gberard.tournament.domain.model.Game game) {
+        return toApi(List.of(game)).getFirst();
+    }
+
+    private List<Game> toApi(List<com.gberard.tournament.domain.model.Game> games) {
+        return games.stream()
+                .map(GameMapper::toApi)
+                .toList();
     }
 
     private com.gberard.tournament.domain.model.Game findGameOrThrow(String id) {
@@ -208,7 +213,6 @@ public class GamesApiDelegateImpl implements GamesApiDelegate {
                 && !Boolean.TRUE.equals(changes.getClearTime())
                 && changes.getTimeOffsetMinutes() == null
                 && changes.getCourt() == null
-                && changes.getStatus() == null
                 && changes.getRefereeId() == null
                 && !Boolean.TRUE.equals(changes.getClearReferee())) {
             throw new ResponseStatusException(BAD_REQUEST, "At least one change is required");

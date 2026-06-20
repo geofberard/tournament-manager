@@ -52,7 +52,7 @@ class PoolGamePlanningServiceTest {
             assertThat(game.court()).isEqualTo("Terrain 1");
             assertThat(game.contestants()).hasSize(2);
             assertThat(game.refereeId()).isEmpty();
-            assertThat(game.isFinished()).isFalse();
+            assertThat(game.status()).isEqualTo(com.gberard.tournament.domain.model.GameStatus.SCHEDULED);
             assertThat(game.score()).isEmpty();
         });
     }

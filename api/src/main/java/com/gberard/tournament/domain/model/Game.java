@@ -17,7 +17,7 @@ public final class Game implements Identified {
     private final Long position;
     private final List<Team> contestants;
     private final Optional<Team> refereeId;
-    private final Boolean isFinished;
+    private final GameStatus status;
     private final Optional<SimpleScore> score;
 
     public Game(
@@ -30,7 +30,7 @@ public final class Game implements Identified {
             Long position,
             List<Team> contestants,
             Optional<Team> refereeId,
-            Boolean isFinished,
+            GameStatus status,
             Optional<SimpleScore> score
     ) {
         this.id = id;
@@ -42,7 +42,7 @@ public final class Game implements Identified {
         this.position = position;
         this.contestants = List.copyOf(Objects.requireNonNull(contestants, "contestants must not be null"));
         this.refereeId = Objects.requireNonNull(refereeId, "refereeId must not be null");
-        this.isFinished = Objects.requireNonNull(isFinished, "isFinished must not be null");
+        this.status = Objects.requireNonNull(status, "status must not be null");
         this.score = Objects.requireNonNull(score, "score must not be null");
     }
 
@@ -83,8 +83,8 @@ public final class Game implements Identified {
         return refereeId;
     }
 
-    public Boolean isFinished() {
-        return isFinished;
+    public GameStatus status() {
+        return status;
     }
 
     public Optional<SimpleScore> score() {
@@ -92,23 +92,11 @@ public final class Game implements Identified {
     }
 
     public Game withScore(SimpleScore newScore) {
-        return new Game(id, phase, subgroup, group, time, court, position, contestants, refereeId, isFinished, Optional.of(newScore));
+        return new Game(id, phase, subgroup, group, time, court, position, contestants, refereeId, GameStatus.COMPLETED, Optional.of(newScore));
     }
 
     public Game withoutScore() {
-        return new Game(id, phase, subgroup, group, time, court, position, contestants, refereeId, isFinished, Optional.empty());
-    }
-
-    public Game finishWithScore(SimpleScore newScore) {
-        return new Game(id, phase, subgroup, group, time, court, position, contestants, refereeId, true, Optional.of(newScore));
-    }
-
-    public Game markAsFinished() {
-        return new Game(id, phase, subgroup, group, time, court, position, contestants, refereeId, true, score);
-    }
-
-    public Game markAsScheduled() {
-        return new Game(id, phase, subgroup, group, time, court, position, contestants, refereeId, false, score);
+        return new Game(id, phase, subgroup, group, time, court, position, contestants, refereeId, GameStatus.SCHEDULED, Optional.empty());
     }
 
     @Override
@@ -128,13 +116,13 @@ public final class Game implements Identified {
                 && Objects.equals(position, game.position)
                 && Objects.equals(contestants, game.contestants)
                 && Objects.equals(refereeId, game.refereeId)
-                && Objects.equals(isFinished, game.isFinished)
+                && status == game.status
                 && Objects.equals(score, game.score);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, phase, subgroup, group, time, court, position, contestants, refereeId, isFinished, score);
+        return Objects.hash(id, phase, subgroup, group, time, court, position, contestants, refereeId, status, score);
     }
 
     @Override
@@ -149,7 +137,7 @@ public final class Game implements Identified {
                 ", position=" + position +
                 ", contestants=" + contestants +
                 ", refereeId=" + refereeId +
-                ", isFinished=" + isFinished +
+                ", status=" + status +
                 ", score=" + score +
                 ']';
     }

@@ -1,6 +1,7 @@
 package com.gberard.tournament.infrastructure.repository.jpa.model;
 
 import com.gberard.tournament.domain.model.Game;
+import com.gberard.tournament.domain.model.GameStatus;
 import com.gberard.tournament.domain.model.Team;
 import com.gberard.tournament.infrastructure.serializer.score.DepthOneScoreRaw;
 import jakarta.persistence.*;
@@ -37,7 +38,9 @@ public class GameEntity {
     private String groupId;
     private String subgroup;
     private String court;
-    private Boolean isFinished;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private GameStatus status;
     private String scoreData;
 
     @OneToMany
@@ -72,7 +75,7 @@ public class GameEntity {
                 entity.position,
                 teams,
                 Optional.ofNullable(entity.referee).map(TeamEntity::toDomain),
-                entity.isFinished,
+                entity.status,
                 Optional.ofNullable(entity.scoreData).map(scoreData -> DepthOneScoreRaw.deserialize(scoreData, teams)));
     }
 
@@ -88,7 +91,7 @@ public class GameEntity {
         playerEntity.position = game.position();
         playerEntity.teams = game.contestants().stream().map(TeamEntity::toEntity).toList();
         playerEntity.referee = game.refereeId().map(TeamEntity::toEntity).orElse(null);
-        playerEntity.isFinished = game.isFinished();
+        playerEntity.status = game.status();
         game.score().ifPresent(score -> playerEntity.scoreData = DepthOneScoreRaw.serialize(score, game.contestants()));
         return playerEntity;
     }

@@ -2,11 +2,13 @@ import { Alert, Stack } from '@mui/material'
 import type { Game } from '../../services/gamesService'
 import { GameCard } from './GameCard'
 import type { Team } from '../../generated/api-client'
+import { getDisplayedGameStatus } from '../../services/gameStatus'
 
 type GameListProps = {
   emptyMessage?: string
   errorMessage: string | null
   games: Game[]
+  allGames: Game[]
   isLoading: boolean,
   currentTeam: Team
 }
@@ -17,6 +19,7 @@ export const GameList = ({
   emptyMessage = defaultEmptyMessage,
   errorMessage,
   games,
+  allGames,
   isLoading,
   currentTeam,
 }: GameListProps) => {
@@ -31,7 +34,12 @@ export const GameList = ({
   return (
     <Stack spacing={2}>
       {games.map((game) => (
-        <GameCard key={game.id} game={game} currentTeam={currentTeam}/>
+        <GameCard
+          key={game.id}
+          game={game}
+          currentTeam={currentTeam}
+          displayedStatus={getDisplayedGameStatus(game, allGames)}
+        />
       ))}
     </Stack>
   )

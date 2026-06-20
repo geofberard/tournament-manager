@@ -19,6 +19,7 @@ import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline'
 import ScheduleIcon from '@mui/icons-material/Schedule'
 import type {Game} from '../../services/gamesService'
 import {GameStatus} from "../../generated/api-client";
+import {getDisplayedGameStatus} from '../../services/gameStatus'
 
 type PitchStatusProps = {
   games: Game[]
@@ -43,7 +44,6 @@ const pulseAnimation = keyframes`
 export const PitchStatus = ({games}: PitchStatusProps) => {
   const gamesByCourt = games
     .filter(game => game.status !== GameStatus.Completed)
-    .filter(game => game.status !== GameStatus.Canceled)
     .reduce((acc, game) => {
       if (!acc[game.court]) {
         acc[game.court] = []
@@ -64,9 +64,11 @@ export const PitchStatus = ({games}: PitchStatusProps) => {
 
       {courts.map((court) => {
         const courtGames = gamesByCourt[court]
-        const inProgressGame = courtGames.find((g) => g.status === 'in_progress')
+        const inProgressGame = courtGames.find(
+          (game) => getDisplayedGameStatus(game, games) === 'in_progress',
+        )
         const upcomingGames = courtGames
-          .filter((g) => g.status === 'scheduled')
+          .filter((game) => getDisplayedGameStatus(game, games) === 'scheduled')
           .sort((a, b) => {
             const hasValidTimeA = a.time && a.time instanceof Date && !isNaN(a.time.getTime()) && a.time.getTime() > 0
             const hasValidTimeB = b.time && b.time instanceof Date && !isNaN(b.time.getTime()) && b.time.getTime() > 0

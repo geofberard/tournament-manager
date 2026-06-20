@@ -1,6 +1,7 @@
 package com.gberard.tournament.domain.service;
 
 import com.gberard.tournament.domain.model.Game;
+import com.gberard.tournament.domain.model.GameStatus;
 import com.gberard.tournament.domain.model.Phase;
 import com.gberard.tournament.domain.model.Team;
 import com.gberard.tournament.domain.model.scheduling.PlannedGame;
@@ -84,7 +85,7 @@ public class PoolGamePlanningService {
                 null,
                 plannedGame.teamPair().teams(),
                 plannedGame.referee(),
-                false,
+                GameStatus.SCHEDULED,
                 Optional.empty()
         );
     }

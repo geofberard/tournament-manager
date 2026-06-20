@@ -5,6 +5,7 @@ import { GameCard } from './GameCard'
 import { GameStatus } from '../../generated/api-client'
 import { TEAM_REFEREE_GAME_PATH } from '../../app/routes'
 import type { Game } from '../../services/gamesService'
+import type { DisplayedGameStatus } from '../../services/gameStatus'
 
 const navigateMock = vi.fn()
 
@@ -12,10 +13,14 @@ vi.mock('react-router-dom', () => ({
   useNavigate: () => navigateMock,
 }))
 
-const renderCard = (game: Game) =>
+const renderCard = (game: Game, displayedStatus: DisplayedGameStatus = game.status) =>
   render(
     <ThemeProvider theme={createTheme()}>
-      <GameCard game={game} currentTeam={{ id: 'team-1', name: 'Aigles' }} />
+      <GameCard
+        game={game}
+        currentTeam={{ id: 'team-1', name: 'Aigles' }}
+        displayedStatus={displayedStatus}
+      />
     </ThemeProvider>,
   )
 
@@ -118,9 +123,10 @@ describe('GameCard', () => {
     renderCard({
       ...baseGame,
       id: 'game-2',
-      status: GameStatus.InProgress,
+      status: GameStatus.Scheduled,
+      time: new Date('2020-05-01T18:30:00Z'),
       referee: { id: 'team-1', name: 'Aigles' },
-    })
+    }, 'in_progress')
 
     const alert = screen.getByRole('alert')
     expect(alert).toHaveTextContent('Votre équipe arbitre ce match')
@@ -137,8 +143,9 @@ describe('GameCard', () => {
   it('should not render an arbitration action for a team that is not the referee', () => {
     renderCard({
       ...baseGame,
-      status: GameStatus.InProgress,
-    })
+      status: GameStatus.Scheduled,
+      time: new Date('2020-05-01T18:30:00Z'),
+    }, 'in_progress')
 
     expect(screen.getByRole('alert')).toHaveTextContent('Vous serez arbitré par Pantheres')
     expect(screen.queryByRole('button')).not.toBeInTheDocument()
@@ -149,8 +156,9 @@ describe('GameCard', () => {
       ...baseGame,
       id: 'game-3',
       referee: undefined,
-      status: GameStatus.InProgress,
-    })
+      status: GameStatus.Scheduled,
+      time: new Date('2020-05-01T18:30:00Z'),
+    }, 'in_progress')
 
     expect(screen.getByRole('alert')).toHaveTextContent("Les équipes doivent s'auto-arbitrer")
     const button = screen.getByRole('button', { name: 'Saisir le score' })
@@ -167,6 +175,7 @@ describe('GameCard', () => {
       ...baseGame,
       referee: undefined,
       status: GameStatus.Scheduled,
+      time: new Date('2099-05-01T18:30:00Z'),
     })
 
     expect(screen.getByRole('alert')).toHaveTextContent("Les équipes doivent s'auto-arbitrer")

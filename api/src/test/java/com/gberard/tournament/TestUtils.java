@@ -32,7 +32,7 @@ public class TestUtils {
                 .contestants(List.of(TEAM_A, TEAM_B))
                 .court("court")
                 .position(1000L)
-                .isFinished(true)
+                .status(com.gberard.tournament.domain.model.GameStatus.COMPLETED)
                 .eraseScore();
     }
 

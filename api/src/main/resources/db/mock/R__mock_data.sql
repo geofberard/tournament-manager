@@ -32,23 +32,23 @@ Le tableau final rassemble les equipes qualifiees pour les matchs a elimination 
 
 Consultez le **tableau final** pour suivre l''avancement des rencontres.', 3, 'BRACKET');
 
-INSERT INTO games (id, phase_id, subgroup, group_id, time, court, is_finished, score_data)
-VALUES ('game_1', 'phase_1', NULL, 'Poule A', '2022-11-01 11:00:00', 'Terrain1', TRUE, '23-18'),
-       ('game_2', 'phase_1', NULL, 'Poule A', '2022-11-01 11:00:00', 'Terrain2', TRUE, '20-21'),
-       ('game_3', 'phase_1', NULL, 'Poule B', '2022-11-01 11:00:00', 'Terrain3', TRUE, '19-23'),
-       ('game_4', 'phase_1', NULL, 'Poule B', '2022-11-01 11:00:00', 'Terrain4', TRUE, '21-13'),
-       ('game_5', 'phase_1', NULL, 'Poule A', '2022-11-01 11:20:00', 'Terrain1', TRUE, '13-4'),
-       ('game_6', 'phase_1', NULL, 'Poule A', '2022-11-01 11:20:00', 'Terrain2', TRUE, '19-8'),
-       ('game_7', 'phase_1', NULL, 'Poule B', '2022-11-01 11:20:00', 'Terrain3', TRUE, '13-13'),
-       ('game_8', 'phase_1', NULL, 'Poule B', '2022-11-01 11:20:00', 'Terrain4', TRUE, '19-3'),
-       ('game_9', 'phase_2', NULL, 'Poule A', '2022-11-01 11:40:00', 'Terrain1', FALSE, '21-10'),
-       ('game_10', 'phase_2', NULL, 'Poule B', '2022-11-01 11:40:00', 'Terrain2', FALSE, '18-24'),
-       ('game_11', 'phase_2', NULL, 'Poule A', '2022-11-01 12:00:00', 'Terrain3', FALSE, '12-9'),
-       ('game_12', 'phase_2', NULL, 'Poule B', '2022-11-01 12:00:00', 'Terrain4', FALSE, '16-14'),
-       ('game_13', 'phase_3', '1/2', 'Principale', '2022-11-01 12:20:00', 'Terrain1', FALSE, NULL),
-       ('game_14', 'phase_3', '1/2', 'Principale', '2022-11-01 12:20:00', 'Terrain2', FALSE, NULL),
-       ('game_15', 'phase_3', 'Finales', 'Consolante', '2022-11-01 12:40:00', 'Terrain1', FALSE, NULL),
-       ('game_16', 'phase_3', 'Finales', 'Principale', '2022-11-01 12:40:00', 'Terrain2', FALSE, NULL);
+INSERT INTO games (id, phase_id, subgroup, group_id, time, court, status, score_data)
+VALUES ('game_1', 'phase_1', NULL, 'Poule A', '2022-11-01 11:00:00', 'Terrain1', 'COMPLETED', '23-18'),
+       ('game_2', 'phase_1', NULL, 'Poule A', '2022-11-01 11:00:00', 'Terrain2', 'COMPLETED', '20-21'),
+       ('game_3', 'phase_1', NULL, 'Poule B', '2022-11-01 11:00:00', 'Terrain3', 'COMPLETED', '19-23'),
+       ('game_4', 'phase_1', NULL, 'Poule B', '2022-11-01 11:00:00', 'Terrain4', 'COMPLETED', '21-13'),
+       ('game_5', 'phase_1', NULL, 'Poule A', '2022-11-01 11:20:00', 'Terrain1', 'COMPLETED', '13-4'),
+       ('game_6', 'phase_1', NULL, 'Poule A', '2022-11-01 11:20:00', 'Terrain2', 'COMPLETED', '19-8'),
+       ('game_7', 'phase_1', NULL, 'Poule B', '2022-11-01 11:20:00', 'Terrain3', 'COMPLETED', '13-13'),
+       ('game_8', 'phase_1', NULL, 'Poule B', '2022-11-01 11:20:00', 'Terrain4', 'COMPLETED', '19-3'),
+       ('game_9', 'phase_2', NULL, 'Poule A', '2022-11-01 11:40:00', 'Terrain1', 'COMPLETED', '21-10'),
+       ('game_10', 'phase_2', NULL, 'Poule B', '2022-11-01 11:40:00', 'Terrain2', 'COMPLETED', '18-24'),
+       ('game_11', 'phase_2', NULL, 'Poule A', '2022-11-01 12:00:00', 'Terrain3', 'COMPLETED', '12-9'),
+       ('game_12', 'phase_2', NULL, 'Poule B', '2022-11-01 12:00:00', 'Terrain4', 'COMPLETED', '16-14'),
+       ('game_13', 'phase_3', '1/2', 'Principale', '2022-11-01 12:20:00', 'Terrain1', 'SCHEDULED', NULL),
+       ('game_14', 'phase_3', '1/2', 'Principale', '2022-11-01 12:20:00', 'Terrain2', 'SCHEDULED', NULL),
+       ('game_15', 'phase_3', 'Finales', 'Consolante', '2022-11-01 12:40:00', 'Terrain1', 'SCHEDULED', NULL),
+       ('game_16', 'phase_3', 'Finales', 'Principale', '2022-11-01 12:40:00', 'Terrain2', 'SCHEDULED', NULL);
 
 INSERT INTO game_teams (game_id, team_id)
 VALUES ('game_1', 'team_1'),

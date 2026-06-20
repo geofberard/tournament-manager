@@ -16,7 +16,6 @@ import {
 import type { ChangeEvent, FormEvent, ReactNode } from 'react'
 import { useState } from 'react'
 import type { SelectChangeEvent } from '@mui/material/Select'
-import { GameStatus } from '../../generated/api-client'
 import { fromDateTimeLocalValue, toDateTimeLocalValue } from '../../services/dateTimeLocal'
 import type { BulkGameChanges } from '../../services/gamesService'
 import type { Phase } from '../../services/phasesService'
@@ -28,7 +27,6 @@ type BulkField =
   | 'subgroup'
   | 'phaseId'
   | 'refereeId'
-  | 'status'
   | 'time'
   | 'clearTime'
   | 'timeOffsetMinutes'
@@ -39,13 +37,6 @@ type BulkUpdateGamesFormProps = {
   onSubmit: (changes: BulkGameChanges) => Promise<void>
   phases: Phase[]
   teams: Team[]
-}
-
-const statusLabels = {
-  [GameStatus.Scheduled]: 'Planifie',
-  [GameStatus.InProgress]: 'En cours',
-  [GameStatus.Completed]: 'Termine',
-  [GameStatus.Canceled]: 'Annule',
 }
 
 export const BulkUpdateGamesForm = ({
@@ -62,7 +53,6 @@ export const BulkUpdateGamesForm = ({
     subgroup: '',
     phaseId: '',
     refereeId: '',
-    status: GameStatus.Scheduled,
     time: new Date(),
     timeOffsetMinutes: '',
   })
@@ -105,7 +95,7 @@ export const BulkUpdateGamesForm = ({
     }
 
   const handleSelectChange =
-    (field: 'phaseId' | 'refereeId' | 'status') => (event: SelectChangeEvent) => {
+    (field: 'phaseId' | 'refereeId') => (event: SelectChangeEvent) => {
       setValues((currentValues) => ({ ...currentValues, [field]: event.target.value }))
     }
 
@@ -123,7 +113,6 @@ export const BulkUpdateGamesForm = ({
       changes.timeOffsetMinutes = timeOffsetMinutes
     }
     if (enabledFields.has('court')) changes.court = values.court.trim()
-    if (enabledFields.has('status')) changes.status = values.status
     if (enabledFields.has('subgroup')) {
       if (values.subgroup.trim()) changes.subgroup = values.subgroup.trim()
       else changes.clearSubgroup = true
@@ -310,25 +299,6 @@ export const BulkUpdateGamesForm = ({
           </FormControl>,
         )}
 
-        {fieldControl(
-          'status',
-          'le statut',
-          <FormControl disabled={!enabledFields.has('status')} fullWidth required={enabledFields.has('status')}>
-            <InputLabel id="bulk-game-status-label">Statut</InputLabel>
-            <Select
-              label="Statut"
-              labelId="bulk-game-status-label"
-              onChange={handleSelectChange('status')}
-              value={values.status}
-            >
-              {Object.values(GameStatus).map((status) => (
-                <MenuItem key={status} value={status}>
-                  {statusLabels[status]}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>,
-        )}
       </Stack>
 
       <Divider />

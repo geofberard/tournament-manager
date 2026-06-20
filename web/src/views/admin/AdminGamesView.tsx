@@ -16,7 +16,6 @@ import { AdminGamesTable } from '../../components/admin/AdminGamesTable'
 import { BulkUpdateGamesForm } from '../../components/admin/BulkUpdateGamesForm'
 import { CreatePoolGamesForm } from '../../components/admin/CreatePoolGamesForm'
 import { ManageGameForm } from '../../components/admin/ManageGameForm'
-import { GameStatus } from '../../generated/api-client'
 import { useGames } from '../../hooks/useGames'
 import { usePhases } from '../../hooks/usePhases'
 import { useTeams } from '../../hooks/useTeams'
@@ -45,7 +44,6 @@ const emptyGameForm = (): GamePayload => ({
   phaseId: '',
   pointsByTeam: null,
   refereeId: undefined,
-  status: GameStatus.Scheduled,
   time: undefined,
 })
 
@@ -71,7 +69,6 @@ const toGamePayload = (game: Game): GamePayload => ({
       ? { ...game.score.pointsByTeam }
       : null,
   refereeId: game.referee?.id,
-  status: game.status,
   time: game.time ?? undefined,
 })
 
@@ -87,13 +84,6 @@ export const AdminGamesView = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
   const saveGameScore = useCallback(
     async (game: Game, pointsByTeam: Record<string, number>) => {
-      const completedGame =
-        game.status === GameStatus.Completed
-          ? game
-          : await updateGame(game.id, {
-              ...toGamePayload(game),
-              status: GameStatus.Completed,
-            })
       const score = await upsertGameScore(game.id, pointsByTeam)
 
       await mutate(
@@ -103,9 +93,9 @@ export const AdminGamesView = () => {
             (currentGames ?? []).map((currentGame) =>
               currentGame.id === game.id
                 ? {
-                    ...completedGame,
+                    ...currentGame,
                     score,
-                    status: GameStatus.Completed,
+                    status: 'completed',
                   }
                 : currentGame,
             ),
@@ -141,9 +131,7 @@ export const AdminGamesView = () => {
     const score = gamePayload.pointsByTeam
       ? await upsertGameScore(newGame.id, gamePayload.pointsByTeam)
       : null
-    const createdGame = score
-      ? { ...newGame, score, status: GameStatus.InProgress }
-      : newGame
+    const createdGame = score ? { ...newGame, score, status: 'completed' as const } : newGame
 
     await mutate(
       '/api/games',
@@ -178,13 +166,10 @@ export const AdminGamesView = () => {
       score = { pointsByTeam: {} }
     }
 
-    const gameWithScore = {
+    const gameWithScore: Game = {
       ...updatedGame,
       score,
-      status:
-        gamePayload.pointsByTeam && updatedGame.status !== GameStatus.Completed
-          ? GameStatus.InProgress
-          : updatedGame.status,
+      status: gamePayload.pointsByTeam ? 'completed' : 'scheduled',
     }
 
     await mutate(

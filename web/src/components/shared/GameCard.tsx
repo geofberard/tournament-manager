@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom'
 import { GameStatus, type Team } from '../../generated/api-client'
 import { TEAM_REFEREE_GAME_PATH } from '../../app/routes'
 import type { Game } from '../../services/gamesService'
+import type { DisplayedGameStatus } from '../../services/gameStatus'
 import RoomOutlinedIcon from '@mui/icons-material/RoomOutlined';
 import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
@@ -20,6 +21,7 @@ import ScoreboardOutlinedIcon from '@mui/icons-material/ScoreboardOutlined';
 type GameCardProps = {
   game: Game,
   currentTeam: Team
+  displayedStatus: DisplayedGameStatus
 }
 
 const timeFormatter = new Intl.DateTimeFormat('fr-FR', {
@@ -27,16 +29,16 @@ const timeFormatter = new Intl.DateTimeFormat('fr-FR', {
   minute: '2-digit',
 })
 
-const statusLabelByValue: Record<string, string> = {
-  [GameStatus.Completed]: 'Terminé',
-  [GameStatus.InProgress]: 'En cours',
-  [GameStatus.Scheduled]: 'Planifié',
+const statusLabelByValue: Record<DisplayedGameStatus, string> = {
+  completed: 'Terminé',
+  in_progress: 'En cours',
+  scheduled: 'Planifié',
 }
 
-const statusColorByValue: Record<string, 'default' | 'error' | 'info' | 'success'> = {
-  [GameStatus.Completed]: 'default',
-  [GameStatus.InProgress]: 'success',
-  [GameStatus.Scheduled]: 'info',
+const statusColorByValue: Record<DisplayedGameStatus, 'default' | 'error' | 'info' | 'success'> = {
+  completed: 'default',
+  in_progress: 'success',
+  scheduled: 'info',
 }
 
 const formatScore = (game: Game) => {
@@ -47,7 +49,7 @@ const formatScore = (game: Game) => {
   return scores.join(' - ')
 }
 
-export const GameCard = ({ game, currentTeam }: GameCardProps) => {
+export const GameCard = ({ game, currentTeam, displayedStatus }: GameCardProps) => {
   const navigate = useNavigate()
 
   const handleRefereeClick = () => {
@@ -57,6 +59,7 @@ export const GameCard = ({ game, currentTeam }: GameCardProps) => {
   const teams = Array.from(game.contestants);
   const isReferee = game.referee?.id === currentTeam.id
   const isCompleted = game.status === GameStatus.Completed;
+  const isInProgress = displayedStatus === 'in_progress'
 
   let winnerIndex = -1;
   if (isCompleted && game.score?.pointsByTeam) {
@@ -80,8 +83,8 @@ export const GameCard = ({ game, currentTeam }: GameCardProps) => {
               <Chip label={game.phase.name} variant="filled" size="small" />
               <Chip label={game.group} variant="outlined" size="small" />
               <Chip
-                label={statusLabelByValue[game.status] ?? game.status}
-                color={statusColorByValue[game.status] ?? 'default'}
+                label={statusLabelByValue[displayedStatus]}
+                color={statusColorByValue[displayedStatus]}
                 size="small"
               />
             </Stack>
@@ -110,10 +113,10 @@ export const GameCard = ({ game, currentTeam }: GameCardProps) => {
             <Chip
               label={
                 <Typography variant="h5" sx={{ fontWeight: 700 }}>
-                  {game.status === GameStatus.Scheduled ? ' vs ' : formatScore(game)}
+                  {displayedStatus === 'scheduled' ? ' vs ' : formatScore(game)}
                 </Typography>
               }
-              color={statusColorByValue[game.status]}
+              color={statusColorByValue[displayedStatus]}
               sx={{ height: 'auto', py: 1, px: 2, borderRadius: 2 }}
             />
             <Typography
@@ -168,7 +171,7 @@ export const GameCard = ({ game, currentTeam }: GameCardProps) => {
                     <Alert severity="warning" icon={<SportsIcon />} sx={{ flex: 1, py: 0 }}>
                       Votre équipe arbitre ce match
                     </Alert>
-                    {game.status === GameStatus.InProgress ? (
+                    {isInProgress ? (
                       <Button
                         color="warning"
                         endIcon={<ScoreboardOutlinedIcon />}
@@ -194,7 +197,7 @@ export const GameCard = ({ game, currentTeam }: GameCardProps) => {
                   <Alert severity="warning" icon={<SportsIcon />} sx={{ flex: 1, py: 0 }}>
                     Les équipes doivent s'auto-arbitrer
                   </Alert>
-                  {game.status === GameStatus.InProgress ? (
+                  {isInProgress ? (
                     <Button
                       color="warning"
                       endIcon={<ScoreboardOutlinedIcon />}

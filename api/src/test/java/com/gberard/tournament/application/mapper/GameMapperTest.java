@@ -9,7 +9,6 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
-import com.gberard.tournament.generated.model.GameStatus;
 import com.gberard.tournament.generated.model.UpdateGameRequest;
 
 class GameMapperTest {
@@ -47,7 +46,6 @@ class GameMapperTest {
                 .group("A")
                 .time(OffsetDateTime.parse("2026-06-13T12:30:00Z"))
                 .court("Court 2")
-                .status(GameStatus.IN_PROGRESS)
                 .contestantIds(contestantIds);
     }
 }

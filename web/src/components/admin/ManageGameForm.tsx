@@ -15,7 +15,6 @@ import {
   Typography,
 } from '@mui/material'
 import type { SelectChangeEvent } from '@mui/material/Select'
-import { GameStatus } from '../../generated/api-client'
 import { fromDateTimeLocalValue, toDateTimeLocalValue } from '../../services/dateTimeLocal'
 import type { Phase } from '../../services/phasesService'
 import type { GamePayload } from '../../services/gamesService'
@@ -31,16 +30,8 @@ type ManageGameFormProps = {
   titleLabel: string
 }
 
-const statusLabels = {
-  [GameStatus.Scheduled]: 'Planifie',
-  [GameStatus.InProgress]: 'En cours',
-  [GameStatus.Completed]: 'Termine',
-  [GameStatus.Canceled]: 'Annule',
-}
-
 export const ManageGameForm = ({
   initialValue,
-  isUpdate,
   onClose,
   onSubmit,
   phases,
@@ -61,7 +52,7 @@ export const ManageGameForm = ({
     }
 
   const handleSelectChange =
-    (field: keyof Pick<GamePayload, 'phaseId' | 'refereeId' | 'status'>) => (event: SelectChangeEvent) => {
+    (field: keyof Pick<GamePayload, 'phaseId' | 'refereeId'>) => (event: SelectChangeEvent) => {
       setFormValue((currentValue) => ({ ...currentValue, [field]: event.target.value }))
     }
 
@@ -292,23 +283,6 @@ export const ManageGameForm = ({
           </Select>
         </FormControl>
 
-        {isUpdate ? (
-          <FormControl fullWidth required>
-            <InputLabel id="game-status-label">Statut</InputLabel>
-            <Select
-              label="Statut"
-              labelId="game-status-label"
-              onChange={handleSelectChange('status')}
-              value={formValue.status}
-            >
-              {Object.values(GameStatus).map((status) => (
-                <MenuItem key={status} value={status}>
-                  {statusLabels[status]}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        ) : null}
       </Stack>
 
       <Divider />

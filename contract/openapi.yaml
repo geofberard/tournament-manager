@@ -991,12 +991,13 @@ components:
 
     GameStatus:
       type: string
-      description: État métier d'un match.
+      description: |
+        État persistant d'un match. Un match est `scheduled` à sa création,
+        puis devient `completed` lorsqu'un score est défini. La suppression
+        du score le fait revenir à `scheduled`.
       enum:
         - scheduled
-        - in_progress
         - completed
-        - canceled
 
     PhaseType:
       type: string
@@ -1161,7 +1162,6 @@ components:
         - phaseId
         - group
         - court
-        - status
         - contestantIds
       properties:
         phaseId:
@@ -1192,8 +1192,6 @@ components:
           minLength: 1
           description: Nouveau nom ou libellé du terrain
           examples: [Court B]
-        status:
-          $ref: '#/components/schemas/GameStatus'
         contestantIds:
           type: array
           description: |
@@ -1309,8 +1307,6 @@ components:
         court:
           type: string
           minLength: 1
-        status:
-          $ref: '#/components/schemas/GameStatus'
         refereeId:
           type: string
           minLength: 1

@@ -13,9 +13,10 @@ describe('PitchStatus', () => {
     const games: Game[] = [
       {
         id: 'game-1',
+        position: 1,
         court: 'Terrain 1',
-        status: 'in_progress',
-        time: new Date('2026-06-18T10:00:00Z'),
+        status: 'scheduled',
+        time: new Date('2020-06-18T10:00:00Z'),
         contestants: new Set([{ id: 't1', name: 'Aigles' }, { id: 't2', name: 'Lions' }]),
         group: 'Poule A',
         phase: { id: 'phase-1', type: 'POOL', name: 'Phase 1', order: 1 },
@@ -23,9 +24,10 @@ describe('PitchStatus', () => {
       },
       {
         id: 'game-2',
+        position: 2,
         court: 'Terrain 1',
         status: 'scheduled',
-        time: new Date('2026-06-18T12:00:00Z'),
+        time: new Date('2099-06-18T12:00:00Z'),
         contestants: new Set([{ id: 't3', name: 'Tigres' }, { id: 't4', name: 'Ours' }]),
         group: 'Poule B',
         phase: { id: 'phase-1', type: 'POOL', name: 'Phase 1', order: 1 },
@@ -33,6 +35,7 @@ describe('PitchStatus', () => {
       },
       {
         id: 'game-3',
+        position: 3,
         court: 'Terrain 2',
         status: 'completed',
         time: new Date('2026-06-18T08:00:00Z'),

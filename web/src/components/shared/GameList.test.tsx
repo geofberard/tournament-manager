@@ -13,6 +13,7 @@ const renderList = (props?: Partial<React.ComponentProps<typeof GameList>>) =>
         <GameList
           errorMessage={null}
           games={[]}
+          allGames={[]}
           isLoading={false}
           currentTeam={{ id: 'team-1', name: 'Aigles' }}
           {...props}
@@ -91,7 +92,7 @@ describe('GameList', () => {
 
   it('should render one card per game', () => {
     // WHEN
-    renderList({ games })
+    renderList({ games, allGames: games })
 
     // THEN
     expect(screen.getByText('Aigles')).toBeInTheDocument()

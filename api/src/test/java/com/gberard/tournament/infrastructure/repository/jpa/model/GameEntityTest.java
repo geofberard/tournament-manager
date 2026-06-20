@@ -28,7 +28,7 @@ class GameEntityTest {
                 1000L,
                 List.of(new Team("team_1", "Tigres"), new Team("team_2", "Lynx")),
                 Optional.empty(),
-                false,
+                com.gberard.tournament.domain.model.GameStatus.SCHEDULED,
                 Optional.empty()
         );
 

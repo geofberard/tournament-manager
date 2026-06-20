@@ -16,7 +16,7 @@ public class GameBuilder {
     private Long position;
     private List<Team> contestants;
     private Optional<Team> refereeId = Optional.empty();
-    private Boolean isFinished;
+    private GameStatus status = GameStatus.SCHEDULED;
     private Optional<SimpleScore> score = Optional.empty();
 
     // Constructeur privé pour forcer l'utilisation des méthodes de la classe pour initialiser le builder
@@ -39,7 +39,7 @@ public class GameBuilder {
                 .position(game.position())
                 .contestants(game.contestants())
                 .refereeId(game.refereeId())
-                .isFinished(game.isFinished())
+                .status(game.status())
                 .score(game.score());
     }
 
@@ -103,13 +103,14 @@ public class GameBuilder {
         return this;
     }
 
-    public GameBuilder isFinished(Boolean isFinished) {
-        this.isFinished = isFinished;
+    public GameBuilder status(GameStatus status) {
+        this.status = status;
         return this;
     }
 
     public GameBuilder score(Optional<SimpleScore> score) {
         this.score = score;
+        this.status = score.isPresent() ? GameStatus.COMPLETED : GameStatus.SCHEDULED;
         return this;
     }
 
@@ -122,6 +123,6 @@ public class GameBuilder {
     }
 
     public Game build() {
-        return new Game(id, phase, subgroup, group, time, court, position, contestants, refereeId, isFinished, score);
+        return new Game(id, phase, subgroup, group, time, court, position, contestants, refereeId, status, score);
     }
 }

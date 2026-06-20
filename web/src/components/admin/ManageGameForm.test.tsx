@@ -1,7 +1,6 @@
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ThemeProvider, createTheme } from '@mui/material'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { GameStatus } from '../../generated/api-client'
 import type { GamePayload } from '../../services/gamesService'
 import { ManageGameForm } from './ManageGameForm'
 
@@ -22,7 +21,6 @@ const initialValue: GamePayload = {
     'team-2': 18,
   },
   refereeId: 'team-1',
-  status: GameStatus.Scheduled,
   time: new Date(2026, 4, 3, 10, 30),
 }
 

@@ -219,15 +219,20 @@ describe('Router', () => {
       games: [
         {
           id: 'game-1',
+          position: 1,
           phase: { id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' },
           group: 'Poule A',
+          court: 'Court 1',
+          time: new Date('2099-01-01T10:00:00Z'),
           status: GameStatus.Scheduled,
           contestants: new Set([{ id: 'team-2', name: 'Tigres' }]),
         },
         {
           id: 'game-2',
+          position: 2,
           phase: { id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' },
           group: 'Poule A',
+          court: 'Court 1',
           status: GameStatus.Completed,
           contestants: new Set([{ id: 'team-2', name: 'Tigres' }]),
         },

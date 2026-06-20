@@ -217,10 +217,7 @@ describe('AdminGamesView', () => {
         'team-2': 18,
       })
     })
-    expect(updateGameMock).toHaveBeenCalledWith(
-      'game-1',
-      expect.objectContaining({ status: GameStatus.Completed }),
-    )
+    expect(updateGameMock).not.toHaveBeenCalled()
     expect(screen.queryByRole('heading', { name: 'Modifier le match' })).not.toBeInTheDocument()
   })
 
@@ -352,7 +349,7 @@ describe('AdminGamesView', () => {
     expect(screen.getByDisplayValue('Terrain 1')).toBeInTheDocument()
     expect(screen.getByRole('spinbutton', { name: 'Score Equipe 1' })).toHaveValue(21)
     expect(screen.getByRole('spinbutton', { name: 'Score Equipe 2' })).toHaveValue(18)
-    expect(screen.getByRole('combobox', { name: 'Statut' })).toBeInTheDocument()
+    expect(screen.queryByRole('combobox', { name: 'Statut' })).not.toBeInTheDocument()
   })
 
   it('should preserve and save the score when updating game information', async () => {

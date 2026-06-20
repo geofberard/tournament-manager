@@ -18,7 +18,6 @@ export type GamePayload = {
   phaseId: string
   pointsByTeam: Record<string, number> | null
   refereeId?: string
-  status: UpdateGameRequest['status']
   time?: Date
 }
 
@@ -48,7 +47,6 @@ export const updateGame = async (gameId: string, gamePayload: GamePayload): Prom
     subgroup: gamePayload.subgroup,
     phaseId: gamePayload.phaseId,
     refereeId: gamePayload.refereeId,
-    status: gamePayload.status,
     time: gamePayload.time,
   }
 

@@ -57,6 +57,7 @@ export const TeamResultsContent = ({ currentTeam, selectedPhase }: TeamResultsCo
       emptyMessage="Aucun match de bracket n'est encore planifie pour cette equipe."
       errorMessage={gamesErrorMessage}
       games={teamBracketGames}
+      allGames={games}
       isLoading={isGamesLoading}
       currentTeam={currentTeam}
     />

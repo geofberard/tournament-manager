@@ -79,7 +79,7 @@ public class TeamStatsService implements TeamStatsUseCase {
     private TeamStats buildTeamStats(Team team, List<Game> games) {
         return games.stream()
                 .filter(game -> game.contestants().stream().anyMatch(contestant -> contestant.id().equals(team.id())))
-                .filter(Game::isFinished)
+                .filter(game -> game.status() == com.gberard.tournament.domain.model.GameStatus.COMPLETED)
                 .reduce(
                         new TeamStatsAccumulator(team),
                         (accumulator, game) -> updateStatsWith(accumulator, game, team),
