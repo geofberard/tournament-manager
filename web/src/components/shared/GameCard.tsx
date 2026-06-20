@@ -4,7 +4,6 @@ import {
   Card,
   CardContent,
   Chip,
-  Divider,
   Stack,
   Typography,
 } from '@mui/material'
@@ -16,6 +15,7 @@ import RoomOutlinedIcon from '@mui/icons-material/RoomOutlined';
 import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import SportsIcon from '@mui/icons-material/Sports';
+import ScoreboardOutlinedIcon from '@mui/icons-material/ScoreboardOutlined';
 
 type GameCardProps = {
   game: Game,
@@ -140,7 +140,7 @@ export const GameCard = ({ game, currentTeam }: GameCardProps) => {
           {!isCompleted ? (
             <>
               {/* Affichage du terrain et de l'horaire */}
-              <Stack direction="row" justifyContent="center" spacing={1} >
+              <Stack direction="row" justifyContent="center" spacing={1} sx={{ mb: 1 }}>
                 {game.court ? (
                   <Chip
                     avatar={<RoomOutlinedIcon />}
@@ -157,30 +157,57 @@ export const GameCard = ({ game, currentTeam }: GameCardProps) => {
                 ) : null}
               </Stack>
 
-              {game.status !== GameStatus.Scheduled ? (
-                <Divider />
-              ) : null}
-
               {/* Affichage de l'arbitre et du bouton d'arbitrage */}
               {game.referee ? (
                 isReferee ? (
-                  <Alert severity="warning" icon={<SportsIcon />} sx={{ py: 0 }}>
-                    Votre équipe arbitre ce match
-                  </Alert>
+                  <Stack
+                    alignItems={{ sm: 'stretch' }}
+                    direction={{ xs: 'column', sm: 'row' }}
+                    spacing={1}
+                  >
+                    <Alert severity="warning" icon={<SportsIcon />} sx={{ flex: 1, py: 0 }}>
+                      Votre équipe arbitre ce match
+                    </Alert>
+                    {game.status === GameStatus.InProgress ? (
+                      <Button
+                        color="warning"
+                        endIcon={<ScoreboardOutlinedIcon />}
+                        onClick={handleRefereeClick}
+                        sx={{ whiteSpace: 'nowrap' }}
+                        variant="outlined"
+                      >
+                        Accéder à l'arbitrage
+                      </Button>
+                    ) : null}
+                  </Stack>
                 ) : (
-                  <Typography variant="body2" color="text.secondary">
-                    Arbitre : {game.referee.name}
-                  </Typography>
+                  <Alert severity="info" icon={<SportsIcon />} sx={{ py: 0 }}>
+                    Vous serez arbitré par {game.referee.name}
+                  </Alert>
                 )
-              ) : null}
-
-              {game.status === GameStatus.InProgress ? (
-                <Stack direction="row" justifyContent="flex-end">
-                  <Button variant="outlined" size="small" onClick={handleRefereeClick} color="success">
-                    Arbitrer le match
-                  </Button>
+              ) : (
+                <Stack
+                  alignItems={{ sm: 'stretch' }}
+                  direction={{ xs: 'column', sm: 'row' }}
+                  spacing={1}
+                >
+                  <Alert severity="warning" icon={<SportsIcon />} sx={{ flex: 1, py: 0 }}>
+                    Les équipes doivent s'auto-arbitrer
+                  </Alert>
+                  {game.status === GameStatus.InProgress ? (
+                    <Button
+                      color="warning"
+                      endIcon={<ScoreboardOutlinedIcon />}
+                      onClick={handleRefereeClick}
+                      sx={{ whiteSpace: 'nowrap' }}
+                      variant="outlined"
+                    >
+                      Saisir le score
+                    </Button>
+                  ) : null}
                 </Stack>
-              ) : null}
+              )}
+
             </>) : null}
         </Stack>
       </CardContent>
