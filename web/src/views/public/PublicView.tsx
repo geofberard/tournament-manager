@@ -106,10 +106,7 @@ export const PublicView = () => {
           {isGamesLoading ? (
             <Box display="flex" justifyContent="center" py={4}><CircularProgress /></Box>
           ) : (
-            <Box display="flex" flexDirection="column" gap={2}>
-              // TODO: Créer un composant pour afficher la liste des matchs par terrain
-              Liste matches sur le terrain
-            </Box>
+            <PitchStatus games={games} />
           )}
         </Paper>
       </Stack>
