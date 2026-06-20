@@ -57,7 +57,7 @@ const getFilesToCover = () =>
 describe('ensuring selected source files have associated tests', () => {
   const filesToCover = getFilesToCover()
 
-  it.each(filesToCover)('should have a matching test file for %p', (sourcePath: string) => {
+  it.each(filesToCover)('should have a matching test file for %s', (sourcePath: string) => {
     // WHEN
     const matchingTestCandidates = getMatchingTestCandidates(sourcePath)
     const hasMatchingTest = matchingTestCandidates.some((testPath) => existsSync(testPath))
