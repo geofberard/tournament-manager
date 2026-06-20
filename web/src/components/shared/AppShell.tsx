@@ -3,6 +3,7 @@ import { NavigationMenu } from './NavigationMenu'
 import type { AppRoute } from '../../app/routes'
 
 type AppShellProps = {
+  actionIcon?: React.ReactNode
   actionLabel: string
   children: React.ReactNode
   currentPath: string
@@ -16,6 +17,7 @@ type AppShellProps = {
 }
 
 export const AppShell = ({
+  actionIcon,
   actionLabel,
   children,
   currentPath,
@@ -49,6 +51,7 @@ export const AppShell = ({
             pages={pages}
             currentPath={currentPath}
             onNavigate={onNavigate}
+            actionIcon={actionIcon}
             actionLabel={actionLabel}
             onActionClick={onActionClick}
             logoSrc={logoSrc}

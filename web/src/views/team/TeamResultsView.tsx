@@ -20,9 +20,6 @@ export const TeamResultsView = ({ currentTeam }: TeamResultsViewProps) => {
     <Stack spacing={3}>
       <Stack spacing={0.5}>
         <Typography variant="h2">Bienvenue {currentTeam.name}</Typography>
-        <Typography variant="body1" color="text.secondary">
-          Retrouvez ici les resultats de votre groupe et suivez votre position dans chaque phase.
-        </Typography>
       </Stack>
 
       {isPhasesLoading ? (
@@ -36,7 +33,6 @@ export const TeamResultsView = ({ currentTeam }: TeamResultsViewProps) => {
       ) : null}
 
       <Stack spacing={2}>
-        <Typography variant="h3">Resultats</Typography>
         {phases.length > 0 ? (
           <Tabs
             value={effectiveSelectedPhaseId ?? false}

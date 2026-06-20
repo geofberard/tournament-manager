@@ -14,6 +14,7 @@ import {
 import type { AppRoute } from '../../app/routes'
 
 type NavigationMenuProps = {
+  actionIcon?: React.ReactNode
   actionLabel: string
   currentPath: string
   logoAlt?: string
@@ -58,6 +59,7 @@ const BurgerButton = ({ onClick }: { onClick: () => void }) => {
 }
 
 export const NavigationMenu = ({
+  actionIcon,
   actionLabel,
   currentPath,
   logoAlt,
@@ -119,11 +121,14 @@ export const NavigationMenu = ({
               <Button
                 key={page.path}
                 color="inherit"
-                variant={isActive ? 'outlined' : 'text'}
+                variant="outlined"
                 onClick={() => onNavigate(page.path)}
                 sx={{
                   borderColor: isActive ? 'secondary.main' : 'transparent',
                   color: 'inherit',
+                  '&:hover': {
+                    borderColor: isActive ? 'secondary.main' : 'transparent',
+                  },
                 }}
               >
                 {page.label}
@@ -132,8 +137,21 @@ export const NavigationMenu = ({
           })}
         </Stack>
 
-        <Button variant="outlined" color="secondary" onClick={onActionClick}>
-          {actionLabel}
+        <Button
+          aria-label={actionLabel}
+          variant="outlined"
+          color="secondary"
+          onClick={onActionClick}
+          sx={{
+            minWidth: actionIcon ? { xs: 44, md: 64 } : undefined,
+            px: actionIcon ? { xs: 1.25, md: 2 } : undefined,
+            gap: actionIcon ? 1 : undefined,
+          }}
+        >
+          {actionIcon ? <Box component="span" sx={{ display: 'inline-flex' }}>{actionIcon}</Box> : null}
+          <Box component="span" sx={{ display: actionIcon ? { xs: 'none', md: 'inline' } : 'inline' }}>
+            {actionLabel}
+          </Box>
         </Button>
       </Stack>
 
@@ -162,7 +180,13 @@ export const NavigationMenu = ({
 
           <Box sx={{ mt: 'auto', p: 2 }}>
             <Divider sx={{ mb: 2 }} />
-            <Button fullWidth variant="outlined" color="secondary" onClick={onActionClick}>
+            <Button
+              fullWidth
+              variant="outlined"
+              color="secondary"
+              onClick={onActionClick}
+              startIcon={actionIcon}
+            >
               {actionLabel}
             </Button>
           </Box>

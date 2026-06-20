@@ -34,12 +34,6 @@ export const TeamGamesView = ({ currentTeam }: TeamGamesViewProps) => {
 
   return (
     <Stack spacing={3}>
-      <Stack spacing={0.5}>
-        <Typography variant="h2">Bienvenue {currentTeam.name}</Typography>
-        <Typography variant="body1" color="text.secondary">
-          Retrouvez ici la liste de vos matchs à venir et déjà joués.
-        </Typography>
-      </Stack>
 
       {isGamesLoading ? (
         <Stack direction="row" justifyContent="center" sx={{ py: 3 }}>

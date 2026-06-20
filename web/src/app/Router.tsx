@@ -1,4 +1,5 @@
 import { CircularProgress, Stack } from '@mui/material'
+import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
 import { BrowserRouter, Navigate, Outlet, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import scufLogo from '../assets/scuf-logo.svg'
 import { AppShell } from '../components/shared/AppShell'
@@ -43,6 +44,7 @@ const TeamProtectedLayout = ({ currentTeam, onChangeTeam }: TeamProtectedLayoutP
       pages={teamRoutes}
       currentPath={location.pathname}
       onNavigate={handleNavigate}
+      actionIcon={<SwapHorizIcon />}
       actionLabel="Changer d'équipe"
       onActionClick={onChangeTeam}
       logoSrc={scufLogo}

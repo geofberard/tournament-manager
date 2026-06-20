@@ -456,6 +456,8 @@ describe('Router', () => {
 
     renderRouter()
 
+    expect(screen.getByTestId('SwapHorizIcon')).toBeInTheDocument()
+
     // WHEN
     fireEvent.click(screen.getByRole('button', { name: "Changer d'équipe" }))
 
