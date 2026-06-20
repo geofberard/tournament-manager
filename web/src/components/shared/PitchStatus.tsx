@@ -49,11 +49,11 @@ export const PitchStatus = ({ games }: PitchStatusProps) => {
         const upcomingGames = courtGames
           .filter((g) => g.status === 'scheduled')
           .sort((a, b) => {
-            const hasValidTimeA = a.time instanceof Date && !isNaN(a.time.getTime()) && a.time.getTime() > 0
-            const hasValidTimeB = b.time instanceof Date && !isNaN(b.time.getTime()) && b.time.getTime() > 0
+            const hasValidTimeA = a.time && a.time instanceof Date && !isNaN(a.time.getTime()) && a.time.getTime() > 0
+            const hasValidTimeB = b.time && b.time instanceof Date && !isNaN(b.time.getTime()) && b.time.getTime() > 0
 
             if (hasValidTimeA && hasValidTimeB) {
-              return a.time.getTime() - b.time.getTime()
+              return a.time!.getTime() - b.time!.getTime()
             }
             if (hasValidTimeA) return -1
             if (hasValidTimeB) return 1
