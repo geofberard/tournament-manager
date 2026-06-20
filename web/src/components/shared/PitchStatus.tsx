@@ -1,15 +1,31 @@
-import { Avatar, Card, CardContent, CardHeader, Chip, Divider, List, ListItem, ListItemIcon, ListItemText, Stack, Typography, Box, keyframes } from '@mui/material'
+import {
+  Avatar,
+  Card,
+  CardContent,
+  CardHeader,
+  Chip,
+  Divider,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Stack,
+  Typography,
+  Box,
+  keyframes
+} from '@mui/material'
 import PlaceIcon from '@mui/icons-material/Place'
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline'
 import ScheduleIcon from '@mui/icons-material/Schedule'
-import type { Game } from '../../services/gamesService'
+import type {Game} from '../../services/gamesService'
+import {GameStatus} from "../../generated/api-client";
 
 type PitchStatusProps = {
   games: Game[]
 }
 
 const formatTime = (date: Date) => {
-  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  return date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})
 }
 
 const pulseAnimation = keyframes`
@@ -24,21 +40,24 @@ const pulseAnimation = keyframes`
   }
 `
 
-export const PitchStatus = ({ games }: PitchStatusProps) => {
-  const gamesByCourt = games.reduce((acc, game) => {
-    if (!acc[game.court]) {
-      acc[game.court] = []
-    }
-    acc[game.court].push(game)
-    return acc
-  }, {} as Record<string, Game[]>)
+export const PitchStatus = ({games}: PitchStatusProps) => {
+  const gamesByCourt = games
+    .filter(game => game.status !== GameStatus.Completed)
+    .filter(game => game.status !== GameStatus.Canceled)
+    .reduce((acc, game) => {
+      if (!acc[game.court]) {
+        acc[game.court] = []
+      }
+      acc[game.court].push(game)
+      return acc
+    }, {} as Record<string, Game[]>)
 
   const courts = Object.keys(gamesByCourt).sort()
 
   return (
     <Stack spacing={3}>
       {courts.length === 0 ? (
-        <Typography variant="body1" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+        <Typography variant="body1" color="text.secondary" sx={{fontStyle: 'italic'}}>
           Aucun match planifié sur les terrains.
         </Typography>
       ) : null}
@@ -61,11 +80,11 @@ export const PitchStatus = ({ games }: PitchStatusProps) => {
           })
 
         return (
-          <Card key={court} variant="elevation" elevation={2} sx={{ borderRadius: 2, overflow: 'hidden' }}>
+          <Card key={court} variant="elevation" elevation={2} sx={{borderRadius: 2, overflow: 'hidden'}}>
             <CardHeader
               avatar={
-                <Avatar sx={{ bgcolor: 'primary.main' }}>
-                  <PlaceIcon />
+                <Avatar sx={{bgcolor: 'primary.main'}}>
+                  <PlaceIcon/>
                 </Avatar>
               }
               title={
@@ -73,17 +92,17 @@ export const PitchStatus = ({ games }: PitchStatusProps) => {
                   {court}
                 </Typography>
               }
-              sx={{ bgcolor: 'grey.50', borderBottom: 1, borderColor: 'divider', py: 1.5 }}
+              sx={{bgcolor: 'grey.50', borderBottom: 1, borderColor: 'divider', py: 1.5}}
             />
-            <CardContent sx={{ p: 0, '&:last-child': { pb: 0 } }}>
+            <CardContent sx={{p: 0, '&:last-child': {pb: 0}}}>
               <List disablePadding>
                 {/* Match en cours */}
-                <ListItem sx={{ py: 2 }}>
-                  <ListItemIcon sx={{ minWidth: 40 }}>
-                    <PlayCircleOutlineIcon color={inProgressGame ? 'success' : 'disabled'} />
+                <ListItem sx={{py: 2}}>
+                  <ListItemIcon sx={{minWidth: 40}}>
+                    <PlayCircleOutlineIcon color={inProgressGame ? 'success' : 'disabled'}/>
                   </ListItemIcon>
                   <ListItemText
-                    slotProps={{ secondary: { component: 'div' } }}
+                    slotProps={{secondary: {component: 'div'}}}
                     primary={
                       <Box display="flex" alignItems="center" gap={1}>
                         <Typography variant="subtitle2" color="text.secondary">
@@ -105,11 +124,11 @@ export const PitchStatus = ({ games }: PitchStatusProps) => {
                     }
                     secondary={
                       inProgressGame ? (
-                        <Typography variant="body1" fontWeight="bold" color="text.primary" sx={{ mt: 0.5 }}>
+                        <Typography variant="body1" fontWeight="bold" color="text.primary" sx={{mt: 0.5}}>
                           {Array.from(inProgressGame.contestants).map(c => c.name).join(' vs ')}
                         </Typography>
                       ) : (
-                        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                        <Typography variant="body2" color="text.secondary" sx={{mt: 0.5}}>
                           Aucun match en cours
                         </Typography>
                       )
@@ -117,17 +136,17 @@ export const PitchStatus = ({ games }: PitchStatusProps) => {
                   />
                 </ListItem>
 
-                <Divider component="li" />
+                <Divider component="li"/>
 
                 {/* Prochains matchs */}
-                <ListItem sx={{ py: 2, bgcolor: 'grey.50', alignItems: 'flex-start' }}>
-                  <ListItemIcon sx={{ minWidth: 40, mt: 0.5 }}>
-                    <ScheduleIcon color="action" />
+                <ListItem sx={{py: 2, bgcolor: 'grey.50', alignItems: 'flex-start'}}>
+                  <ListItemIcon sx={{minWidth: 40, mt: 0.5}}>
+                    <ScheduleIcon color="action"/>
                   </ListItemIcon>
                   <ListItemText
-                    slotProps={{ secondary: { component: 'div' } }}
+                    slotProps={{secondary: {component: 'div'}}}
                     primary={
-                      <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
+                      <Typography variant="subtitle2" color="text.secondary" sx={{mb: 1}}>
                         À venir
                       </Typography>
                     }
@@ -135,13 +154,14 @@ export const PitchStatus = ({ games }: PitchStatusProps) => {
                       upcomingGames.length > 0 ? (
                         <Stack spacing={1.5}>
                           {upcomingGames.map((game) => (
-                            <Box key={game.id} component="div" sx={{ display: 'flex', alignItems: 'center' }}>
-                              {game.time instanceof Date && !isNaN(game.time.getTime()) && game.time.getTime() > 0 && <Chip
-                                size="small"
-                                label={formatTime(game.time)}
-                                variant="outlined"
-                                sx={{ mr: 1.5, height: 24, minWidth: 56 }}
-                              />}
+                            <Box key={game.id} component="div" sx={{display: 'flex', alignItems: 'center'}}>
+                              {game.time instanceof Date && !isNaN(game.time.getTime()) && game.time.getTime() > 0 &&
+                                  <Chip
+                                      size="small"
+                                      label={formatTime(game.time)}
+                                      variant="outlined"
+                                      sx={{mr: 1.5, height: 24, minWidth: 56}}
+                                  />}
                               <Typography component="span" variant="body2" color="text.primary" fontWeight="medium">
                                 {Array.from(game.contestants).map(c => c.name).join(' vs ')}
                               </Typography>
@@ -149,7 +169,7 @@ export const PitchStatus = ({ games }: PitchStatusProps) => {
                           ))}
                         </Stack>
                       ) : (
-                        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                        <Typography variant="body2" color="text.secondary" sx={{mt: 0.5}}>
                           Aucun match à venir
                         </Typography>
                       )
