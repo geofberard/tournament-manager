@@ -1,7 +1,7 @@
 import { renderHook, waitFor } from '@testing-library/react'
 import { SWRConfig } from 'swr'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { useRankings } from './useRankings'
+import { useTeamRankings } from './useTeamRankings'
 import * as statisticsService from '../services/statisticsService'
 import * as teamsService from '../services/teamsService'
 
@@ -30,7 +30,7 @@ const createWrapper = () => {
   }
 }
 
-describe('useRankings', () => {
+describe('useTeamRankings', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
@@ -53,7 +53,7 @@ describe('useRankings', () => {
     ])
 
     // WHEN
-    const { result } = renderHook(() => useRankings('team-1', 'phase-1'), { wrapper: createWrapper() })
+    const { result } = renderHook(() => useTeamRankings('team-1', 'phase-1'), { wrapper: createWrapper() })
 
     // THEN
     await waitFor(() => expect(result.current.isLoading).toBe(false))
@@ -80,7 +80,7 @@ describe('useRankings', () => {
     getTeamGroupMock.mockRejectedValueOnce(new Error('Groupe indisponible'))
 
     // WHEN
-    const { result } = renderHook(() => useRankings('team-1', 'phase-1'), { wrapper: createWrapper() })
+    const { result } = renderHook(() => useTeamRankings('team-1', 'phase-1'), { wrapper: createWrapper() })
 
     // THEN
     await waitFor(() => expect(result.current.isLoading).toBe(false))
@@ -91,7 +91,7 @@ describe('useRankings', () => {
 
   it('should stay idle while no phase is selected', async () => {
     // WHEN
-    const { result } = renderHook(() => useRankings('team-1', null), { wrapper: createWrapper() })
+    const { result } = renderHook(() => useTeamRankings('team-1', null), { wrapper: createWrapper() })
 
     // THEN
     await waitFor(() => expect(result.current.isLoading).toBe(false))

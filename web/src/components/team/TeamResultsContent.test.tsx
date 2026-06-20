@@ -3,18 +3,18 @@ import { ThemeProvider, createTheme } from '@mui/material'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { TeamResultsContent } from './TeamResultsContent'
 import * as useGamesModule from '../../hooks/useGames'
-import * as useRankingsModule from '../../hooks/useRankings'
+import * as useTeamRankingsModule from '../../hooks/useTeamRankings'
 
 vi.mock('../../hooks/useGames', () => ({
   useGames: vi.fn(),
 }))
 
-vi.mock('../../hooks/useRankings', () => ({
-  useRankings: vi.fn(),
+vi.mock('../../hooks/useTeamRankings', () => ({
+  useTeamRankings: vi.fn(),
 }))
 
 const useGamesMock = vi.mocked(useGamesModule.useGames)
-const useRankingsMock = vi.mocked(useRankingsModule.useRankings)
+const useTeamRankingsMock = vi.mocked(useTeamRankingsModule.useTeamRankings)
 
 describe('TeamResultsContent', () => {
   afterEach(() => {
@@ -28,7 +28,7 @@ describe('TeamResultsContent', () => {
       games: [],
       isLoading: false,
     })
-    useRankingsMock.mockReturnValue({
+    useTeamRankingsMock.mockReturnValue({
       groupName: 'Poule A',
       errorMessage: null,
       isLoading: false,

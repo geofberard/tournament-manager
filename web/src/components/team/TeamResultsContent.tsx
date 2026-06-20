@@ -2,8 +2,9 @@ import { Alert, Stack, Typography } from '@mui/material'
 import { GameList } from '../shared/GameList'
 import { RankingTable } from '../shared/RankingTable'
 import { useGames } from '../../hooks/useGames'
-import { useRankings } from '../../hooks/useRankings'
 import { sortGamesByPosition } from '../../services/gameOrdering'
+import { useTeamRankings } from '../../hooks/useTeamRankings'
+import type { Game } from '../../services/gamesService'
 import type { Phase } from '../../services/phasesService'
 import type { Team } from '../../services/teamsService'
 
@@ -20,7 +21,7 @@ export const TeamResultsContent = ({ currentTeam, selectedPhase }: TeamResultsCo
     errorMessage: rankingsErrorMessage,
     isLoading: isRankingsLoading,
     rankings,
-  } = useRankings(currentTeam.id, isPoolPhase ? selectedPhase?.id ?? null : null)
+  } = useTeamRankings(currentTeam.id, isPoolPhase ? selectedPhase?.id ?? null : null)
 
   if (!selectedPhase) {
     return <Alert severity="info">Aucune phase n'est disponible pour le moment.</Alert>
