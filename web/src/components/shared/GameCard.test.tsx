@@ -15,7 +15,7 @@ vi.mock('react-router-dom', () => ({
 const renderCard = (game: Game) =>
   render(
     <ThemeProvider theme={createTheme()}>
-      <GameCard game={game} />
+      <GameCard game={game} currentTeam={{ id: 'team-1', name: 'Aigles' }} />
     </ThemeProvider>,
   )
 
@@ -51,14 +51,15 @@ describe('GameCard', () => {
     renderCard(baseGame)
 
     // THEN
-    expect(screen.getByText('Aigles vs Tigres')).toBeInTheDocument()
+    expect(screen.getByText('Aigles')).toBeInTheDocument()
+    expect(screen.getByText('Tigres')).toBeInTheDocument()
     expect(screen.getByText('Brassage')).toBeInTheDocument()
     expect(screen.getByText('Poule A')).toBeInTheDocument()
-    expect(screen.getByText('Termine')).toBeInTheDocument()
-    expect(screen.getByText('Score:')).toBeInTheDocument()
+    expect(screen.getByText('Terminé')).toBeInTheDocument()
     expect(screen.getByText('21 - 18')).toBeInTheDocument()
-    expect(screen.getByText('Arbitre: Pantheres')).toBeInTheDocument()
-    expect(screen.getByText(/Terrain Central/)).toBeInTheDocument()
+    // Court and referee are not rendered for completed games
+    expect(screen.queryByText('Central')).not.toBeInTheDocument()
+    expect(screen.queryByText(/Arbitre/)).not.toBeInTheDocument()
   })
 
   it('should render the match subgroup when provided', () => {
@@ -70,7 +71,8 @@ describe('GameCard', () => {
 
     // THEN
     expect(screen.getByText('1/2')).toBeInTheDocument()
-    expect(screen.getByText('Aigles vs Tigres')).toBeInTheDocument()
+    expect(screen.getByText('Aigles')).toBeInTheDocument()
+    expect(screen.getByText('Tigres')).toBeInTheDocument()
   })
 
   it('should render the court without a fallback time when no time is planned', () => {
@@ -78,11 +80,12 @@ describe('GameCard', () => {
     renderCard({
       ...baseGame,
       time: undefined,
+      status: GameStatus.Scheduled,
     })
 
     // THEN
     expect(screen.queryByText(/Horaire a definir/)).not.toBeInTheDocument()
-    expect(screen.getByText('Terrain Central')).toBeInTheDocument()
+    expect(screen.getByText('Central')).toBeInTheDocument()
   })
 
   it('should omit the referee block when no referee is provided', () => {
@@ -93,7 +96,7 @@ describe('GameCard', () => {
     })
 
     // THEN
-    expect(container).not.toHaveTextContent('Arbitre:')
+    expect(container).not.toHaveTextContent('Arbitre :')
   })
 
   it('should render missing scores as dashes', () => {

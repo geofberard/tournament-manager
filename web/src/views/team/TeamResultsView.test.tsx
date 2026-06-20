@@ -166,9 +166,8 @@ describe('TeamResultsView', () => {
 
     // THEN
     expect(screen.queryByText("Les resultats ne sont pas encore disponibles.")).not.toBeInTheDocument()
-    expect(screen.getAllByText(/Tigres vs|Aigles vs/).map((card) => card.textContent)).toEqual([
-      'Aigles vs Tigres',
-      'Tigres vs Lynx',
-    ])
+    expect(screen.getByText('Aigles')).toBeInTheDocument()
+    expect(screen.getAllByText('Tigres')).toHaveLength(2)
+    expect(screen.getByText('Lynx')).toBeInTheDocument()
   })
 })

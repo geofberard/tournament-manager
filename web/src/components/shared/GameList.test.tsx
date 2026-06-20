@@ -14,6 +14,7 @@ const renderList = (props?: Partial<React.ComponentProps<typeof GameList>>) =>
           errorMessage={null}
           games={[]}
           isLoading={false}
+          currentTeam={{ id: 'team-1', name: 'Aigles' }}
           {...props}
         />
       </MemoryRouter>
@@ -93,7 +94,8 @@ describe('GameList', () => {
     renderList({ games })
 
     // THEN
-    expect(screen.getByText('Aigles vs Tigres')).toBeInTheDocument()
-    expect(screen.getByText('Tigres vs Lynx')).toBeInTheDocument()
+    expect(screen.getByText('Aigles')).toBeInTheDocument()
+    expect(screen.getAllByText('Tigres')).toHaveLength(2)
+    expect(screen.getByText('Lynx')).toBeInTheDocument()
   })
 })
