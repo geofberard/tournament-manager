@@ -130,7 +130,7 @@ describe('Router', () => {
     renderRouter()
 
     // THEN
-    expect(screen.getByText('Zone publique')).toBeInTheDocument()
+    expect(screen.getByText("Aucun tournoi n'est configuré pour le moment.")).toBeInTheDocument()
   })
 
   it('should redirect /team to /team/login when no team is selected', async () => {
