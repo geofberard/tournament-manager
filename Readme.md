@@ -48,9 +48,12 @@ To install all dependencies, run :
 $ cd api
 $ mvn clean install
 ```
-The API now relies on Spring Data JPA and supports two database profiles:
-- `h2` (default): in-memory database for local quick start and tests
-- `postgres`: external PostgreSQL database configured at startup
+The API relies on Spring Data JPA and Flyway. Database and data-loading profiles can
+be composed:
+
+- `h2,mock` (default): in-memory database, reset and populated on every start
+- `postgres,mock`: PostgreSQL database, reset and populated on every start
+- `postgres`: persistent PostgreSQL database, migrated without deleting its data
 
 The shared configuration lives in
 [`api/src/main/resources/application.properties`](/Users/geoffrey.berard/lesfurets/_perso/tournament-manager/api/src/main/resources/application.properties),
@@ -68,11 +71,11 @@ However, it is possible to run it in terminal with the command :
 $ mvn spring-boot:run
 ```
 
-This starts the API with the default `h2` profile.
+This starts the API with the default `h2,mock` profiles.
 
 To start the API on PostgreSQL instead:
 ```bash
-$ SPRING_PROFILES_ACTIVE=postgres \
+$ SPRING_PROFILES_ACTIVE=postgres,mock \
   APP_DATASOURCE_URL='jdbc:postgresql://localhost:5432/tournament_manager' \
   APP_DATASOURCE_USERNAME=tournament \
   mvn spring-boot:run
@@ -88,15 +91,14 @@ In production on Cloud Run, Terraform injects `APP_DATASOURCE_URL`,
 targets Cloud SQL through the Google socket factory, while credentials stay outside
 the URL.
 
-The application initializes the schema and seed data automatically for both profiles
-using
-[`api/src/main/resources/schema.sql`](/Users/geoffrey.berard/lesfurets/_perso/tournament-manager/api/src/main/resources/schema.sql)
-and
-[`api/src/main/resources/data.sql`](/Users/geoffrey.berard/lesfurets/_perso/tournament-manager/api/src/main/resources/data.sql).
+Versioned production migrations live in `api/src/main/resources/db/migration`.
+Mock-only data lives in `api/src/main/resources/db/mock`. Add every schema change as
+a new migration such as `V2__add_team_registration_date.sql`; never edit an already
+deployed migration.
 
 To start a local PostgreSQL container for development:
 ```bash
-$ SPRING_PROFILES_ACTIVE=postgres docker compose -f infra/local/docker/docker-compose.yml --profile postgres up
+$ docker compose -f infra/local/docker/docker-compose.yml --profile postgres up
 ```
 
 The `postgres` service exposes a database on `localhost:5432` with:

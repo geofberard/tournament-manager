@@ -1,3 +1,4 @@
+-- Mock data loaded only when the mock profile is active.
 INSERT INTO teams (id, name)
 VALUES ('team_1', 'Star Wars Heroes'),
        ('team_2', 'Back to the Future Crew'),

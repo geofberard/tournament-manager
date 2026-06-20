@@ -13,7 +13,7 @@ services:
       ]
     environment:
       MAVEN_CONFIG: /root/.m2
-      SPRING_PROFILES_ACTIVE: postgres
+      SPRING_PROFILES_ACTIVE: postgres,mock
       APP_DATASOURCE_URL: jdbc:postgresql://postgres:5432/tournament_manager
       APP_DATASOURCE_USERNAME: tournament
       APP_DATASOURCE_PASSWORD: ${APP_DATASOURCE_PASSWORD:-}
