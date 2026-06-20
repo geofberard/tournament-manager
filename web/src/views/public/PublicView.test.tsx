@@ -52,7 +52,7 @@ describe('PublicView', () => {
 
   it('should display groups and pitches when data is available', () => {
     usePhasesMock.mockReturnValue({
-      phases: [{ id: 'phase-1', type: 'POOL', name: 'Phase 1' }],
+      phases: [{ id: 'phase-1', type: 'POOL', name: 'Phase 1', order: 1 }],
       isLoading: false,
       errorMessage: null,
     })
@@ -82,7 +82,7 @@ describe('PublicView', () => {
 
   it('should display errors from hooks', () => {
     usePhasesMock.mockReturnValue({
-      phases: [{ id: 'phase-1', type: 'POOL', name: 'Phase 1' }],
+      phases: [{ id: 'phase-1', type: 'POOL', name: 'Phase 1', order: 1 }],
       isLoading: false,
       errorMessage: null,
     })
