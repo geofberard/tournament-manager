@@ -21,7 +21,7 @@ resource "google_sql_database_instance" "database" {
     }
   }
 
-  depends_on = [google_project_service.services]
+  depends_on = [time_sleep.after_service_activation]
 }
 
 resource "google_sql_database" "database" {
