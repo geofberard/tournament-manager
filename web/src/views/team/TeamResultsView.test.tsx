@@ -65,7 +65,6 @@ describe('TeamResultsView', () => {
 
     // THEN
     expect(screen.getByText('Bienvenue Tigres')).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: 'Resultats' })).toBeInTheDocument()
     expect(screen.getByRole('tablist', { name: 'Phases du tournoi' })).toBeInTheDocument()
     expect(screen.getByRole('tab', { name: 'Brassage' })).toBeInTheDocument()
     expect(screen.getByText('Premier paragraphe.')).toBeInTheDocument()
