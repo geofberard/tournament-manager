@@ -58,6 +58,7 @@ export const TeamResultsContent = ({ currentTeam, selectedPhase }: TeamResultsCo
       errorMessage={gamesErrorMessage}
       games={teamBracketGames}
       isLoading={isGamesLoading}
+      currentTeam={currentTeam}
     />
   )
 }
