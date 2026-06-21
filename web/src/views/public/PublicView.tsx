@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Alert, CircularProgress, Stack, Typography, Box, Paper, Divider, Tabs, Tab } from '@mui/material'
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered'
 import StadiumIcon from '@mui/icons-material/Stadium'
@@ -11,8 +11,16 @@ import { QrCodeButton } from '../../components/shared/QrCodeButton'
 import { TerrainMapButton } from '../../components/shared/TerrainMapButton'
 import { BuvetteButton } from '../../components/shared/BuvetteButton'
 
+const PUBLIC_REFRESH_INTERVAL = 30_000
+
 export const PublicView = () => {
   const { phases, isLoading: isPhasesLoading, errorMessage: phasesError } = usePhases()
+
+  useEffect(() => {
+    const refreshInterval = window.setInterval(() => window.location.reload(), PUBLIC_REFRESH_INTERVAL)
+
+    return () => window.clearInterval(refreshInterval)
+  }, [])
 
   const [selectedPhaseId, setSelectedPhaseId] = useState<string | null>(null)
   const effectiveSelectedPhaseId = selectedPhaseId ?? phases[0]?.id ?? null

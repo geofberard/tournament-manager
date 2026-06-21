@@ -35,7 +35,7 @@ export const RankingTable = ({
               #
             </TableCell>
             <TableCell>Equipe</TableCell>
-            <TableCell align="center">P</TableCell>
+            <TableCell align="center">J</TableCell>
             <TableCell align="center">G</TableCell>
             <TableCell align="center">N</TableCell>
             <TableCell align="center">D</TableCell>

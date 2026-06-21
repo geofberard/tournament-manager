@@ -29,6 +29,17 @@ const formatTime = (date: Date) => {
   return date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})
 }
 
+const GameTeamsAndReferee = ({game}: {game: Game}) => (
+  <Box>
+    <Typography variant="body1" fontWeight="bold" color="text.primary">
+      {Array.from(game.contestants).map(c => c.name).join(' vs ')}
+    </Typography>
+    <Typography variant="caption" color="text.secondary">
+      Arbitre : {game.referee?.name ?? 'auto-arbitrage'}
+    </Typography>
+  </Box>
+)
+
 const pulseAnimation = keyframes`
   0% {
     opacity: 1;
@@ -126,9 +137,9 @@ export const PitchStatus = ({games}: PitchStatusProps) => {
                     }
                     secondary={
                       inProgressGame ? (
-                        <Typography variant="body1" fontWeight="bold" color="text.primary" sx={{mt: 0.5}}>
-                          {Array.from(inProgressGame.contestants).map(c => c.name).join(' vs ')}
-                        </Typography>
+                        <Box sx={{mt: 0.5}}>
+                          <GameTeamsAndReferee game={inProgressGame}/>
+                        </Box>
                       ) : (
                         <Typography variant="body2" color="text.secondary" sx={{mt: 0.5}}>
                           Aucun match en cours
@@ -164,9 +175,7 @@ export const PitchStatus = ({games}: PitchStatusProps) => {
                                       variant="outlined"
                                       sx={{mr: 1.5, height: 24, minWidth: 56}}
                                   />}
-                              <Typography component="span" variant="body2" color="text.primary" fontWeight="medium">
-                                {Array.from(game.contestants).map(c => c.name).join(' vs ')}
-                              </Typography>
+                              <GameTeamsAndReferee game={game}/>
                             </Box>
                           ))}
                         </Stack>

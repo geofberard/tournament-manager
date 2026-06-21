@@ -18,6 +18,7 @@ describe('PitchStatus', () => {
         status: 'scheduled',
         time: new Date('2020-06-18T10:00:00Z'),
         contestants: new Set([{ id: 't1', name: 'Aigles' }, { id: 't2', name: 'Lions' }]),
+        referee: { id: 't7', name: 'Panthères' },
         group: 'Poule A',
         phase: { id: 'phase-1', type: 'POOL', name: 'Phase 1', order: 1 },
         score: { pointsByTeam: {} },
@@ -51,7 +52,9 @@ describe('PitchStatus', () => {
     // Terrain 1
     expect(screen.getByText('Terrain 1')).toBeInTheDocument()
     expect(screen.getByText('Aigles vs Lions')).toBeInTheDocument()
+    expect(screen.getByText('Arbitre : Panthères')).toBeInTheDocument()
     expect(screen.getByText(/Tigres vs Ours/)).toBeInTheDocument()
+    expect(screen.getByText('Arbitre : auto-arbitrage')).toBeInTheDocument()
 
     // Terrain 2 only has a completed game, so it should not be displayed
     expect(screen.queryByText('Terrain 2')).not.toBeInTheDocument()
