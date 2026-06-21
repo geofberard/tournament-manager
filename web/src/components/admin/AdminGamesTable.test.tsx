@@ -47,6 +47,7 @@ const renderTable = (
 describe('AdminGamesTable', () => {
   afterEach(() => {
     cleanup()
+    localStorage.clear()
   })
 
   it('should render games and visible columns', () => {
@@ -60,6 +61,30 @@ describe('AdminGamesTable', () => {
     expect(screen.getByRole('button', { name: 'Modifier le score de Tigres' })).toHaveTextContent('21')
     expect(screen.getByRole('button', { name: 'Modifier le score de Lynx' })).toHaveTextContent('18')
     expect(screen.queryByText('Finale')).not.toBeInTheDocument()
+  })
+
+  it('should restore the persisted grid configuration', () => {
+    // GIVEN
+    localStorage.setItem(
+      'admin-games-grid-state-v1',
+      JSON.stringify({
+        columns: {
+          columnVisibilityModel: {
+            phase: false,
+          },
+        },
+        pagination: {
+          paginationModel: { pageSize: 25 },
+        },
+      }),
+    )
+
+    // WHEN
+    renderTable([game])
+
+    // THEN
+    expect(screen.queryByRole('columnheader', { name: /Phase/ })).not.toBeInTheDocument()
+    expect(screen.getByRole('columnheader', { name: /Heure/ })).toBeInTheDocument()
   })
 
   it('should render games without a planned time', () => {

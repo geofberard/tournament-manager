@@ -1,6 +1,12 @@
 import { Card, CardContent } from '@mui/material'
-import { DataGrid, type GridColDef, type GridRowSelectionModel } from '@mui/x-data-grid'
-import { useMemo } from 'react'
+import {
+  DataGrid,
+  type GridColDef,
+  type GridInitialState,
+  type GridRowSelectionModel,
+  useGridApiRef,
+} from '@mui/x-data-grid'
+import { useMemo, useRef } from 'react'
 import type { Game } from '../../services/gamesService'
 import { AdminGamesTableToolbar } from './AdminGamesTableToolbar'
 import { EditableGameScore } from './EditableGameScore'
@@ -49,6 +55,44 @@ const formatScore = (value: number | null) => (value === null ? '-' : value)
 const formatGameScore = (team1Score: number | null, team2Score: number | null) =>
   `${formatScore(team1Score)} - ${formatScore(team2Score)}`
 
+const adminGamesGridStateKey = 'admin-games-grid-state-v1'
+
+const defaultGridState: GridInitialState = {
+  columns: {
+    columnVisibilityModel: {
+      court: false,
+      id: false,
+      position: false,
+      subgroup: false,
+      referee: false,
+      status: false,
+      teams: false,
+    },
+  },
+  filter: {
+    filterModel: {
+      items: [],
+      quickFilterExcludeHiddenColumns: false,
+    },
+  },
+  pagination: {
+    paginationModel: { pageSize: 25 },
+  },
+  sorting: {
+    sortModel: [{ field: 'position', sort: 'asc' }],
+  },
+}
+
+const loadGridState = (): GridInitialState => {
+  try {
+    const storedState = localStorage.getItem(adminGamesGridStateKey)
+    return storedState ? JSON.parse(storedState) : defaultGridState
+  } catch {
+    localStorage.removeItem(adminGamesGridStateKey)
+    return defaultGridState
+  }
+}
+
 const toAdminGameRow = (game: Game): AdminGameRow => {
   const teams = Array.from(game.contestants)
   const team1 = teams[0]
@@ -85,6 +129,9 @@ export const AdminGamesTable = ({
   onSelectionChange,
   selectedGameIds,
 }: AdminGamesTableProps) => {
+  const apiRef = useGridApiRef()
+  const initialGridState = useMemo(() => loadGridState(), [])
+  const persistedGridState = useRef(JSON.stringify(initialGridState))
   const rows = useMemo(() => games.map(toAdminGameRow), [games])
   const rowSelectionModel = useMemo<GridRowSelectionModel>(
     () => ({ ids: selectedGameIds, type: 'include' }),
@@ -189,6 +236,7 @@ export const AdminGamesTable = ({
     <Card variant="outlined">
       <CardContent sx={{ p: 0 }}>
         <DataGrid
+          apiRef={apiRef}
           autoHeight
           checkboxSelection
           columns={columns}
@@ -196,31 +244,7 @@ export const AdminGamesTable = ({
           disableVirtualization={import.meta.env.MODE === 'test'}
           disableRowSelectionOnClick
           getRowHeight={() => 'auto'}
-          initialState={{
-            columns: {
-              columnVisibilityModel: {
-                court: false,
-                id: false,
-                position: false,
-                subgroup: false,
-                referee: false,
-                status: false,
-                teams: false,
-              },
-            },
-            filter: {
-              filterModel: {
-                items: [],
-                quickFilterExcludeHiddenColumns: false,
-              },
-            },
-            pagination: {
-              paginationModel: { pageSize: 25 },
-            },
-            sorting: {
-              sortModel: [{ field: 'position', sort: 'asc' }],
-            },
-          }}
+          initialState={initialGridState}
           localeText={{
             checkboxSelectionHeaderName: 'Selectionner les matchs',
             checkboxSelectionSelectAllRows: 'Selectionner tous les matchs',
@@ -233,6 +257,25 @@ export const AdminGamesTable = ({
           onRowSelectionModelChange={(selectionModel) =>
             onSelectionChange(new Set(Array.from(selectionModel.ids, String)))
           }
+          onStateChange={() => {
+            const exportedState = apiRef.current?.exportState()
+            if (!exportedState) {
+              return
+            }
+
+            const state: GridInitialState = {
+              columns: exportedState.columns,
+              density: exportedState.density,
+              filter: exportedState.filter,
+              pagination: exportedState.pagination,
+              sorting: exportedState.sorting,
+            }
+            const serializedState = JSON.stringify(state)
+            if (serializedState !== persistedGridState.current) {
+              persistedGridState.current = serializedState
+              localStorage.setItem(adminGamesGridStateKey, serializedState)
+            }
+          }}
           pageSizeOptions={[10, 25, 50]}
           rowSelectionModel={rowSelectionModel}
           rows={rows}
