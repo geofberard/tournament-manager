@@ -1,4 +1,5 @@
-import { Alert, CircularProgress, Stack, Typography } from '@mui/material'
+import { useState } from 'react'
+import { Alert, CircularProgress, FormControlLabel, Stack, Switch, Typography } from '@mui/material'
 import { GameList } from '../../components/shared/GameList'
 import { GameStatus } from '../../generated/api-client'
 import { useGames } from '../../hooks/useGames'
@@ -13,6 +14,7 @@ type TeamGamesViewProps = {
 
 export const TeamGamesView = ({ currentTeam }: TeamGamesViewProps) => {
   const { errorMessage: gamesErrorMessage, games, isLoading: isGamesLoading } = useGames()
+  const [showOnlyTeamGames, setShowOnlyTeamGames] = useState(false)
 
   const teamGames = games.filter((game) =>
     Array.from(game.contestants).some((team) => team.id === currentTeam.id),
@@ -21,20 +23,23 @@ export const TeamGamesView = ({ currentTeam }: TeamGamesViewProps) => {
   const groupGames = games.filter((game) =>
     teamGroupKeys.has(`${game.phase.id}\u0000${game.group}`),
   )
+  const displayedGames = showOnlyTeamGames
+    ? groupGames.filter((game) => teamGames.includes(game) || game.referee?.id === currentTeam.id)
+    : groupGames
   const displayedStatus = (game: (typeof games)[number]) => getDisplayedGameStatus(game, games)
   const teamOngoingRefereeGames = games.filter((game) =>
     game.referee?.id === currentTeam.id && displayedStatus(game) === 'in_progress',
   )
   const ongoingGames = sortGamesByPosition(
-    groupGames.filter((game) =>
+    displayedGames.filter((game) =>
       displayedStatus(game) === 'in_progress' && game.referee?.id !== currentTeam.id,
     ),
   )
   const upcomingGames = sortGamesByPosition(
-    groupGames.filter((game) => displayedStatus(game) === 'scheduled'),
+    displayedGames.filter((game) => displayedStatus(game) === 'scheduled'),
   )
   const completedGames = sortGamesByPosition(
-    groupGames.filter((game) => game.status === GameStatus.Completed),
+    displayedGames.filter((game) => game.status === GameStatus.Completed),
   )
 
   return (
@@ -50,6 +55,22 @@ export const TeamGamesView = ({ currentTeam }: TeamGamesViewProps) => {
         <Alert severity="warning">
           La liste des matchs est indisponible pour le moment.
         </Alert>
+      ) : null}
+
+      {!isGamesLoading && !gamesErrorMessage ? (
+        <Stack direction="row" justifyContent="flex-end">
+          <FormControlLabel
+            control={(
+              <Switch
+                checked={showOnlyTeamGames}
+                onChange={(event) => setShowOnlyTeamGames(event.target.checked)}
+                size="small"
+              />
+            )}
+            label="Mes matchs"
+            sx={{ mr: 0 }}
+          />
+        </Stack>
       ) : null}
 
       {teamOngoingRefereeGames.length > 0 ? (<Stack spacing={2}>
