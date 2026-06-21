@@ -104,7 +104,7 @@ describe('GameCard', () => {
       status: GameStatus.Scheduled,
     }, 'scheduled', 2)
 
-    expect(screen.getByText('2 matchs avant le vôtre')).toBeInTheDocument()
+    expect(screen.getByText('Encore 2 matchs à attendre')).toBeInTheDocument()
   })
 
   it('should omit the referee block when no referee is provided', () => {

@@ -433,7 +433,7 @@ describe('AdminGamesView', () => {
         <AdminGamesView />
       </ThemeProvider>,
     )
-    const gameCheckboxes = screen.getAllByRole('checkbox', { name: 'Selectionner le match' })
+    const gameCheckboxes = screen.getAllByLabelText('Selectionner le match')
     fireEvent.click(gameCheckboxes[0])
     fireEvent.click(gameCheckboxes[1])
 
@@ -443,11 +443,11 @@ describe('AdminGamesView', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Supprimer' }))
 
     // THEN
+    expect(deleteGameMock).toHaveBeenCalledWith('game-1')
+    expect(deleteGameMock).toHaveBeenCalledWith('game-2')
     await waitFor(() => {
-      expect(deleteGameMock).toHaveBeenCalledWith('game-1')
-      expect(deleteGameMock).toHaveBeenCalledWith('game-2')
+      expect(screen.queryByText('2 matchs selectionnes')).not.toBeInTheDocument()
     })
-    expect(screen.queryByText('2 matchs selectionnes')).not.toBeInTheDocument()
   })
 
   it('should bulk update selected games from the drawer', async () => {

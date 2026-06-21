@@ -66,6 +66,6 @@ describe('TeamGamesView', () => {
     // THEN
     expect(screen.getByRole('heading', { name: 'Prochains matchs' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Matchs terminés' })).toBeInTheDocument()
-    expect(screen.getByText('1 match avant le vôtre')).toBeInTheDocument()
+    expect(screen.getByText('Encore 1 match à attendre')).toBeInTheDocument()
   })
 })
