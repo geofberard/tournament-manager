@@ -59,6 +59,7 @@ export const GameCard = ({ game, currentTeam, displayedStatus, waitingGamesCount
 
   const teams = Array.from(game.contestants);
   const isReferee = game.referee?.id === currentTeam.id
+  const isContestant = teams.some((team) => team.id === currentTeam.id)
   const isCompleted = game.status === GameStatus.Completed;
   const isInProgress = displayedStatus === 'in_progress'
 
@@ -79,9 +80,7 @@ export const GameCard = ({ game, currentTeam, displayedStatus, waitingGamesCount
               {waitingGamesCount != null ? (
                 <Chip
                   avatar={<AccessTimeOutlinedIcon />}
-                  label={waitingGamesCount === 0
-                    ? 'Aucun match avant le vôtre'
-                    : `Encore ${waitingGamesCount} match${waitingGamesCount > 1 ? 's' : ''} à attendre`}
+                  label={`Attente : ${waitingGamesCount} match${waitingGamesCount > 1 ? 's' : ''}`}
                   color="info"
                   variant="outlined"
                   size="small"
@@ -206,7 +205,9 @@ export const GameCard = ({ game, currentTeam, displayedStatus, waitingGamesCount
                   </Stack>
                 ) : (
                   <Alert severity="info" icon={<SportsIcon />} sx={{ py: 0 }}>
-                    Vous serez arbitré par {game.referee.name}
+                    {isContestant
+                      ? `Vous serez arbitré par ${game.referee.name}`
+                      : `Arbitre : ${game.referee.name}`}
                   </Alert>
                 )
               ) : (
@@ -218,7 +219,7 @@ export const GameCard = ({ game, currentTeam, displayedStatus, waitingGamesCount
                   <Alert severity="warning" icon={<SportsIcon />} sx={{ flex: 1, py: 0 }}>
                     Les équipes doivent s'auto-arbitrer
                   </Alert>
-                  {isInProgress ? (
+                  {isInProgress && isContestant ? (
                     <Button
                       color="warning"
                       endIcon={<ScoreboardOutlinedIcon />}

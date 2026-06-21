@@ -104,7 +104,7 @@ describe('GameCard', () => {
       status: GameStatus.Scheduled,
     }, 'scheduled', 2)
 
-    expect(screen.getByText('Encore 2 matchs à attendre')).toBeInTheDocument()
+    expect(screen.getByText('Attente : 2 matchs')).toBeInTheDocument()
   })
 
   it('should omit the referee block when no referee is provided', () => {
@@ -165,6 +165,20 @@ describe('GameCard', () => {
     expect(screen.queryByRole('button')).not.toBeInTheDocument()
   })
 
+  it('should describe the referee without addressing a team that does not play the game', () => {
+    renderCard({
+      ...baseGame,
+      status: GameStatus.Scheduled,
+      time: new Date('2020-05-01T18:30:00Z'),
+      contestants: new Set([
+        { id: 'team-2', name: 'Tigres' },
+        { id: 'team-4', name: 'Lynx' },
+      ]),
+    }, 'in_progress')
+
+    expect(screen.getByRole('alert')).toHaveTextContent('Arbitre : Pantheres')
+  })
+
   it('should render a score action when teams must referee themselves', () => {
     renderCard({
       ...baseGame,
@@ -193,6 +207,21 @@ describe('GameCard', () => {
     })
 
     expect(screen.getByRole('alert')).toHaveTextContent("Les équipes doivent s'auto-arbitrer")
+    expect(screen.queryByRole('button', { name: 'Saisir le score' })).not.toBeInTheDocument()
+  })
+
+  it('should not allow an unrelated team to enter an auto-refereed game score', () => {
+    renderCard({
+      ...baseGame,
+      referee: undefined,
+      status: GameStatus.Scheduled,
+      time: new Date('2020-05-01T18:30:00Z'),
+      contestants: new Set([
+        { id: 'team-2', name: 'Tigres' },
+        { id: 'team-4', name: 'Lynx' },
+      ]),
+    }, 'in_progress')
+
     expect(screen.queryByRole('button', { name: 'Saisir le score' })).not.toBeInTheDocument()
   })
 

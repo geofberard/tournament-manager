@@ -17,7 +17,7 @@ describe('TeamGamesView', () => {
     cleanup()
   })
 
-  it('should render the two game sections', () => {
+  it('should render every game from the groups in which the team participates', () => {
     // GIVEN
     useGamesMock.mockReturnValue({
       errorMessage: null,
@@ -50,6 +50,24 @@ describe('TeamGamesView', () => {
           status: GameStatus.Scheduled,
           contestants: new Set([{ id: 'team-3', name: 'Panthères' }]),
         },
+        {
+          id: 'game-other-group',
+          position: 3,
+          phase: { id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' },
+          group: 'Poule B',
+          court: 'Terrain 2',
+          status: GameStatus.Scheduled,
+          contestants: new Set([{ id: 'team-4', name: 'Lynx' }]),
+        },
+        {
+          id: 'game-same-name-other-phase',
+          position: 4,
+          phase: { id: 'phase-2', name: 'Finale', order: 2, type: 'POOL' },
+          group: 'Poule A',
+          court: 'Terrain 2',
+          status: GameStatus.Scheduled,
+          contestants: new Set([{ id: 'team-5', name: 'Ours' }]),
+        },
       ] as Game[],
       isLoading: false,
     })
@@ -66,6 +84,9 @@ describe('TeamGamesView', () => {
     // THEN
     expect(screen.getByRole('heading', { name: 'Prochains matchs' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Matchs terminés' })).toBeInTheDocument()
-    expect(screen.getByText('Encore 1 match à attendre')).toBeInTheDocument()
+    expect(screen.getByText('Panthères')).toBeInTheDocument()
+    expect(screen.queryByText('Lynx')).not.toBeInTheDocument()
+    expect(screen.queryByText('Ours')).not.toBeInTheDocument()
+    expect(screen.getByText('Attente : 1 match')).toBeInTheDocument()
   })
 })
