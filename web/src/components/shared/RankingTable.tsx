@@ -14,6 +14,10 @@ export const RankingTable = ({
   isLoading,
   rankings,
 }: RankingTableProps) => {
+  const sortedRankings = [...rankings].sort(
+    (first, second) => second.score - first.score || second.pointsDiff - first.pointsDiff,
+  )
+
   if (errorMessage) {
     return <Alert severity="error">{errorMessage}</Alert>
   }
@@ -39,7 +43,7 @@ export const RankingTable = ({
           </TableRow>
         </TableHead>
         <TableBody>
-          {rankings.map((entry, index) => {
+          {sortedRankings.map((entry, index) => {
             const isSelected = entry.contestant.id === currentTeamId
             const rankingIndex = index + 1
             const isTop3 = rankingIndex <= 3

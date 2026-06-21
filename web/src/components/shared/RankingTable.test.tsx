@@ -78,4 +78,28 @@ describe('RankingTable', () => {
     expect(screen.getByRole('table')).toBeInTheDocument()
     expect(screen.getByText('7')).toBeInTheDocument()
   })
+
+  it('should sort teams by score descending without mutating the input', () => {
+    const inputRankings = [...rankings]
+
+    renderTable({ rankings: inputRankings })
+
+    const rows = screen.getAllByRole('row')
+    expect(rows[1]).toHaveTextContent('Tigres')
+    expect(rows[2]).toHaveTextContent('Aigles')
+    expect(inputRankings).toEqual(rankings)
+  })
+
+  it('should use the highest point difference to break a score tie', () => {
+    renderTable({
+      rankings: [
+        { ...rankings[0], score: 7, pointsDiff: 8 },
+        { ...rankings[1], score: 7, pointsDiff: 13 },
+      ],
+    })
+
+    const rows = screen.getAllByRole('row')
+    expect(rows[1]).toHaveTextContent('Tigres')
+    expect(rows[2]).toHaveTextContent('Aigles')
+  })
 })
