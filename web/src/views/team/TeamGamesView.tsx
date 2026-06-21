@@ -108,6 +108,7 @@ export const TeamGamesView = ({ currentTeam }: TeamGamesViewProps) => {
             allGames={games}
             isLoading={isGamesLoading}
             currentTeam={currentTeam}
+            showWaitingGamesCount
           />
         </Stack>
       ) : null}

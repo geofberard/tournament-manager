@@ -3,6 +3,18 @@ import type { Game } from './gamesService'
 
 export type DisplayedGameStatus = 'scheduled' | 'in_progress' | 'completed'
 
+export const countPendingGamesBefore = (game: Game, allGames: Game[]) => {
+  if (game.position == null) return undefined
+  const targetPosition = game.position
+
+  return allGames.filter((candidate) =>
+    candidate.court === game.court &&
+    candidate.status !== GameStatus.Completed &&
+    candidate.position != null &&
+    candidate.position < targetPosition,
+  ).length
+}
+
 export const getDisplayedGameStatus = (
   game: Game,
   allGames: Game[],

@@ -2,7 +2,7 @@ import { Alert, Stack } from '@mui/material'
 import type { Game } from '../../services/gamesService'
 import { GameCard } from './GameCard'
 import type { Team } from '../../generated/api-client'
-import { getDisplayedGameStatus } from '../../services/gameStatus'
+import { countPendingGamesBefore, getDisplayedGameStatus } from '../../services/gameStatus'
 
 type GameListProps = {
   emptyMessage?: string
@@ -11,6 +11,7 @@ type GameListProps = {
   allGames: Game[]
   isLoading: boolean,
   currentTeam: Team
+  showWaitingGamesCount?: boolean
 }
 
 const defaultEmptyMessage = "Aucun match n'est encore planifie."
@@ -22,6 +23,7 @@ export const GameList = ({
   allGames,
   isLoading,
   currentTeam,
+  showWaitingGamesCount = false,
 }: GameListProps) => {
   if (errorMessage) {
     return <Alert severity="error">{errorMessage}</Alert>
@@ -39,6 +41,7 @@ export const GameList = ({
           game={game}
           currentTeam={currentTeam}
           displayedStatus={getDisplayedGameStatus(game, allGames)}
+          waitingGamesCount={showWaitingGamesCount ? countPendingGamesBefore(game, allGames) : undefined}
         />
       ))}
     </Stack>

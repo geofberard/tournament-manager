@@ -13,13 +13,18 @@ vi.mock('react-router-dom', () => ({
   useNavigate: () => navigateMock,
 }))
 
-const renderCard = (game: Game, displayedStatus: DisplayedGameStatus = game.status) =>
+const renderCard = (
+  game: Game,
+  displayedStatus: DisplayedGameStatus = game.status,
+  waitingGamesCount?: number,
+) =>
   render(
     <ThemeProvider theme={createTheme()}>
       <GameCard
         game={game}
         currentTeam={{ id: 'team-1', name: 'Aigles' }}
         displayedStatus={displayedStatus}
+        waitingGamesCount={waitingGamesCount}
       />
     </ThemeProvider>,
   )
@@ -91,6 +96,15 @@ describe('GameCard', () => {
     // THEN
     expect(screen.queryByText(/Horaire a definir/)).not.toBeInTheDocument()
     expect(screen.getByText('Central')).toBeInTheDocument()
+  })
+
+  it('should render the number of games remaining before an upcoming game', () => {
+    renderCard({
+      ...baseGame,
+      status: GameStatus.Scheduled,
+    }, 'scheduled', 2)
+
+    expect(screen.getByText('2 matchs avant le vôtre')).toBeInTheDocument()
   })
 
   it('should omit the referee block when no referee is provided', () => {

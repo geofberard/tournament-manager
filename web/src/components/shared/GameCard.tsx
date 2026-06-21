@@ -22,6 +22,7 @@ type GameCardProps = {
   game: Game,
   currentTeam: Team
   displayedStatus: DisplayedGameStatus
+  waitingGamesCount?: number
 }
 
 const timeFormatter = new Intl.DateTimeFormat('fr-FR', {
@@ -49,7 +50,7 @@ const formatScore = (game: Game) => {
   return scores.join(' - ')
 }
 
-export const GameCard = ({ game, currentTeam, displayedStatus }: GameCardProps) => {
+export const GameCard = ({ game, currentTeam, displayedStatus, waitingGamesCount }: GameCardProps) => {
   const navigate = useNavigate()
 
   const handleRefereeClick = () => {
@@ -74,11 +75,24 @@ export const GameCard = ({ game, currentTeam, displayedStatus }: GameCardProps) 
       <CardContent>
         <Stack spacing={1.5}>
           <Stack direction="row" alignItems="center" justifyContent="space-between">
-            {game.subgroup ? (
-              <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-                {game.subgroup}
-              </Typography>
-            ) : <div />}
+            <Stack direction="row" alignItems="center" flexWrap="wrap" spacing={1} useFlexGap>
+              {waitingGamesCount != null ? (
+                <Chip
+                  avatar={<AccessTimeOutlinedIcon />}
+                  label={waitingGamesCount === 0
+                    ? 'Aucun match avant le vôtre'
+                    : `Encore ${waitingGamesCount} match${waitingGamesCount > 1 ? 's' : ''} à attendre`}
+                  color="info"
+                  variant="outlined"
+                  size="small"
+                />
+              ) : null}
+              {game.subgroup ? (
+                <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+                  {game.subgroup}
+                </Typography>
+              ) : null}
+            </Stack>
             <Stack direction="row" spacing={1} flexWrap="wrap" justifyContent="flex-end">
               <Chip label={game.phase.name} variant="filled" size="small" />
               <Chip label={game.group} variant="outlined" size="small" />
@@ -143,7 +157,14 @@ export const GameCard = ({ game, currentTeam, displayedStatus }: GameCardProps) 
           {!isCompleted ? (
             <>
               {/* Affichage du terrain et de l'horaire */}
-              <Stack direction="row" justifyContent="center" spacing={1} sx={{ mb: 1 }}>
+              <Stack
+                direction="row"
+                flexWrap="wrap"
+                justifyContent="center"
+                spacing={1}
+                useFlexGap
+                sx={{ mb: 1 }}
+              >
                 {game.court ? (
                   <Chip
                     avatar={<RoomOutlinedIcon />}

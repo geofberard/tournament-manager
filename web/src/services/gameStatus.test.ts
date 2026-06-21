@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { GameStatus, type Game } from '../generated/api-client'
-import { getDisplayedGameStatus } from './gameStatus'
+import { countPendingGamesBefore, getDisplayedGameStatus } from './gameStatus'
 
 const now = new Date('2026-06-20T12:00:00Z')
 const game = (overrides: Partial<Game>): Game => ({
@@ -39,5 +39,25 @@ describe('gameStatus', () => {
     const futureGame = game({ time: new Date('2026-06-20T13:00:00Z') })
 
     expect(getDisplayedGameStatus(futureGame, [futureGame], now)).toBe('scheduled')
+  })
+
+  it('counts only unfinished games with a lower position on the same court', () => {
+    const target = game({ id: 'target', position: 5 })
+    const unfinishedBefore = game({ id: 'before', position: 2 })
+    const completedBefore = game({ id: 'completed', position: 3, status: GameStatus.Completed })
+    const unfinishedAfter = game({ id: 'after', position: 6 })
+    const otherCourt = game({ id: 'other-court', court: 'Court 2', position: 1 })
+
+    expect(countPendingGamesBefore(target, [
+      target,
+      unfinishedBefore,
+      completedBefore,
+      unfinishedAfter,
+      otherCourt,
+    ])).toBe(1)
+  })
+
+  it('cannot calculate a waiting count for a game without a position', () => {
+    expect(countPendingGamesBefore(game({ position: undefined }), [])).toBeUndefined()
   })
 })

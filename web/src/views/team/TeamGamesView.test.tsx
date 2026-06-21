@@ -24,9 +24,10 @@ describe('TeamGamesView', () => {
       games: [
         {
           id: 'game-1',
-          position: 1,
+          position: 2,
           phase: { id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' },
           group: 'Poule A',
+          court: 'Terrain 1',
           status: GameStatus.Scheduled,
           time: new Date('2099-01-01T10:00:00Z'),
           contestants: new Set([{ id: 'team-2', name: 'Tigres' }]),
@@ -36,8 +37,18 @@ describe('TeamGamesView', () => {
           position: 2,
           phase: { id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' },
           group: 'Poule A',
+          court: 'Terrain 1',
           status: GameStatus.Completed,
           contestants: new Set([{ id: 'team-2', name: 'Tigres' }]),
+        },
+        {
+          id: 'game-before',
+          position: 1,
+          phase: { id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' },
+          group: 'Poule A',
+          court: 'Terrain 1',
+          status: GameStatus.Scheduled,
+          contestants: new Set([{ id: 'team-3', name: 'Panthères' }]),
         },
       ] as Game[],
       isLoading: false,
@@ -55,5 +66,6 @@ describe('TeamGamesView', () => {
     // THEN
     expect(screen.getByRole('heading', { name: 'Prochains matchs' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Matchs terminés' })).toBeInTheDocument()
+    expect(screen.getByText('1 match avant le vôtre')).toBeInTheDocument()
   })
 })
