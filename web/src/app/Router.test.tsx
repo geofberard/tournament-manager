@@ -11,6 +11,7 @@ import {
   ADMIN_LOGIN_PATH,
   ADMIN_PHASES_PATH,
   ADMIN_TEAMS_PATH,
+  ADMIN_COURTS_PATH,
   PUBLIC_HOME_PATH,
   TEAM_REFEREE_GAME_PATH,
   TEAM_GAMES_PATH,
@@ -410,6 +411,27 @@ describe('Router', () => {
     // THEN
     expect(screen.getByRole('heading', { name: 'Équipes' })).toBeInTheDocument()
     expect(screen.getByText('Aigles')).toBeInTheDocument()
+  })
+
+  it('should render the admin terrains page when requested', () => {
+    setPath(ADMIN_COURTS_PATH)
+    useTeamLoginMock.mockReturnValue({
+      clearTeamSelection: vi.fn(),
+      currentTeam: null,
+      handleTeamChange: vi.fn(),
+    })
+    useAdminSessionMock.mockReturnValue({
+      isAuthenticated: true,
+      isLoading: false,
+      login: vi.fn(),
+      logout: vi.fn(),
+      username: 'admin',
+    })
+
+    renderRouter()
+
+    expect(screen.getByRole('heading', { name: 'Terrains' })).toBeInTheDocument()
+    expect(screen.getByText('Aucun match planifié sur les terrains.')).toBeInTheDocument()
   })
 
   it('should allow logging out from the admin area', () => {
