@@ -79,6 +79,17 @@ describe('RankingTable', () => {
     expect(screen.getByText('7')).toBeInTheDocument()
   })
 
+  it('should display all scoring statistics in extended mode', () => {
+    renderTable({ extended: true, rankings: [rankings[0]] })
+
+    expect(screen.getByRole('columnheader', { name: 'Marqués' })).toBeInTheDocument()
+    expect(screen.getByRole('columnheader', { name: 'Pris' })).toBeInTheDocument()
+    expect(screen.getByRole('columnheader', { name: 'Diff.' })).toBeInTheDocument()
+    expect(screen.getByText('63')).toBeInTheDocument()
+    expect(screen.getByText('51')).toBeInTheDocument()
+    expect(screen.getByText('12')).toBeInTheDocument()
+  })
+
   it('should sort teams by score descending without mutating the input', () => {
     const inputRankings = [...rankings]
 

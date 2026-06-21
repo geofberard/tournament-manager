@@ -4,11 +4,12 @@ import { RankingTable } from './RankingTable'
 import { useGroupRankings } from '../../hooks/useGroupRankings'
 
 type GroupRankingCardProps = {
+  extended?: boolean
   groupId: string
   phaseId: string
 }
 
-export const GroupRankingCard = ({ groupId, phaseId }: GroupRankingCardProps) => {
+export const GroupRankingCard = ({ extended = false, groupId, phaseId }: GroupRankingCardProps) => {
   const { errorMessage, isLoading, rankings } = useGroupRankings(groupId, phaseId)
 
   return (
@@ -29,6 +30,7 @@ export const GroupRankingCard = ({ groupId, phaseId }: GroupRankingCardProps) =>
       <CardContent sx={{ p: 0, '&:last-child': { pb: 0 } }}>
         <RankingTable
           currentTeamId=""
+          extended={extended}
           errorMessage={errorMessage}
           isLoading={isLoading}
           rankings={rankings}

@@ -7,6 +7,7 @@ import {
   ADMIN_PHASES_PATH,
   ADMIN_TEAMS_PATH,
   ADMIN_COURTS_PATH,
+  ADMIN_RANKINGS_PATH,
   PUBLIC_HOME_PATH,
   TEAM_GAMES_PATH,
   TEAM_HOME_PATH,
@@ -33,6 +34,7 @@ describe('routes', () => {
     expect(ADMIN_LOGIN_PATH).toBe('/admin/login')
     expect(ADMIN_PHASES_PATH).toBe('/admin/phases')
     expect(ADMIN_COURTS_PATH).toBe('/admin/courts')
+    expect(ADMIN_RANKINGS_PATH).toBe('/admin/rankings')
     expect(TEAM_REFEREE_GAME_PATH).toBe('/team/referee/game/:id')
   })
 
@@ -60,6 +62,7 @@ describe('routes', () => {
       { label: 'Equipes', path: '/admin/teams' },
       { label: 'Matchs', path: '/admin/games' },
       { label: 'Terrains', path: '/admin/courts' },
+      { label: 'Classement', path: '/admin/rankings' },
     ]
 
     // WHEN

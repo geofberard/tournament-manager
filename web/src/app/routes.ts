@@ -14,6 +14,7 @@ export const ADMIN_LOGIN_PATH = '/admin/login'
 export const ADMIN_PHASES_PATH = '/admin/phases'
 export const ADMIN_TEAMS_PATH = '/admin/teams'
 export const ADMIN_COURTS_PATH = '/admin/courts'
+export const ADMIN_RANKINGS_PATH = '/admin/rankings'
 
 export type AppRoute = {
   label: string
@@ -59,5 +60,9 @@ export const adminRoutes: AppRoute[] = [
   {
     label: 'Terrains',
     path: ADMIN_COURTS_PATH,
+  },
+  {
+    label: 'Classement',
+    path: ADMIN_RANKINGS_PATH,
   },
 ]

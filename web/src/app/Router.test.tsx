@@ -12,6 +12,7 @@ import {
   ADMIN_PHASES_PATH,
   ADMIN_TEAMS_PATH,
   ADMIN_COURTS_PATH,
+  ADMIN_RANKINGS_PATH,
   PUBLIC_HOME_PATH,
   TEAM_REFEREE_GAME_PATH,
   TEAM_GAMES_PATH,
@@ -54,6 +55,7 @@ vi.mock('../hooks/useTeamRankings', () => ({
 vi.mock('../hooks/usePhases', () => ({
   usePhases: vi.fn(),
 }))
+
 
 const useTeamLoginMock = vi.mocked(useTeamLoginModule.useTeamLogin)
 const useAdminSessionMock = vi.mocked(useAdminSessionModule.useAdminSession)
@@ -432,6 +434,26 @@ describe('Router', () => {
 
     expect(screen.getByRole('heading', { name: 'Terrains' })).toBeInTheDocument()
     expect(screen.getByText('Aucun match planifié sur les terrains.')).toBeInTheDocument()
+  })
+
+  it('should render the admin rankings page when requested', () => {
+    setPath(ADMIN_RANKINGS_PATH)
+    useTeamLoginMock.mockReturnValue({
+      clearTeamSelection: vi.fn(),
+      currentTeam: null,
+      handleTeamChange: vi.fn(),
+    })
+    useAdminSessionMock.mockReturnValue({
+      isAuthenticated: true,
+      isLoading: false,
+      login: vi.fn(),
+      logout: vi.fn(),
+      username: 'admin',
+    })
+
+    renderRouter()
+
+    expect(screen.getByRole('heading', { name: 'Classements' })).toBeInTheDocument()
   })
 
   it('should allow logging out from the admin area', () => {

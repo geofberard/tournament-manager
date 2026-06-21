@@ -3,6 +3,7 @@ import type { ContestantStats } from '../../services/statisticsService'
 
 type RankingTableProps = {
   currentTeamId: string
+  extended?: boolean
   errorMessage: string | null
   isLoading: boolean
   rankings: ContestantStats[]
@@ -10,6 +11,7 @@ type RankingTableProps = {
 
 export const RankingTable = ({
   currentTeamId,
+  extended = false,
   errorMessage,
   isLoading,
   rankings,
@@ -40,6 +42,9 @@ export const RankingTable = ({
             <TableCell align="center">N</TableCell>
             <TableCell align="center">D</TableCell>
             <TableCell align="center">Pts</TableCell>
+            {extended ? <TableCell align="center">Marqués</TableCell> : null}
+            {extended ? <TableCell align="center">Pris</TableCell> : null}
+            {extended ? <TableCell align="center">Diff.</TableCell> : null}
           </TableRow>
         </TableHead>
         <TableBody>
@@ -88,6 +93,9 @@ export const RankingTable = ({
                 <TableCell align="center">{entry.drawn}</TableCell>
                 <TableCell align="center">{entry.lost}</TableCell>
                 <TableCell align="center">{entry.score}</TableCell>
+                {extended ? <TableCell align="center">{entry.pointsFor}</TableCell> : null}
+                {extended ? <TableCell align="center">{entry.pointsAgainst}</TableCell> : null}
+                {extended ? <TableCell align="center">{entry.pointsDiff}</TableCell> : null}
               </TableRow>
             )
           })}
