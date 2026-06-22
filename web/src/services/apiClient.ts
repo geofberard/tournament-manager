@@ -17,7 +17,7 @@ import {
 } from '../generated/api-client'
 
 export type PhaseType = 'POOL' | 'BRACKET'
-export type Phase = ApiPhase & { type: PhaseType }
+export type Phase = Omit<ApiPhase, 'type'> & { type?: PhaseType }
 export type Game = Omit<ApiGame, 'phase' | 'position'> & { phase: Phase; position?: number }
 
 const apiConfiguration = new Configuration({

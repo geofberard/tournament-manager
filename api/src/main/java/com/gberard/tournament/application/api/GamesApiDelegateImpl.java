@@ -220,7 +220,7 @@ public class GamesApiDelegateImpl implements GamesApiDelegate {
     }
 
     private void validateBulkCreateRequest(BulkCreateGamesRequest request, Phase phase) {
-        if (phase.type() != PhaseType.POOL) {
+        if (phase.type().orElse(null) != PhaseType.POOL) {
             throw new ResponseStatusException(BAD_REQUEST, "Games can only be generated for a pool phase");
         }
         if (request.getTeamIds().size() < 2) {
@@ -248,4 +248,5 @@ public class GamesApiDelegateImpl implements GamesApiDelegate {
             throw new ResponseStatusException(BAD_REQUEST, "Break duration must not be negative");
         }
     }
+
 }

@@ -56,6 +56,24 @@ class PhasesApiIntegrationTest {
         assertTrue(response.body().contains("Phase phase_1 is still referenced by existing games"));
     }
 
+    @Test
+    void shouldRejectMovingAPhaseUnderOneOfItsDescendants() throws Exception {
+        HttpResponse<String> response = send(
+                "/api/phases/phase_poules",
+                "PUT",
+                """
+                {
+                  "parentId": "phase_1",
+                  "name": "Phase de poules",
+                  "order": 1
+                }
+                """
+        );
+
+        assertEquals(409, response.statusCode());
+        assertTrue(response.body().contains("\"code\":\"PHASE_HIERARCHY_CYCLE\""));
+    }
+
     private HttpResponse<String> send(String path, String method, String body) throws Exception {
         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:" + port + path))

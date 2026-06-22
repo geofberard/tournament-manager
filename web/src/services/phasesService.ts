@@ -14,11 +14,31 @@ export type PhasePayload = CreatePhaseRequest
 export const listPhases = async (): Promise<Phase[]> =>
   fetchJson<Phase[]>('/api/phases')
 
-export const createPhase = async (createPhaseRequest: PhasePayload): Promise<Phase> =>
-  phasesApi.createPhase({ createPhaseRequest }) as Promise<Phase>
+const rethrowPhaseHierarchyError = async (error: unknown): Promise<never> => {
+  if (await getApiErrorCode(error) === 'PHASE_HIERARCHY_CYCLE') {
+    throw new UserFacingError(
+      "Cette phase ne peut pas avoir ce parent, car cela créerait une boucle dans l'arborescence.",
+    )
+  }
 
-export const updatePhase = async (phaseId: string, updatePhaseRequest: UpdatePhaseRequest): Promise<Phase> =>
-  phasesApi.updatePhase({ phaseId, updatePhaseRequest }) as Promise<Phase>
+  throw error
+}
+
+export const createPhase = async (createPhaseRequest: PhasePayload): Promise<Phase> => {
+  try {
+    return await phasesApi.createPhase({ createPhaseRequest }) as Phase
+  } catch (error) {
+    return rethrowPhaseHierarchyError(error)
+  }
+}
+
+export const updatePhase = async (phaseId: string, updatePhaseRequest: UpdatePhaseRequest): Promise<Phase> => {
+  try {
+    return await phasesApi.updatePhase({ phaseId, updatePhaseRequest }) as Phase
+  } catch (error) {
+    return rethrowPhaseHierarchyError(error)
+  }
+}
 
 export const deletePhase = async (phaseId: string): Promise<void> => {
   try {

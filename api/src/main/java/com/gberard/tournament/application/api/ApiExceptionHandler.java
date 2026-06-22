@@ -1,5 +1,6 @@
 package com.gberard.tournament.application.api;
 
+import com.gberard.tournament.domain.exception.PhaseHierarchyCycleException;
 import com.gberard.tournament.domain.exception.PhaseInUseException;
 import com.gberard.tournament.domain.exception.TeamInUseException;
 import com.gberard.tournament.generated.model.ErrorResponse;
@@ -10,6 +11,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class ApiExceptionHandler {
+
+    @ExceptionHandler(PhaseHierarchyCycleException.class)
+    public ResponseEntity<ErrorResponse> handlePhaseHierarchyCycle(PhaseHierarchyCycleException exception) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse("PHASE_HIERARCHY_CYCLE", exception.getMessage()));
+    }
 
     @ExceptionHandler(TeamInUseException.class)
     public ResponseEntity<ErrorResponse> handleTeamInUse(TeamInUseException exception) {

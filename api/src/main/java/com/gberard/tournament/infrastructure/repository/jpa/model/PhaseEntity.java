@@ -21,6 +21,9 @@ public class PhaseEntity {
 
     String name;
 
+    @Column(name = "parent_id")
+    String parentId;
+
     @Column(columnDefinition = "TEXT")
     String details;
 
@@ -38,16 +41,23 @@ public class PhaseEntity {
     }
 
     public static Phase toDomain(PhaseEntity phaseEntity) {
-        return new Phase(phaseEntity.id, phaseEntity.name, phaseEntity.details, phaseEntity.displayOrder, phaseEntity.type);
+        return new Phase(
+                phaseEntity.id,
+                java.util.Optional.ofNullable(phaseEntity.parentId),
+                phaseEntity.name,
+                phaseEntity.details,
+                phaseEntity.displayOrder,
+                java.util.Optional.ofNullable(phaseEntity.type));
     }
 
     public static PhaseEntity toEntity(Phase phase) {
         PhaseEntity phaseEntity = new PhaseEntity();
         phaseEntity.id = phase.id();
+        phaseEntity.parentId = phase.parentId().orElse(null);
         phaseEntity.name = phase.name();
         phaseEntity.details = phase.details();
         phaseEntity.displayOrder = phase.order();
-        phaseEntity.type = phase.type();
+        phaseEntity.type = phase.type().orElse(null);
         return phaseEntity;
     }
 }

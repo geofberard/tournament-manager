@@ -123,6 +123,27 @@ class GamesApiDelegateImplTest {
     }
 
     @Test
+    void shouldRejectBulkCreationForAnUntypedChildOfAPoolPhase() {
+        Phase pool = new Phase("pool", "Poules principales", null, 1, PhaseType.POOL);
+        Phase group = new Phase(
+                "pool-a",
+                Optional.of(pool.id()),
+                "Poule A",
+                null,
+                1,
+                Optional.empty());
+        var request = bulkCreateRequest(false, TEAM_A.id(), TEAM_B.id());
+        request.setPhaseId(group.id());
+        when(phaseService.findById(group.id())).thenReturn(Optional.of(group));
+
+        assertThatThrownBy(() -> gamesApiDelegate.bulkCreateGames(request))
+                .isInstanceOf(ResponseStatusException.class)
+                .hasMessageContaining("Games can only be generated for a pool phase");
+        verify(phaseService, never()).findById(pool.id());
+        verify(gameService, never()).create(any());
+    }
+
+    @Test
     void shouldRejectBulkCreationWhenTheGroupAlreadyContainsGames() {
         // GIVEN
         var request = bulkCreateRequest(false, TEAM_A.id(), TEAM_B.id());

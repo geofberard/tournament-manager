@@ -11,6 +11,11 @@ const initialValue: PhasePayload = {
   type: 'POOL',
 }
 
+const phases = [
+  { id: 'root-phase', name: 'Phase finale', order: 1 },
+  { id: 'current-phase', parentId: 'root-phase', name: 'Principale', order: 2, type: 'BRACKET' as const },
+]
+
 const renderForm = (overrides: Partial<PhasePayload> = {}) => {
   const onClose = vi.fn()
   const onSubmit = vi.fn().mockResolvedValue(undefined)
@@ -18,9 +23,11 @@ const renderForm = (overrides: Partial<PhasePayload> = {}) => {
   render(
     <ThemeProvider theme={createTheme()}>
       <ManagePhaseForm
+        currentPhaseId="current-phase"
         initialValue={{ ...initialValue, ...overrides }}
         onClose={onClose}
         onSubmit={onSubmit}
+        phases={phases}
         titleLabel="Titre personnalise"
       />
     </ThemeProvider>,
@@ -57,6 +64,7 @@ describe('ManagePhaseForm', () => {
         details: 'Details avec espaces',
         name: 'Brassage',
         order: 1,
+        parentId: undefined,
         type: 'POOL',
       }),
     )
@@ -71,5 +79,33 @@ describe('ManagePhaseForm', () => {
 
     // THEN
     expect(onClose).toHaveBeenCalled()
+  })
+
+  it('should submit an organizational phase without a type', async () => {
+    const { onSubmit } = renderForm()
+
+    fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Type' }))
+    fireEvent.click(screen.getByRole('option', { name: 'Aucun type' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Sauvegarder' }))
+
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledWith({
+      details: 'Details initiaux',
+      name: 'Brassage',
+      order: 1,
+      parentId: undefined,
+      type: undefined,
+    }))
+  })
+
+  it('should allow selecting a parent other than the edited phase itself', async () => {
+    const { onSubmit } = renderForm()
+
+    fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Phase parente' }))
+
+    expect(screen.queryByRole('option', { name: 'Principale' })).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole('option', { name: 'Phase finale' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Sauvegarder' }))
+
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ parentId: 'root-phase' })))
   })
 })

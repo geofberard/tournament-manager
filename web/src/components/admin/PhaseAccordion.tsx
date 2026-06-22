@@ -16,8 +16,9 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { DeleteButton } from './DeleteButton'
 import { MarkdownContent } from '../shared/MarkdownContent'
 import type { Phase } from '../../services/phasesService'
+import type { PhaseType } from '../../services/apiClient'
 
-const phaseTypeLabels: Record<Phase['type'], string> = {
+const phaseTypeLabels: Record<PhaseType, string> = {
   BRACKET: 'Elimination',
   POOL: 'Poules',
 }
@@ -31,6 +32,7 @@ type PhaseAccordionProps = {
 }
 
 export const PhaseAccordion = ({ expanded, onChange, onDelete, onEdit, phase }: PhaseAccordionProps) => {
+  const phaseTypeLabel = phase.type ? phaseTypeLabels[phase.type] : 'Organisation'
   const handleEditClick = (event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation()
     onEdit(phase)
@@ -55,7 +57,7 @@ export const PhaseAccordion = ({ expanded, onChange, onDelete, onEdit, phase }: 
       }}
     >
       <AccordionSummary
-        aria-label={`${phase.name} ${phaseTypeLabels[phase.type]}`}
+        aria-label={`${phase.name} ${phaseTypeLabel}`}
         component="div"
         expandIcon={<ExpandMoreIcon />}
         sx={{
@@ -114,7 +116,7 @@ export const PhaseAccordion = ({ expanded, onChange, onDelete, onEdit, phase }: 
               >
                 {phase.name}
               </Typography>
-              <Chip label={phaseTypeLabels[phase.type]} size="small" sx={{ flex: '0 0 auto' }} />
+              <Chip label={phaseTypeLabel} size="small" sx={{ flex: '0 0 auto' }} />
             </Stack>
           </Stack>
           <Stack

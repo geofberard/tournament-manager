@@ -14,16 +14,26 @@ import {
   Typography,
 } from '@mui/material'
 import type { SelectChangeEvent } from '@mui/material/Select'
-import type { Phase, PhasePayload } from '../../services/phasesService'
+import type { PhasePayload } from '../../services/phasesService'
+import type { Phase, PhaseType } from '../../services/apiClient'
 
 type ManagePhaseFormProps = {
+  currentPhaseId?: string
   initialValue: PhasePayload
   onClose: () => void
   onSubmit: (phasePayload: PhasePayload) => Promise<void>
+  phases: Phase[]
   titleLabel: string
 }
 
-export const ManagePhaseForm = ({ initialValue, onClose, onSubmit, titleLabel }: ManagePhaseFormProps) => {
+export const ManagePhaseForm = ({
+  currentPhaseId,
+  initialValue,
+  onClose,
+  onSubmit,
+  phases,
+  titleLabel,
+}: ManagePhaseFormProps) => {
   const [formValue, setFormValue] = useState<PhasePayload>(initialValue)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
@@ -44,10 +54,17 @@ export const ManagePhaseForm = ({ initialValue, onClose, onSubmit, titleLabel }:
     }))
   }
 
-  const handleTypeChange = (event: SelectChangeEvent<Phase['type']>) => {
+  const handleTypeChange = (event: SelectChangeEvent<string>) => {
     setFormValue((currentValue) => ({
       ...currentValue,
-      type: event.target.value as Phase['type'],
+      type: event.target.value ? event.target.value as PhaseType : undefined,
+    }))
+  }
+
+  const handleParentChange = (event: SelectChangeEvent<string>) => {
+    setFormValue((currentValue) => ({
+      ...currentValue,
+      parentId: event.target.value || undefined,
     }))
   }
 
@@ -105,14 +122,32 @@ export const ManagePhaseForm = ({ initialValue, onClose, onSubmit, titleLabel }:
           value={formValue.order}
         />
 
-        <FormControl fullWidth required>
+        <FormControl fullWidth>
+          <InputLabel id="phase-parent-label">Phase parente</InputLabel>
+          <Select
+            label="Phase parente"
+            labelId="phase-parent-label"
+            onChange={handleParentChange}
+            value={formValue.parentId ?? ''}
+          >
+            <MenuItem value="">Aucune (phase racine)</MenuItem>
+            {phases
+              .filter((phase) => phase.id !== currentPhaseId)
+              .map((phase) => (
+                <MenuItem key={phase.id} value={phase.id}>{phase.name}</MenuItem>
+              ))}
+          </Select>
+        </FormControl>
+
+        <FormControl fullWidth>
           <InputLabel id="phase-type-label">Type</InputLabel>
           <Select
             label="Type"
             labelId="phase-type-label"
             onChange={handleTypeChange}
-            value={formValue.type}
+            value={formValue.type ?? ''}
           >
+            <MenuItem value="">Aucun type</MenuItem>
             <MenuItem value="POOL">Poules</MenuItem>
             <MenuItem value="BRACKET">Elimination</MenuItem>
           </Select>

@@ -1,0 +1,2 @@
+ALTER TABLE phases
+    ALTER COLUMN type DROP NOT NULL;

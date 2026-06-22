@@ -1013,13 +1013,18 @@ components:
         - id
         - name
         - order
-        - type
       properties:
         id:
           type: string
           minLength: 1
           description: Identifiant unique de la phase
           examples: [phase_1]
+        parentId:
+          type: string
+          nullable: true
+          minLength: 1
+          description: Identifiant de la phase parente. Absent pour une phase racine.
+          examples: [phase_finale]
         name:
           type: string
           minLength: 1
@@ -1040,7 +1045,10 @@ components:
           description: Ordre de la phase dans le tournoi
           examples: [1]
         type:
-          $ref: '#/components/schemas/PhaseType'
+          allOf:
+            - $ref: '#/components/schemas/PhaseType'
+          nullable: true
+          description: Type sportif optionnel. Les descendants sans type héritent du type le plus proche dans leur branche.
 
     CreatePhaseRequest:
       type: object
@@ -1048,8 +1056,13 @@ components:
       required:
         - name
         - order
-        - type
       properties:
+        parentId:
+          type: string
+          nullable: true
+          minLength: 1
+          description: Identifiant de la phase parente. Absent pour créer une phase racine.
+          examples: [phase_finale]
         name:
           type: string
           minLength: 1
@@ -1070,7 +1083,10 @@ components:
           description: Ordre de la phase dans le tournoi
           examples: [1]
         type:
-          $ref: '#/components/schemas/PhaseType'
+          allOf:
+            - $ref: '#/components/schemas/PhaseType'
+          nullable: true
+          description: Type sportif optionnel de la phase.
 
     UpdatePhaseRequest:
       type: object
@@ -1078,8 +1094,13 @@ components:
       required:
         - name
         - order
-        - type
       properties:
+        parentId:
+          type: string
+          nullable: true
+          minLength: 1
+          description: Identifiant de la nouvelle phase parente. Absent pour déplacer la phase à la racine.
+          examples: [phase_finale]
         name:
           type: string
           minLength: 1
@@ -1100,7 +1121,10 @@ components:
           description: Nouvel ordre de la phase dans le tournoi
           examples: [2]
         type:
-          $ref: '#/components/schemas/PhaseType'
+          allOf:
+            - $ref: '#/components/schemas/PhaseType'
+          nullable: true
+          description: Type sportif optionnel de la phase.
 
     CreateGameRequest:
       type: object

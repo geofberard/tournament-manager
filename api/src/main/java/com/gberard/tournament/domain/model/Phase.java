@@ -1,16 +1,30 @@
 package com.gberard.tournament.domain.model;
 
 import java.util.Objects;
+import java.util.Optional;
 
 public final class Phase implements Identified {
     private final String id;
+    private final Optional<String> parentId;
     private final String name;
     private final String details;
     private final Integer order;
-    private final PhaseType type;
+    private final Optional<PhaseType> type;
 
     public Phase(String id, String name, String details, Integer order, PhaseType type) {
+        this(id, Optional.empty(), name, details, order, Optional.of(type));
+    }
+
+    public Phase(
+            String id,
+            Optional<String> parentId,
+            String name,
+            String details,
+            Integer order,
+            Optional<PhaseType> type
+    ) {
         this.id = id;
+        this.parentId = Objects.requireNonNull(parentId, "parentId must not be null");
         this.name = Objects.requireNonNull(name, "name must not be null");
         this.details = details;
         this.order = Objects.requireNonNull(order, "order must not be null");
@@ -26,6 +40,10 @@ public final class Phase implements Identified {
         return name;
     }
 
+    public Optional<String> parentId() {
+        return parentId;
+    }
+
     public String details() {
         return details;
     }
@@ -34,7 +52,7 @@ public final class Phase implements Identified {
         return order;
     }
 
-    public PhaseType type() {
+    public Optional<PhaseType> type() {
         return type;
     }
 
@@ -47,21 +65,23 @@ public final class Phase implements Identified {
             return false;
         }
         return Objects.equals(id, phase.id)
+                && Objects.equals(parentId, phase.parentId)
                 && Objects.equals(name, phase.name)
                 && Objects.equals(details, phase.details)
                 && Objects.equals(order, phase.order)
-                && type == phase.type;
+                && Objects.equals(type, phase.type);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, details, order, type);
+        return Objects.hash(id, parentId, name, details, order, type);
     }
 
     @Override
     public String toString() {
         return "Phase[" +
                 "id=" + id +
+                ", parentId=" + parentId +
                 ", name=" + name +
                 ", details=" + details +
                 ", order=" + order +

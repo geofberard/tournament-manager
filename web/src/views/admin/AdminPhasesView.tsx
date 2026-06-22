@@ -22,13 +22,15 @@ const emptyPhaseForm: PhasePayload = {
   details: '',
   name: '',
   order: 1,
-  type: 'POOL',
+  parentId: undefined,
+  type: undefined,
 }
 
 const toPhasePayload = (phase: Phase): PhasePayload => ({
   details: phase.details ?? '',
   name: phase.name,
   order: phase.order,
+  parentId: phase.parentId,
   type: phase.type,
 })
 
@@ -151,14 +153,17 @@ export const AdminPhasesView = () => {
             initialValue={emptyPhaseForm}
             onClose={closeDrawer}
             onSubmit={saveCreatedPhase}
+            phases={phases}
             titleLabel="Nouvelle phase"
           />
         ) : null}
         {drawerMode === 'update' && selectedPhase ? (
           <ManagePhaseForm
+            currentPhaseId={selectedPhase.id}
             initialValue={toPhasePayload(selectedPhase)}
             onClose={closeDrawer}
             onSubmit={saveUpdatedPhase}
+            phases={phases}
             titleLabel="Modifier la phase"
           />
         ) : null}

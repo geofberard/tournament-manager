@@ -3,6 +3,7 @@ import { TeamResultsContent } from '../../components/team/TeamResultsContent'
 import { MarkdownContent } from '../../components/shared/MarkdownContent'
 import { useState } from 'react'
 import { usePhases } from '../../hooks/usePhases'
+import { resolvePhaseType } from '../../services/phaseHierarchy'
 import type { Team } from '../../services/teamsService'
 
 type TeamResultsViewProps = {
@@ -14,6 +15,9 @@ export const TeamResultsView = ({ currentTeam }: TeamResultsViewProps) => {
   const [selectedPhaseId, setSelectedPhaseId] = useState<string | null>(null)
   const effectiveSelectedPhaseId = selectedPhaseId ?? phases[0]?.id ?? null
   const selectedPhase = phases.find((phase) => phase.id === effectiveSelectedPhaseId) ?? null
+  const selectedPhaseWithInheritedType = selectedPhase
+    ? { ...selectedPhase, type: resolvePhaseType(phases, selectedPhase) }
+    : null
   const phaseDetails = selectedPhase?.details?.trim() ?? ''
 
   return (
@@ -57,7 +61,7 @@ export const TeamResultsView = ({ currentTeam }: TeamResultsViewProps) => {
             )}
           </Stack>
         </Paper>
-        <TeamResultsContent currentTeam={currentTeam} selectedPhase={selectedPhase} />
+        <TeamResultsContent currentTeam={currentTeam} selectedPhase={selectedPhaseWithInheritedType} />
       </Stack>
     </Stack>
   )
