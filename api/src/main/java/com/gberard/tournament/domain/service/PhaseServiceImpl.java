@@ -2,6 +2,7 @@ package com.gberard.tournament.domain.service;
 
 import com.gberard.tournament.domain.exception.PhaseInUseException;
 import com.gberard.tournament.domain.exception.PhaseHierarchyCycleException;
+import com.gberard.tournament.domain.exception.PhaseHasChildrenException;
 import com.gberard.tournament.domain.model.Phase;
 import com.gberard.tournament.domain.port.input.PhaseService;
 import com.gberard.tournament.domain.port.output.GameRepository;
@@ -37,6 +38,12 @@ public class PhaseServiceImpl implements PhaseService {
 
     @Override
     public boolean delete(Phase phase) {
+        boolean hasChildren = phaseRepository.findAll().stream()
+                .anyMatch(candidatePhase -> candidatePhase.parentId().filter(phase.id()::equals).isPresent());
+        if (hasChildren) {
+            throw new PhaseHasChildrenException(phase.id());
+        }
+
         if (gameRepository.existsByPhaseId(phase.id())) {
             throw new PhaseInUseException(phase.id());
         }

@@ -1,6 +1,7 @@
 package com.gberard.tournament.domain.service;
 
 import com.gberard.tournament.domain.exception.PhaseHierarchyCycleException;
+import com.gberard.tournament.domain.exception.PhaseHasChildrenException;
 import com.gberard.tournament.domain.exception.PhaseInUseException;
 import com.gberard.tournament.domain.model.Phase;
 import com.gberard.tournament.domain.model.PhaseType;
@@ -13,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.never;
@@ -54,6 +56,19 @@ class PhaseServiceImplTest {
         assertThatThrownBy(() -> phaseService.delete(PHASE))
                 .isInstanceOf(PhaseInUseException.class)
                 .hasMessage("Phase phase_1 is still referenced by existing games");
+        verify(phaseRepository, never()).deleteById(PHASE.id());
+    }
+
+    @Test
+    void shouldRejectDeletionWhenPhaseHasChildren() {
+        Phase child = new Phase(
+                "child", Optional.of(PHASE.id()), "Poule A", null, 1, Optional.of(PhaseType.POOL));
+        when(phaseRepository.findAll()).thenReturn(List.of(PHASE, child));
+
+        assertThatThrownBy(() -> phaseService.delete(PHASE))
+                .isInstanceOf(PhaseHasChildrenException.class)
+                .hasMessage("Phase phase_1 still contains child phases");
+        verify(gameRepository, never()).existsByPhaseId(PHASE.id());
         verify(phaseRepository, never()).deleteById(PHASE.id());
     }
 

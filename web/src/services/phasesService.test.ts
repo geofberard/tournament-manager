@@ -49,4 +49,13 @@ describe('phasesService', () => {
       "Cette phase ne peut pas être supprimée car elle est utilisée par un ou plusieurs matchs.",
     )
   })
+
+  it('should explain when a phase cannot be deleted because it contains sub-phases', async () => {
+    phasesApiMock.deletePhase.mockRejectedValueOnce(new Error('API error'))
+    getApiErrorCodeMock.mockResolvedValueOnce('PHASE_HAS_CHILDREN')
+
+    await expect(deletePhase('phase-1')).rejects.toThrow(
+      "Cette phase ne peut pas être supprimée car elle contient des sous-phases. Supprimez ou déplacez d'abord ses sous-phases.",
+    )
+  })
 })

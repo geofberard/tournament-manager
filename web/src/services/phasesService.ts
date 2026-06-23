@@ -44,7 +44,14 @@ export const deletePhase = async (phaseId: string): Promise<void> => {
   try {
     await phasesApi.deletePhase({ phaseId })
   } catch (error) {
-    if (await getApiErrorCode(error) === 'PHASE_IN_USE') {
+    const errorCode = await getApiErrorCode(error)
+    if (errorCode === 'PHASE_HAS_CHILDREN') {
+      throw new UserFacingError(
+        "Cette phase ne peut pas être supprimée car elle contient des sous-phases. Supprimez ou déplacez d'abord ses sous-phases.",
+      )
+    }
+
+    if (errorCode === 'PHASE_IN_USE') {
       throw new UserFacingError(
         "Cette phase ne peut pas être supprimée car elle est utilisée par un ou plusieurs matchs.",
       )

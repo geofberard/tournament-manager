@@ -57,6 +57,15 @@ class PhasesApiIntegrationTest {
     }
 
     @Test
+    void shouldRejectDeletionWhenPhaseHasChildren() throws Exception {
+        HttpResponse<String> response = send("/api/phases/phase_poules", "DELETE", null);
+
+        assertEquals(409, response.statusCode());
+        assertTrue(response.body().contains("\"code\":\"PHASE_HAS_CHILDREN\""));
+        assertTrue(response.body().contains("Phase phase_poules still contains child phases"));
+    }
+
+    @Test
     void shouldRejectMovingAPhaseUnderOneOfItsDescendants() throws Exception {
         HttpResponse<String> response = send(
                 "/api/phases/phase_poules",
