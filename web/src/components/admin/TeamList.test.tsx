@@ -4,8 +4,9 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { TeamList } from './TeamList'
 
 const teams = [
-  { id: 'team-1', name: 'Aigles' },
+  { id: 'team-1', name: 'Éperviers' },
   { id: 'team-2', name: 'Tigres' },
+  { id: 'team-3', name: 'Aigles' },
 ]
 
 const renderList = () => {
@@ -31,9 +32,60 @@ describe('TeamList', () => {
     renderList()
 
     // THEN
-    expect(screen.getByText('Aigles')).toBeInTheDocument()
+    expect(screen.getByText('Éperviers')).toBeInTheDocument()
     expect(screen.getByText('Tigres')).toBeInTheDocument()
     expect(screen.queryByText('team-1')).not.toBeInTheDocument()
+  })
+
+  it('should filter teams ignoring case and accents, then clear the search', () => {
+    // GIVEN
+    renderList()
+
+    // WHEN
+    fireEvent.change(screen.getByRole('textbox', { name: 'Rechercher une équipe' }), {
+      target: { value: 'eper' },
+    })
+
+    // THEN
+    expect(screen.getByText('Éperviers')).toBeInTheDocument()
+    expect(screen.queryByText('Tigres')).not.toBeInTheDocument()
+    expect(screen.getByText('1 résultat sur 3')).toBeInTheDocument()
+
+    // WHEN
+    fireEvent.click(screen.getByRole('button', { name: 'Effacer la recherche' }))
+
+    // THEN
+    expect(screen.getByText('Tigres')).toBeInTheDocument()
+    expect(screen.getByText('3 équipes')).toBeInTheDocument()
+  })
+
+  it('should sort teams in both directions', () => {
+    // GIVEN
+    renderList()
+    const listItems = () => screen.getAllByRole('listitem').map((item) => item.getAttribute('data-team-name'))
+
+    // THEN
+    expect(listItems()).toEqual(['Aigles', 'Éperviers', 'Tigres'])
+
+    // WHEN
+    fireEvent.click(screen.getByRole('button', { name: 'Tri actuel A à Z. Inverser en Z à A' }))
+
+    // THEN
+    expect(listItems()).toEqual(['Tigres', 'Éperviers', 'Aigles'])
+  })
+
+  it('should display an empty search state', () => {
+    // GIVEN
+    renderList()
+
+    // WHEN
+    fireEvent.change(screen.getByRole('textbox', { name: 'Rechercher une équipe' }), {
+      target: { value: 'Lions' },
+    })
+
+    // THEN
+    expect(screen.getByText('Aucune équipe trouvée')).toBeInTheDocument()
+    expect(screen.getByText('0 résultat sur 3')).toBeInTheDocument()
   })
 
   it('should expose the selected team when editing', () => {
@@ -51,7 +103,7 @@ describe('TeamList', () => {
     // GIVEN
     const { onDelete } = renderList()
 
-    fireEvent.click(screen.getAllByRole('button', { name: 'Supprimer' })[0])
+    fireEvent.click(screen.getByRole('button', { name: 'Supprimer Aigles' }))
     const dialog = screen.getByRole('dialog', { name: 'Supprimer ?' })
 
     // WHEN
@@ -59,7 +111,7 @@ describe('TeamList', () => {
 
     // THEN
     await waitFor(() => {
-      expect(onDelete).toHaveBeenCalledWith(teams[0])
+      expect(onDelete).toHaveBeenCalledWith(teams[2])
     })
   })
 })

@@ -172,7 +172,7 @@ describe('AdminTeamsView', () => {
     deleteTeamMock.mockResolvedValueOnce(undefined)
     renderView()
 
-    fireEvent.click(screen.getByRole('button', { name: 'Supprimer' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Supprimer Aigles' }))
     const dialog = screen.getByRole('dialog', { name: 'Supprimer ?' })
 
     // WHEN
@@ -198,7 +198,7 @@ describe('AdminTeamsView', () => {
     )
     renderView()
 
-    fireEvent.click(screen.getByRole('button', { name: 'Supprimer' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Supprimer Aigles' }))
     const dialog = screen.getByRole('dialog', { name: 'Supprimer ?' })
 
     // WHEN
