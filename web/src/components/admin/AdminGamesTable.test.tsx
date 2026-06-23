@@ -15,6 +15,17 @@ const game: Game = {
   id: 'game-1',
   subgroup: '1/2',
   phase: { id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' },
+  phasePath: [
+    { id: 'phase-root', name: 'Tournoi/2026', order: 1 },
+    { id: 'phase-pools', name: 'Poules', order: 1, parentId: 'phase-root' },
+    {
+      id: 'phase-1',
+      name: 'Brassage',
+      order: 1,
+      parentId: 'phase-pools',
+      type: 'POOL',
+    },
+  ],
   referee: { id: 'team-3', name: 'Aigles' },
   score: { pointsByTeam: { 'team-1': 21, 'team-2': 18 } },
   status: GameStatus.Completed,
@@ -57,7 +68,11 @@ describe('AdminGamesTable', () => {
     // THEN
     expect(screen.getByRole('columnheader', { name: /Heure/ })).toBeInTheDocument()
     expect(screen.getByRole('columnheader', { name: /Score/ })).toBeInTheDocument()
-    expect(screen.getByText('Brassage')).toBeInTheDocument()
+    expect(screen.getByRole('columnheader', { name: /GamePath/ })).toBeInTheDocument()
+    expect(
+      screen.getByLabelText('Chemin du match : Tournoi/2026 › Poules › Brassage'),
+    ).toHaveTextContent('Tournoi/2026›Poules›Brassage')
+    expect(screen.getAllByText('Brassage')).toHaveLength(2)
     expect(screen.getByRole('button', { name: 'Modifier le score de Tigres' })).toHaveTextContent('21')
     expect(screen.getByRole('button', { name: 'Modifier le score de Lynx' })).toHaveTextContent('18')
     expect(screen.queryByText('Finale')).not.toBeInTheDocument()
@@ -120,7 +135,9 @@ describe('AdminGamesTable', () => {
     renderTable([game], onGameClick)
 
     // WHEN
-    fireEvent.click(screen.getByRole('row', { name: /Brassage Poule A Tigres 21 - 18 Lynx/ }))
+    fireEvent.click(
+      screen.getByRole('row', { name: /Tournoi\/2026 › Poules › Brassage.*Poule A/ }),
+    )
 
     // THEN
     expect(onGameClick).toHaveBeenCalledWith(game)

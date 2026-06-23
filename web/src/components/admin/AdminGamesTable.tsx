@@ -1,4 +1,4 @@
-import { Card, CardContent } from '@mui/material'
+import { Breadcrumbs, Card, CardContent, Typography } from '@mui/material'
 import {
   DataGrid,
   type GridColDef,
@@ -23,6 +23,7 @@ type AdminGameRow = {
   id: string
   subgroup: string
   phase: string
+  gamePath: string
   position: number | null
   referee: string
   score: string
@@ -108,6 +109,7 @@ const toAdminGameRow = (game: Game): AdminGameRow => {
     id: game.id,
     subgroup: formatOptionalValue(game.subgroup),
     phase: game.phase.name,
+    gamePath: game.phasePath?.map((phase) => phase.name).join(' › ') ?? '',
     position: game.position ?? null,
     referee: formatOptionalValue(game.referee?.name),
     score: hasScore ? formatGameScore(team1Score, team2Score) : '∅',
@@ -157,6 +159,24 @@ export const AdminGamesTable = ({
         minWidth: 150,
         type: 'singleSelect',
         valueOptions: [...new Set(rows.map((row) => row.phase))],
+      },
+      {
+        field: 'gamePath',
+        flex: 1.5,
+        headerName: 'GamePath',
+        minWidth: 220,
+        type: 'singleSelect',
+        valueOptions: [...new Set(rows.map((row) => row.gamePath))].filter(Boolean),
+        renderCell: (params) =>
+          params.row.game.phasePath?.length ? (
+            <Breadcrumbs aria-label={`Chemin du match : ${params.row.gamePath}`} separator="›">
+              {params.row.game.phasePath.map((phase) => (
+                <Typography color="text.primary" key={phase.id} variant="body2">
+                  {phase.name}
+                </Typography>
+              ))}
+            </Breadcrumbs>
+          ) : null,
       },
       {
         field: 'group',
