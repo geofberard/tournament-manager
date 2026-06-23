@@ -15,14 +15,16 @@ import {
 } from '@mui/material'
 import type { SelectChangeEvent } from '@mui/material/Select'
 import type { PhasePayload } from '../../services/phasesService'
-import type { Phase, PhaseType } from '../../services/apiClient'
+import type { PhaseType } from '../../services/apiClient'
+import type { PhaseNode } from '../../hooks/usePhaseTree'
+import { findPhaseName, renderPhaseMenuItems } from './phaseSelectOptions'
 
 type ManagePhaseFormProps = {
   currentPhaseId?: string
   initialValue: PhasePayload
   onClose: () => void
   onSubmit: (phasePayload: PhasePayload) => Promise<void>
-  phases: Phase[]
+  phaseTree: PhaseNode[]
   titleLabel: string
 }
 
@@ -31,7 +33,7 @@ export const ManagePhaseForm = ({
   initialValue,
   onClose,
   onSubmit,
-  phases,
+  phaseTree,
   titleLabel,
 }: ManagePhaseFormProps) => {
   const [formValue, setFormValue] = useState<PhasePayload>(initialValue)
@@ -128,14 +130,15 @@ export const ManagePhaseForm = ({
             label="Phase parente"
             labelId="phase-parent-label"
             onChange={handleParentChange}
+            renderValue={(selectedId) => (
+              selectedId
+                ? findPhaseName(phaseTree, selectedId) ?? selectedId
+                : 'Aucune (phase racine)'
+            )}
             value={formValue.parentId ?? ''}
           >
             <MenuItem value="">Aucune (phase racine)</MenuItem>
-            {phases
-              .filter((phase) => phase.id !== currentPhaseId)
-              .map((phase) => (
-                <MenuItem key={phase.id} value={phase.id}>{phase.name}</MenuItem>
-              ))}
+            {renderPhaseMenuItems(phaseTree, currentPhaseId)}
           </Select>
         </FormControl>
 

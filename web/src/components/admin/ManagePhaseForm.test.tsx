@@ -3,6 +3,7 @@ import { ThemeProvider, createTheme } from '@mui/material'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { ManagePhaseForm } from './ManagePhaseForm'
 import type { PhasePayload } from '../../services/phasesService'
+import { buildPhaseTree } from '../../hooks/usePhaseTree'
 
 const initialValue: PhasePayload = {
   details: 'Details initiaux',
@@ -14,6 +15,9 @@ const initialValue: PhasePayload = {
 const phases = [
   { id: 'root-phase', name: 'Phase finale', order: 1 },
   { id: 'current-phase', parentId: 'root-phase', name: 'Principale', order: 2, type: 'BRACKET' as const },
+  { id: 'child-phase', parentId: 'current-phase', name: 'Finale', order: 1 },
+  { id: 'other-root', name: 'Poules', order: 2 },
+  { id: 'other-child', parentId: 'other-root', name: 'Poule A', order: 1, type: 'POOL' as const },
 ]
 
 const renderForm = (overrides: Partial<PhasePayload> = {}) => {
@@ -27,7 +31,7 @@ const renderForm = (overrides: Partial<PhasePayload> = {}) => {
         initialValue={{ ...initialValue, ...overrides }}
         onClose={onClose}
         onSubmit={onSubmit}
-        phases={phases}
+        phaseTree={buildPhaseTree(phases)}
         titleLabel="Titre personnalise"
       />
     </ThemeProvider>,
@@ -103,9 +107,25 @@ describe('ManagePhaseForm', () => {
     fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Phase parente' }))
 
     expect(screen.queryByRole('option', { name: 'Principale' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('option', { name: 'Finale' })).not.toBeInTheDocument()
     fireEvent.click(screen.getByRole('option', { name: 'Phase finale' }))
     fireEvent.click(screen.getByRole('button', { name: 'Sauvegarder' }))
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ parentId: 'root-phase' })))
+  })
+
+  it('should display parent choices in hierarchy order', () => {
+    renderForm()
+
+    fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Phase parente' }))
+
+    const options = screen.getAllByRole('option')
+    expect(options.map((option) => option.textContent)).toEqual([
+      'Aucune (phase racine)',
+      'Phase finale',
+      'Poules',
+      '└Poule A',
+    ])
+    expect(screen.getByRole('option', { name: 'Poule A' })).toBeInTheDocument()
   })
 })

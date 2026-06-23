@@ -17,7 +17,7 @@ import { BulkUpdateGamesForm } from '../../components/admin/BulkUpdateGamesForm'
 import { CreatePoolGamesForm } from '../../components/admin/CreatePoolGamesForm'
 import { ManageGameForm } from '../../components/admin/ManageGameForm'
 import { useGames } from '../../hooks/useGames'
-import { usePhases } from '../../hooks/usePhases'
+import { usePhaseTree } from '../../hooks/usePhaseTree'
 import { useTeams } from '../../hooks/useTeams'
 import { sortGamesByPosition } from '../../services/gameOrdering'
 import {
@@ -47,7 +47,7 @@ const emptyGameForm = (): GamePayload => ({
   time: undefined,
 })
 
-const emptyPoolGamesForm = (phases: ReturnType<typeof usePhases>['phases']): PoolGamesPayload => ({
+const emptyPoolGamesForm = (phases: ReturnType<typeof usePhaseTree>['phases']): PoolGamesPayload => ({
   assignReferees: false,
   breakDurationMinutes: 5,
   court: '',
@@ -74,7 +74,7 @@ const toGamePayload = (game: Game): GamePayload => ({
 
 export const AdminGamesView = () => {
   const { games, isLoading, errorMessage } = useGames()
-  const { phases } = usePhases()
+  const { phases, phaseTree } = usePhaseTree()
   const { teams } = useTeams()
   const { mutate } = useSWRConfig()
   const [drawerMode, setDrawerMode] = useState<GameDrawerMode>('idle')
@@ -285,7 +285,7 @@ export const AdminGamesView = () => {
             isUpdate={false}
             onClose={closeDrawer}
             onSubmit={saveCreatedGame}
-            phases={phases}
+            phaseTree={phaseTree}
             teams={teams}
             titleLabel="Nouveau match"
           />
@@ -305,7 +305,7 @@ export const AdminGamesView = () => {
             isUpdate
             onClose={closeDrawer}
             onSubmit={saveUpdatedGame}
-            phases={phases}
+            phaseTree={phaseTree}
             teams={teams}
             titleLabel="Modifier le match"
           />
@@ -315,7 +315,7 @@ export const AdminGamesView = () => {
             gameCount={selectedGameIds.size}
             onClose={closeDrawer}
             onSubmit={saveBulkUpdatedGames}
-            phases={phases}
+            phaseTree={phaseTree}
             teams={teams}
           />
         ) : null}

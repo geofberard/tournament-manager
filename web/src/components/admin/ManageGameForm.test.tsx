@@ -3,8 +3,12 @@ import { ThemeProvider, createTheme } from '@mui/material'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { GamePayload } from '../../services/gamesService'
 import { ManageGameForm } from './ManageGameForm'
+import { buildPhaseTree } from '../../hooks/usePhaseTree'
 
-const phases = [{ id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' as const }]
+const phases = [
+  { id: 'phase-root', name: 'Poules', order: 1 },
+  { id: 'phase-1', parentId: 'phase-root', name: 'Brassage', order: 1, type: 'POOL' as const },
+]
 const teams = [
   { id: 'team-1', name: 'Tigres' },
   { id: 'team-2', name: 'Lynx' },
@@ -34,7 +38,7 @@ const renderForm = (overrides: Partial<GamePayload> = {}, onSubmit = vi.fn().moc
         isUpdate
         onClose={onClose}
         onSubmit={onSubmit}
-        phases={phases}
+        phaseTree={buildPhaseTree(phases)}
         teams={teams}
         titleLabel="Modifier le match"
       />
@@ -63,6 +67,16 @@ describe('ManageGameForm', () => {
     expect(screen.getByRole('combobox', { name: 'Equipe 2' })).toHaveTextContent('Lynx')
     expect(screen.getByRole('spinbutton', { name: 'Score Equipe 1' })).toHaveValue(21)
     expect(screen.getByRole('spinbutton', { name: 'Score Equipe 2' })).toHaveValue(18)
+  })
+
+  it('should display phase choices in hierarchy order', () => {
+    renderForm()
+
+    fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Phase' }))
+
+    const options = screen.getAllByRole('option')
+    expect(options.map((option) => option.textContent)).toEqual(['Poules', '└Brassage'])
+    expect(screen.getByRole('option', { name: 'Brassage' })).toBeInTheDocument()
   })
 
   it('should submit a trimmed game payload', async () => {

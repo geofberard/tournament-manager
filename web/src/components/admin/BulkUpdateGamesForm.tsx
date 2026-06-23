@@ -18,8 +18,9 @@ import { useState } from 'react'
 import type { SelectChangeEvent } from '@mui/material/Select'
 import { fromDateTimeLocalValue, toDateTimeLocalValue } from '../../services/dateTimeLocal'
 import type { BulkGameChanges } from '../../services/gamesService'
-import type { Phase } from '../../services/phasesService'
 import type { Team } from '../../services/teamsService'
+import type { PhaseNode } from '../../hooks/usePhaseTree'
+import { findPhaseName, renderPhaseMenuItems } from './phaseSelectOptions'
 
 type BulkField =
   | 'court'
@@ -35,7 +36,7 @@ type BulkUpdateGamesFormProps = {
   gameCount: number
   onClose: () => void
   onSubmit: (changes: BulkGameChanges) => Promise<void>
-  phases: Phase[]
+  phaseTree: PhaseNode[]
   teams: Team[]
 }
 
@@ -43,7 +44,7 @@ export const BulkUpdateGamesForm = ({
   gameCount,
   onClose,
   onSubmit,
-  phases,
+  phaseTree,
   teams,
 }: BulkUpdateGamesFormProps) => {
   const [enabledFields, setEnabledFields] = useState<Set<BulkField>>(new Set())
@@ -172,13 +173,10 @@ export const BulkUpdateGamesForm = ({
               label="Phase"
               labelId="bulk-game-phase-label"
               onChange={handleSelectChange('phaseId')}
+              renderValue={(phaseId) => findPhaseName(phaseTree, phaseId) ?? phaseId}
               value={values.phaseId}
             >
-              {phases.map((phase) => (
-                <MenuItem key={phase.id} value={phase.id}>
-                  {phase.name}
-                </MenuItem>
-              ))}
+              {renderPhaseMenuItems(phaseTree)}
             </Select>
           </FormControl>,
         )}

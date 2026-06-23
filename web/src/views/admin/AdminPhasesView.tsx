@@ -34,7 +34,7 @@ const toPhasePayload = (phase: Phase): PhasePayload => ({
 })
 
 export const AdminPhasesView = () => {
-  const { phases, phaseTree, isLoading, errorMessage } = usePhaseTree()
+  const { phaseTree, isLoading, errorMessage } = usePhaseTree()
   const { mutate } = useSWRConfig()
   const [drawerMode, setDrawerMode] = useState<PhaseDrawerMode>('idle')
   const [selectedPhase, setSelectedPhase] = useState<Phase | null>(null)
@@ -131,7 +131,7 @@ export const AdminPhasesView = () => {
             initialValue={emptyPhaseForm}
             onClose={closeDrawer}
             onSubmit={saveCreatedPhase}
-            phases={phases}
+            phaseTree={phaseTree}
             titleLabel="Nouvelle phase"
           />
         ) : null}
@@ -141,7 +141,7 @@ export const AdminPhasesView = () => {
             initialValue={toPhasePayload(selectedPhase)}
             onClose={closeDrawer}
             onSubmit={saveUpdatedPhase}
-            phases={phases}
+            phaseTree={phaseTree}
             titleLabel="Modifier la phase"
           />
         ) : null}

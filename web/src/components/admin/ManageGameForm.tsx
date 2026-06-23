@@ -16,16 +16,17 @@ import {
 } from '@mui/material'
 import type { SelectChangeEvent } from '@mui/material/Select'
 import { fromDateTimeLocalValue, toDateTimeLocalValue } from '../../services/dateTimeLocal'
-import type { Phase } from '../../services/phasesService'
 import type { GamePayload } from '../../services/gamesService'
 import type { Team } from '../../services/teamsService'
+import type { PhaseNode } from '../../hooks/usePhaseTree'
+import { findPhaseName, renderPhaseMenuItems } from './phaseSelectOptions'
 
 type ManageGameFormProps = {
   initialValue: GamePayload
   isUpdate: boolean
   onClose: () => void
   onSubmit: (gamePayload: GamePayload) => Promise<void>
-  phases: Phase[]
+  phaseTree: PhaseNode[]
   teams: Team[]
   titleLabel: string
 }
@@ -34,7 +35,7 @@ export const ManageGameForm = ({
   initialValue,
   onClose,
   onSubmit,
-  phases,
+  phaseTree,
   teams,
   titleLabel,
 }: ManageGameFormProps) => {
@@ -166,13 +167,10 @@ export const ManageGameForm = ({
             label="Phase"
             labelId="game-phase-label"
             onChange={handleSelectChange('phaseId')}
+            renderValue={(phaseId) => findPhaseName(phaseTree, phaseId) ?? phaseId}
             value={formValue.phaseId}
           >
-            {phases.map((phase) => (
-              <MenuItem key={phase.id} value={phase.id}>
-                {phase.name}
-              </MenuItem>
-            ))}
+            {renderPhaseMenuItems(phaseTree)}
           </Select>
         </FormControl>
 

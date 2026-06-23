@@ -7,7 +7,7 @@ export type PhaseNode = {
   subPhases: PhaseNode[] | undefined
 }
 
-const buildPhaseTree = (phases: Phase[]): PhaseNode[] => {
+export const buildPhaseTree = (phases: Phase[]): PhaseNode[] => {
   const nodesById = new Map<string, PhaseNode>(
     phases.map((phase) => [phase.id, { phase, subPhases: undefined }]),
   )

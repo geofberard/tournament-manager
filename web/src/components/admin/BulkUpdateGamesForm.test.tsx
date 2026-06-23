@@ -2,6 +2,12 @@ import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/re
 import { ThemeProvider, createTheme } from '@mui/material'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { BulkUpdateGamesForm } from './BulkUpdateGamesForm'
+import { buildPhaseTree } from '../../hooks/usePhaseTree'
+
+const phases = [
+  { id: 'phase-root', name: 'Poules', order: 1 },
+  { id: 'phase-1', parentId: 'phase-root', name: 'Brassage', order: 1, type: 'POOL' as const },
+]
 
 const renderForm = (onSubmit = vi.fn().mockResolvedValue(undefined)) =>
   render(
@@ -10,7 +16,7 @@ const renderForm = (onSubmit = vi.fn().mockResolvedValue(undefined)) =>
         gameCount={2}
         onClose={vi.fn()}
         onSubmit={onSubmit}
-        phases={[{ id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' }]}
+        phaseTree={buildPhaseTree(phases)}
         teams={[
           { id: 'team-1', name: 'Tigres' },
           { id: 'team-2', name: 'Lynx' },
@@ -29,6 +35,17 @@ describe('BulkUpdateGamesForm', () => {
     // THEN
     expect(screen.getByRole('button', { name: 'Modifier les matchs' })).toBeDisabled()
     expect(screen.getByRole('textbox', { name: 'Terrain' })).toBeDisabled()
+  })
+
+  it('should display phase choices in hierarchy order', () => {
+    renderForm()
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Modifier la phase' }))
+
+    fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Phase' }))
+
+    const options = screen.getAllByRole('option')
+    expect(options.map((option) => option.textContent)).toEqual(['Poules', '└Brassage'])
+    expect(screen.getByRole('option', { name: 'Brassage' })).toBeInTheDocument()
   })
 
   it('should submit only enabled fields', async () => {
