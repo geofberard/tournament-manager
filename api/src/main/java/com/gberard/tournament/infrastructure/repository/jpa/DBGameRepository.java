@@ -3,6 +3,7 @@ package com.gberard.tournament.infrastructure.repository.jpa;
 import com.gberard.tournament.domain.model.Game;
 import com.gberard.tournament.domain.port.output.GameRepository;
 import com.gberard.tournament.infrastructure.repository.jpa.model.GameEntity;
+import com.gberard.tournament.infrastructure.repository.jpa.model.PhaseEntity;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 
@@ -11,10 +12,12 @@ import org.springframework.stereotype.Repository;
 public class DBGameRepository extends DBRepository<Game, GameEntity> implements GameRepository {
 
     private final JpaGameRepository repository;
+    private final JpaPhaseRepository phaseRepository;
 
-    public DBGameRepository(JpaGameRepository repository) {
+    public DBGameRepository(JpaGameRepository repository, JpaPhaseRepository phaseRepository) {
         super(repository, GameEntity::toEntity, GameEntity::toDomain);
         this.repository = repository;
+        this.phaseRepository = phaseRepository;
     }
 
     @Override
@@ -74,7 +77,9 @@ public class DBGameRepository extends DBRepository<Game, GameEntity> implements 
 
     @Override
     public Game save(Game game) {
-        return saveMapped(game);
+        PhaseEntity phase = phaseRepository.findById(game.phase().id())
+                .orElseThrow();
+        return GameEntity.toDomain(repository.saveAndFlush(GameEntity.toEntity(game, phase)));
     }
 
     @Override

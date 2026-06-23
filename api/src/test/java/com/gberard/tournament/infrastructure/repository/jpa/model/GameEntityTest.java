@@ -17,10 +17,17 @@ class GameEntityTest {
     @Test
     void shouldKeepPhaseWhenMappingGameToEntityAndBack() {
         // GIVEN
-        Phase phase = new Phase("phase_1", "Brassage", "Matchs de poule", 1, PhaseType.POOL);
+        Phase rootPhase = new Phase("phase_1", "Brassage", "Matchs de poule", 1, PhaseType.POOL);
+        Phase phase = new Phase(
+                "phase_2",
+                Optional.of(rootPhase.id()),
+                "Poule A",
+                null,
+                1,
+                Optional.empty());
         Game game = new Game(
                 null,
-                phase,
+                List.of(rootPhase, phase),
                 Optional.of("Ouverture"),
                 "Poule A",
                 LocalDateTime.of(2026, 6, 11, 18, 30),
@@ -37,5 +44,6 @@ class GameEntityTest {
 
         // THEN
         assertThat(mappedGame.phase()).isEqualTo(phase);
+        assertThat(mappedGame.phasePath()).containsExactly(phase);
     }
 }

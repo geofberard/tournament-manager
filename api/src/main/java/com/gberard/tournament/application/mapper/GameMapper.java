@@ -18,6 +18,7 @@ public final class GameMapper {
         return new com.gberard.tournament.generated.model.Game()
                 .id(game.id())
                 .phase(PhaseMapper.toApi(game.phase()))
+                .phasePath(game.phasePath().stream().map(PhaseMapper::toApi).toList())
                 .subgroup(game.subgroup().orElse(null))
                 .group(game.group())
                 .court(game.court())

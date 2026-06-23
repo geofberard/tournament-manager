@@ -7,9 +7,15 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity(name = "phase")
@@ -23,6 +29,10 @@ public class PhaseEntity {
 
     @Column(name = "parent_id")
     String parentId;
+
+    @ManyToOne
+    @JoinColumn(name = "parent_id", referencedColumnName = "id", insertable = false, updatable = false)
+    PhaseEntity parent;
 
     @Column(columnDefinition = "TEXT")
     String details;
@@ -50,6 +60,19 @@ public class PhaseEntity {
                 java.util.Optional.ofNullable(phaseEntity.type));
     }
 
+    public static List<Phase> toDomainPath(PhaseEntity phaseEntity) {
+        List<Phase> phasePath = new ArrayList<>();
+        Set<String> visitedIds = new HashSet<>();
+        PhaseEntity currentPhase = phaseEntity;
+
+        while (currentPhase != null && visitedIds.add(currentPhase.id)) {
+            phasePath.addFirst(toDomain(currentPhase));
+            currentPhase = currentPhase.parent;
+        }
+
+        return phasePath;
+    }
+
     public static PhaseEntity toEntity(Phase phase) {
         PhaseEntity phaseEntity = new PhaseEntity();
         phaseEntity.id = phase.id();
@@ -60,4 +83,5 @@ public class PhaseEntity {
         phaseEntity.type = phase.type().orElse(null);
         return phaseEntity;
     }
+
 }

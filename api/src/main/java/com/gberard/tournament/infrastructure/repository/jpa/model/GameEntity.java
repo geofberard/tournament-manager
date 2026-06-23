@@ -67,7 +67,7 @@ public class GameEntity {
         List<Team> teams = entity.teams.stream().map(TeamEntity::toDomain).toList();
         return new Game(
                 entity.id,
-                PhaseEntity.toDomain(entity.phase),
+                PhaseEntity.toDomainPath(entity.phase),
                 Optional.ofNullable(entity.subgroup),
                 entity.groupId,
                 entity.time,
@@ -94,6 +94,12 @@ public class GameEntity {
         playerEntity.status = game.status();
         game.score().ifPresent(score -> playerEntity.scoreData = DepthOneScoreRaw.serialize(score, game.contestants()));
         return playerEntity;
+    }
+
+    public static GameEntity toEntity(Game game, PhaseEntity phase) {
+        GameEntity gameEntity = toEntity(game);
+        gameEntity.phase = phase;
+        return gameEntity;
     }
 
 }

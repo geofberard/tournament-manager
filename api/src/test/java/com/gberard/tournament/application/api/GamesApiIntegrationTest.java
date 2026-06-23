@@ -85,6 +85,8 @@ class GamesApiIntegrationTest {
         );
         games.forEach(game -> {
             assertEquals("phase_1", game.path("phase").path("id").asText());
+            assertEquals("phase_poules", game.path("phasePath").path(0).path("id").asText());
+            assertEquals("phase_1", game.path("phasePath").path(1).path("id").asText());
             assertEquals("Poule integration bulk", game.path("group").asText());
             assertTrue(game.path("subgroup").isNull());
             assertEquals("Terrain integration", game.path("court").asText());

@@ -374,6 +374,26 @@ class GamesApiDelegateImplTest {
     }
 
     @Test
+    void shouldExposeTheCompletePhasePathFromRootToCurrentPhase() {
+        Phase root = new Phase("root", "Tournoi", null, 1, PhaseType.POOL);
+        Phase child = new Phase(
+                "child",
+                Optional.of(root.id()),
+                "Poule A",
+                null,
+                1,
+                Optional.empty());
+        Game game = gameBuilder().phasePath(List.of(root, child)).build();
+        when(gameService.findById(game.id())).thenReturn(Optional.of(game));
+
+        var response = gamesApiDelegate.getGameById(game.id());
+
+        assertThat(response.getBody().getPhasePath())
+                .extracting(com.gberard.tournament.generated.model.Phase::getId)
+                .containsExactly(root.id(), child.id());
+    }
+
+    @Test
     void shouldNotUpdateAnyGameWhenASelectedGameDoesNotExist() {
         // GIVEN
         Game game = gameBuilder().id("game-1").build();

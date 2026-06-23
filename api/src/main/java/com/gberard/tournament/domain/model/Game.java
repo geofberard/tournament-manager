@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public final class Game implements Identified {
     private final String id;
-    private final Phase phase;
+    private final List<Phase> phasePath;
     private final Optional<String> subgroup;
     private final String group;
     private final LocalDateTime time;
@@ -33,8 +33,27 @@ public final class Game implements Identified {
             GameStatus status,
             Optional<SimpleScore> score
     ) {
+        this(id, List.of(phase), subgroup, group, time, court, position, contestants, refereeId, status, score);
+    }
+
+    public Game(
+            String id,
+            List<Phase> phasePath,
+            Optional<String> subgroup,
+            String group,
+            LocalDateTime time,
+            String court,
+            Long position,
+            List<Team> contestants,
+            Optional<Team> refereeId,
+            GameStatus status,
+            Optional<SimpleScore> score
+    ) {
         this.id = id;
-        this.phase = Objects.requireNonNull(phase, "phase must not be null");
+        this.phasePath = List.copyOf(Objects.requireNonNull(phasePath, "phasePath must not be null"));
+        if (this.phasePath.isEmpty()) {
+            throw new IllegalArgumentException("phasePath must not be empty");
+        }
         this.subgroup = Objects.requireNonNull(subgroup, "subgroup must not be null");
         this.group = Objects.requireNonNull(group, "group must not be null");
         this.time = time;
@@ -56,7 +75,11 @@ public final class Game implements Identified {
     }
 
     public Phase phase() {
-        return phase;
+        return phasePath.getLast();
+    }
+
+    public List<Phase> phasePath() {
+        return phasePath;
     }
 
     public String group() {
@@ -92,11 +115,11 @@ public final class Game implements Identified {
     }
 
     public Game withScore(SimpleScore newScore) {
-        return new Game(id, phase, subgroup, group, time, court, position, contestants, refereeId, GameStatus.COMPLETED, Optional.of(newScore));
+        return new Game(id, phasePath, subgroup, group, time, court, position, contestants, refereeId, GameStatus.COMPLETED, Optional.of(newScore));
     }
 
     public Game withoutScore() {
-        return new Game(id, phase, subgroup, group, time, court, position, contestants, refereeId, GameStatus.SCHEDULED, Optional.empty());
+        return new Game(id, phasePath, subgroup, group, time, court, position, contestants, refereeId, GameStatus.SCHEDULED, Optional.empty());
     }
 
     @Override
@@ -108,7 +131,7 @@ public final class Game implements Identified {
             return false;
         }
         return Objects.equals(id, game.id)
-                && Objects.equals(phase, game.phase)
+                && Objects.equals(phasePath, game.phasePath)
                 && Objects.equals(subgroup, game.subgroup)
                 && Objects.equals(group, game.group)
                 && Objects.equals(time, game.time)
@@ -122,14 +145,14 @@ public final class Game implements Identified {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, phase, subgroup, group, time, court, position, contestants, refereeId, status, score);
+        return Objects.hash(id, phasePath, subgroup, group, time, court, position, contestants, refereeId, status, score);
     }
 
     @Override
     public String toString() {
         return "Game[" +
                 "id=" + id +
-                ", phase=" + phase +
+                ", phasePath=" + phasePath +
                 ", subgroup=" + subgroup +
                 ", group=" + group +
                 ", time=" + time +
