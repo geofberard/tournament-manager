@@ -3,7 +3,6 @@ import {
   Alert,
   CircularProgress,
   Drawer,
-  List,
   Stack,
   Typography,
   useMediaQuery,
@@ -12,7 +11,7 @@ import {
 import { useSWRConfig } from 'swr'
 import { AdminCreateFab } from '../../components/admin/AdminCreateFab'
 import { ManagePhaseForm } from '../../components/admin/ManagePhaseForm'
-import { PhaseTreeItem } from '../../components/admin/PhaseTreeItem'
+import { PhaseTreeRoot } from '../../components/admin/PhaseTreeRoot'
 import { usePhaseTree } from '../../hooks/usePhaseTree'
 import { createPhase, deletePhase, updatePhase, type Phase, type PhasePayload } from '../../services/phasesService'
 
@@ -105,16 +104,11 @@ export const AdminPhasesView = () => {
       ) : phaseTree.length === 0 ? (
         <Alert severity="info">Aucune phase disponible.</Alert>
       ) : (
-        <List component="nav" disablePadding aria-label="Phases">
-          {phaseTree.map((node) => (
-            <PhaseTreeItem
-              key={node.phase.id}
-              node={node}
-              onDelete={deleteSelectedPhase}
-              onEdit={openUpdateDrawer}
-            />
-          ))}
-        </List>
+        <PhaseTreeRoot
+          nodes={phaseTree}
+          onDelete={deleteSelectedPhase}
+          onEdit={openUpdateDrawer}
+        />
       )}
 
       <AdminCreateFab label="Ajouter une phase" onClick={openCreateDrawer} />

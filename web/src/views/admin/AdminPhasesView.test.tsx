@@ -52,7 +52,7 @@ describe('AdminPhasesView', () => {
 
     // THEN
     expect(screen.getByRole('heading', { name: 'Phases' })).toBeInTheDocument()
-    expect(screen.getByRole('navigation', { name: 'Phases' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Phase de poules Organisation' })).toBeInTheDocument()
     expect(screen.getByText('Phase de poules')).toBeInTheDocument()
     expect(screen.getByText('Brassage')).toBeInTheDocument()
     expect(screen.queryByText('phase-1')).not.toBeInTheDocument()
