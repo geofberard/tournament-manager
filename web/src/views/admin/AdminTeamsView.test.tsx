@@ -104,7 +104,8 @@ describe('AdminTeamsView', () => {
     createTeamMock.mockResolvedValueOnce({ id: 'team-1', name: 'Aigles' })
     renderView()
 
-    fireEvent.click(screen.getByRole('button', { name: 'Ajouter une equipe' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Ajouter des équipes' }))
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Créer une équipe' }))
     fireEvent.change(screen.getByRole('textbox', { name: 'Nom' }), { target: { value: ' Aigles ' } })
 
     // WHEN
@@ -116,6 +117,29 @@ describe('AdminTeamsView', () => {
     })
     await waitFor(() => {
       expect(screen.queryByRole('heading', { name: 'Nouvelle equipe' })).not.toBeInTheDocument()
+    })
+  })
+
+  it('should create multiple teams from one name per line', async () => {
+    useTeamsMock.mockReturnValue({ errorMessage: null, isLoading: false, teams: [] })
+    createTeamMock
+      .mockResolvedValueOnce({ id: 'team-1', name: 'Aigles' })
+      .mockResolvedValueOnce({ id: 'team-2', name: 'Tigres' })
+    renderView()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Ajouter des équipes' }))
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Créer plusieurs équipes' }))
+    fireEvent.change(screen.getByRole('textbox', { name: 'Noms des équipes' }), {
+      target: { value: 'Aigles\nTigres' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Créer 2' }))
+
+    await waitFor(() => {
+      expect(createTeamMock).toHaveBeenCalledWith({ name: 'Aigles' })
+      expect(createTeamMock).toHaveBeenCalledWith({ name: 'Tigres' })
+    })
+    await waitFor(() => {
+      expect(screen.queryByRole('heading', { name: 'Créer plusieurs équipes' })).not.toBeInTheDocument()
     })
   })
 
@@ -151,7 +175,8 @@ describe('AdminTeamsView', () => {
     createTeamMock.mockRejectedValueOnce(new Error('Creation impossible'))
     renderView()
 
-    fireEvent.click(screen.getByRole('button', { name: 'Ajouter une equipe' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Ajouter des équipes' }))
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Créer une équipe' }))
     fireEvent.change(screen.getByRole('textbox', { name: 'Nom' }), { target: { value: 'Aigles' } })
 
     // WHEN

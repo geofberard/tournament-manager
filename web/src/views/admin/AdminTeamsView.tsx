@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import AddIcon from '@mui/icons-material/Add'
+import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd'
 import {
   Alert,
   CircularProgress,
@@ -9,7 +11,8 @@ import {
   useTheme,
 } from '@mui/material'
 import { useSWRConfig } from 'swr'
-import { AdminCreateFab } from '../../components/admin/AdminCreateFab'
+import { AdminCreateSpeedDial } from '../../components/admin/AdminCreateSpeedDial'
+import { BulkCreateTeamsForm } from '../../components/admin/BulkCreateTeamsForm'
 import { ManageTeamForm } from '../../components/admin/ManageTeamForm'
 import { TeamList } from '../../components/admin/TeamList'
 import { useTeams } from '../../hooks/useTeams'
@@ -21,7 +24,7 @@ import {
   type TeamPayload,
 } from '../../services/teamsService'
 
-type TeamDrawerMode = 'idle' | 'create' | 'update'
+type TeamDrawerMode = 'idle' | 'bulk-create' | 'create' | 'update'
 
 const emptyTeamForm: TeamPayload = { name: '' }
 
@@ -41,9 +44,9 @@ export const AdminTeamsView = () => {
     setSelectedTeam(null)
   }
 
-  const openCreateDrawer = () => {
+  const openCreateDrawer = (mode: 'bulk-create' | 'create') => {
     setSelectedTeam(null)
-    setDrawerMode('create')
+    setDrawerMode(mode)
   }
 
   const openUpdateDrawer = (team: Team) => {
@@ -59,6 +62,30 @@ export const AdminTeamsView = () => {
       { revalidate: false },
     )
     closeDrawer()
+  }
+
+  const saveCreatedTeams = async (teamNames: string[]) => {
+    const creationResults = await Promise.allSettled(
+      teamNames.map((name) => createTeam({ name })),
+    )
+    const createdTeams = creationResults.flatMap((result) =>
+      result.status === 'fulfilled' ? [result.value] : [],
+    )
+    const failedNames = teamNames.filter(
+      (_name, index) => creationResults[index].status === 'rejected',
+    )
+
+    if (createdTeams.length > 0) {
+      await mutate(
+        '/api/teams',
+        (currentTeams: Team[] | undefined) =>
+          sortTeamsByName([...(currentTeams ?? []), ...createdTeams]),
+        { revalidate: false },
+      )
+    }
+
+    if (failedNames.length === 0) closeDrawer()
+    return failedNames
   }
 
   const saveUpdatedTeam = async (teamPayload: TeamPayload) => {
@@ -107,7 +134,21 @@ export const AdminTeamsView = () => {
         <TeamList onDelete={deleteSelectedTeam} onEdit={openUpdateDrawer} teams={teams} />
       )}
 
-      <AdminCreateFab label="Ajouter une equipe" onClick={openCreateDrawer} />
+      <AdminCreateSpeedDial
+        actions={[
+          {
+            icon: <AddIcon />,
+            label: 'Créer une équipe',
+            onClick: () => openCreateDrawer('create'),
+          },
+          {
+            icon: <PlaylistAddIcon />,
+            label: 'Créer plusieurs équipes',
+            onClick: () => openCreateDrawer('bulk-create'),
+          },
+        ]}
+        label="Ajouter des équipes"
+      />
 
       <Drawer
         anchor={isMobile ? 'bottom' : 'right'}
@@ -129,6 +170,9 @@ export const AdminTeamsView = () => {
             onSubmit={saveCreatedTeam}
             titleLabel="Nouvelle equipe"
           />
+        ) : null}
+        {drawerMode === 'bulk-create' ? (
+          <BulkCreateTeamsForm onClose={closeDrawer} onSubmit={saveCreatedTeams} />
         ) : null}
         {drawerMode === 'update' && selectedTeam ? (
           <ManageTeamForm
