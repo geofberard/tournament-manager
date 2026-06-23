@@ -14,10 +14,11 @@ import { useState } from 'react'
 import { UserFacingError } from '../../services/apiError'
 
 type DeleteButtonProps = {
+  ariaLabel?: string
   onConfirm: () => Promise<void> | void
 }
 
-export const DeleteButton = ({ onConfirm }: DeleteButtonProps) => {
+export const DeleteButton = ({ ariaLabel = 'Supprimer', onConfirm }: DeleteButtonProps) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
@@ -59,7 +60,7 @@ export const DeleteButton = ({ onConfirm }: DeleteButtonProps) => {
   return (
     <>
       <IconButton
-        aria-label="Supprimer"
+        aria-label={ariaLabel}
         onClick={openDialog}
         onMouseDown={stopParentClick}
         size="small"

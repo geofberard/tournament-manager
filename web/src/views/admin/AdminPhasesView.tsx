@@ -1,9 +1,9 @@
-import type { SyntheticEvent } from 'react'
 import { useState } from 'react'
 import {
   Alert,
   CircularProgress,
   Drawer,
+  List,
   Stack,
   Typography,
   useMediaQuery,
@@ -12,8 +12,8 @@ import {
 import { useSWRConfig } from 'swr'
 import { AdminCreateFab } from '../../components/admin/AdminCreateFab'
 import { ManagePhaseForm } from '../../components/admin/ManagePhaseForm'
-import { PhaseAccordion } from '../../components/admin/PhaseAccordion'
-import { usePhases } from '../../hooks/usePhases'
+import { PhaseTreeItem } from '../../components/admin/PhaseTreeItem'
+import { usePhaseTree } from '../../hooks/usePhaseTree'
 import { createPhase, deletePhase, updatePhase, type Phase, type PhasePayload } from '../../services/phasesService'
 
 type PhaseDrawerMode = 'idle' | 'create' | 'update'
@@ -35,17 +35,12 @@ const toPhasePayload = (phase: Phase): PhasePayload => ({
 })
 
 export const AdminPhasesView = () => {
-  const { phases, isLoading, errorMessage } = usePhases()
+  const { phases, phaseTree, isLoading, errorMessage } = usePhaseTree()
   const { mutate } = useSWRConfig()
-  const [expandedPhaseId, setExpandedPhaseId] = useState<string | false>(false)
   const [drawerMode, setDrawerMode] = useState<PhaseDrawerMode>('idle')
   const [selectedPhase, setSelectedPhase] = useState<Phase | null>(null)
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
-
-  const handleAccordionChange = (phaseId: string) => (_event: SyntheticEvent, isExpanded: boolean) => {
-    setExpandedPhaseId(isExpanded ? phaseId : false)
-  }
 
   const closeDrawer = () => {
     setDrawerMode('idle')
@@ -67,7 +62,6 @@ export const AdminPhasesView = () => {
     await mutate('/api/phases', (currentPhases: Phase[] | undefined) => [...(currentPhases ?? []), newPhase], {
       revalidate: false,
     })
-    setExpandedPhaseId(newPhase.id)
     closeDrawer()
   }
 
@@ -83,25 +77,17 @@ export const AdminPhasesView = () => {
         (currentPhases ?? []).map((phase) => (phase.id === updatedPhase.id ? updatedPhase : phase)),
       { revalidate: false },
     )
-    setExpandedPhaseId(updatedPhase.id)
     closeDrawer()
   }
 
-  const deleteSelectedPhase = async (phaseToDelete: Phase) => {
-    await deletePhase(phaseToDelete.id)
+  const deleteSelectedPhase = async (phase: Phase) => {
+    await deletePhase(phase.id)
     await mutate(
       '/api/phases',
-      (currentPhases: Phase[] | undefined) => (currentPhases ?? []).filter((phase) => phase.id !== phaseToDelete.id),
+      (currentPhases: Phase[] | undefined) =>
+        (currentPhases ?? []).filter((currentPhase) => currentPhase.id !== phase.id),
       { revalidate: false },
     )
-
-    if (expandedPhaseId === phaseToDelete.id) {
-      setExpandedPhaseId(false)
-    }
-
-    if (selectedPhase?.id === phaseToDelete.id) {
-      closeDrawer()
-    }
   }
 
   return (
@@ -116,21 +102,19 @@ export const AdminPhasesView = () => {
         <Stack alignItems="center" justifyContent="center" sx={{ minHeight: 240 }}>
           <CircularProgress />
         </Stack>
-      ) : phases.length === 0 ? (
+      ) : phaseTree.length === 0 ? (
         <Alert severity="info">Aucune phase disponible.</Alert>
       ) : (
-        <Stack spacing={0}>
-          {phases.map((phase) => (
-            <PhaseAccordion
-              expanded={expandedPhaseId === phase.id}
-              key={phase.id}
-              onChange={handleAccordionChange(phase.id)}
+        <List component="nav" disablePadding aria-label="Phases">
+          {phaseTree.map((node) => (
+            <PhaseTreeItem
+              key={node.phase.id}
+              node={node}
               onDelete={deleteSelectedPhase}
               onEdit={openUpdateDrawer}
-              phase={phase}
             />
           ))}
-        </Stack>
+        </List>
       )}
 
       <AdminCreateFab label="Ajouter une phase" onClick={openCreateDrawer} />
