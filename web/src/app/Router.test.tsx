@@ -12,7 +12,7 @@ import {
   ADMIN_PHASES_PATH,
   ADMIN_TEAMS_PATH,
   ADMIN_COURTS_PATH,
-  ADMIN_RANKINGS_PATH,
+  ADMIN_RESULTS_PATH,
   PUBLIC_HOME_PATH,
   TEAM_REFEREE_GAME_PATH,
   TEAM_GAMES_PATH,
@@ -431,8 +431,8 @@ describe('Router', () => {
     expect(screen.getByText('Aucun match planifié sur les terrains.')).toBeInTheDocument()
   })
 
-  it('should render the admin rankings page when requested', () => {
-    setPath(ADMIN_RANKINGS_PATH)
+  it('should render the admin results page when requested', () => {
+    setPath(ADMIN_RESULTS_PATH)
     useTeamLoginMock.mockReturnValue({
       clearTeamSelection: vi.fn(),
       currentTeam: null,

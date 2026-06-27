@@ -185,7 +185,7 @@ const AppRoutes = ({ adminSession, teamSession }: AppRoutesProps) => {
         <Route path="phases" element={<AdminPhasesView />} />
         <Route path="teams" element={<AdminTeamsView />} />
         <Route path="courts" element={<AdminTerrainsView />} />
-        <Route path="rankings" element={<AdminRankingsView />} />
+        <Route path="results" element={<AdminRankingsView />} />
       </Route>
 
       <Route path="*" element={<Navigate to={PUBLIC_HOME_PATH} replace />} />
