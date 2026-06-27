@@ -57,7 +57,6 @@ describe('routes', () => {
   it('should register the admin navigation entries', () => {
     // GIVEN
     const expectedRoutes = [
-      { label: 'Accueil', path: '/admin' },
       { label: 'Phases', path: '/admin/phases' },
       { label: 'Equipes', path: '/admin/teams' },
       { label: 'Matchs', path: '/admin/games' },

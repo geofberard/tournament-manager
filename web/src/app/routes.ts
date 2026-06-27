@@ -42,10 +42,6 @@ export const teamRoutes: AppRoute[] = [
 
 export const adminRoutes: AppRoute[] = [
   {
-    label: 'Accueil',
-    path: ADMIN_HOME_PATH,
-  },
-  {
     label: 'Phases',
     path: ADMIN_PHASES_PATH,
   },

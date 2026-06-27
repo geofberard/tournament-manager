@@ -298,11 +298,11 @@ describe('Router', () => {
     renderRouter()
 
     // THEN
-    expect(screen.getByRole('heading', { name: 'Zone admin', level: 1 })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Matchs' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Se deconnecter' })).toBeInTheDocument()
 
     await waitFor(() => {
-      expect(window.location.pathname).toBe(ADMIN_HOME_PATH)
+      expect(window.location.pathname).toBe(ADMIN_GAMES_PATH)
     })
   })
 

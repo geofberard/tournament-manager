@@ -5,6 +5,7 @@ import scufLogo from '../assets/scuf-logo.svg'
 import { AppShell } from '../components/shared/AppShell'
 import {
   adminRoutes,
+  ADMIN_GAMES_PATH,
   ADMIN_HOME_PATH,
   ADMIN_LOGIN_PATH,
   PUBLIC_HOME_PATH,
@@ -19,7 +20,6 @@ import { useAdminSession } from '../hooks/useAdminSession'
 import { PublicView } from '../views/public/PublicView'
 import { AdminGamesView } from '../views/admin/AdminGamesView'
 import { AdminLoginView } from '../views/admin/AdminLoginView'
-import { AdminView } from '../views/admin/AdminView'
 import { AdminPhasesView } from '../views/admin/AdminPhasesView'
 import { AdminTeamsView } from '../views/admin/AdminTeamsView'
 import { AdminTerrainsView } from '../views/admin/AdminTerrainsView'
@@ -120,7 +120,7 @@ const AppRoutes = ({ adminSession, teamSession }: AppRoutesProps) => {
 
   const handleAdminLogin = async (loginUsername: string, password: string) => {
     await login({ username: loginUsername, password })
-    navigate(ADMIN_HOME_PATH, { replace: true })
+    navigate(ADMIN_GAMES_PATH, { replace: true })
   }
 
   return (
@@ -162,7 +162,7 @@ const AppRoutes = ({ adminSession, teamSession }: AppRoutesProps) => {
           isLoading ? (
             adminLoadingFallback
           ) : isAuthenticated ? (
-            <Navigate to={ADMIN_HOME_PATH} replace />
+            <Navigate to={ADMIN_GAMES_PATH} replace />
           ) : (
             <AdminLoginView onLogin={handleAdminLogin} />
           )
@@ -180,7 +180,7 @@ const AppRoutes = ({ adminSession, teamSession }: AppRoutesProps) => {
           )
         }
       >
-        <Route index element={<AdminView username={username} />} />
+        <Route index element={<Navigate to={ADMIN_GAMES_PATH} replace />} />
         <Route path="games" element={<AdminGamesView />} />
         <Route path="phases" element={<AdminPhasesView />} />
         <Route path="teams" element={<AdminTeamsView />} />
