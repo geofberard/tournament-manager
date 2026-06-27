@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { ThemeProvider, createTheme } from '@mui/material'
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -33,7 +33,27 @@ describe('TeamResultsView', () => {
     // GIVEN
     useGamesMock.mockReturnValue({
       errorMessage: null,
-      games: [],
+      games: [
+        {
+          id: 'game-1',
+          phase: { id: 'phase-1-a', name: 'Poule A', order: 1, type: 'POOL' },
+          phasePath: [
+            { id: 'phase-1', name: 'Brassage', order: 1 },
+            { id: 'phase-1-a-parent', parentId: 'phase-1', name: 'Matin', order: 1 },
+            { id: 'phase-1-a', parentId: 'phase-1-a-parent', name: 'Poule A', order: 1, type: 'POOL' },
+          ],
+          position: 1000,
+          time: new Date('2026-05-03T18:00:00Z'),
+          court: 'Annexe',
+          status: GameStatus.Completed,
+          contestants: new Set([
+            { id: 'team-1', name: 'Aigles' },
+            { id: 'team-2', name: 'Tigres' },
+          ]),
+          referee: undefined,
+          score: { pointsByTeam: { 'team-1': 21, 'team-2': 18 } },
+        },
+      ],
       isLoading: false,
     })
     usePhasesMock.mockReturnValue({
@@ -85,6 +105,66 @@ describe('TeamResultsView', () => {
     expect(screen.getByText('Second paragraphe.')).toBeInTheDocument()
     expect(screen.getByText('Poule A')).toBeInTheDocument()
     expect(screen.getByText("Les resultats ne sont pas encore disponibles.")).toBeInTheDocument()
+  })
+
+  it('should switch between current team results and every result', () => {
+    // GIVEN
+    useGamesMock.mockReturnValue({
+      errorMessage: null,
+      games: [
+        {
+          id: 'game-1',
+          phase: { id: 'phase-1-a', name: 'Poule A', order: 1, type: 'POOL' },
+          phasePath: [
+            { id: 'phase-1', name: 'Brassage', order: 1 },
+            { id: 'phase-1-a', parentId: 'phase-1', name: 'Poule A', order: 1, type: 'POOL' },
+          ],
+          position: 1000,
+          time: new Date('2026-05-03T18:00:00Z'),
+          court: 'Annexe',
+          status: GameStatus.Completed,
+          contestants: new Set([
+            { id: 'team-1', name: 'Aigles' },
+            { id: 'team-2', name: 'Tigres' },
+          ]),
+          referee: undefined,
+          score: { pointsByTeam: { 'team-1': 21, 'team-2': 18 } },
+        },
+      ],
+      isLoading: false,
+    })
+    usePhasesMock.mockReturnValue({
+      errorMessage: null,
+      isLoading: false,
+      phases: [
+        { id: 'phase-1', name: 'Brassage', order: 1 },
+        { id: 'phase-1-a', parentId: 'phase-1', name: 'Poule A', order: 1, type: 'POOL' },
+        { id: 'phase-1-b', parentId: 'phase-1', name: 'Poule B', order: 2, type: 'POOL' },
+      ],
+    })
+    useTeamRankingsMock.mockReturnValue({
+      errorMessage: null,
+      isLoading: false,
+      rankings: [],
+    })
+
+    // WHEN
+    render(
+      <ThemeProvider theme={createTheme()}>
+        <MemoryRouter>
+          <TeamResultsView currentTeam={{ id: 'team-2', name: 'Tigres' }} />
+        </MemoryRouter>
+      </ThemeProvider>,
+    )
+
+    // THEN
+    expect(screen.getByText('Poule A')).toBeInTheDocument()
+    expect(screen.queryByText('Poule B')).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('switch', { name: 'Tous les résultats' }))
+
+    expect(screen.getByText('Poule A')).toBeInTheDocument()
+    expect(screen.getByText('Poule B')).toBeInTheDocument()
   })
 
   it('should render a fallback message when the phase has no details', () => {

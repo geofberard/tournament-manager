@@ -1,4 +1,4 @@
-import { Alert, Card, CardContent, CardHeader, Stack, Typography } from '@mui/material'
+import { Alert, Card, CardContent, CardHeader, CircularProgress, Stack, Typography } from '@mui/material'
 import { GameList } from '../shared/GameList'
 import { RankingTable } from '../shared/RankingTable'
 import { useGames } from '../../hooks/useGames'
@@ -11,6 +11,7 @@ type TeamResultsContentProps = {
   currentTeam: Team
   poolPhases: Phase[]
   selectedPhase: Phase | null
+  showAllResults: boolean
 }
 
 const TeamPoolRankingCard = ({ currentTeam, phase }: { currentTeam: Team, phase: Phase }) => {
@@ -35,7 +36,19 @@ const TeamPoolRankingCard = ({ currentTeam, phase }: { currentTeam: Team, phase:
   )
 }
 
-export const TeamResultsContent = ({ currentTeam, poolPhases, selectedPhase }: TeamResultsContentProps) => {
+const teamParticipatesInPhase = (phase: Phase, currentTeam: Team, games: ReturnType<typeof useGames>['games']) =>
+  games.some(
+    (game) =>
+      game.phase.id === phase.id &&
+      Array.from(game.contestants).some((contestant) => contestant.id === currentTeam.id),
+  )
+
+export const TeamResultsContent = ({
+  currentTeam,
+  poolPhases,
+  selectedPhase,
+  showAllResults,
+}: TeamResultsContentProps) => {
   const { errorMessage: gamesErrorMessage, games, isLoading: isGamesLoading } = useGames()
 
   if (!selectedPhase) {
@@ -43,9 +56,29 @@ export const TeamResultsContent = ({ currentTeam, poolPhases, selectedPhase }: T
   }
 
   if (poolPhases.length > 0) {
+    if (!showAllResults && isGamesLoading) {
+      return (
+        <Stack direction="row" justifyContent="center" sx={{ py: 3 }}>
+          <CircularProgress />
+        </Stack>
+      )
+    }
+
+    if (!showAllResults && gamesErrorMessage) {
+      return <Alert severity="error">{gamesErrorMessage}</Alert>
+    }
+
+    const visiblePoolPhases = showAllResults
+      ? poolPhases
+      : poolPhases.filter((phase) => teamParticipatesInPhase(phase, currentTeam, games))
+
+    if (visiblePoolPhases.length === 0) {
+      return <Alert severity="info">Aucun résultat n'est disponible pour cette équipe dans cette phase.</Alert>
+    }
+
     return (
       <Stack spacing={2}>
-        {poolPhases.map((phase) => (
+        {visiblePoolPhases.map((phase) => (
           <TeamPoolRankingCard currentTeam={currentTeam} key={phase.id} phase={phase} />
         ))}
       </Stack>
