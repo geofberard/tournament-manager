@@ -19,8 +19,8 @@ import type { SelectChangeEvent } from '@mui/material/Select'
 import { fromDateTimeLocalValue, toDateTimeLocalValue } from '../../services/dateTimeLocal'
 import type { BulkGameChanges } from '../../services/gamesService'
 import type { Team } from '../../services/teamsService'
-import type { PhaseNode } from '../../hooks/usePhaseTree'
-import { findPhaseName, renderPhaseMenuItems } from './phaseSelectOptions'
+import type { Phase } from '../../services/phasesService'
+import { PhaseSelect } from './PhaseSelect'
 
 type BulkField =
   | 'court'
@@ -34,7 +34,6 @@ type BulkUpdateGamesFormProps = {
   gameCount: number
   onClose: () => void
   onSubmit: (changes: BulkGameChanges) => Promise<void>
-  phaseTree: PhaseNode[]
   teams: Team[]
 }
 
@@ -42,7 +41,6 @@ export const BulkUpdateGamesForm = ({
   gameCount,
   onClose,
   onSubmit,
-  phaseTree,
   teams,
 }: BulkUpdateGamesFormProps) => {
   const [enabledFields, setEnabledFields] = useState<Set<BulkField>>(new Set())
@@ -92,9 +90,13 @@ export const BulkUpdateGamesForm = ({
     }
 
   const handleSelectChange =
-    (field: 'phaseId' | 'refereeId') => (event: SelectChangeEvent) => {
+    (field: 'refereeId') => (event: SelectChangeEvent) => {
       setValues((currentValues) => ({ ...currentValues, [field]: event.target.value }))
     }
+
+  const handlePhaseChange = (phase?: Phase) => {
+    setValues((currentValues) => ({ ...currentValues, phaseId: phase?.id ?? '' }))
+  }
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -158,18 +160,12 @@ export const BulkUpdateGamesForm = ({
         {fieldControl(
           'phaseId',
           'la phase',
-          <FormControl disabled={!enabledFields.has('phaseId')} fullWidth required={enabledFields.has('phaseId')}>
-            <InputLabel id="bulk-game-phase-label">Phase</InputLabel>
-            <Select
-              label="Phase"
-              labelId="bulk-game-phase-label"
-              onChange={handleSelectChange('phaseId')}
-              renderValue={(phaseId) => findPhaseName(phaseTree, phaseId) ?? phaseId}
-              value={values.phaseId}
-            >
-              {renderPhaseMenuItems(phaseTree)}
-            </Select>
-          </FormControl>,
+          <PhaseSelect
+            disabled={!enabledFields.has('phaseId')}
+            onChange={handlePhaseChange}
+            required={enabledFields.has('phaseId')}
+            value={values.phaseId}
+          />,
         )}
 
         {fieldControl(

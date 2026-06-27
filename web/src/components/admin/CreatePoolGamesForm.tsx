@@ -6,21 +6,17 @@ import {
   Button,
   Checkbox,
   Divider,
-  FormControl,
   FormControlLabel,
-  InputLabel,
-  MenuItem,
-  Select,
   Stack,
   TextField,
   Typography,
 } from '@mui/material'
-import type { SelectChangeEvent } from '@mui/material/Select'
 import { fromDateTimeLocalValue, toDateTimeLocalValue } from '../../services/dateTimeLocal'
 import type { PoolGamesPayload } from '../../services/gamesService'
 import type { Phase } from '../../services/phasesService'
 import type { Team } from '../../services/teamsService'
 import { MultipleTeamSelect } from './MultipleTeamSelect'
+import { PhaseSelect } from './PhaseSelect'
 
 type CreatePoolGamesFormProps = {
   initialValue: PoolGamesPayload
@@ -57,8 +53,8 @@ export const CreatePoolGamesForm = ({
       }))
     }
 
-  const handlePhaseChange = (event: SelectChangeEvent) => {
-    setFormValue((currentValue) => ({ ...currentValue, phaseId: event.target.value }))
+  const handlePhaseChange = (phase?: Phase) => {
+    setFormValue((currentValue) => ({ ...currentValue, phaseId: phase?.id ?? '' }))
   }
 
   const updateTeamIds = (teamIds: Set<string>) => {
@@ -128,21 +124,12 @@ export const CreatePoolGamesForm = ({
       <Stack spacing={2.5} sx={{ flex: 1, overflowY: 'auto', p: 3 }}>
         {submitError ? <Alert severity="error">{submitError}</Alert> : null}
 
-        <FormControl fullWidth required>
-          <InputLabel id="pool-games-phase-label">Phase</InputLabel>
-          <Select
-            label="Phase"
-            labelId="pool-games-phase-label"
-            onChange={handlePhaseChange}
-            value={formValue.phaseId}
-          >
-            {poolPhases.map((phase) => (
-              <MenuItem key={phase.id} value={phase.id}>
-                {phase.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        <PhaseSelect
+          isPhaseDisabled={(phase) => phase.type !== 'POOL'}
+          onChange={handlePhaseChange}
+          required
+          value={formValue.phaseId}
+        />
 
         <TextField
           fullWidth
@@ -193,7 +180,6 @@ export const CreatePoolGamesForm = ({
         <MultipleTeamSelect
           onLoadingChange={setIsLoadingReferencePhase}
           onSelectedTeamIdsChange={updateTeamIds}
-          phases={phases}
           selectedTeamIds={formValue.teamIds}
           teams={teams}
         />

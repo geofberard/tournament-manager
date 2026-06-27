@@ -14,17 +14,15 @@ import {
   Typography,
 } from '@mui/material'
 import type { SelectChangeEvent } from '@mui/material/Select'
-import type { PhasePayload } from '../../services/phasesService'
+import type { Phase, PhasePayload } from '../../services/phasesService'
 import type { PhaseType } from '../../services/apiClient'
-import type { PhaseNode } from '../../hooks/usePhaseTree'
-import { findPhaseName, renderPhaseMenuItems } from './phaseSelectOptions'
+import { PhaseSelect } from './PhaseSelect'
 
 type ManagePhaseFormProps = {
   currentPhaseId?: string
   initialValue: PhasePayload
   onClose: () => void
   onSubmit: (phasePayload: PhasePayload) => Promise<void>
-  phaseTree: PhaseNode[]
   titleLabel: string
 }
 
@@ -33,7 +31,6 @@ export const ManagePhaseForm = ({
   initialValue,
   onClose,
   onSubmit,
-  phaseTree,
   titleLabel,
 }: ManagePhaseFormProps) => {
   const [formValue, setFormValue] = useState<PhasePayload>(initialValue)
@@ -63,12 +60,15 @@ export const ManagePhaseForm = ({
     }))
   }
 
-  const handleParentChange = (event: SelectChangeEvent<string>) => {
+  const handleParentChange = (phase?: Phase) => {
     setFormValue((currentValue) => ({
       ...currentValue,
-      parentId: event.target.value || undefined,
+      parentId: phase?.id,
     }))
   }
+
+  const isParentPhaseDisabled = (phase: Phase) =>
+    Boolean(currentPhaseId && (phase.id === currentPhaseId || phase.parentId === currentPhaseId))
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -124,23 +124,13 @@ export const ManagePhaseForm = ({
           value={formValue.order}
         />
 
-        <FormControl fullWidth>
-          <InputLabel id="phase-parent-label">Phase parente</InputLabel>
-          <Select
-            label="Phase parente"
-            labelId="phase-parent-label"
-            onChange={handleParentChange}
-            renderValue={(selectedId) => (
-              selectedId
-                ? findPhaseName(phaseTree, selectedId) ?? selectedId
-                : 'Aucune (phase racine)'
-            )}
-            value={formValue.parentId ?? ''}
-          >
-            <MenuItem value="">Aucune (phase racine)</MenuItem>
-            {renderPhaseMenuItems(phaseTree, currentPhaseId)}
-          </Select>
-        </FormControl>
+        <PhaseSelect
+          allowEmpty
+          isPhaseDisabled={isParentPhaseDisabled}
+          label="Phase parente"
+          onChange={handleParentChange}
+          value={formValue.parentId ?? ''}
+        />
 
         <FormControl fullWidth>
           <InputLabel id="phase-type-label">Type</InputLabel>

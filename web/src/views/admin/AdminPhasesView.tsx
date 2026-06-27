@@ -133,7 +133,6 @@ export const AdminPhasesView = () => {
             initialValue={emptyPhaseForm}
             onClose={closeDrawer}
             onSubmit={saveCreatedPhase}
-            phaseTree={phaseTree}
             titleLabel="Nouvelle phase"
           />
         ) : null}
@@ -143,7 +142,6 @@ export const AdminPhasesView = () => {
             initialValue={toPhasePayload(selectedPhase)}
             onClose={closeDrawer}
             onSubmit={saveUpdatedPhase}
-            phaseTree={phaseTree}
             titleLabel="Modifier la phase"
           />
         ) : null}

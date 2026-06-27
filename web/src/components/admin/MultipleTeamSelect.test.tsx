@@ -1,15 +1,22 @@
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ThemeProvider, createTheme } from '@mui/material'
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import { buildPhaseTree, usePhaseTree } from '../../hooks/usePhaseTree'
 import * as statisticsService from '../../services/statisticsService'
 import { MultipleTeamSelect } from './MultipleTeamSelect'
 
+vi.mock('../../hooks/usePhaseTree', async () => {
+  const actual = await vi.importActual<typeof import('../../hooks/usePhaseTree')>('../../hooks/usePhaseTree')
+  return { ...actual, usePhaseTree: vi.fn() }
+})
 vi.mock('../../services/statisticsService', () => ({ getPhaseStatistics: vi.fn() }))
 
 const phases = [
-  { id: 'phase-pool', name: 'Brassage', order: 1, type: 'POOL' as const },
-  { id: 'phase-bracket', name: 'Finales', order: 2, type: 'BRACKET' as const },
+  { id: 'phase-root', name: 'Tournoi', order: 1 },
+  { id: 'phase-pool', name: 'Brassage', order: 1, parentId: 'phase-root', type: 'POOL' as const },
+  { id: 'phase-bracket', name: 'Finales', order: 2, parentId: 'phase-root', type: 'BRACKET' as const },
 ]
+const phaseTree = buildPhaseTree(phases)
 const teams = [
   { id: 'team-1', name: 'Tigres' },
   { id: 'team-2', name: 'Lynx' },
@@ -21,12 +28,17 @@ const renderSelect = ({
   onSelectedTeamIdsChange = vi.fn(),
   selectedTeamIds = new Set<string>(),
 } = {}) => {
+  vi.mocked(usePhaseTree).mockReturnValue({
+    errorMessage: null,
+    isLoading: false,
+    phases,
+    phaseTree,
+  })
   render(
     <ThemeProvider theme={createTheme()}>
       <MultipleTeamSelect
         onLoadingChange={onLoadingChange}
         onSelectedTeamIdsChange={onSelectedTeamIdsChange}
-        phases={phases}
         selectedTeamIds={selectedTeamIds}
         teams={teams}
       />
@@ -66,7 +78,7 @@ describe('MultipleTeamSelect', () => {
     })
 
     // WHEN
-    fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Phase de filtre' }))
+    fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Filtrer par phase' }))
     fireEvent.click(screen.getByRole('option', { name: 'Brassage' }))
 
     // THEN

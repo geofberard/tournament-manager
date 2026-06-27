@@ -17,16 +17,15 @@ import {
 import type { SelectChangeEvent } from '@mui/material/Select'
 import { fromDateTimeLocalValue, toDateTimeLocalValue } from '../../services/dateTimeLocal'
 import type { GamePayload } from '../../services/gamesService'
+import type { Phase } from '../../services/phasesService'
 import type { Team } from '../../services/teamsService'
-import type { PhaseNode } from '../../hooks/usePhaseTree'
-import { findPhaseName, renderPhaseMenuItems } from './phaseSelectOptions'
+import { PhaseSelect } from './PhaseSelect'
 
 type ManageGameFormProps = {
   initialValue: GamePayload
   isUpdate: boolean
   onClose: () => void
   onSubmit: (gamePayload: GamePayload) => Promise<void>
-  phaseTree: PhaseNode[]
   teams: Team[]
   titleLabel: string
 }
@@ -35,7 +34,6 @@ export const ManageGameForm = ({
   initialValue,
   onClose,
   onSubmit,
-  phaseTree,
   teams,
   titleLabel,
 }: ManageGameFormProps) => {
@@ -53,9 +51,13 @@ export const ManageGameForm = ({
     }
 
   const handleSelectChange =
-    (field: keyof Pick<GamePayload, 'phaseId' | 'refereeId'>) => (event: SelectChangeEvent) => {
+    (field: keyof Pick<GamePayload, 'refereeId'>) => (event: SelectChangeEvent) => {
       setFormValue((currentValue) => ({ ...currentValue, [field]: event.target.value }))
     }
+
+  const handlePhaseChange = (phase?: Phase) => {
+    setFormValue((currentValue) => ({ ...currentValue, phaseId: phase?.id ?? '' }))
+  }
 
   const handleContestantChange = (index: number) => (event: SelectChangeEvent) => {
     const previousTeamId = contestantIds[index]
@@ -159,18 +161,7 @@ export const ManageGameForm = ({
       <Stack spacing={2.5} sx={{ flex: 1, overflowY: 'auto', p: 3 }}>
         {submitError ? <Alert severity="error">{submitError}</Alert> : null}
 
-        <FormControl fullWidth required>
-          <InputLabel id="game-phase-label">Phase</InputLabel>
-          <Select
-            label="Phase"
-            labelId="game-phase-label"
-            onChange={handleSelectChange('phaseId')}
-            renderValue={(phaseId) => findPhaseName(phaseTree, phaseId) ?? phaseId}
-            value={formValue.phaseId}
-          >
-            {renderPhaseMenuItems(phaseTree)}
-          </Select>
-        </FormControl>
+        <PhaseSelect onChange={handlePhaseChange} required value={formValue.phaseId} />
 
         <TextField
           fullWidth

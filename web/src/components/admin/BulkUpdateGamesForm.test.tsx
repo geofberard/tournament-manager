@@ -2,21 +2,32 @@ import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/re
 import { ThemeProvider, createTheme } from '@mui/material'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { BulkUpdateGamesForm } from './BulkUpdateGamesForm'
-import { buildPhaseTree } from '../../hooks/usePhaseTree'
+import { buildPhaseTree, usePhaseTree } from '../../hooks/usePhaseTree'
+
+vi.mock('../../hooks/usePhaseTree', async () => {
+  const actual = await vi.importActual<typeof import('../../hooks/usePhaseTree')>('../../hooks/usePhaseTree')
+  return { ...actual, usePhaseTree: vi.fn() }
+})
 
 const phases = [
   { id: 'phase-root', name: 'Poules', order: 1 },
   { id: 'phase-1', parentId: 'phase-root', name: 'Brassage', order: 1, type: 'POOL' as const },
 ]
 
-const renderForm = (onSubmit = vi.fn().mockResolvedValue(undefined)) =>
-  render(
+const renderForm = (onSubmit = vi.fn().mockResolvedValue(undefined)) => {
+  vi.mocked(usePhaseTree).mockReturnValue({
+    errorMessage: null,
+    isLoading: false,
+    phases,
+    phaseTree: buildPhaseTree(phases),
+  })
+
+  return render(
     <ThemeProvider theme={createTheme()}>
       <BulkUpdateGamesForm
         gameCount={2}
         onClose={vi.fn()}
         onSubmit={onSubmit}
-        phaseTree={buildPhaseTree(phases)}
         teams={[
           { id: 'team-1', name: 'Tigres' },
           { id: 'team-2', name: 'Lynx' },
@@ -24,6 +35,7 @@ const renderForm = (onSubmit = vi.fn().mockResolvedValue(undefined)) =>
       />
     </ThemeProvider>,
   )
+}
 
 describe('BulkUpdateGamesForm', () => {
   afterEach(cleanup)

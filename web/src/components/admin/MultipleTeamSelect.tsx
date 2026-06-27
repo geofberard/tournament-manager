@@ -8,21 +8,17 @@ import {
   FormControlLabel,
   FormGroup,
   FormHelperText,
-  InputLabel,
-  MenuItem,
-  Select,
   Stack,
   Typography,
 } from '@mui/material'
-import type { SelectChangeEvent } from '@mui/material/Select'
-import type { Phase } from '../../services/phasesService'
 import { getPhaseStatistics } from '../../services/statisticsService'
 import type { Team } from '../../services/teamsService'
+import type { Phase } from '../../services/phasesService'
+import { PhaseSelect } from './PhaseSelect'
 
 type MultipleTeamSelectProps = {
   onLoadingChange?: (isLoading: boolean) => void
   onSelectedTeamIdsChange: (teamIds: Set<string>) => void
-  phases: Phase[]
   selectedTeamIds: Set<string>
   teams: Team[]
 }
@@ -30,11 +26,11 @@ type MultipleTeamSelectProps = {
 export const MultipleTeamSelect = ({
   onLoadingChange,
   onSelectedTeamIdsChange,
-  phases,
   selectedTeamIds,
   teams,
 }: MultipleTeamSelectProps) => {
   const [referencePhaseId, setReferencePhaseId] = useState('')
+  const [referencePhaseName, setReferencePhaseName] = useState<string | undefined>()
   const [usedTeamIds, setUsedTeamIds] = useState<Set<string>>(new Set())
   const [isLoadingReferencePhase, setIsLoadingReferencePhase] = useState(false)
   const [referencePhaseError, setReferencePhaseError] = useState<string | null>(null)
@@ -43,7 +39,6 @@ export const MultipleTeamSelect = ({
     () => teams.filter((team) => !usedTeamIds.has(team.id)).length,
     [teams, usedTeamIds],
   )
-  const referencePhaseName = phases.find((phase) => phase.id === referencePhaseId)?.name
   const unavailableTeamsCount = usedTeamIds.size
 
   const setReferencePhaseLoading = (isLoading: boolean) => {
@@ -51,11 +46,12 @@ export const MultipleTeamSelect = ({
     onLoadingChange?.(isLoading)
   }
 
-  const handleReferencePhaseChange = async (event: SelectChangeEvent) => {
-    const nextReferencePhaseId = event.target.value
+  const handleReferencePhaseChange = async (nextReferencePhase?: Phase) => {
+    const nextReferencePhaseId = nextReferencePhase?.id ?? ''
     const requestId = referencePhaseRequestId.current + 1
     referencePhaseRequestId.current = requestId
     setReferencePhaseId(nextReferencePhaseId)
+    setReferencePhaseName(nextReferencePhase?.name)
 
     if (!nextReferencePhaseId) {
       setUsedTeamIds(new Set())
@@ -118,33 +114,14 @@ export const MultipleTeamSelect = ({
           Equipes
         </Typography>
 
-        <Stack
-          alignItems={{ xs: 'stretch', sm: 'center' }}
-          direction={{ xs: 'column', sm: 'row' }}
-          spacing={1}
-        >
-          <Typography color="text.secondary" id="pool-games-reference-phase-hint">
-            Marquer comme indisponibles les equipes de
-          </Typography>
-          <FormControl size="small" sx={{ minWidth: { sm: 220 } }}>
-            <InputLabel id="pool-games-reference-phase-label">Phase de filtre</InputLabel>
-            <Select
-              aria-describedby="pool-games-reference-phase-hint"
-              label="Phase de filtre"
-              labelId="pool-games-reference-phase-label"
-              onChange={handleReferencePhaseChange}
-              value={referencePhaseId}
-            >
-              <MenuItem value="">
-                <em>Aucune phase</em>
-              </MenuItem>
-              {phases.map((phase) => (
-                <MenuItem key={phase.id} value={phase.id}>
-                  {phase.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+        <Stack alignItems={{ xs: 'stretch', sm: 'flex-start' }}>
+          <PhaseSelect
+            allowEmpty
+            condensed
+            label="Filtrer par phase"
+            onChange={handleReferencePhaseChange}
+            value={referencePhaseId}
+          />
         </Stack>
 
         <Typography color="text.secondary" variant="body2">

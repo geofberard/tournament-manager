@@ -3,7 +3,12 @@ import { ThemeProvider, createTheme } from '@mui/material'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { ManagePhaseForm } from './ManagePhaseForm'
 import type { PhasePayload } from '../../services/phasesService'
-import { buildPhaseTree } from '../../hooks/usePhaseTree'
+import { buildPhaseTree, usePhaseTree } from '../../hooks/usePhaseTree'
+
+vi.mock('../../hooks/usePhaseTree', async () => {
+  const actual = await vi.importActual<typeof import('../../hooks/usePhaseTree')>('../../hooks/usePhaseTree')
+  return { ...actual, usePhaseTree: vi.fn() }
+})
 
 const initialValue: PhasePayload = {
   details: 'Details initiaux',
@@ -23,6 +28,12 @@ const phases = [
 const renderForm = (overrides: Partial<PhasePayload> = {}) => {
   const onClose = vi.fn()
   const onSubmit = vi.fn().mockResolvedValue(undefined)
+  vi.mocked(usePhaseTree).mockReturnValue({
+    errorMessage: null,
+    isLoading: false,
+    phases,
+    phaseTree: buildPhaseTree(phases),
+  })
 
   render(
     <ThemeProvider theme={createTheme()}>
@@ -31,7 +42,6 @@ const renderForm = (overrides: Partial<PhasePayload> = {}) => {
         initialValue={{ ...initialValue, ...overrides }}
         onClose={onClose}
         onSubmit={onSubmit}
-        phaseTree={buildPhaseTree(phases)}
         titleLabel="Titre personnalise"
       />
     </ThemeProvider>,
@@ -106,8 +116,8 @@ describe('ManagePhaseForm', () => {
 
     fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Phase parente' }))
 
-    expect(screen.queryByRole('option', { name: 'Principale' })).not.toBeInTheDocument()
-    expect(screen.queryByRole('option', { name: 'Finale' })).not.toBeInTheDocument()
+    expect(screen.getByRole('option', { name: 'Principale' })).toHaveAttribute('aria-disabled', 'true')
+    expect(screen.getByRole('option', { name: 'Finale' })).toHaveAttribute('aria-disabled', 'true')
     fireEvent.click(screen.getByRole('option', { name: 'Phase finale' }))
     fireEvent.click(screen.getByRole('button', { name: 'Sauvegarder' }))
 
@@ -121,8 +131,10 @@ describe('ManagePhaseForm', () => {
 
     const options = screen.getAllByRole('option')
     expect(options.map((option) => option.textContent)).toEqual([
-      'Aucune (phase racine)',
+      '-- Aucune --',
       'Phase finale',
+      '└Principale',
+      '└Finale',
       'Poules',
       '└Poule A',
     ])

@@ -3,7 +3,12 @@ import { ThemeProvider, createTheme } from '@mui/material'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { GamePayload } from '../../services/gamesService'
 import { ManageGameForm } from './ManageGameForm'
-import { buildPhaseTree } from '../../hooks/usePhaseTree'
+import { buildPhaseTree, usePhaseTree } from '../../hooks/usePhaseTree'
+
+vi.mock('../../hooks/usePhaseTree', async () => {
+  const actual = await vi.importActual<typeof import('../../hooks/usePhaseTree')>('../../hooks/usePhaseTree')
+  return { ...actual, usePhaseTree: vi.fn() }
+})
 
 const phases = [
   { id: 'phase-root', name: 'Poules', order: 1 },
@@ -28,6 +33,12 @@ const initialValue: GamePayload = {
 
 const renderForm = (overrides: Partial<GamePayload> = {}, onSubmit = vi.fn().mockResolvedValue(undefined)) => {
   const onClose = vi.fn()
+  vi.mocked(usePhaseTree).mockReturnValue({
+    errorMessage: null,
+    isLoading: false,
+    phases,
+    phaseTree: buildPhaseTree(phases),
+  })
 
   render(
     <ThemeProvider theme={createTheme()}>
@@ -36,7 +47,6 @@ const renderForm = (overrides: Partial<GamePayload> = {}, onSubmit = vi.fn().moc
         isUpdate
         onClose={onClose}
         onSubmit={onSubmit}
-        phaseTree={buildPhaseTree(phases)}
         teams={teams}
         titleLabel="Modifier le match"
       />

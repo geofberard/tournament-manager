@@ -70,7 +70,7 @@ const toGamePayload = (game: Game): GamePayload => ({
 
 export const AdminGamesView = () => {
   const { games, isLoading, errorMessage } = useGames()
-  const { phases, phaseTree } = usePhaseTree()
+  const { phases } = usePhaseTree()
   const { teams } = useTeams()
   const { mutate } = useSWRConfig()
   const [drawerMode, setDrawerMode] = useState<GameDrawerMode>('idle')
@@ -282,7 +282,6 @@ export const AdminGamesView = () => {
             isUpdate={false}
             onClose={closeDrawer}
             onSubmit={saveCreatedGame}
-            phaseTree={phaseTree}
             teams={teams}
             titleLabel="Nouveau match"
           />
@@ -302,7 +301,6 @@ export const AdminGamesView = () => {
             isUpdate
             onClose={closeDrawer}
             onSubmit={saveUpdatedGame}
-            phaseTree={phaseTree}
             teams={teams}
             titleLabel="Modifier le match"
           />
@@ -312,7 +310,6 @@ export const AdminGamesView = () => {
             gameCount={selectedGameIds.size}
             onClose={closeDrawer}
             onSubmit={saveBulkUpdatedGames}
-            phaseTree={phaseTree}
             teams={teams}
           />
         ) : null}
