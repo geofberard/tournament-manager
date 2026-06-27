@@ -6,7 +6,7 @@ import { TeamResultsView } from './TeamResultsView'
 import { GameStatus } from '../../generated/api-client'
 import * as useGamesModule from '../../hooks/useGames'
 import * as usePhasesModule from '../../hooks/usePhases'
-import * as useTeamRankingsModule from '../../hooks/useTeamRankings'
+import * as usePhaseRankingsModule from '../../hooks/usePhaseRankings'
 
 vi.mock('../../hooks/useGames', () => ({
   useGames: vi.fn(),
@@ -16,13 +16,13 @@ vi.mock('../../hooks/usePhases', () => ({
   usePhases: vi.fn(),
 }))
 
-vi.mock('../../hooks/useTeamRankings', () => ({
-  useTeamRankings: vi.fn(),
+vi.mock('../../hooks/usePhaseRankings', () => ({
+  usePhaseRankings: vi.fn(),
 }))
 
 const useGamesMock = vi.mocked(useGamesModule.useGames)
 const usePhasesMock = vi.mocked(usePhasesModule.usePhases)
-const useTeamRankingsMock = vi.mocked(useTeamRankingsModule.useTeamRankings)
+const usePhaseRankingsMock = vi.mocked(usePhaseRankingsModule.usePhaseRankings)
 
 describe('TeamResultsView', () => {
   afterEach(() => {
@@ -81,7 +81,7 @@ describe('TeamResultsView', () => {
         },
       ],
     })
-    useTeamRankingsMock.mockReturnValue({
+    usePhaseRankingsMock.mockReturnValue({
       errorMessage: null,
       isLoading: false,
       rankings: [],
@@ -143,7 +143,7 @@ describe('TeamResultsView', () => {
         { id: 'phase-1-b', parentId: 'phase-1', name: 'Poule B', order: 2, type: 'POOL' },
       ],
     })
-    useTeamRankingsMock.mockReturnValue({
+    usePhaseRankingsMock.mockReturnValue({
       errorMessage: null,
       isLoading: false,
       rankings: [],
@@ -180,7 +180,7 @@ describe('TeamResultsView', () => {
       isLoading: false,
       phases: [{ id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' }],
     })
-    useTeamRankingsMock.mockReturnValue({
+    usePhaseRankingsMock.mockReturnValue({
       errorMessage: null,
       isLoading: false,
       rankings: [],
@@ -240,7 +240,7 @@ describe('TeamResultsView', () => {
       isLoading: false,
       phases: [{ id: 'phase-2', name: 'Bracket final', order: 2, type: 'BRACKET' }],
     })
-    useTeamRankingsMock.mockReturnValue({
+    usePhaseRankingsMock.mockReturnValue({
       errorMessage: null,
       isLoading: false,
       rankings: [],

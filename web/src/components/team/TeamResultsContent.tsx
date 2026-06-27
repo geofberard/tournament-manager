@@ -1,9 +1,8 @@
-import { Alert, Card, CardContent, CardHeader, CircularProgress, Stack, Typography } from '@mui/material'
+import { Alert, CircularProgress, Stack } from '@mui/material'
 import { GameList } from '../shared/GameList'
-import { RankingTable } from '../shared/RankingTable'
+import { PhaseRankingCard } from '../shared/PhaseRankingCard'
 import { useGames } from '../../hooks/useGames'
 import { sortGamesByPosition } from '../../services/gameOrdering'
-import { useTeamRankings } from '../../hooks/useTeamRankings'
 import type { Phase } from '../../services/phasesService'
 import type { Team } from '../../services/teamsService'
 
@@ -12,28 +11,6 @@ type TeamResultsContentProps = {
   poolPhases: Phase[]
   selectedPhase: Phase | null
   showAllResults: boolean
-}
-
-const TeamPoolRankingCard = ({ currentTeam, phase }: { currentTeam: Team, phase: Phase }) => {
-  const {
-    errorMessage: rankingsErrorMessage,
-    isLoading: isRankingsLoading,
-    rankings,
-  } = useTeamRankings(currentTeam.id, phase.id)
-
-  return (
-    <Card variant="outlined">
-      <CardHeader title={<Typography fontWeight="bold">{phase.name}</Typography>} />
-      <CardContent sx={{ pt: 0 }}>
-        <RankingTable
-          currentTeamId={currentTeam.id}
-          errorMessage={rankingsErrorMessage}
-          isLoading={isRankingsLoading}
-          rankings={rankings}
-        />
-      </CardContent>
-    </Card>
-  )
 }
 
 const teamParticipatesInPhase = (phase: Phase, currentTeam: Team, games: ReturnType<typeof useGames>['games']) =>
@@ -77,9 +54,9 @@ export const TeamResultsContent = ({
     }
 
     return (
-      <Stack spacing={2}>
+      <Stack>
         {visiblePoolPhases.map((phase) => (
-          <TeamPoolRankingCard currentTeam={currentTeam} key={phase.id} phase={phase} />
+          <PhaseRankingCard currentTeamId={currentTeam.id} key={phase.id} phaseId={phase.id} phaseName={phase.name} />
         ))}
       </Stack>
     )

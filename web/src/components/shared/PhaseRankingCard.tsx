@@ -4,12 +4,13 @@ import { usePhaseRankings } from '../../hooks/usePhaseRankings'
 import { RankingTable } from './RankingTable'
 
 type PhaseRankingCardProps = {
+  currentTeamId?: string
   extended?: boolean
   phaseName: string
   phaseId: string
 }
 
-export const PhaseRankingCard = ({ extended = false, phaseName, phaseId }: PhaseRankingCardProps) => {
+export const PhaseRankingCard = ({ currentTeamId = '', extended = false, phaseName, phaseId }: PhaseRankingCardProps) => {
   const { errorMessage, isLoading, rankings } = usePhaseRankings(phaseId)
 
   return (
@@ -21,7 +22,7 @@ export const PhaseRankingCard = ({ extended = false, phaseName, phaseId }: Phase
       />
       <CardContent sx={{ p: 0, '&:last-child': { pb: 0 } }}>
         <RankingTable
-          currentTeamId=""
+          currentTeamId={currentTeamId}
           extended={extended}
           errorMessage={errorMessage}
           isLoading={isLoading}

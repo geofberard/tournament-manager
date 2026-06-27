@@ -21,7 +21,7 @@ import {
 } from './routes'
 import * as useGamesModule from '../hooks/useGames'
 import * as useGameModule from '../hooks/useGame'
-import * as useTeamRankingsModule from '../hooks/useTeamRankings'
+import * as usePhaseRankingsModule from '../hooks/usePhaseRankings'
 import * as useTeamLoginModule from '../hooks/useTeamLogin'
 import * as useAdminSessionModule from '../hooks/useAdminSession'
 import * as usePhasesModule from '../hooks/usePhases'
@@ -47,8 +47,8 @@ vi.mock('../hooks/useGame', () => ({
   useGame: vi.fn(),
 }))
 
-vi.mock('../hooks/useTeamRankings', () => ({
-  useTeamRankings: vi.fn(),
+vi.mock('../hooks/usePhaseRankings', () => ({
+  usePhaseRankings: vi.fn(),
 }))
 
 vi.mock('../hooks/usePhases', () => ({
@@ -61,7 +61,7 @@ const useAdminSessionMock = vi.mocked(useAdminSessionModule.useAdminSession)
 const useTeamsMock = vi.mocked(useTeamsModule.useTeams)
 const useGamesMock = vi.mocked(useGamesModule.useGames)
 const useGameMock = vi.mocked(useGameModule.useGame)
-const useTeamRankingsMock = vi.mocked(useTeamRankingsModule.useTeamRankings)
+const usePhaseRankingsMock = vi.mocked(usePhaseRankingsModule.usePhaseRankings)
 const usePhasesMock = vi.mocked(usePhasesModule.usePhases)
 
 const renderRouter = () =>
@@ -94,7 +94,7 @@ describe('Router', () => {
       isLoading: false,
       errorMessage: null,
     })
-    useTeamRankingsMock.mockReturnValue({
+    usePhaseRankingsMock.mockReturnValue({
       errorMessage: null,
       isLoading: false,
       rankings: [],

@@ -4,18 +4,18 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { TeamResultsContent } from './TeamResultsContent'
 import { GameStatus, type Game } from '../../generated/api-client'
 import * as useGamesModule from '../../hooks/useGames'
-import * as useTeamRankingsModule from '../../hooks/useTeamRankings'
+import * as usePhaseRankingsModule from '../../hooks/usePhaseRankings'
 
 vi.mock('../../hooks/useGames', () => ({
   useGames: vi.fn(),
 }))
 
-vi.mock('../../hooks/useTeamRankings', () => ({
-  useTeamRankings: vi.fn(),
+vi.mock('../../hooks/usePhaseRankings', () => ({
+  usePhaseRankings: vi.fn(),
 }))
 
 const useGamesMock = vi.mocked(useGamesModule.useGames)
-const useTeamRankingsMock = vi.mocked(useTeamRankingsModule.useTeamRankings)
+const usePhaseRankingsMock = vi.mocked(usePhaseRankingsModule.usePhaseRankings)
 const teamPoolGame: Game = {
   id: 'game-1',
   phase: { id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' },
@@ -44,7 +44,7 @@ describe('TeamResultsContent', () => {
       games: [teamPoolGame],
       isLoading: false,
     })
-    useTeamRankingsMock.mockReturnValue({
+    usePhaseRankingsMock.mockReturnValue({
       errorMessage: null,
       isLoading: false,
       rankings: [],
@@ -73,7 +73,7 @@ describe('TeamResultsContent', () => {
       games: [teamPoolGame],
       isLoading: false,
     })
-    useTeamRankingsMock.mockReturnValue({
+    usePhaseRankingsMock.mockReturnValue({
       errorMessage: null,
       isLoading: false,
       rankings: [],
@@ -106,7 +106,7 @@ describe('TeamResultsContent', () => {
       games: [teamPoolGame],
       isLoading: false,
     })
-    useTeamRankingsMock.mockReturnValue({
+    usePhaseRankingsMock.mockReturnValue({
       errorMessage: null,
       isLoading: false,
       rankings: [],
