@@ -86,8 +86,9 @@ describe('TeamGamesView', () => {
     )
 
     // THEN
-    expect(screen.getByRole('heading', { name: 'Prochains matchs' })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: 'Matchs terminés' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Matchs' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'À venir' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Terminés' })).toBeInTheDocument()
     expect(screen.getByText('Panthères')).toBeInTheDocument()
     expect(screen.getByText('Lynx')).toBeInTheDocument()
     expect(screen.queryByText('Ours')).not.toBeInTheDocument()

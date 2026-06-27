@@ -1,16 +1,38 @@
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import { Alert, CircularProgress, FormControlLabel, Stack, Switch, Typography } from '@mui/material'
+import SportsVolleyballIcon from '@mui/icons-material/SportsVolleyball'
 import { GameList } from '../../components/shared/GameList'
 import { GameStatus } from '../../generated/api-client'
 import { useGames } from '../../hooks/useGames'
 import { sortGamesByPosition } from '../../services/gameOrdering'
 import { getDisplayedGameStatus } from '../../services/gameStatus'
 import type { Team } from '../../services/teamsService'
-import SportsIcon from '@mui/icons-material/Sports';
 
 type TeamGamesViewProps = {
   currentTeam: Team
 }
+
+type GameSectionHeaderProps = {
+  description?: string
+  icon?: ReactNode
+  title: string
+}
+
+const GameSectionHeader = ({ description, icon, title }: GameSectionHeaderProps) => (
+  <Stack spacing={0.5}>
+    <Stack direction="row" alignItems="center" gap={1}>
+      {icon}
+      <Typography variant="h3" color="primary" sx={{ fontWeight: 700 }}>
+        {title}
+      </Typography>
+    </Stack>
+    {description ? (
+      <Typography variant="body2" color="text.secondary">
+        {description}
+      </Typography>
+    ) : null}
+  </Stack>
+)
 
 export const TeamGamesView = ({ currentTeam }: TeamGamesViewProps) => {
   const { errorMessage: gamesErrorMessage, games, isLoading: isGamesLoading } = useGames()
@@ -42,6 +64,28 @@ export const TeamGamesView = ({ currentTeam }: TeamGamesViewProps) => {
 
   return (
     <Stack spacing={3}>
+      <Stack
+        alignItems={{ xs: 'stretch', sm: 'center' }}
+        direction={{ xs: 'column', sm: 'row' }}
+        justifyContent="space-between"
+        spacing={1.5}
+      >
+        <Typography variant="h1">Matchs</Typography>
+
+        {!isGamesLoading && !gamesErrorMessage ? (
+          <FormControlLabel
+            control={(
+              <Switch
+                checked={showOnlyTeamGames}
+                onChange={(event) => setShowOnlyTeamGames(event.target.checked)}
+                size="small"
+              />
+            )}
+            label="Mes matchs"
+            sx={{ mr: 0 }}
+          />
+        ) : null}
+      </Stack>
 
       {isGamesLoading ? (
         <Stack direction="row" justifyContent="center" sx={{ py: 3 }}>
@@ -55,32 +99,12 @@ export const TeamGamesView = ({ currentTeam }: TeamGamesViewProps) => {
         </Alert>
       ) : null}
 
-      {!isGamesLoading && !gamesErrorMessage ? (
-        <Stack direction="row" justifyContent="flex-end">
-          <FormControlLabel
-            control={(
-              <Switch
-                checked={showOnlyTeamGames}
-                onChange={(event) => setShowOnlyTeamGames(event.target.checked)}
-                size="small"
-              />
-            )}
-            label="Mes matchs"
-            sx={{ mr: 0 }}
-          />
-        </Stack>
-      ) : null}
-
       {teamOngoingRefereeGames.length > 0 ? (<Stack spacing={2}>
-        <Stack spacing={0.5} direction="row" alignItems="center" justifyContent="center">
-          <SportsIcon />
-          <Typography variant="h3" color="primary" sx={{ fontWeight: 700 }}>
-            Matchs à arbitrer
-          </Typography>
-        </Stack>
-        <Typography variant="body2" color="text.secondary">
-          Vos matchs à arbitrer sur le tournoi. Vous pouvez cliquer sur le bouton d'un match pour accéder à l'interface d'arbitrage.
-        </Typography>
+        <GameSectionHeader
+          description="Vos matchs à arbitrer sur le tournoi. Vous pouvez cliquer sur le bouton d'un match pour accéder à l'interface d'arbitrage."
+          icon={<SportsVolleyballIcon color="primary" />}
+          title="À arbitrer"
+        />
         <GameList
           emptyMessage="Aucun match à arbitrer n'est enregistré pour cette equipe."
           errorMessage={gamesErrorMessage}
@@ -94,14 +118,10 @@ export const TeamGamesView = ({ currentTeam }: TeamGamesViewProps) => {
 
       {ongoingGames.length > 0 ? (
         <Stack spacing={2}>
-          <Stack spacing={0.5}>
-            <Typography variant="h3" color="primary" sx={{ fontWeight: 700 }}>
-              Matchs en cours
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Les matchs en cours dans vos phases.
-            </Typography>
-          </Stack>
+          <GameSectionHeader
+            description="Les matchs en cours dans vos phases."
+            title="En cours"
+          />
           <GameList
             emptyMessage="Aucun match en cours n'est enregistré pour cette equipe."
             errorMessage={gamesErrorMessage}
@@ -115,14 +135,10 @@ export const TeamGamesView = ({ currentTeam }: TeamGamesViewProps) => {
 
       {upcomingGames.length > 0 ? (
         <Stack spacing={2}>
-          <Stack spacing={0.5}>
-            <Typography variant="h3" color="primary" sx={{ fontWeight: 700 }}>
-              Prochains matchs
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Les prochains matchs dans vos phases.
-            </Typography>
-          </Stack>
+          <GameSectionHeader
+            description="Les prochains matchs dans vos phases."
+            title="À venir"
+          />
           <GameList
             emptyMessage="Aucun match a venir n'est encore planifie pour cette equipe."
             errorMessage={gamesErrorMessage}
@@ -136,9 +152,7 @@ export const TeamGamesView = ({ currentTeam }: TeamGamesViewProps) => {
       ) : null}
 
       {completedGames.length > 0 ? (<Stack spacing={2.5} sx={{ pt: 1 }}>
-        <Typography variant="h3" color="primary" sx={{ fontWeight: 700 }}>
-          Matchs terminés
-        </Typography>
+        <GameSectionHeader title="Terminés" />
         <GameList
           emptyMessage="Aucun match termine pour cette equipe."
           errorMessage={gamesErrorMessage}

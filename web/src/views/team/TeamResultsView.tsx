@@ -25,9 +25,7 @@ export const TeamResultsView = ({ currentTeam }: TeamResultsViewProps) => {
 
   return (
     <Stack spacing={3}>
-      <Stack spacing={0.5}>
-        <Typography variant="h2">Bienvenue {currentTeam.name}</Typography>
-      </Stack>
+      <Typography variant="h1">Résultats</Typography>
 
       {isPhasesLoading ? (
         <Stack direction="row" justifyContent="center" sx={{ py: 3 }}>

@@ -11,7 +11,6 @@ import {
   PUBLIC_HOME_PATH,
   TEAM_HOME_PATH,
   TEAM_LOGIN_PATH,
-  TEAM_RESULTS_PATH,
   teamRoutes,
 } from './routes'
 import { TeamSelectionView } from '../views/team/TeamSelectionView'
@@ -25,6 +24,7 @@ import { AdminTeamsView } from '../views/admin/AdminTeamsView'
 import { AdminTerrainsView } from '../views/admin/AdminTerrainsView'
 import { AdminRankingsView } from '../views/admin/AdminRankingsView'
 import { TeamGamesView } from '../views/team/TeamGamesView'
+import { TeamHomeView } from '../views/team/TeamHomeView'
 import { TeamResultsView } from '../views/team/TeamResultsView'
 import { TeamRefereeGameView } from '../views/team/TeamRefereeGameView'
 import { TeamTerrainView } from '../views/team/TeamTerrainView'
@@ -148,11 +148,11 @@ const AppRoutes = ({ adminSession, teamSession }: AppRoutesProps) => {
           )
         }
       >
-        <Route index element={<Navigate to={TEAM_RESULTS_PATH} replace />} />
+        <Route index element={<TeamHomeView currentTeam={currentTeam ?? undefined!} />} />
         <Route path="results" element={<TeamResultsView currentTeam={currentTeam ?? undefined!} />} />
         <Route path="games" element={<TeamGamesView currentTeam={currentTeam ?? undefined!} />} />
         <Route path="terrains" element={<TeamTerrainView />} />
-        <Route path="buvette" element={<TeamBuvetteView />} />
+        <Route path="food" element={<TeamBuvetteView />} />
         <Route path="referee/game/:id" element={<TeamRefereeGameView />} />
       </Route>
 

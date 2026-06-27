@@ -4,7 +4,7 @@ export const TEAM_HOME_PATH = '/team'
 export const TEAM_RESULTS_PATH = '/team/results'
 export const TEAM_GAMES_PATH = '/team/games'
 export const TEAM_TERRAINS_PATH = '/team/terrains'
-export const TEAM_BUVETTE_PATH = '/team/buvette'
+export const TEAM_BUVETTE_PATH = '/team/food'
 export const TEAM_LOGIN_PATH = '/team/login'
 export const TEAM_REFEREE_GAME_PATH = '/team/referee/game/:id'
 
@@ -23,15 +23,15 @@ export type AppRoute = {
 
 export const teamRoutes: AppRoute[] = [
   {
-    label: 'Resultats',
-    path: TEAM_RESULTS_PATH,
-  },
-  {
     label: 'Matchs',
     path: TEAM_GAMES_PATH,
   },
   {
-    label: 'Terrains',
+    label: 'Résultats',
+    path: TEAM_RESULTS_PATH,
+  },
+  {
+    label: 'Plan',
     path: TEAM_TERRAINS_PATH,
   },
   {

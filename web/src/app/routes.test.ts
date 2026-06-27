@@ -26,7 +26,7 @@ describe('routes', () => {
     expect(TEAM_RESULTS_PATH).toBe('/team/results')
     expect(TEAM_GAMES_PATH).toBe('/team/games')
     expect(TEAM_TERRAINS_PATH).toBe('/team/terrains')
-    expect(TEAM_BUVETTE_PATH).toBe('/team/buvette')
+    expect(TEAM_BUVETTE_PATH).toBe('/team/food')
     expect(TEAM_LOGIN_PATH).toBe('/team/login')
     expect(ADMIN_HOME_PATH).toBe('/admin')
     expect(ADMIN_GAMES_PATH).toBe('/admin/games')
@@ -41,10 +41,10 @@ describe('routes', () => {
   it('should register the team navigation entries', () => {
     // GIVEN
     const expectedRoutes = [
-      { label: 'Resultats', path: '/team/results' },
       { label: 'Matchs', path: '/team/games' },
-      { label: 'Terrains', path: '/team/terrains' },
-      { label: 'Buvette', path: '/team/buvette' },
+      { label: 'Résultats', path: '/team/results' },
+      { label: 'Plan', path: '/team/terrains' },
+      { label: 'Buvette', path: '/team/food' },
     ]
 
     // WHEN

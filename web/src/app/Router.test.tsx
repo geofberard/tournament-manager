@@ -18,7 +18,6 @@ import {
   TEAM_GAMES_PATH,
   TEAM_HOME_PATH,
   TEAM_LOGIN_PATH,
-  TEAM_RESULTS_PATH,
 } from './routes'
 import * as useGamesModule from '../hooks/useGames'
 import * as useGameModule from '../hooks/useGame'
@@ -170,7 +169,7 @@ describe('Router', () => {
     })
   })
 
-  it('should render the team area when a team is selected', async () => {
+  it('should render the team home page when a team is selected', async () => {
     // GIVEN
     setPath(TEAM_LOGIN_PATH)
 
@@ -193,9 +192,11 @@ describe('Router', () => {
     // THEN
     expect(screen.getByText('Espace équipe')).toBeInTheDocument()
     expect(screen.getByText('Bienvenue Tigres')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Ouvrir résultats' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Ouvrir matchs' })).toBeInTheDocument()
 
     await waitFor(() => {
-      expect(window.location.pathname).toBe(TEAM_RESULTS_PATH)
+      expect(window.location.pathname).toBe(TEAM_HOME_PATH)
     })
   })
 
@@ -244,9 +245,10 @@ describe('Router', () => {
     renderRouter()
 
     // THEN
-    expect(screen.getByRole('heading', { name: 'Prochains matchs' })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: 'Matchs terminés' })).toBeInTheDocument()
-    expect(screen.queryByRole('heading', { name: 'Resultats' })).not.toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Matchs' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'À venir' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Terminés' })).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'Résultats' })).not.toBeInTheDocument()
   })
 
   it('should redirect /admin to /admin/login when the admin is not authenticated', async () => {
