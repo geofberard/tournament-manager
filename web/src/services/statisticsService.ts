@@ -1,9 +1,14 @@
-import { phasesApi, type ContestantStats, type PhaseStatistics } from './apiClient'
+import { phasesApi, type ContestantStats, type PhaseStatistics as ApiPhaseStatistics, type Team } from './apiClient'
 
-export type { ContestantStats, PhaseStatistics }
+export type PhaseStatistics = Omit<ApiPhaseStatistics, 'teams' | 'teamStats'> & {
+  teams: Team[]
+  teamStats: ContestantStats[]
+}
 
-export const listPhaseRankings = async (phaseId: string): Promise<ContestantStats[]> =>
-  phasesApi.listPhaseGameStatistics({ phaseId })
+export type { ContestantStats }
 
 export const getPhaseStatistics = async (phaseId: string): Promise<PhaseStatistics> =>
-  phasesApi.getPhaseStatistics({ phaseId })
+  phasesApi.getPhaseStatistics({ phaseId }) as Promise<PhaseStatistics>
+
+export const listPhasesStatistics = async (phaseIds: string[]): Promise<PhaseStatistics[]> =>
+  Promise.all(phaseIds.map((phaseId) => getPhaseStatistics(phaseId)))

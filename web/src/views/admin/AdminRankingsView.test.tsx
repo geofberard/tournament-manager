@@ -1,19 +1,16 @@
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { ThemeProvider, createTheme } from '@mui/material'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AdminRankingsView } from './AdminRankingsView'
 import * as usePhasesModule from '../../hooks/usePhases'
-import * as statisticsService from '../../services/statisticsService'
 
 vi.mock('../../hooks/usePhases', () => ({ usePhases: vi.fn() }))
-vi.mock('../../services/statisticsService', () => ({ listPhaseRankings: vi.fn() }))
 vi.mock('../../components/shared/PhaseRankingCard', () => ({
-  PhaseRankingCard: ({ extended, phaseId, phaseName }: { extended: boolean, phaseId: string, phaseName: string }) =>
-    <div>{phaseName} ({phaseId}) - {extended ? 'étendu' : 'simple'}</div>,
+  PhaseRankingCard: ({ extended, phase }: { extended?: boolean, phase: { id: string } }) =>
+    <div>PhaseRankingCard {phase.id} {extended ? 'étendu' : 'simple'}</div>,
 }))
 
 const usePhasesMock = vi.mocked(usePhasesModule.usePhases)
-const listPhaseRankingsMock = vi.mocked(statisticsService.listPhaseRankings)
 
 const renderView = () => render(
   <ThemeProvider theme={createTheme()}>
@@ -47,15 +44,15 @@ describe('AdminRankingsView', () => {
 
     fireEvent.click(screen.getByRole('tab', { name: 'Brassage' }))
 
-    expect(screen.getByText('Poule A (phase-1-a) - étendu')).toBeInTheDocument()
-    expect(screen.getByText('Poule B (phase-1-b) - étendu')).toBeInTheDocument()
+    expect(screen.getByText('PhaseRankingCard phase-1-a étendu')).toBeInTheDocument()
+    expect(screen.getByText('PhaseRankingCard phase-1-b étendu')).toBeInTheDocument()
     expect(screen.getByRole('switch', { name: 'Classement global' })).not.toBeChecked()
 
     fireEvent.click(screen.getByRole('tab', { name: 'Finales' }))
     expect(screen.getByText("Aucune poule n'est disponible pour cette phase.")).toBeInTheDocument()
   })
 
-  it('should display one global ranking table when requested', async () => {
+  it('should display the selected root phase ranking when global ranking is requested', () => {
     usePhasesMock.mockReturnValue({
       errorMessage: null,
       isLoading: false,
@@ -65,44 +62,14 @@ describe('AdminRankingsView', () => {
         { id: 'phase-1-b', parentId: 'phase-1', name: 'Poule B', order: 2, type: 'POOL' },
       ],
     })
-    listPhaseRankingsMock.mockImplementation(async (phaseId) => {
-      if (phaseId === 'phase-1-a') {
-        return [{
-          contestant: { id: 'team-1', name: 'Aigles' },
-          drawn: 0,
-          lost: 0,
-          played: 2,
-          pointsAgainst: 10,
-          pointsDiff: 20,
-          pointsFor: 30,
-          score: 6,
-          won: 2,
-        }]
-      }
-
-      return [{
-        contestant: { id: 'team-2', name: 'Tigres' },
-        drawn: 0,
-        lost: 1,
-        played: 2,
-        pointsAgainst: 24,
-        pointsDiff: -4,
-        pointsFor: 20,
-        score: 3,
-        won: 1,
-      }]
-    })
 
     renderView()
 
     fireEvent.click(screen.getByRole('switch', { name: 'Classement global' }))
 
-    expect(screen.queryByText('Poule A (phase-1-a) - étendu')).not.toBeInTheDocument()
-    expect(screen.queryByText('Poule B (phase-1-b) - étendu')).not.toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: 'Classement global' })).toBeInTheDocument()
-    await waitFor(() => expect(listPhaseRankingsMock).toHaveBeenCalledTimes(2))
-    await waitFor(() => expect(screen.getByText('Aigles')).toBeInTheDocument())
-    expect(screen.getByText('Tigres')).toBeInTheDocument()
+    expect(screen.queryByText('PhaseRankingCard phase-1-a étendu')).not.toBeInTheDocument()
+    expect(screen.queryByText('PhaseRankingCard phase-1-b étendu')).not.toBeInTheDocument()
+    expect(screen.getByText('PhaseRankingCard phase-1 étendu')).toBeInTheDocument()
   })
 
   it('should display an empty state when no phase exists', () => {

@@ -1,61 +1,53 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { ThemeProvider, createTheme } from '@mui/material'
 import { MemoryRouter } from 'react-router-dom'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { SWRConfig } from 'swr'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { TeamResultsView } from './TeamResultsView'
-import { GameStatus } from '../../generated/api-client'
-import * as useGamesModule from '../../hooks/useGames'
 import * as usePhasesModule from '../../hooks/usePhases'
-import * as usePhaseRankingsModule from '../../hooks/usePhaseRankings'
-
-vi.mock('../../hooks/useGames', () => ({
-  useGames: vi.fn(),
-}))
+import * as statisticsService from '../../services/statisticsService'
 
 vi.mock('../../hooks/usePhases', () => ({
   usePhases: vi.fn(),
 }))
 
-vi.mock('../../hooks/usePhaseRankings', () => ({
-  usePhaseRankings: vi.fn(),
+vi.mock('../../services/statisticsService', () => ({
+  getPhaseStatistics: vi.fn(),
+  listPhasesStatistics: vi.fn(),
 }))
 
-const useGamesMock = vi.mocked(useGamesModule.useGames)
 const usePhasesMock = vi.mocked(usePhasesModule.usePhases)
-const usePhaseRankingsMock = vi.mocked(usePhaseRankingsModule.usePhaseRankings)
+const getPhaseStatisticsMock = vi.mocked(statisticsService.getPhaseStatistics)
+const listPhasesStatisticsMock = vi.mocked(statisticsService.listPhasesStatistics)
+
+const renderView = () => render(
+  <SWRConfig value={{ provider: () => new Map(), dedupingInterval: 0 }}>
+    <ThemeProvider theme={createTheme()}>
+      <MemoryRouter>
+        <TeamResultsView currentTeam={{ id: 'team-2', name: 'Tigres' }} />
+      </MemoryRouter>
+    </ThemeProvider>
+  </SWRConfig>,
+)
 
 describe('TeamResultsView', () => {
+  beforeEach(() => {
+    getPhaseStatisticsMock.mockResolvedValue({
+      completionRate: 0,
+      gameCount: 0,
+      teams: [],
+      teamStats: [],
+    })
+    listPhasesStatisticsMock.mockResolvedValue([])
+  })
+
   afterEach(() => {
+    vi.clearAllMocks()
     cleanup()
   })
 
-  it('should render the team results page with tabs, details and rankings', () => {
+  it('should render the team results page with tabs, details and rankings', async () => {
     // GIVEN
-    useGamesMock.mockReturnValue({
-      errorMessage: null,
-      games: [
-        {
-          id: 'game-1',
-          phase: { id: 'phase-1-a', name: 'Poule A', order: 1, type: 'POOL' },
-          phasePath: [
-            { id: 'phase-1', name: 'Brassage', order: 1 },
-            { id: 'phase-1-a-parent', parentId: 'phase-1', name: 'Matin', order: 1 },
-            { id: 'phase-1-a', parentId: 'phase-1-a-parent', name: 'Poule A', order: 1, type: 'POOL' },
-          ],
-          position: 1000,
-          time: new Date('2026-05-03T18:00:00Z'),
-          court: 'Annexe',
-          status: GameStatus.Completed,
-          contestants: new Set([
-            { id: 'team-1', name: 'Aigles' },
-            { id: 'team-2', name: 'Tigres' },
-          ]),
-          referee: undefined,
-          score: { pointsByTeam: { 'team-1': 21, 'team-2': 18 } },
-        },
-      ],
-      isLoading: false,
-    })
     usePhasesMock.mockReturnValue({
       errorMessage: null,
       isLoading: false,
@@ -81,20 +73,18 @@ describe('TeamResultsView', () => {
         },
       ],
     })
-    usePhaseRankingsMock.mockReturnValue({
-      errorMessage: null,
-      isLoading: false,
-      rankings: [],
-    })
+    listPhasesStatisticsMock.mockResolvedValue([{
+      completionRate: 1,
+      gameCount: 1,
+      teams: [
+        { id: 'team-1', name: 'Aigles' },
+        { id: 'team-2', name: 'Tigres' },
+      ],
+      teamStats: [],
+    }])
 
     // WHEN
-    render(
-      <ThemeProvider theme={createTheme()}>
-        <MemoryRouter>
-          <TeamResultsView currentTeam={{ id: 'team-2', name: 'Tigres' }} />
-        </MemoryRouter>
-      </ThemeProvider>,
-    )
+    renderView()
 
     // THEN
     expect(screen.getByRole('heading', { name: 'Résultats' })).toBeInTheDocument()
@@ -104,36 +94,12 @@ describe('TeamResultsView', () => {
     expect(screen.queryByRole('tab', { name: 'Poule A' })).not.toBeInTheDocument()
     expect(screen.getByText('Premier paragraphe.')).toBeInTheDocument()
     expect(screen.getByText('Second paragraphe.')).toBeInTheDocument()
-    expect(screen.getByText('Poule A')).toBeInTheDocument()
+    expect(await screen.findByText('Poule A')).toBeInTheDocument()
     expect(screen.getByText("Les resultats ne sont pas encore disponibles.")).toBeInTheDocument()
   })
 
-  it('should switch between current team results and every result', () => {
+  it('should switch between current team results and every result', async () => {
     // GIVEN
-    useGamesMock.mockReturnValue({
-      errorMessage: null,
-      games: [
-        {
-          id: 'game-1',
-          phase: { id: 'phase-1-a', name: 'Poule A', order: 1, type: 'POOL' },
-          phasePath: [
-            { id: 'phase-1', name: 'Brassage', order: 1 },
-            { id: 'phase-1-a', parentId: 'phase-1', name: 'Poule A', order: 1, type: 'POOL' },
-          ],
-          position: 1000,
-          time: new Date('2026-05-03T18:00:00Z'),
-          court: 'Annexe',
-          status: GameStatus.Completed,
-          contestants: new Set([
-            { id: 'team-1', name: 'Aigles' },
-            { id: 'team-2', name: 'Tigres' },
-          ]),
-          referee: undefined,
-          score: { pointsByTeam: { 'team-1': 21, 'team-2': 18 } },
-        },
-      ],
-      isLoading: false,
-    })
     usePhasesMock.mockReturnValue({
       errorMessage: null,
       isLoading: false,
@@ -143,23 +109,26 @@ describe('TeamResultsView', () => {
         { id: 'phase-1-b', parentId: 'phase-1', name: 'Poule B', order: 2, type: 'POOL' },
       ],
     })
-    usePhaseRankingsMock.mockReturnValue({
-      errorMessage: null,
-      isLoading: false,
-      rankings: [],
-    })
+    listPhasesStatisticsMock.mockResolvedValue([
+      {
+        completionRate: 1,
+        gameCount: 1,
+        teams: [{ id: 'team-2', name: 'Tigres' }],
+        teamStats: [],
+      },
+      {
+        completionRate: 1,
+        gameCount: 1,
+        teams: [{ id: 'team-3', name: 'Lions' }],
+        teamStats: [],
+      },
+    ])
 
     // WHEN
-    render(
-      <ThemeProvider theme={createTheme()}>
-        <MemoryRouter>
-          <TeamResultsView currentTeam={{ id: 'team-2', name: 'Tigres' }} />
-        </MemoryRouter>
-      </ThemeProvider>,
-    )
+    renderView()
 
     // THEN
-    expect(screen.getByText('Poule A')).toBeInTheDocument()
+    expect(await screen.findByText('Poule A')).toBeInTheDocument()
     expect(screen.queryByText('Poule B')).not.toBeInTheDocument()
 
     fireEvent.click(screen.getByRole('switch', { name: 'Tous les résultats' }))
@@ -170,11 +139,6 @@ describe('TeamResultsView', () => {
 
   it('should select the last root phase by default', () => {
     // GIVEN
-    useGamesMock.mockReturnValue({
-      errorMessage: null,
-      games: [],
-      isLoading: false,
-    })
     usePhasesMock.mockReturnValue({
       errorMessage: null,
       isLoading: false,
@@ -184,20 +148,8 @@ describe('TeamResultsView', () => {
         { id: 'phase-2', name: 'Finales', details: 'Details des finales', order: 2, type: 'BRACKET' },
       ],
     })
-    usePhaseRankingsMock.mockReturnValue({
-      errorMessage: null,
-      isLoading: false,
-      rankings: [],
-    })
-
     // WHEN
-    render(
-      <ThemeProvider theme={createTheme()}>
-        <MemoryRouter>
-          <TeamResultsView currentTeam={{ id: 'team-2', name: 'Tigres' }} />
-        </MemoryRouter>
-      </ThemeProvider>,
-    )
+    renderView()
 
     // THEN
     expect(screen.getByRole('tab', { name: 'Finales' })).toHaveAttribute('aria-selected', 'true')
@@ -207,95 +159,30 @@ describe('TeamResultsView', () => {
 
   it('should render a fallback message when the phase has no details', () => {
     // GIVEN
-    useGamesMock.mockReturnValue({
-      errorMessage: null,
-      games: [],
-      isLoading: false,
-    })
     usePhasesMock.mockReturnValue({
       errorMessage: null,
       isLoading: false,
       phases: [{ id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' }],
     })
-    usePhaseRankingsMock.mockReturnValue({
-      errorMessage: null,
-      isLoading: false,
-      rankings: [],
-    })
-
     // WHEN
-    render(
-      <ThemeProvider theme={createTheme()}>
-        <MemoryRouter>
-          <TeamResultsView currentTeam={{ id: 'team-2', name: 'Tigres' }} />
-        </MemoryRouter>
-      </ThemeProvider>,
-    )
+    renderView()
 
     // THEN
     expect(screen.getByText("Aucun detail n'est disponible pour cette phase.")).toBeInTheDocument()
   })
 
-  it('should render bracket games inside the results page for bracket phases', () => {
+  it('should render an empty pool state for bracket phases for now', () => {
     // GIVEN
-    useGamesMock.mockReturnValue({
-      errorMessage: null,
-      isLoading: false,
-      games: [
-        {
-          id: 'game-1',
-          phase: { id: 'phase-2', name: 'Bracket final', order: 2, type: 'BRACKET' },
-          position: 2000,
-          time: new Date('2026-05-04T18:00:00Z'),
-          court: 'Central',
-          status: GameStatus.Scheduled,
-          contestants: new Set([
-            { id: 'team-2', name: 'Tigres' },
-            { id: 'team-4', name: 'Lynx' },
-          ]),
-          referee: undefined,
-          score: { pointsByTeam: {} },
-        },
-        {
-          id: 'game-2',
-          phase: { id: 'phase-2', name: 'Bracket final', order: 2, type: 'BRACKET' },
-          position: 1000,
-          time: new Date('2026-05-03T18:00:00Z'),
-          court: 'Annexe',
-          status: GameStatus.Completed,
-          contestants: new Set([
-            { id: 'team-1', name: 'Aigles' },
-            { id: 'team-2', name: 'Tigres' },
-          ]),
-          referee: undefined,
-          score: { pointsByTeam: { 'team-1': 21, 'team-2': 18 } },
-        },
-      ],
-    })
     usePhasesMock.mockReturnValue({
       errorMessage: null,
       isLoading: false,
       phases: [{ id: 'phase-2', name: 'Bracket final', order: 2, type: 'BRACKET' }],
     })
-    usePhaseRankingsMock.mockReturnValue({
-      errorMessage: null,
-      isLoading: false,
-      rankings: [],
-    })
-
     // WHEN
-    render(
-      <ThemeProvider theme={createTheme()}>
-        <MemoryRouter>
-          <TeamResultsView currentTeam={{ id: 'team-2', name: 'Tigres' }} />
-        </MemoryRouter>
-      </ThemeProvider>,
-    )
+    renderView()
 
     // THEN
     expect(screen.queryByText("Les resultats ne sont pas encore disponibles.")).not.toBeInTheDocument()
-    expect(screen.getByText('Aigles')).toBeInTheDocument()
-    expect(screen.getAllByText('Tigres')).toHaveLength(2)
-    expect(screen.getByText('Lynx')).toBeInTheDocument()
+    expect(screen.getByText("Aucune poule n'est disponible pour cette phase.")).toBeInTheDocument()
   })
 })

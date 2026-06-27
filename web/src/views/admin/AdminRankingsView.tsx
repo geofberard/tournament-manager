@@ -1,8 +1,5 @@
 import {
   Alert,
-  Card,
-  CardContent,
-  CardHeader,
   CircularProgress,
   FormControlLabel,
   Stack,
@@ -13,44 +10,9 @@ import {
 } from '@mui/material'
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents'
 import { useState } from 'react'
-import useSWR from 'swr'
 import { PhaseRankingCard } from '../../components/shared/PhaseRankingCard'
-import { RankingTable } from '../../components/shared/RankingTable'
 import { usePhases } from '../../hooks/usePhases'
-import { listPhaseRankings, type ContestantStats } from '../../services/statisticsService'
 import { getPoolPhasesInBranch, getRootPhases } from '../../services/phaseHierarchy'
-import type { Phase } from '../../services/phasesService'
-
-type GlobalRankingCardProps = {
-  poolPhases: Phase[]
-}
-
-const GlobalRankingCard = ({ poolPhases }: GlobalRankingCardProps) => {
-  const phaseIds = poolPhases.map((phase) => phase.id)
-  const { data, error, isLoading } = useSWR<ContestantStats[]>(
-    phaseIds.length > 0 ? ['/api/phases/games/statistics/global', phaseIds.join('|')] : null,
-    async () => (await Promise.all(phaseIds.map((phaseId) => listPhaseRankings(phaseId)))).flat(),
-  )
-
-  return (
-    <Card elevation={2} sx={{ mb: 4, borderRadius: 2, overflow: 'hidden' }} variant="elevation">
-      <CardHeader
-        avatar={<EmojiEventsIcon color="secondary" />}
-        title={<Typography fontWeight="bold" variant="h6">Classement global</Typography>}
-        sx={{ bgcolor: 'grey.50', borderBottom: 1, borderColor: 'divider', py: 1.5 }}
-      />
-      <CardContent sx={{ p: 0, '&:last-child': { pb: 0 } }}>
-        <RankingTable
-          currentTeamId=""
-          errorMessage={error instanceof Error ? error.message : error ? 'Le chargement des resultats a echoue.' : null}
-          extended
-          isLoading={isLoading}
-          rankings={data ?? []}
-        />
-      </CardContent>
-    </Card>
-  )
-}
 
 export const AdminRankingsView = () => {
   const { phases, isLoading: isPhasesLoading, errorMessage: phasesError } = usePhases()
@@ -107,11 +69,11 @@ export const AdminRankingsView = () => {
             />
           </Stack>
           {poolPhases.length > 0 ? (
-            showGlobalRanking ? (
-              <GlobalRankingCard poolPhases={poolPhases} />
+            showGlobalRanking && selectedPhase ? (
+              <PhaseRankingCard extended phase={selectedPhase} />
             ) : (
               poolPhases.map((phase) => (
-                <PhaseRankingCard extended key={phase.id} phaseId={phase.id} phaseName={phase.name} />
+                <PhaseRankingCard extended key={phase.id} phase={phase} />
               ))
             )
           ) : selectedPhase ? (

@@ -14,7 +14,7 @@ vi.mock('../../hooks/useGames', () => ({
 }))
 
 vi.mock('../../components/shared/PhaseRankingCard', () => ({
-  PhaseRankingCard: ({ phaseName }: { phaseName: string }) => <div>PhaseRankingCard {phaseName}</div>,
+  PhaseRankingCard: ({ phase }: { phase: { id: string } }) => <div>PhaseRankingCard {phase.id}</div>,
 }))
 
 vi.mock('../../components/shared/PitchStatus', () => ({
@@ -61,7 +61,7 @@ describe('PublicView', () => {
       </ThemeProvider>
     )
 
-    expect(screen.getByText('PhaseRankingCard Phase 1')).toBeInTheDocument()
+    expect(screen.getByText('PhaseRankingCard phase-1')).toBeInTheDocument()
     expect(screen.getByTestId('pitch-status')).toBeInTheDocument()
   })
 
@@ -118,8 +118,8 @@ describe('PublicView', () => {
       </ThemeProvider>
     )
 
-    expect(screen.getByText('PhaseRankingCard Poule A')).toBeInTheDocument()
-    expect(screen.getByText('PhaseRankingCard Poule B')).toBeInTheDocument()
+    expect(screen.getByText('PhaseRankingCard phase-1-a')).toBeInTheDocument()
+    expect(screen.getByText('PhaseRankingCard phase-1-b')).toBeInTheDocument()
   })
 
   it('should display errors from hooks', () => {

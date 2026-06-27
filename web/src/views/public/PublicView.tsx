@@ -92,7 +92,7 @@ export const PublicView = () => {
 
           {poolPhases.length > 0 ? (
             poolPhases.map((phase) => (
-              <PhaseRankingCard key={phase.id} phaseId={phase.id} phaseName={phase.name} />
+              <PhaseRankingCard key={phase.id} phase={phase} />
             ))
           ) : (
             <Alert severity="info">Aucune poule n'est disponible pour cette phase.</Alert>
