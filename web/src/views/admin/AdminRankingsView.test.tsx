@@ -3,17 +3,14 @@ import { ThemeProvider, createTheme } from '@mui/material'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { AdminRankingsView } from './AdminRankingsView'
 import * as usePhasesModule from '../../hooks/usePhases'
-import * as useGroupRankingsModule from '../../hooks/useGroupRankings'
 
 vi.mock('../../hooks/usePhases', () => ({ usePhases: vi.fn() }))
-vi.mock('../../hooks/useGroupRankings', () => ({ usePhaseGroups: vi.fn() }))
-vi.mock('../../components/shared/GroupRankingCard', () => ({
-  GroupRankingCard: ({ extended, groupId }: { extended: boolean, groupId: string }) =>
-    <div>{groupId} - {extended ? 'étendu' : 'simple'}</div>,
+vi.mock('../../components/shared/PhaseRankingCard', () => ({
+  PhaseRankingCard: ({ extended, phaseName }: { extended: boolean, phaseName: string }) =>
+    <div>{phaseName} - {extended ? 'étendu' : 'simple'}</div>,
 }))
 
 const usePhasesMock = vi.mocked(usePhasesModule.usePhases)
-const usePhaseGroupsMock = vi.mocked(useGroupRankingsModule.usePhaseGroups)
 
 const renderView = () => render(
   <ThemeProvider theme={createTheme()}>
@@ -24,7 +21,7 @@ const renderView = () => render(
 describe('AdminRankingsView', () => {
   beforeEach(() => vi.clearAllMocks())
 
-  it('should display and switch extended group rankings by phase', () => {
+  it('should display and switch extended rankings by phase', () => {
     usePhasesMock.mockReturnValue({
       errorMessage: null,
       isLoading: false,
@@ -33,26 +30,17 @@ describe('AdminRankingsView', () => {
         { id: 'phase-2', name: 'Finales', order: 2, type: 'BRACKET' },
       ],
     })
-    usePhaseGroupsMock.mockReturnValue({
-      errorMessage: null,
-      isLoading: false,
-      groups: [{ id: 'Poule A' }],
-    })
-
     renderView()
 
     expect(screen.getByRole('heading', { name: 'Classements' })).toBeInTheDocument()
-    expect(screen.getByText('Poule A - étendu')).toBeInTheDocument()
-    expect(usePhaseGroupsMock).toHaveBeenLastCalledWith('phase-1')
+    expect(screen.getByText('Brassage - étendu')).toBeInTheDocument()
 
     fireEvent.click(screen.getByRole('tab', { name: 'Finales' }))
-    expect(usePhaseGroupsMock).toHaveBeenLastCalledWith('phase-2')
+    expect(screen.getByText('Finales - étendu')).toBeInTheDocument()
   })
 
   it('should display an empty state when no phase exists', () => {
     usePhasesMock.mockReturnValue({ errorMessage: null, isLoading: false, phases: [] })
-    usePhaseGroupsMock.mockReturnValue({ errorMessage: null, isLoading: false, groups: [] })
-
     renderView()
 
     expect(screen.getByText("Aucune phase n'est disponible pour le moment.")).toBeInTheDocument()

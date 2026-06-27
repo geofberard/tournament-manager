@@ -48,22 +48,8 @@ public class DBGameRepository extends DBRepository<Game, GameEntity> implements 
     }
 
     @Override
-    public java.util.List<Game> findByGroup(String group) {
-        return repository.findByGroupId(group).stream()
-                .map(GameEntity::toDomain)
-                .toList();
-    }
-
-    @Override
     public java.util.List<Game> findByPhaseId(String phaseId) {
         return repository.findByPhaseId(phaseId).stream()
-                .map(GameEntity::toDomain)
-                .toList();
-    }
-
-    @Override
-    public java.util.List<Game> findByGroupAndPhaseId(String group, String phaseId) {
-        return repository.findByGroupIdAndPhaseId(group, phaseId).stream()
                 .map(GameEntity::toDomain)
                 .toList();
     }

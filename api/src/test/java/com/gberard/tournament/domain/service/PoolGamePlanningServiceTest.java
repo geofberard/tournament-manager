@@ -35,7 +35,6 @@ class PoolGamePlanningServiceTest {
         // WHEN
         List<Game> games = planningService.plan(
                 PHASE_A,
-                "Poule A",
                 teams,
                 START_TIME,
                 Duration.ofMinutes(12),
@@ -48,7 +47,6 @@ class PoolGamePlanningServiceTest {
         assertThat(games).hasSize(3).allSatisfy(game -> {
             assertThat(game.id()).isNull();
             assertThat(game.phase()).isEqualTo(PHASE_A);
-            assertThat(game.group()).isEqualTo("Poule A");
             assertThat(game.court()).isEqualTo("Terrain 1");
             assertThat(game.contestants()).hasSize(2);
             assertThat(game.refereeId()).isEmpty();
@@ -65,7 +63,6 @@ class PoolGamePlanningServiceTest {
         // WHEN
         List<Game> games = planningService.plan(
                 PHASE_A,
-                "Poule A",
                 teams,
                 START_TIME,
                 Duration.ofMinutes(12),
@@ -89,7 +86,6 @@ class PoolGamePlanningServiceTest {
         // WHEN
         List<Game> games = planningService.plan(
                 PHASE_A,
-                "Poule A",
                 teams,
                 null,
                 null,
@@ -110,7 +106,6 @@ class PoolGamePlanningServiceTest {
         // WHEN
         List<Game> games = planningService.plan(
                 PHASE_A,
-                "Poule A",
                 teams,
                 START_TIME,
                 Duration.ofMinutes(12),

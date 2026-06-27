@@ -70,24 +70,21 @@ class GamesApiDelegateImplTest {
         var request = bulkCreateRequest(true, TEAM_A.id(), TEAM_B.id(), TEAM_C.id());
         Game firstGame = gameBuilder()
                 .id("game-1")
-                .group(request.getGroup())
                 .contestants(List.of(TEAM_A, TEAM_B))
                 .refereeId(TEAM_C)
                 .build();
         Game secondGame = gameBuilder()
                 .id("game-2")
-                .group(request.getGroup())
                 .contestants(List.of(TEAM_A, TEAM_C))
                 .refereeId(TEAM_B)
                 .build();
         when(phaseService.findById(PHASE_A.id())).thenReturn(Optional.of(PHASE_A));
-        when(gameService.findByGroupAndPhase(request.getGroup(), PHASE_A.id())).thenReturn(List.of());
+        when(gameService.findByPhase(PHASE_A)).thenReturn(List.of());
         when(teamService.findById(TEAM_A.id())).thenReturn(Optional.of(TEAM_A));
         when(teamService.findById(TEAM_B.id())).thenReturn(Optional.of(TEAM_B));
         when(teamService.findById(TEAM_C.id())).thenReturn(Optional.of(TEAM_C));
         when(poolGamePlanningService.plan(
                 eq(PHASE_A),
-                eq("Poule A"),
                 eq(List.of(TEAM_A, TEAM_B, TEAM_C)),
                 eq(LocalDateTime.parse("2026-06-20T09:00:00")),
                 eq(Duration.ofMinutes(12)),
@@ -125,7 +122,7 @@ class GamesApiDelegateImplTest {
     @Test
     void shouldRejectBulkCreationForAnUntypedChildOfAPoolPhase() {
         Phase pool = new Phase("pool", "Poules principales", null, 1, PhaseType.POOL);
-        Phase group = new Phase(
+        Phase childPhase = new Phase(
                 "pool-a",
                 Optional.of(pool.id()),
                 "Poule A",
@@ -133,8 +130,8 @@ class GamesApiDelegateImplTest {
                 1,
                 Optional.empty());
         var request = bulkCreateRequest(false, TEAM_A.id(), TEAM_B.id());
-        request.setPhaseId(group.id());
-        when(phaseService.findById(group.id())).thenReturn(Optional.of(group));
+        request.setPhaseId(childPhase.id());
+        when(phaseService.findById(childPhase.id())).thenReturn(Optional.of(childPhase));
 
         assertThatThrownBy(() -> gamesApiDelegate.bulkCreateGames(request))
                 .isInstanceOf(ResponseStatusException.class)
@@ -144,11 +141,11 @@ class GamesApiDelegateImplTest {
     }
 
     @Test
-    void shouldRejectBulkCreationWhenTheGroupAlreadyContainsGames() {
+    void shouldRejectBulkCreationWhenThePhaseAlreadyContainsGames() {
         // GIVEN
         var request = bulkCreateRequest(false, TEAM_A.id(), TEAM_B.id());
         when(phaseService.findById(PHASE_A.id())).thenReturn(Optional.of(PHASE_A));
-        when(gameService.findByGroupAndPhase(request.getGroup(), PHASE_A.id()))
+        when(gameService.findByPhase(PHASE_A))
                 .thenReturn(List.of(gameBuilder().build()));
 
         // WHEN / THEN
@@ -178,17 +175,15 @@ class GamesApiDelegateImplTest {
         var request = bulkCreateRequestWithoutTime(false, TEAM_A.id(), TEAM_B.id());
         Game plannedGame = gameBuilder()
                 .id("game-1")
-                .group(request.getGroup())
                 .time(null)
                 .contestants(List.of(TEAM_A, TEAM_B))
                 .build();
         when(phaseService.findById(PHASE_A.id())).thenReturn(Optional.of(PHASE_A));
-        when(gameService.findByGroupAndPhase(request.getGroup(), PHASE_A.id())).thenReturn(List.of());
+        when(gameService.findByPhase(PHASE_A)).thenReturn(List.of());
         when(teamService.findById(TEAM_A.id())).thenReturn(Optional.of(TEAM_A));
         when(teamService.findById(TEAM_B.id())).thenReturn(Optional.of(TEAM_B));
         when(poolGamePlanningService.plan(
                 eq(PHASE_A),
-                eq("Poule A"),
                 eq(List.of(TEAM_A, TEAM_B)),
                 eq(null),
                 eq(null),
@@ -212,7 +207,7 @@ class GamesApiDelegateImplTest {
         // GIVEN
         var request = bulkCreateRequest(false, TEAM_A.id(), "unknown");
         when(phaseService.findById(PHASE_A.id())).thenReturn(Optional.of(PHASE_A));
-        when(gameService.findByGroupAndPhase(request.getGroup(), PHASE_A.id())).thenReturn(List.of());
+        when(gameService.findByPhase(PHASE_A)).thenReturn(List.of());
         when(teamService.findById(TEAM_A.id())).thenReturn(Optional.of(TEAM_A));
         when(teamService.findById("unknown")).thenReturn(Optional.empty());
 
@@ -221,7 +216,7 @@ class GamesApiDelegateImplTest {
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage("Unknown team unknown");
         verify(poolGamePlanningService, never()).plan(
-                any(), any(), any(), any(), any(), any(), any(), anyBoolean()
+                any(), any(), any(), any(), any(), any(), anyBoolean()
         );
         verify(gameService, never()).create(any());
     }
@@ -250,7 +245,6 @@ class GamesApiDelegateImplTest {
                 .allSatisfy(game -> {
                     assertThat(game.court()).isEqualTo("Central");
                     assertThat(game.time()).isEqualTo(newTime.toLocalDateTime());
-                    assertThat(game.group()).isEqualTo("A");
                 });
         assertThat(response.getBody()).hasSize(2);
     }
@@ -356,7 +350,6 @@ class GamesApiDelegateImplTest {
         // GIVEN
         var request = new CreateGameRequest()
                 .phaseId(PHASE_A.id())
-                .group("A")
                 .time(null)
                 .court("Terrain 1")
                 .contestantIds(Set.of(TEAM_A.id(), TEAM_B.id()));
@@ -379,7 +372,7 @@ class GamesApiDelegateImplTest {
         Phase child = new Phase(
                 "child",
                 Optional.of(root.id()),
-                "Poule A",
+                "Finale",
                 null,
                 1,
                 Optional.empty());
@@ -433,7 +426,6 @@ class GamesApiDelegateImplTest {
     private BulkCreateGamesRequest bulkCreateRequestWithoutTime(boolean assignReferees, String... teamIds) {
         return new BulkCreateGamesRequest(
                 PHASE_A.id(),
-                "Poule A",
                 "Terrain 1",
                 new LinkedHashSet<>(List.of(teamIds)),
                 assignReferees

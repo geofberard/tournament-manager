@@ -19,9 +19,7 @@ const dateFormatter = new Intl.DateTimeFormat('fr-FR', {
 type AdminGameRow = {
   court: string
   game: Game
-  group: string
   id: string
-  subgroup: string
   phase: string
   gamePath: string
   position: number | null
@@ -64,7 +62,6 @@ const defaultGridState: GridInitialState = {
       court: false,
       id: false,
       position: false,
-      subgroup: false,
       referee: false,
       status: false,
       teams: false,
@@ -105,9 +102,7 @@ const toAdminGameRow = (game: Game): AdminGameRow => {
   return {
     court: game.court,
     game,
-    group: game.group,
     id: game.id,
-    subgroup: formatOptionalValue(game.subgroup),
     phase: game.phase.name,
     gamePath: game.phasePath?.map((phase) => phase.name).join(' › ') ?? '',
     position: game.position ?? null,
@@ -179,14 +174,6 @@ export const AdminGamesTable = ({
           ) : null,
       },
       {
-        field: 'group',
-        flex: 0.8,
-        headerName: 'Groupe',
-        minWidth: 130,
-        type: 'singleSelect',
-        valueOptions: [...new Set(rows.map((row) => row.group))],
-      },
-      {
         field: 'team1',
         flex: 1,
         headerName: 'Equipe 1',
@@ -211,14 +198,6 @@ export const AdminGamesTable = ({
         flex: 1,
         headerName: 'Equipe 2',
         minWidth: 170,
-      },
-      {
-        field: 'subgroup',
-        flex: 1,
-        headerName: 'Sous-groupe',
-        minWidth: 150,
-        type: 'singleSelect',
-        valueOptions: [...new Set(rows.map((row) => row.subgroup))],
       },
       {
         field: 'court',

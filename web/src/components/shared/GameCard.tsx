@@ -86,15 +86,9 @@ export const GameCard = ({ game, currentTeam, displayedStatus, waitingGamesCount
                   size="small"
                 />
               ) : null}
-              {game.subgroup ? (
-                <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-                  {game.subgroup}
-                </Typography>
-              ) : null}
             </Stack>
             <Stack direction="row" spacing={1} flexWrap="wrap" justifyContent="flex-end">
               <Chip label={game.phase.name} variant="filled" size="small" />
-              <Chip label={game.group} variant="outlined" size="small" />
               <Chip
                 label={statusLabelByValue[displayedStatus]}
                 color={statusColorByValue[displayedStatus]}

@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Optional;
 
 import static com.gberard.tournament.domain.model.stats.TeamResult.DRAWN;
 import static com.gberard.tournament.domain.model.stats.TeamResult.LOST;
@@ -39,33 +38,8 @@ public class TeamStatsService implements TeamStatsUseCase {
     }
 
     @Override
-    public List<TeamStats> getTeamsStatsByGroup(String group) {
-        return buildTeamsStats(gameRepository.findByGroup(group));
-    }
-
-    @Override
-    public List<String> getPhaseGroups(String phaseId) {
-        return gameRepository.findByPhaseId(phaseId).stream()
-                .map(Game::group)
-                .distinct()
-                .sorted()
-                .toList();
-    }
-
-    @Override
-    public List<TeamStats> getTeamsStatsByGroup(String group, String phaseId) {
-        return buildTeamsStats(gameRepository.findByGroupAndPhaseId(group, phaseId));
-    }
-
-    @Override
-    public Optional<String> getTeamGroup(Team team, String phaseId) {
-        return gameRepository.findByTeamIdAndPhaseId(team.id(), phaseId).stream()
-                .filter(game -> game.contestants().stream().anyMatch(contestant -> contestant.id().equals(team.id())))
-                .map(Game::group)
-                .distinct()
-                .reduce((first, second) -> {
-                    throw new IllegalStateException("Team " + team.id() + " belongs to multiple groups");
-                });
+    public List<TeamStats> getTeamsStatsByPhase(String phaseId) {
+        return buildTeamsStats(gameRepository.findByPhaseId(phaseId));
     }
 
     private List<TeamStats> buildTeamsStats(List<Game> games) {

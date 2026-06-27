@@ -96,7 +96,6 @@ describe('Router', () => {
       errorMessage: null,
     })
     useTeamRankingsMock.mockReturnValue({
-      groupName: 'Poule A',
       errorMessage: null,
       isLoading: false,
       rankings: [],
@@ -224,7 +223,6 @@ describe('Router', () => {
           id: 'game-1',
           position: 1,
           phase: { id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' },
-          group: 'Poule A',
           court: 'Court 1',
           time: new Date('2099-01-01T10:00:00Z'),
           status: GameStatus.Scheduled,
@@ -234,7 +232,6 @@ describe('Router', () => {
           id: 'game-2',
           position: 2,
           phase: { id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' },
-          group: 'Poule A',
           court: 'Court 1',
           status: GameStatus.Completed,
           contestants: new Set([{ id: 'team-2', name: 'Tigres' }]),
@@ -364,9 +361,7 @@ describe('Router', () => {
             { id: 'team-2', name: 'Lynx' },
           ]),
           court: 'Terrain 1',
-          group: 'Poule A',
           id: 'game-1',
-          subgroup: 'Finales',
           phase: { id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' },
           referee: { id: 'team-3', name: 'Aigles' },
           score: { pointsByTeam: { 'team-1': 21, 'team-2': 18 } },
@@ -518,7 +513,6 @@ describe('Router', () => {
     const sampleGame: Game = {
       id: 'game-1',
       phase: { id: 'phase-1', name: 'Phase Finale', order: 1, type: 'POOL' },
-      group: 'poule-a',
       time: new Date(),
       court: 'Terrain 1',
       status: 'scheduled',

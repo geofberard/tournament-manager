@@ -17,8 +17,6 @@ const teams = [
 const initialValue: GamePayload = {
   contestantIds: new Set(['team-1', 'team-2']),
   court: 'Terrain 1',
-  group: 'Poule A',
-  subgroup: '1/4',
   phaseId: 'phase-1',
   pointsByTeam: {
     'team-1': 21,
@@ -60,9 +58,7 @@ describe('ManageGameForm', () => {
 
     // THEN
     expect(screen.getByRole('heading', { name: 'Modifier le match' })).toBeInTheDocument()
-    expect(screen.getByDisplayValue('Poule A')).toBeInTheDocument()
     expect(screen.getByDisplayValue('Terrain 1')).toBeInTheDocument()
-    expect(screen.getByDisplayValue('1/4')).toBeInTheDocument()
     expect(screen.getByRole('combobox', { name: 'Equipe 1' })).toHaveTextContent('Tigres')
     expect(screen.getByRole('combobox', { name: 'Equipe 2' })).toHaveTextContent('Lynx')
     expect(screen.getByRole('spinbutton', { name: 'Score Equipe 1' })).toHaveValue(21)
@@ -83,8 +79,6 @@ describe('ManageGameForm', () => {
     // GIVEN
     const { onSubmit } = renderForm({
       court: '  Terrain 1  ',
-      group: '  Poule A  ',
-      subgroup: '  1/2  ',
     })
 
     // WHEN
@@ -95,8 +89,6 @@ describe('ManageGameForm', () => {
       expect(onSubmit).toHaveBeenCalledWith({
         ...initialValue,
         court: 'Terrain 1',
-        group: 'Poule A',
-        subgroup: '1/2',
       }),
     )
   })

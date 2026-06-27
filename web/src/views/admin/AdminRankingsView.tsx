@@ -1,8 +1,7 @@
 import { Alert, CircularProgress, Stack, Tab, Tabs, Typography } from '@mui/material'
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents'
 import { useState } from 'react'
-import { GroupRankingCard } from '../../components/shared/GroupRankingCard'
-import { usePhaseGroups } from '../../hooks/useGroupRankings'
+import { PhaseRankingCard } from '../../components/shared/PhaseRankingCard'
 import { usePhases } from '../../hooks/usePhases'
 
 export const AdminRankingsView = () => {
@@ -10,8 +9,6 @@ export const AdminRankingsView = () => {
   const [selectedPhaseId, setSelectedPhaseId] = useState<string | null>(null)
   const effectiveSelectedPhaseId = selectedPhaseId ?? phases[0]?.id ?? null
   const selectedPhase = phases.find((phase) => phase.id === effectiveSelectedPhaseId) ?? null
-  const { groups, isLoading: isGroupsLoading, errorMessage: groupsError } =
-    usePhaseGroups(effectiveSelectedPhaseId)
 
   return (
     <Stack spacing={3} sx={{ maxWidth: 960, mx: 'auto', py: { xs: 4, md: 8 }, px: 2 }}>
@@ -40,23 +37,9 @@ export const AdminRankingsView = () => {
               <Tab key={phase.id} value={phase.id} label={phase.name} />
             ))}
           </Tabs>
-          {groupsError ? <Alert severity="error">{groupsError}</Alert> : null}
-          {isGroupsLoading ? (
-            <Stack direction="row" justifyContent="center" sx={{ py: 3 }}>
-              <CircularProgress />
-            </Stack>
-          ) : groups.length === 0 || !selectedPhase ? (
-            <Alert severity="info">Aucune poule n'est disponible pour cette phase.</Alert>
-          ) : (
-            groups.map((group) => (
-              <GroupRankingCard
-                key={group.id}
-                extended
-                groupId={group.id}
-                phaseId={selectedPhase.id}
-              />
-            ))
-          )}
+          {selectedPhase ? (
+            <PhaseRankingCard extended phaseId={selectedPhase.id} phaseName={selectedPhase.name} />
+          ) : null}
         </>
       )}
     </Stack>

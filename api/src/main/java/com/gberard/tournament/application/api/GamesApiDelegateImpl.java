@@ -55,10 +55,10 @@ public class GamesApiDelegateImpl implements GamesApiDelegate {
         Phase phase = findPhaseOrThrow(request.getPhaseId());
         validateBulkCreateRequest(request, phase);
 
-        if (!gameService.findByGroupAndPhase(request.getGroup(), phase.id()).isEmpty()) {
+        if (!gameService.findByPhase(phase).isEmpty()) {
             throw new ResponseStatusException(
                     BAD_REQUEST,
-                    "Group " + request.getGroup() + " already contains games in phase " + phase.id()
+                    "Phase " + phase.id() + " already contains games"
             );
         }
 
@@ -68,7 +68,6 @@ public class GamesApiDelegateImpl implements GamesApiDelegate {
 
         List<com.gberard.tournament.domain.model.Game> plannedGames = poolGamePlanningService.plan(
                 phase,
-                request.getGroup(),
                 teams,
                 request.getStartTime() == null
                         ? null
@@ -190,9 +189,6 @@ public class GamesApiDelegateImpl implements GamesApiDelegate {
     }
 
     private void validateChanges(BulkGameChanges changes) {
-        if (changes.getSubgroup() != null && Boolean.TRUE.equals(changes.getClearSubgroup())) {
-            throw new ResponseStatusException(BAD_REQUEST, "subgroup and clearSubgroup cannot be used together");
-        }
         if (changes.getRefereeId() != null && Boolean.TRUE.equals(changes.getClearReferee())) {
             throw new ResponseStatusException(BAD_REQUEST, "refereeId and clearReferee cannot be used together");
         }
@@ -206,9 +202,6 @@ public class GamesApiDelegateImpl implements GamesApiDelegate {
             throw new ResponseStatusException(BAD_REQUEST, "timeOffsetMinutes and clearTime cannot be used together");
         }
         if (changes.getPhaseId() == null
-                && changes.getSubgroup() == null
-                && !Boolean.TRUE.equals(changes.getClearSubgroup())
-                && changes.getGroup() == null
                 && changes.getTime() == null
                 && !Boolean.TRUE.equals(changes.getClearTime())
                 && changes.getTimeOffsetMinutes() == null

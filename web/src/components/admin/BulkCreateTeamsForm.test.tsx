@@ -25,7 +25,7 @@ describe('BulkCreateTeamsForm', () => {
       target: { value: ' Aigles \n\nTigres\naigles' },
     })
 
-    fireEvent.click(screen.getByRole('button', { name: 'Créer 2' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Créer (2)' }))
 
     await waitFor(() => {
       expect(onSubmit).toHaveBeenCalledWith(['Aigles', 'Tigres'])
@@ -39,10 +39,10 @@ describe('BulkCreateTeamsForm', () => {
       target: { value: 'Aigles\nTigres' },
     })
 
-    fireEvent.click(screen.getByRole('button', { name: 'Créer 2' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Créer (2)' }))
 
     expect(await screen.findByText(/1 équipe n’a pas pu être créée/)).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: 'Noms des équipes' })).toHaveValue('Tigres')
-    expect(screen.getByRole('button', { name: 'Créer 1' })).toBeEnabled()
+    expect(screen.getByRole('button', { name: 'Créer (1)' })).toBeEnabled()
   })
 })

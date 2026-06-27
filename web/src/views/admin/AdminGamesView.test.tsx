@@ -61,9 +61,7 @@ const game = {
     { id: 'team-2', name: 'Lynx' },
   ]),
   court: 'Terrain 1',
-  group: 'Poule A',
   id: 'game-1',
-  subgroup: '1/2',
   phase: { id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' as const },
   referee: { id: 'team-3', name: 'Aigles' },
   score: { pointsByTeam: { 'team-1': 21, 'team-2': 18 } },
@@ -119,12 +117,13 @@ describe('AdminGamesView', () => {
     expect(screen.getByRole('heading', { name: 'Matchs' })).toBeInTheDocument()
     expect(screen.getByRole('columnheader', { name: /Heure/ })).toBeInTheDocument()
     expect(screen.getByRole('columnheader', { name: /Phase/ })).toBeInTheDocument()
-    expect(screen.getByRole('columnheader', { name: /Groupe/ })).toBeInTheDocument()
+    expect(screen.queryByRole('columnheader', { name: /Groupe/ })).not.toBeInTheDocument()
+    expect(screen.queryByRole('columnheader', { name: /Sous-groupe/ })).not.toBeInTheDocument()
     expect(screen.getByRole('columnheader', { name: /Equipe 1/ })).toBeInTheDocument()
     expect(screen.getByRole('columnheader', { name: /Score/ })).toBeInTheDocument()
     expect(screen.getByRole('columnheader', { name: /Equipe 2/ })).toBeInTheDocument()
     expect(screen.getByText('Brassage')).toBeInTheDocument()
-    expect(screen.getByText('Poule A')).toBeInTheDocument()
+    expect(screen.queryByText('Poule A')).not.toBeInTheDocument()
     expect(screen.getByText('Tigres')).toBeInTheDocument()
     expect(screen.getByText('Lynx')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Modifier le score de Tigres' })).toHaveTextContent('21')
@@ -296,9 +295,6 @@ describe('AdminGamesView', () => {
     )
     fireEvent.click(screen.getByRole('button', { name: 'Ajouter des matchs' }))
     fireEvent.click(screen.getByRole('menuitem', { name: "Creer les matchs d'une poule" }))
-    fireEvent.change(screen.getByRole('textbox', { name: 'Poule' }), {
-      target: { value: 'Poule A' },
-    })
     fireEvent.change(screen.getByRole('textbox', { name: 'Terrain' }), {
       target: { value: 'Terrain 1' },
     })
@@ -316,7 +312,6 @@ describe('AdminGamesView', () => {
           breakDurationMinutes: undefined,
           court: 'Terrain 1',
           gameDurationMinutes: undefined,
-          group: 'Poule A',
           phaseId: 'phase-1',
           startTime: undefined,
           teamIds: new Set(['team-1', 'team-2']),
@@ -341,11 +336,10 @@ describe('AdminGamesView', () => {
     )
 
     // WHEN
-    fireEvent.click(screen.getByRole('row', { name: /Brassage Poule A Tigres 21 - 18 Lynx/ }))
+    fireEvent.click(screen.getByRole('row', { name: /Brassage Tigres 21 - 18 Lynx/ }))
 
     // THEN
     expect(screen.getByRole('heading', { name: 'Modifier le match' })).toBeInTheDocument()
-    expect(screen.getByDisplayValue('1/2')).toBeInTheDocument()
     expect(screen.getByDisplayValue('Terrain 1')).toBeInTheDocument()
     expect(screen.getByRole('spinbutton', { name: 'Score Equipe 1' })).toHaveValue(21)
     expect(screen.getByRole('spinbutton', { name: 'Score Equipe 2' })).toHaveValue(18)
@@ -364,7 +358,7 @@ describe('AdminGamesView', () => {
         <AdminGamesView />
       </ThemeProvider>,
     )
-    fireEvent.click(screen.getByRole('row', { name: /Brassage Poule A Tigres 21 - 18 Lynx/ }))
+    fireEvent.click(screen.getByRole('row', { name: /Brassage Tigres 21 - 18 Lynx/ }))
 
     // WHEN
     fireEvent.change(screen.getByDisplayValue(/2026-05-03T/), {
@@ -404,7 +398,7 @@ describe('AdminGamesView', () => {
         <AdminGamesView />
       </ThemeProvider>,
     )
-    fireEvent.click(screen.getByRole('row', { name: /Brassage Poule A Tigres 21 - 18 Lynx/ }))
+    fireEvent.click(screen.getByRole('row', { name: /Brassage Tigres 21 - 18 Lynx/ }))
     fireEvent.change(screen.getByRole('spinbutton', { name: 'Score Equipe 1' }), {
       target: { value: '' },
     })
@@ -422,7 +416,7 @@ describe('AdminGamesView', () => {
 
   it('should delete selected games after confirmation', async () => {
     // GIVEN
-    const secondGame = { ...game, id: 'game-2', subgroup: 'Finales' }
+    const secondGame = { ...game, id: 'game-2' }
     useGamesMock.mockReturnValue({
       errorMessage: null,
       games: [game, secondGame],
@@ -452,7 +446,7 @@ describe('AdminGamesView', () => {
 
   it('should bulk update selected games from the drawer', async () => {
     // GIVEN
-    const secondGame = { ...game, id: 'game-2', subgroup: 'Finales' }
+    const secondGame = { ...game, id: 'game-2' }
     const updatedGames = [
       { ...game, court: 'Central' },
       { ...secondGame, court: 'Central' },

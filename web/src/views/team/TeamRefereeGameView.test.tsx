@@ -21,7 +21,6 @@ const useGameMock = vi.mocked(useGameModule.useGame)
 const baseGame: Game = {
   id: 'game-1',
   phase: { id: 'phase-1', name: 'Phase Finale', order: 1, type: 'POOL' },
-  group: 'Poule A',
   time: new Date('2026-05-01T18:30:00Z'),
   court: 'Terrain 1',
   status: 'scheduled',

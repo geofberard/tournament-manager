@@ -10,8 +10,6 @@ import java.util.Optional;
 public final class Game implements Identified {
     private final String id;
     private final List<Phase> phasePath;
-    private final Optional<String> subgroup;
-    private final String group;
     private final LocalDateTime time;
     private final String court;
     private final Long position;
@@ -23,8 +21,6 @@ public final class Game implements Identified {
     public Game(
             String id,
             Phase phase,
-            Optional<String> subgroup,
-            String group,
             LocalDateTime time,
             String court,
             Long position,
@@ -33,14 +29,12 @@ public final class Game implements Identified {
             GameStatus status,
             Optional<SimpleScore> score
     ) {
-        this(id, List.of(phase), subgroup, group, time, court, position, contestants, refereeId, status, score);
+        this(id, List.of(phase), time, court, position, contestants, refereeId, status, score);
     }
 
     public Game(
             String id,
             List<Phase> phasePath,
-            Optional<String> subgroup,
-            String group,
             LocalDateTime time,
             String court,
             Long position,
@@ -54,8 +48,6 @@ public final class Game implements Identified {
         if (this.phasePath.isEmpty()) {
             throw new IllegalArgumentException("phasePath must not be empty");
         }
-        this.subgroup = Objects.requireNonNull(subgroup, "subgroup must not be null");
-        this.group = Objects.requireNonNull(group, "group must not be null");
         this.time = time;
         this.court = Objects.requireNonNull(court, "court must not be null");
         this.position = position;
@@ -80,14 +72,6 @@ public final class Game implements Identified {
 
     public List<Phase> phasePath() {
         return phasePath;
-    }
-
-    public String group() {
-        return group;
-    }
-
-    public Optional<String> subgroup() {
-        return subgroup;
     }
 
     public String court() {
@@ -115,11 +99,11 @@ public final class Game implements Identified {
     }
 
     public Game withScore(SimpleScore newScore) {
-        return new Game(id, phasePath, subgroup, group, time, court, position, contestants, refereeId, GameStatus.COMPLETED, Optional.of(newScore));
+        return new Game(id, phasePath, time, court, position, contestants, refereeId, GameStatus.COMPLETED, Optional.of(newScore));
     }
 
     public Game withoutScore() {
-        return new Game(id, phasePath, subgroup, group, time, court, position, contestants, refereeId, GameStatus.SCHEDULED, Optional.empty());
+        return new Game(id, phasePath, time, court, position, contestants, refereeId, GameStatus.SCHEDULED, Optional.empty());
     }
 
     @Override
@@ -132,8 +116,6 @@ public final class Game implements Identified {
         }
         return Objects.equals(id, game.id)
                 && Objects.equals(phasePath, game.phasePath)
-                && Objects.equals(subgroup, game.subgroup)
-                && Objects.equals(group, game.group)
                 && Objects.equals(time, game.time)
                 && Objects.equals(court, game.court)
                 && Objects.equals(position, game.position)
@@ -145,7 +127,7 @@ public final class Game implements Identified {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, phasePath, subgroup, group, time, court, position, contestants, refereeId, status, score);
+        return Objects.hash(id, phasePath, time, court, position, contestants, refereeId, status, score);
     }
 
     @Override
@@ -153,8 +135,6 @@ public final class Game implements Identified {
         return "Game[" +
                 "id=" + id +
                 ", phasePath=" + phasePath +
-                ", subgroup=" + subgroup +
-                ", group=" + group +
                 ", time=" + time +
                 ", court=" + court +
                 ", position=" + position +

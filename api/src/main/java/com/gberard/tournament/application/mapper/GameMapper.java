@@ -19,8 +19,6 @@ public final class GameMapper {
                 .id(game.id())
                 .phase(PhaseMapper.toApi(game.phase()))
                 .phasePath(game.phasePath().stream().map(PhaseMapper::toApi).toList())
-                .subgroup(game.subgroup().orElse(null))
-                .group(game.group())
                 .court(game.court())
                 .position(game.position())
                 .contestants(game.contestants().stream().map(TeamMapper::toApi).collect(toSet()))
@@ -39,8 +37,6 @@ public final class GameMapper {
         return new com.gberard.tournament.domain.model.Game(
                 null,
                 phase,
-                Optional.ofNullable(request.getSubgroup()),
-                request.getGroup(),
                 request.getTime() == null ? null : request.getTime().toLocalDateTime(),
                 request.getCourt(),
                 null,
@@ -60,8 +56,6 @@ public final class GameMapper {
     ) {
         var updatedGame = GameBuilder.from(existingGame)
                 .phase(phase)
-                .subgroup(Optional.ofNullable(request.getSubgroup()))
-                .group(request.getGroup())
                 .time(request.getTime() == null ? null : request.getTime().toLocalDateTime())
                 .court(request.getCourt())
                 .position(existingGame.position())
@@ -92,14 +86,6 @@ public final class GameMapper {
 
         if (phase != null) {
             updatedGame.phase(phase);
-        }
-        if (changes.getSubgroup() != null) {
-            updatedGame.subgroup(changes.getSubgroup());
-        } else if (Boolean.TRUE.equals(changes.getClearSubgroup())) {
-            updatedGame.eraseSubgroup();
-        }
-        if (changes.getGroup() != null) {
-            updatedGame.group(changes.getGroup());
         }
         if (changes.getTime() != null) {
             updatedGame.time(changes.getTime().toLocalDateTime());

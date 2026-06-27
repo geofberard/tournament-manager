@@ -282,45 +282,6 @@ paths:
                     code: PHASE_IN_USE
                     message: Phase phase_1 is still referenced by existing games
 
-  /api/phases/{phaseId}/groups:
-    parameters:
-      - $ref: '#/components/parameters/PhaseId'
-    get:
-      tags: [Phases]
-      operationId: listPhaseGroups
-      summary: Lister les groupes d'une phase
-      description: Retourne les groupes presents dans la phase demandee.
-      responses:
-        '200':
-          description: Liste des groupes de la phase
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Group'
-        '404':
-          $ref: '#/components/responses/NotFound'
-
-  /api/phases/{phaseId}/teams/{teamId}/group:
-    parameters:
-      - $ref: '#/components/parameters/PhaseId'
-      - $ref: '#/components/parameters/TeamId'
-    get:
-      tags: [Phases]
-      operationId: getPhaseTeamGroup
-      summary: Lire le groupe d'une équipe dans une phase
-      description: Retourne le groupe auquel appartient l'equipe donnee dans la phase demandee.
-      responses:
-        '200':
-          description: Groupe de l'équipe dans la phase
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Group'
-        '404':
-          $ref: '#/components/responses/NotFound'
-
   /api/games:
     get:
       tags: [Games]
@@ -470,7 +431,6 @@ paths:
               default:
                 value:
                   phaseId: phase_1
-                  group: Poule A
                   startTime: '2026-06-20T09:00:00Z'
                   gameDurationMinutes: 12
                   breakDurationMinutes: 3
@@ -671,20 +631,19 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
-  /api/phases/{phaseId}/groups/{groupId}/statistics:
+  /api/phases/{phaseId}/statistics:
     parameters:
       - $ref: '#/components/parameters/PhaseId'
-      - $ref: '#/components/parameters/GroupId'
     get:
       tags: [Phases]
-      operationId: listPhaseGroupRankings
-      summary: Lire le classement d'un groupe
+      operationId: listPhaseRankings
+      summary: Lire le classement d'une phase
       description: |
         Retourne le classement calculé en ne prenant en compte que les matchs
-        appartenant au groupe demande au sein de la phase donnee.
+        appartenant à la phase demandée.
       responses:
         '200':
-          description: Classement du groupe
+          description: Classement de la phase
           content:
             application/json:
               schema:
@@ -773,17 +732,6 @@ components:
         default:
           value: game_1
 
-    GroupId:
-      name: groupId
-      in: path
-      required: true
-      description: Identifiant unique d'un groupe
-      schema:
-        type: string
-        minLength: 1
-      examples:
-        default:
-          value: Poule A
     PhaseId:
       name: phaseId
       in: path
@@ -857,18 +805,6 @@ components:
           description: Nom d'utilisateur admin connecte, ou `null` si personne n'est connecte
           examples: [admin]
 
-    Group:
-      type: object
-      description: Représentation d'un groupe.
-      required:
-        - id
-      properties:
-        id:
-          type: string
-          minLength: 1
-          description: Identifiant ou nom du groupe
-          examples: [Poule A]
-
     Team:
       type: object
       description: Équipe participante au tournoi.
@@ -920,7 +856,6 @@ components:
         - id
         - phase
         - phasePath
-        - group
         - court
         - position
         - status
@@ -943,18 +878,6 @@ components:
             toujours à `phase`.
           items:
             $ref: '#/components/schemas/Phase'
-        subgroup:
-          type: string
-          nullable: true
-          description: |
-            Sous-groupe optionnel permettant de regrouper les matchs d'un tableau,
-            par exemple `1/8`, `1/4` ou `1/2`. Ce champ reste vide pour les matchs de poule.
-          examples: [1/4]
-        group:
-          type: string
-          minLength: 1
-          description: Identifiant ou nom du groupe du match
-          examples: [Poule A]
         time:
           type: string
           format: date-time
@@ -1141,7 +1064,6 @@ components:
       description: Payload utilisé pour créer un match.
       required:
         - phaseId
-        - group
         - court
         - contestantIds
       properties:
@@ -1150,18 +1072,6 @@ components:
           minLength: 1
           description: Identifiant de la phase du match
           examples: [phase_1]
-        subgroup:
-          type: string
-          nullable: true
-          description: |
-            Sous-groupe optionnel permettant de regrouper les matchs d'un tableau,
-            par exemple `1/8`, `1/4` ou `1/2`. Ce champ reste vide pour les matchs de poule.
-          examples: [1/4]
-        group:
-          type: string
-          minLength: 1
-          description: Identifiant ou nom du groupe du match
-          examples: [Poule A]
         time:
           type: string
           format: date-time
@@ -1194,7 +1104,6 @@ components:
         Cette opération ne permet pas de modifier le score.
       required:
         - phaseId
-        - group
         - court
         - contestantIds
       properties:
@@ -1203,18 +1112,6 @@ components:
           minLength: 1
           description: Identifiant de la phase du match
           examples: [phase_2]
-        subgroup:
-          type: string
-          nullable: true
-          description: |
-            Sous-groupe optionnel permettant de regrouper les matchs d'un tableau,
-            par exemple `1/8`, `1/4` ou `1/2`. Ce champ reste vide pour les matchs de poule.
-          examples: [1/2]
-        group:
-          type: string
-          minLength: 1
-          description: Identifiant ou nom du groupe du match
-          examples: [Poule B]
         time:
           type: string
           format: date-time
@@ -1262,7 +1159,6 @@ components:
       description: Paramètres de création du calendrier d'une poule sur un terrain.
       required:
         - phaseId
-        - group
         - court
         - teamIds
         - assignReferees
@@ -1271,10 +1167,6 @@ components:
           type: string
           minLength: 1
           description: Identifiant de la phase de poules
-        group:
-          type: string
-          minLength: 1
-          description: Nom ou identifiant de la poule
         startTime:
           type: string
           format: date-time
@@ -1311,20 +1203,10 @@ components:
       description: |
         Modifications partielles à appliquer à chaque match ciblé.
 
-        Une propriété absente conserve la valeur actuelle. `clearSubgroup` et
-        `clearReferee` permettent d'effacer explicitement les valeurs
-        optionnelles correspondantes.
+        Une propriété absente conserve la valeur actuelle. `clearReferee`
+        permet d'effacer explicitement l'arbitre optionnel.
       properties:
         phaseId:
-          type: string
-          minLength: 1
-        subgroup:
-          type: string
-          minLength: 1
-        clearSubgroup:
-          type: boolean
-          default: false
-        group:
           type: string
           minLength: 1
         time:

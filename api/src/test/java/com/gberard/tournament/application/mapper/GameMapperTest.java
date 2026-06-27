@@ -43,7 +43,6 @@ class GameMapperTest {
     private static UpdateGameRequest updateRequest(Set<String> contestantIds) {
         return new UpdateGameRequest()
                 .phaseId(PHASE_A.id())
-                .group("A")
                 .time(OffsetDateTime.parse("2026-06-13T12:30:00Z"))
                 .court("Court 2")
                 .contestantIds(contestantIds);

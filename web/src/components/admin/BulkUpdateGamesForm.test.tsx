@@ -64,19 +64,6 @@ describe('BulkUpdateGamesForm', () => {
     await waitFor(() => expect(onSubmit).toHaveBeenCalledWith({ court: 'Central' }))
   })
 
-  it('should explicitly clear an enabled optional value left empty', async () => {
-    // GIVEN
-    const onSubmit = vi.fn().mockResolvedValue(undefined)
-    renderForm(onSubmit)
-
-    // WHEN
-    fireEvent.click(screen.getByRole('checkbox', { name: 'Modifier le sous-groupe' }))
-    fireEvent.click(screen.getByRole('button', { name: 'Modifier les matchs' }))
-
-    // THEN
-    await waitFor(() => expect(onSubmit).toHaveBeenCalledWith({ clearSubgroup: true }))
-  })
-
   it.each([
     ['retard', '20', 20],
     ['avance', '-10', -10],

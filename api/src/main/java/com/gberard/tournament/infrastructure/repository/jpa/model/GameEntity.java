@@ -34,9 +34,6 @@ public class GameEntity {
     @JoinColumn(name = "phase_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
     private PhaseEntity phase;
 
-    @Column(name = "group_id")
-    private String groupId;
-    private String subgroup;
     private String court;
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
@@ -68,8 +65,6 @@ public class GameEntity {
         return new Game(
                 entity.id,
                 PhaseEntity.toDomainPath(entity.phase),
-                Optional.ofNullable(entity.subgroup),
-                entity.groupId,
                 entity.time,
                 entity.court,
                 entity.position,
@@ -84,8 +79,6 @@ public class GameEntity {
         playerEntity.id = game.id();
         playerEntity.phaseId = game.phase().id();
         playerEntity.phase = PhaseEntity.toEntity(game.phase());
-        playerEntity.subgroup = game.subgroup().orElse(null);
-        playerEntity.groupId = game.group();
         playerEntity.time = game.time();
         playerEntity.court = game.court();
         playerEntity.position = game.position();

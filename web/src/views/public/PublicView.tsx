@@ -3,9 +3,8 @@ import { Alert, CircularProgress, Stack, Typography, Box, Paper, Divider, Tabs, 
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered'
 import StadiumIcon from '@mui/icons-material/Stadium'
 import { usePhases } from '../../hooks/usePhases'
-import { usePhaseGroups } from '../../hooks/useGroupRankings'
 import { useGames } from '../../hooks/useGames'
-import { GroupRankingCard } from '../../components/shared/GroupRankingCard'
+import { PhaseRankingCard } from '../../components/shared/PhaseRankingCard'
 import { PitchStatus } from '../../components/shared/PitchStatus'
 import { QrCodeButton } from '../../components/shared/QrCodeButton'
 import { TerrainMapButton } from '../../components/shared/TerrainMapButton'
@@ -26,7 +25,6 @@ export const PublicView = () => {
   const effectiveSelectedPhaseId = selectedPhaseId ?? phases[0]?.id ?? null
   const selectedPhase = phases.find((phase) => phase.id === effectiveSelectedPhaseId) ?? null
 
-  const { groups, isLoading: isGroupsLoading, errorMessage: groupsError } = usePhaseGroups(effectiveSelectedPhaseId)
   const { games, isLoading: isGamesLoading, errorMessage: gamesError } = useGames()
 
   if (isPhasesLoading) {
@@ -89,17 +87,7 @@ export const PublicView = () => {
             </Tabs>
           )}
 
-          {groupsError && <Alert severity="error" sx={{ mb: 2 }}>{groupsError}</Alert>}
-          {isGroupsLoading ? (
-            <Box display="flex" justifyContent="center" py={4}><CircularProgress /></Box>
-          ) : groups.length === 0 ? (
-            <Alert severity="info" variant="outlined">Aucun groupe n'est disponible pour cette phase.</Alert>
-          ) : (
-            groups.map(group => (
-              <GroupRankingCard key={group.id} groupId={group.id} phaseId={selectedPhase.id} />
-
-            ))
-          )}
+          <PhaseRankingCard phaseId={selectedPhase.id} phaseName={selectedPhase.name} />
         </Paper>
       </Stack>
 

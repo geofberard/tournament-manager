@@ -44,7 +44,7 @@ export const CreatePoolGamesForm = ({
   const [submitError, setSubmitError] = useState<string | null>(null)
 
   const handleTextChange =
-    (field: 'court' | 'group') => (event: ChangeEvent<HTMLInputElement>) => {
+    (field: 'court') => (event: ChangeEvent<HTMLInputElement>) => {
       setFormValue((currentValue) => ({ ...currentValue, [field]: event.target.value }))
     }
 
@@ -112,7 +112,6 @@ export const CreatePoolGamesForm = ({
         breakDurationMinutes: formValue.startTime ? formValue.breakDurationMinutes : undefined,
         court: formValue.court.trim(),
         gameDurationMinutes: formValue.startTime ? formValue.gameDurationMinutes : undefined,
-        group: formValue.group.trim(),
       })
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : 'La creation des matchs a echoue.')
@@ -151,15 +150,6 @@ export const CreatePoolGamesForm = ({
             ))}
           </Select>
         </FormControl>
-
-        <TextField
-          autoFocus
-          fullWidth
-          label="Poule"
-          onChange={handleTextChange('group')}
-          required
-          value={formValue.group}
-        />
 
         <TextField
           fullWidth

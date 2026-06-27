@@ -1,6 +1,7 @@
 package com.gberard.tournament.domain.port.input;
 
 import com.gberard.tournament.domain.model.Game;
+import com.gberard.tournament.domain.model.Phase;
 import com.gberard.tournament.domain.model.Team;
 
 import java.util.List;
@@ -20,6 +21,6 @@ public interface GameService {
 
     List<Game> findByTeam(Team team);
 
-    List<Game> findByGroupAndPhase(String group, String phaseId);
+    List<Game> findByPhase(Phase phase);
 
 }

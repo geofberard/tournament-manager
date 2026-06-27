@@ -19,13 +19,11 @@ export const TeamGamesView = ({ currentTeam }: TeamGamesViewProps) => {
   const teamGames = games.filter((game) =>
     Array.from(game.contestants).some((team) => team.id === currentTeam.id),
   )
-  const teamGroupKeys = new Set(teamGames.map((game) => `${game.phase.id}\u0000${game.group}`))
-  const groupGames = games.filter((game) =>
-    teamGroupKeys.has(`${game.phase.id}\u0000${game.group}`),
-  )
+  const teamPhaseIds = new Set(teamGames.map((game) => game.phase.id))
+  const phaseGames = games.filter((game) => teamPhaseIds.has(game.phase.id))
   const displayedGames = showOnlyTeamGames
-    ? groupGames.filter((game) => teamGames.includes(game) || game.referee?.id === currentTeam.id)
-    : groupGames
+    ? phaseGames.filter((game) => teamGames.includes(game) || game.referee?.id === currentTeam.id)
+    : phaseGames
   const displayedStatus = (game: (typeof games)[number]) => getDisplayedGameStatus(game, games)
   const teamOngoingRefereeGames = games.filter((game) =>
     game.referee?.id === currentTeam.id && displayedStatus(game) === 'in_progress',
@@ -101,7 +99,7 @@ export const TeamGamesView = ({ currentTeam }: TeamGamesViewProps) => {
               Matchs en cours
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Les matchs en cours dans vos groupes.
+              Les matchs en cours dans vos phases.
             </Typography>
           </Stack>
           <GameList
@@ -122,7 +120,7 @@ export const TeamGamesView = ({ currentTeam }: TeamGamesViewProps) => {
               Prochains matchs
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Les prochains matchs dans vos groupes.
+              Les prochains matchs dans vos phases.
             </Typography>
           </Stack>
           <GameList

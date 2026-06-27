@@ -28,8 +28,6 @@ class GameEntityTest {
         Game game = new Game(
                 null,
                 List.of(rootPhase, phase),
-                Optional.of("Ouverture"),
-                "Poule A",
                 LocalDateTime.of(2026, 6, 11, 18, 30),
                 "Terrain 1",
                 1000L,

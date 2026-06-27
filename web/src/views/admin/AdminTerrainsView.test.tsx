@@ -33,7 +33,6 @@ describe('AdminTerrainsView', () => {
         time: new Date('2099-06-18T12:00:00Z'),
         contestants: new Set([{ id: 'team-1', name: 'Aigles' }, { id: 'team-2', name: 'Lions' }]),
         referee: { id: 'team-3', name: 'Panthères' },
-        group: 'Poule A',
         phase: { id: 'phase-1', type: 'POOL', name: 'Phase 1', order: 1 },
         score: { pointsByTeam: {} },
       }],

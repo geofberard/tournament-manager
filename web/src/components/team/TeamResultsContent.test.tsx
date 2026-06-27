@@ -29,7 +29,6 @@ describe('TeamResultsContent', () => {
       isLoading: false,
     })
     useTeamRankingsMock.mockReturnValue({
-      groupName: 'Poule A',
       errorMessage: null,
       isLoading: false,
       rankings: [],
@@ -46,7 +45,6 @@ describe('TeamResultsContent', () => {
     )
 
     // THEN
-    expect(screen.getByText('Poule A')).toBeInTheDocument()
     expect(screen.getByText("Les resultats ne sont pas encore disponibles.")).toBeInTheDocument()
   })
 })

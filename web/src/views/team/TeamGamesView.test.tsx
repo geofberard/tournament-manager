@@ -17,7 +17,7 @@ describe('TeamGamesView', () => {
     cleanup()
   })
 
-  it('should render every game from the groups in which the team participates', () => {
+  it('should render every game from the phases in which the team participates', () => {
     // GIVEN
     useGamesMock.mockReturnValue({
       errorMessage: null,
@@ -26,7 +26,6 @@ describe('TeamGamesView', () => {
           id: 'game-1',
           position: 2,
           phase: { id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' },
-          group: 'Poule A',
           court: 'Terrain 1',
           status: GameStatus.Scheduled,
           time: new Date('2099-01-01T10:00:00Z'),
@@ -36,7 +35,6 @@ describe('TeamGamesView', () => {
           id: 'game-2',
           position: 2,
           phase: { id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' },
-          group: 'Poule A',
           court: 'Terrain 1',
           status: GameStatus.Completed,
           contestants: new Set([{ id: 'team-2', name: 'Tigres' }]),
@@ -45,16 +43,14 @@ describe('TeamGamesView', () => {
           id: 'game-before',
           position: 1,
           phase: { id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' },
-          group: 'Poule A',
           court: 'Terrain 1',
           status: GameStatus.Scheduled,
           contestants: new Set([{ id: 'team-3', name: 'Panthères' }]),
         },
         {
-          id: 'game-other-group',
+          id: 'game-other-phase',
           position: 3,
           phase: { id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' },
-          group: 'Poule B',
           court: 'Terrain 2',
           status: GameStatus.Scheduled,
           contestants: new Set([{ id: 'team-4', name: 'Lynx' }]),
@@ -63,7 +59,6 @@ describe('TeamGamesView', () => {
           id: 'game-refereed-by-team',
           position: 3,
           phase: { id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' },
-          group: 'Poule A',
           court: 'Terrain 2',
           status: GameStatus.Scheduled,
           contestants: new Set([{ id: 'team-6', name: 'Lions' }]),
@@ -73,7 +68,6 @@ describe('TeamGamesView', () => {
           id: 'game-same-name-other-phase',
           position: 4,
           phase: { id: 'phase-2', name: 'Finale', order: 2, type: 'POOL' },
-          group: 'Poule A',
           court: 'Terrain 2',
           status: GameStatus.Scheduled,
           contestants: new Set([{ id: 'team-5', name: 'Ours' }]),
@@ -95,7 +89,7 @@ describe('TeamGamesView', () => {
     expect(screen.getByRole('heading', { name: 'Prochains matchs' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Matchs terminés' })).toBeInTheDocument()
     expect(screen.getByText('Panthères')).toBeInTheDocument()
-    expect(screen.queryByText('Lynx')).not.toBeInTheDocument()
+    expect(screen.getByText('Lynx')).toBeInTheDocument()
     expect(screen.queryByText('Ours')).not.toBeInTheDocument()
     expect(screen.getByText('Attente : 1 match')).toBeInTheDocument()
   })
@@ -107,7 +101,6 @@ describe('TeamGamesView', () => {
         {
           id: 'team-game',
           phase: { id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' },
-          group: 'Poule A',
           status: GameStatus.Scheduled,
           contestants: new Set([
             { id: 'team-2', name: 'Tigres' },
@@ -115,9 +108,8 @@ describe('TeamGamesView', () => {
           ]),
         },
         {
-          id: 'group-game',
+          id: 'phase-game',
           phase: { id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' },
-          group: 'Poule A',
           status: GameStatus.Scheduled,
           contestants: new Set([
             { id: 'team-4', name: 'Lynx' },
@@ -127,7 +119,6 @@ describe('TeamGamesView', () => {
         {
           id: 'referee-game',
           phase: { id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' },
-          group: 'Poule A',
           status: GameStatus.Scheduled,
           contestants: new Set([
             { id: 'team-6', name: 'Lions' },

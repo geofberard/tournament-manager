@@ -1,4 +1,4 @@
-import { Alert, Stack, Typography } from '@mui/material'
+import { Alert, Stack } from '@mui/material'
 import { GameList } from '../shared/GameList'
 import { RankingTable } from '../shared/RankingTable'
 import { useGames } from '../../hooks/useGames'
@@ -16,7 +16,6 @@ export const TeamResultsContent = ({ currentTeam, selectedPhase }: TeamResultsCo
   const { errorMessage: gamesErrorMessage, games, isLoading: isGamesLoading } = useGames()
   const isPoolPhase = selectedPhase?.type === 'POOL'
   const {
-    groupName,
     errorMessage: rankingsErrorMessage,
     isLoading: isRankingsLoading,
     rankings,
@@ -29,11 +28,6 @@ export const TeamResultsContent = ({ currentTeam, selectedPhase }: TeamResultsCo
   if (isPoolPhase) {
     return (
       <Stack spacing={2}>
-        {groupName ? (
-          <Typography variant="body1" color="text.secondary">
-            {groupName}
-          </Typography>
-        ) : null}
         <RankingTable
           currentTeamId={currentTeam.id}
           errorMessage={rankingsErrorMessage}

@@ -39,8 +39,6 @@ type GameDrawerMode = 'idle' | 'bulk-create' | 'bulk-update' | 'create' | 'updat
 const emptyGameForm = (): GamePayload => ({
   contestantIds: new Set(),
   court: '',
-  group: '',
-  subgroup: '',
   phaseId: '',
   pointsByTeam: null,
   refereeId: undefined,
@@ -52,7 +50,6 @@ const emptyPoolGamesForm = (phases: ReturnType<typeof usePhaseTree>['phases']): 
   breakDurationMinutes: 5,
   court: '',
   gameDurationMinutes: 15,
-  group: '',
   phaseId: phases.find((phase) => phase.type === 'POOL')?.id ?? '',
   startTime: undefined,
   teamIds: new Set(),
@@ -61,8 +58,6 @@ const emptyPoolGamesForm = (phases: ReturnType<typeof usePhaseTree>['phases']): 
 const toGamePayload = (game: Game): GamePayload => ({
   contestantIds: new Set(Array.from(game.contestants, (team) => team.id)),
   court: game.court,
-  group: game.group,
-  subgroup: game.subgroup,
   phaseId: game.phase.id,
   pointsByTeam:
     game.score?.pointsByTeam && Object.keys(game.score.pointsByTeam).length > 0

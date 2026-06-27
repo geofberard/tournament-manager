@@ -18,7 +18,6 @@ const initialValue: PoolGamesPayload = {
   breakDurationMinutes: 5,
   court: '',
   gameDurationMinutes: 15,
-  group: '',
   phaseId: 'phase-pool',
   startTime: new Date(2026, 5, 20, 9, 0),
   teamIds: new Set(),
@@ -76,9 +75,6 @@ describe('CreatePoolGamesForm', () => {
   it('should submit trimmed values and selected teams', async () => {
     // GIVEN
     const { onSubmit } = renderForm()
-    fireEvent.change(screen.getByRole('textbox', { name: 'Poule' }), {
-      target: { value: '  Poule A  ' },
-    })
     fireEvent.change(screen.getByRole('textbox', { name: 'Terrain' }), {
       target: { value: '  Terrain 1  ' },
     })
@@ -98,7 +94,6 @@ describe('CreatePoolGamesForm', () => {
         ...initialValue,
         assignReferees: true,
         court: 'Terrain 1',
-        group: 'Poule A',
         teamIds: new Set(['team-1', 'team-2', 'team-3']),
       }),
     )
@@ -107,9 +102,6 @@ describe('CreatePoolGamesForm', () => {
   it('should display an API error and enable retry', async () => {
     // GIVEN
     renderForm(vi.fn().mockRejectedValue(new Error('Creation impossible')))
-    fireEvent.change(screen.getByRole('textbox', { name: 'Poule' }), {
-      target: { value: 'Poule A' },
-    })
     fireEvent.change(screen.getByRole('textbox', { name: 'Terrain' }), {
       target: { value: 'Terrain 1' },
     })

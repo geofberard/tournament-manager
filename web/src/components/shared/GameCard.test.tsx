@@ -32,8 +32,6 @@ const renderCard = (
 const baseGame: Game = {
   id: 'game-1',
   phase: { id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' },
-  subgroup: undefined,
-  group: 'Poule A',
   time: new Date('2026-05-01T18:30:00Z'),
   court: 'Central',
   status: GameStatus.Completed,
@@ -64,25 +62,11 @@ describe('GameCard', () => {
     expect(screen.getByText('Aigles')).toBeInTheDocument()
     expect(screen.getByText('Tigres')).toBeInTheDocument()
     expect(screen.getByText('Brassage')).toBeInTheDocument()
-    expect(screen.getByText('Poule A')).toBeInTheDocument()
     expect(screen.getByText('Terminé')).toBeInTheDocument()
     expect(screen.getByText('21 - 18')).toBeInTheDocument()
     // Court and referee are not rendered for completed games
     expect(screen.queryByText('Central')).not.toBeInTheDocument()
     expect(screen.queryByText(/Arbitre/)).not.toBeInTheDocument()
-  })
-
-  it('should render the match subgroup when provided', () => {
-    // WHEN
-    renderCard({
-      ...baseGame,
-      subgroup: '1/2',
-    })
-
-    // THEN
-    expect(screen.getByText('1/2')).toBeInTheDocument()
-    expect(screen.getByText('Aigles')).toBeInTheDocument()
-    expect(screen.getByText('Tigres')).toBeInTheDocument()
   })
 
   it('should render the court without a fallback time when no time is planned', () => {

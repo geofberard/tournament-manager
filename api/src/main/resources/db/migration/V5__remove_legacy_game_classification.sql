@@ -1,0 +1,5 @@
+ALTER TABLE games
+    DROP COLUMN IF EXISTS subgroup;
+
+ALTER TABLE games
+    DROP COLUMN IF EXISTS group_id;

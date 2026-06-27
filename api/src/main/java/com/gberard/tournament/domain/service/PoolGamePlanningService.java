@@ -35,7 +35,6 @@ public class PoolGamePlanningService {
 
     public List<Game> plan(
             Phase phase,
-            String group,
             List<Team> teams,
             LocalDateTime startTime,
             Duration gameDuration,
@@ -65,21 +64,18 @@ public class PoolGamePlanningService {
         }
 
         return plannedGames.stream()
-                .map(plannedGame -> toGame(phase, group, court, plannedGame))
+                .map(plannedGame -> toGame(phase, court, plannedGame))
                 .toList();
     }
 
     private Game toGame(
             Phase phase,
-            String group,
             String court,
             PlannedGame plannedGame
     ) {
         return new Game(
                 null,
                 phase,
-                Optional.empty(),
-                group,
                 plannedGame.time(),
                 court,
                 null,

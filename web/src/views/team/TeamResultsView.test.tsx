@@ -48,7 +48,6 @@ describe('TeamResultsView', () => {
       }],
     })
     useTeamRankingsMock.mockReturnValue({
-      groupName: 'Poule A',
       errorMessage: null,
       isLoading: false,
       rankings: [],
@@ -69,7 +68,7 @@ describe('TeamResultsView', () => {
     expect(screen.getByRole('tab', { name: 'Brassage' })).toBeInTheDocument()
     expect(screen.getByText('Premier paragraphe.')).toBeInTheDocument()
     expect(screen.getByText('Second paragraphe.')).toBeInTheDocument()
-    expect(screen.getByText('Poule A')).toBeInTheDocument()
+    expect(screen.getByText("Les resultats ne sont pas encore disponibles.")).toBeInTheDocument()
   })
 
   it('should render a fallback message when the phase has no details', () => {
@@ -85,7 +84,6 @@ describe('TeamResultsView', () => {
       phases: [{ id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' }],
     })
     useTeamRankingsMock.mockReturnValue({
-      groupName: 'Poule A',
       errorMessage: null,
       isLoading: false,
       rankings: [],
@@ -113,7 +111,6 @@ describe('TeamResultsView', () => {
         {
           id: 'game-1',
           phase: { id: 'phase-2', name: 'Bracket final', order: 2, type: 'BRACKET' },
-          group: 'Bracket principal',
           position: 2000,
           time: new Date('2026-05-04T18:00:00Z'),
           court: 'Central',
@@ -128,7 +125,6 @@ describe('TeamResultsView', () => {
         {
           id: 'game-2',
           phase: { id: 'phase-2', name: 'Bracket final', order: 2, type: 'BRACKET' },
-          group: 'Bracket principal',
           position: 1000,
           time: new Date('2026-05-03T18:00:00Z'),
           court: 'Annexe',
@@ -148,7 +144,6 @@ describe('TeamResultsView', () => {
       phases: [{ id: 'phase-2', name: 'Bracket final', order: 2, type: 'BRACKET' }],
     })
     useTeamRankingsMock.mockReturnValue({
-      groupName: null,
       errorMessage: null,
       isLoading: false,
       rankings: [],

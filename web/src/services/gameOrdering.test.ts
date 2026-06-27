@@ -6,7 +6,6 @@ import { sortGamesByPosition } from './gameOrdering'
 const game = (id: string, position?: number): Game => ({
   id,
   phase: { id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' },
-  group: 'Poule A',
   position,
   time: undefined,
   court: 'Terrain 1',

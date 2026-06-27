@@ -5,12 +5,10 @@ import static org.springframework.http.HttpStatus.CREATED;
 import com.gberard.tournament.application.mapper.PhaseMapper;
 import com.gberard.tournament.application.mapper.StatisticsMapper;
 import com.gberard.tournament.domain.port.input.PhaseService;
-import com.gberard.tournament.domain.port.input.TeamService;
 import com.gberard.tournament.domain.port.input.TeamStatsUseCase;
 import com.gberard.tournament.generated.api.PhasesApiDelegate;
 import com.gberard.tournament.generated.model.ContestantStats;
 import com.gberard.tournament.generated.model.CreatePhaseRequest;
-import com.gberard.tournament.generated.model.Group;
 import com.gberard.tournament.generated.model.Phase;
 import com.gberard.tournament.generated.model.UpdatePhaseRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,9 +24,6 @@ public class PhasesApiDelegateImpl implements PhasesApiDelegate {
 
     @Autowired
     public PhaseService phaseService;
-
-    @Autowired
-    public TeamService teamService;
 
     @Autowired
     public TeamStatsUseCase teamStatsUseCase;
@@ -61,32 +56,10 @@ public class PhasesApiDelegateImpl implements PhasesApiDelegate {
     }
 
     @Override
-    public ResponseEntity<List<Group>> listPhaseGroups(String phaseId) {
+    public ResponseEntity<List<ContestantStats>> listPhaseRankings(String phaseId) {
         findPhaseOrThrow(phaseId);
 
-        return ResponseEntity.ok(
-                teamStatsUseCase.getPhaseGroups(phaseId).stream()
-                        .map(groupId -> new Group().id(groupId))
-                        .toList()
-        );
-    }
-
-    @Override
-    public ResponseEntity<Group> getPhaseTeamGroup(String phaseId, String teamId) {
-        findPhaseOrThrow(phaseId);
-        var team = teamService.findById(teamId)
-                .orElseThrow(() -> new EntityNotFoundException("Unknown team " + teamId));
-        var group = teamStatsUseCase.getTeamGroup(team, phaseId)
-                .orElseThrow(() -> new EntityNotFoundException("No group found for team " + teamId));
-
-        return ResponseEntity.ok(new Group().id(group));
-    }
-
-    @Override
-    public ResponseEntity<List<ContestantStats>> listPhaseGroupRankings(String phaseId, String groupId) {
-        findPhaseOrThrow(phaseId);
-
-        return ResponseEntity.ok(teamStatsUseCase.getTeamsStatsByGroup(groupId, phaseId).stream()
+        return ResponseEntity.ok(teamStatsUseCase.getTeamsStatsByPhase(phaseId).stream()
                 .map(StatisticsMapper::toApi)
                 .toList());
     }

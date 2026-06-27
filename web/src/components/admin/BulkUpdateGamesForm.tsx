@@ -24,8 +24,6 @@ import { findPhaseName, renderPhaseMenuItems } from './phaseSelectOptions'
 
 type BulkField =
   | 'court'
-  | 'group'
-  | 'subgroup'
   | 'phaseId'
   | 'refereeId'
   | 'time'
@@ -50,8 +48,6 @@ export const BulkUpdateGamesForm = ({
   const [enabledFields, setEnabledFields] = useState<Set<BulkField>>(new Set())
   const [values, setValues] = useState({
     court: '',
-    group: '',
-    subgroup: '',
     phaseId: '',
     refereeId: '',
     time: new Date(),
@@ -91,7 +87,7 @@ export const BulkUpdateGamesForm = ({
   }
 
   const handleTextChange =
-    (field: 'court' | 'group' | 'subgroup') => (event: ChangeEvent<HTMLInputElement>) => {
+    (field: 'court') => (event: ChangeEvent<HTMLInputElement>) => {
       setValues((currentValues) => ({ ...currentValues, [field]: event.target.value }))
     }
 
@@ -107,17 +103,12 @@ export const BulkUpdateGamesForm = ({
     const changes: BulkGameChanges = {}
 
     if (enabledFields.has('phaseId')) changes.phaseId = values.phaseId
-    if (enabledFields.has('group')) changes.group = values.group.trim()
     if (enabledFields.has('time')) changes.time = values.time
     if (enabledFields.has('clearTime')) changes.clearTime = true
     if (enabledFields.has('timeOffsetMinutes')) {
       changes.timeOffsetMinutes = timeOffsetMinutes
     }
     if (enabledFields.has('court')) changes.court = values.court.trim()
-    if (enabledFields.has('subgroup')) {
-      if (values.subgroup.trim()) changes.subgroup = values.subgroup.trim()
-      else changes.clearSubgroup = true
-    }
     if (enabledFields.has('refereeId')) {
       if (values.refereeId) changes.refereeId = values.refereeId
       else changes.clearReferee = true
@@ -179,19 +170,6 @@ export const BulkUpdateGamesForm = ({
               {renderPhaseMenuItems(phaseTree)}
             </Select>
           </FormControl>,
-        )}
-
-        {fieldControl(
-          'group',
-          'le groupe',
-          <TextField
-            disabled={!enabledFields.has('group')}
-            fullWidth
-            label="Groupe"
-            onChange={handleTextChange('group')}
-            required={enabledFields.has('group')}
-            value={values.group}
-          />,
         )}
 
         {fieldControl(
@@ -260,19 +238,6 @@ export const BulkUpdateGamesForm = ({
             onChange={handleTextChange('court')}
             required={enabledFields.has('court')}
             value={values.court}
-          />,
-        )}
-
-        {fieldControl(
-          'subgroup',
-          'le sous-groupe',
-          <TextField
-            disabled={!enabledFields.has('subgroup')}
-            fullWidth
-            helperText="Laissez vide pour effacer le sous-groupe."
-            label="Sous-groupe"
-            onChange={handleTextChange('subgroup')}
-            value={values.subgroup}
           />,
         )}
 

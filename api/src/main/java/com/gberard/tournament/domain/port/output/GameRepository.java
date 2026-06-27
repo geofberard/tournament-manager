@@ -17,11 +17,7 @@ public interface GameRepository {
 
     List<Game> findByTeamId(String teamId);
 
-    List<Game> findByGroup(String group);
-
     List<Game> findByPhaseId(String phaseId);
-
-    List<Game> findByGroupAndPhaseId(String group, String phaseId);
 
     List<Game> findByTeamIdAndPhaseId(String teamId, String phaseId);
 

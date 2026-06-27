@@ -7,7 +7,6 @@ const game = (overrides: Partial<Game>): Game => ({
   id: 'game-1',
   phase: { id: 'phase-1', name: 'Phase 1', order: 1, type: 'POOL' },
   phasePath: [{ id: 'phase-1', name: 'Phase 1', order: 1, type: 'POOL' }],
-  group: 'A',
   court: 'Court 1',
   position: 1,
   status: GameStatus.Scheduled,

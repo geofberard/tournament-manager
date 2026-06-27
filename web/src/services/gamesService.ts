@@ -13,8 +13,6 @@ export type PoolGamesPayload = BulkCreateGamesRequest
 export type GamePayload = {
   contestantIds: Set<string>
   court: string
-  group: string
-  subgroup?: string
   phaseId: string
   pointsByTeam: Record<string, number> | null
   refereeId?: string
@@ -29,8 +27,6 @@ export const createGame = async (gamePayload: GamePayload): Promise<Game> => {
   const createGameRequest: CreateGameRequest = {
     contestantIds: gamePayload.contestantIds,
     court: gamePayload.court,
-    group: gamePayload.group,
-    subgroup: gamePayload.subgroup,
     phaseId: gamePayload.phaseId,
     refereeId: gamePayload.refereeId,
     time: gamePayload.time,
@@ -43,8 +39,6 @@ export const updateGame = async (gameId: string, gamePayload: GamePayload): Prom
   const updateGameRequest: UpdateGameRequest = {
     contestantIds: gamePayload.contestantIds,
     court: gamePayload.court,
-    group: gamePayload.group,
-    subgroup: gamePayload.subgroup,
     phaseId: gamePayload.phaseId,
     refereeId: gamePayload.refereeId,
     time: gamePayload.time,

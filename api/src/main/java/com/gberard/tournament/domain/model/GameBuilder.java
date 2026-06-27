@@ -9,8 +9,6 @@ import java.util.Optional;
 public class GameBuilder {
     private String id;
     private List<Phase> phasePath = List.of(new Phase("phase-default", "Phase par defaut", null, 1, PhaseType.POOL));
-    private Optional<String> subgroup = Optional.empty();
-    private String group = "A";
     private LocalDateTime time;
     private String court;
     private Long position;
@@ -32,8 +30,6 @@ public class GameBuilder {
         return new GameBuilder()
                 .id(game.id())
                 .phasePath(game.phasePath())
-                .subgroup(game.subgroup())
-                .group(game.group())
                 .time(game.time())
                 .court(game.court())
                 .position(game.position())
@@ -60,26 +56,6 @@ public class GameBuilder {
 
     public GameBuilder phasePath(List<Phase> phasePath) {
         this.phasePath = List.copyOf(phasePath);
-        return this;
-    }
-
-    public GameBuilder group(String group) {
-        this.group = group;
-        return this;
-    }
-
-    public GameBuilder subgroup(Optional<String> subgroup) {
-        this.subgroup = subgroup;
-        return this;
-    }
-
-    public GameBuilder subgroup(String subgroup) {
-        this.subgroup = Optional.of(subgroup);
-        return this;
-    }
-
-    public GameBuilder eraseSubgroup() {
-        this.subgroup = Optional.empty();
         return this;
     }
 
@@ -128,6 +104,6 @@ public class GameBuilder {
     }
 
     public Game build() {
-        return new Game(id, phasePath, subgroup, group, time, court, position, contestants, refereeId, status, score);
+        return new Game(id, phasePath, time, court, position, contestants, refereeId, status, score);
     }
 }

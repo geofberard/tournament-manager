@@ -11,9 +11,7 @@ const game: Game = {
     { id: 'team-2', name: 'Lynx' },
   ]),
   court: 'Terrain 1',
-  group: 'Poule A',
   id: 'game-1',
-  subgroup: '1/2',
   phase: { id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' },
   phasePath: [
     { id: 'phase-root', name: 'Tournoi/2026', order: 1 },
@@ -69,6 +67,8 @@ describe('AdminGamesTable', () => {
     expect(screen.getByRole('columnheader', { name: /Heure/ })).toBeInTheDocument()
     expect(screen.getByRole('columnheader', { name: /Score/ })).toBeInTheDocument()
     expect(screen.getByRole('columnheader', { name: /GamePath/ })).toBeInTheDocument()
+    expect(screen.queryByRole('columnheader', { name: /Groupe/ })).not.toBeInTheDocument()
+    expect(screen.queryByRole('columnheader', { name: /Sous-groupe/ })).not.toBeInTheDocument()
     expect(
       screen.getByLabelText('Chemin du match : Tournoi/2026 › Poules › Brassage'),
     ).toHaveTextContent('Tournoi/2026›Poules›Brassage')
@@ -136,7 +136,7 @@ describe('AdminGamesTable', () => {
 
     // WHEN
     fireEvent.click(
-      screen.getByRole('row', { name: /Tournoi\/2026 › Poules › Brassage.*Poule A/ }),
+      screen.getByRole('row', { name: /Tournoi\/2026 › Poules › Brassage.*Tigres/ }),
     )
 
     // THEN

@@ -132,7 +132,7 @@ describe('AdminTeamsView', () => {
     fireEvent.change(screen.getByRole('textbox', { name: 'Noms des équipes' }), {
       target: { value: 'Aigles\nTigres' },
     })
-    fireEvent.click(screen.getByRole('button', { name: 'Créer 2' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Créer (2)' }))
 
     await waitFor(() => {
       expect(createTeamMock).toHaveBeenCalledWith({ name: 'Aigles' })
