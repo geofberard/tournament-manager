@@ -4,7 +4,6 @@ import {
   GamesApi,
   PhasesApi,
   ScoresApi,
-  StatisticsApi,
   TeamsApi,
   type CreateTeamRequest,
   type CreatePhaseRequest,
@@ -34,11 +33,10 @@ const adminAuthApi = new AdminAuthApi(apiConfiguration)
 const gamesApi = new GamesApi(apiConfiguration)
 const phasesApi = new PhasesApi(apiConfiguration)
 const scoresApi = new ScoresApi(apiConfiguration)
-const statisticsApi = new StatisticsApi(apiConfiguration)
 
 export { adminAuthApi }
 export { teamsApi }
-export { gamesApi, phasesApi, scoresApi, statisticsApi }
+export { gamesApi, phasesApi, scoresApi }
 export type {
   ContestantStats,
   CreatePhaseRequest,

@@ -17,7 +17,7 @@ info:
     - un match référence un ensemble d'équipes participantes
     - un score est toujours simple, sur un seul set
     - le score est manipulé via une sous-ressource dédiée `/games/{gameId}/score`
-    - le classement est exposé via `/statistics`
+    - le classement est exposé par phase via `/phases/{phaseId}/statistics`
 
     Cette spécification est destinée à devenir la source de vérité du serveur.
 
@@ -42,9 +42,6 @@ tags:
       Gestion du score d'un match.
       Dans cette version, le score est toujours un score simple,
       représenté comme une association entre identifiant d'équipe et nombre de points.
-  - name: Statistics
-    description: |
-      Exposition du classement calculé à partir des matchs et de leurs scores.
   - name: Phases
     description: |
       Gestion et consultation des phases du tournoi.
@@ -568,66 +565,6 @@ paths:
       responses:
         '204':
           description: Score supprimé
-        '404':
-          $ref: '#/components/responses/NotFound'
-
-  /api/statistics:
-    get:
-      tags: [Statistics]
-      operationId: listRankings
-      summary: Lire le classement
-      description: |
-        Retourne le classement complet de toutes les équipes connues.
-      responses:
-        '200':
-          description: Classement calculé
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ContestantStats'
-              examples:
-                default:
-                  value:
-                    - contestant:
-                        id: team_1
-                        name: Les Furets
-                      played: 3
-                      won: 2
-                      drawn: 0
-                      lost: 1
-                      score: 6
-                      pointsFor: 66
-                      pointsAgainst: 57
-                      pointsDiff: 9
-                    - contestant:
-                        id: team_2
-                        name: Les Blaireaux
-                      played: 3
-                      won: 1
-                      drawn: 0
-                      lost: 2
-                      score: 3
-                      pointsFor: 54
-                      pointsAgainst: 60
-                      pointsDiff: -6
-
-  /api/statistics/{teamId}:
-    parameters:
-      - $ref: '#/components/parameters/TeamId'
-    get:
-      tags: [Statistics]
-      operationId: getRankingByTeamId
-      summary: Lire le classement d'une équipe
-      description: Retourne l'entrée de classement correspondant à une équipe donnée.
-      responses:
-        '200':
-          description: Entrée de classement
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ContestantStats'
         '404':
           $ref: '#/components/responses/NotFound'
 
