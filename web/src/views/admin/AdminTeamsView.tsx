@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import AddIcon from '@mui/icons-material/Add'
+import GroupsIcon from '@mui/icons-material/Groups'
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd'
 import {
   Alert,
@@ -118,7 +119,8 @@ export const AdminTeamsView = () => {
 
   return (
     <Stack spacing={3}>
-      <Stack spacing={1}>
+      <Stack direction="row" alignItems="center" gap={1.5}>
+        <GroupsIcon fontSize="large" />
         <Typography variant="h1">Équipes</Typography>
       </Stack>
 

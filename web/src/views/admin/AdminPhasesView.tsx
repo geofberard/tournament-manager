@@ -8,6 +8,7 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material'
+import AccountTreeIcon from '@mui/icons-material/AccountTree'
 import { useSWRConfig } from 'swr'
 import { AdminCreateFab } from '../../components/admin/AdminCreateFab'
 import { ManagePhaseForm } from '../../components/admin/ManagePhaseForm'
@@ -91,7 +92,8 @@ export const AdminPhasesView = () => {
 
   return (
     <Stack spacing={3}>
-      <Stack spacing={1}>
+      <Stack direction="row" alignItems="center" gap={1.5}>
+        <AccountTreeIcon fontSize="large" />
         <Typography variant="h1">Phases</Typography>
       </Stack>
 

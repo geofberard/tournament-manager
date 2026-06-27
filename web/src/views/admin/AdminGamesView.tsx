@@ -9,6 +9,7 @@ import {
 } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd'
+import SportsVolleyballIcon from '@mui/icons-material/SportsVolleyball'
 import { useCallback, useState } from 'react'
 import { useSWRConfig } from 'swr'
 import { AdminCreateSpeedDial } from '../../components/admin/AdminCreateSpeedDial'
@@ -222,7 +223,8 @@ export const AdminGamesView = () => {
 
   return (
     <Stack spacing={3}>
-      <Stack spacing={1}>
+      <Stack direction="row" alignItems="center" gap={1.5}>
+        <SportsVolleyballIcon fontSize="large" />
         <Typography variant="h1">Matchs</Typography>
       </Stack>
 

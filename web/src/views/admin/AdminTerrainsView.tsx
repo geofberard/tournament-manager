@@ -7,7 +7,7 @@ export const AdminTerrainsView = () => {
   const { games, isLoading, errorMessage } = useGames()
 
   return (
-    <Stack spacing={3} sx={{ maxWidth: 760, mx: 'auto', py: { xs: 4, md: 8 }, px: 2 }}>
+    <Stack spacing={3}>
       <Box display="flex" alignItems="center" gap={1.5}>
         <StadiumIcon fontSize="large" />
         <Typography variant="h1">Terrains</Typography>

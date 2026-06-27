@@ -62,7 +62,7 @@ export const AdminRankingsView = () => {
   const poolPhases = selectedPhase ? getPoolPhasesInBranch(phases, selectedPhase) : []
 
   return (
-    <Stack spacing={3} sx={{ maxWidth: 960, mx: 'auto', py: { xs: 4, md: 8 }, px: 2 }}>
+    <Stack spacing={3}>
       <Stack direction="row" alignItems="center" gap={1.5}>
         <EmojiEventsIcon fontSize="large" />
         <Typography variant="h1">Classements</Typography>
