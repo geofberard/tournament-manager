@@ -6,7 +6,7 @@ const rankingsFetcher = async ([, phaseId]: readonly [string, string]) =>
 
 export function useTeamRankings(_teamId: string, phaseId: string | null) {
   const { data, error: rankingsError, isLoading: isRankingsLoading } = useSWR<ContestantStats[]>(
-    phaseId ? ['/api/phases/statistics', phaseId] : null,
+    phaseId ? ['/api/phases/games/statistics', phaseId] : null,
     rankingsFetcher,
   )
 

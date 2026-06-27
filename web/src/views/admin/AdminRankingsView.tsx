@@ -28,7 +28,7 @@ type GlobalRankingCardProps = {
 const GlobalRankingCard = ({ poolPhases }: GlobalRankingCardProps) => {
   const phaseIds = poolPhases.map((phase) => phase.id)
   const { data, error, isLoading } = useSWR<ContestantStats[]>(
-    phaseIds.length > 0 ? ['/api/phases/statistics/global', phaseIds.join('|')] : null,
+    phaseIds.length > 0 ? ['/api/phases/games/statistics/global', phaseIds.join('|')] : null,
     async () => (await Promise.all(phaseIds.map((phaseId) => listPhaseRankings(phaseId)))).flat(),
   )
 

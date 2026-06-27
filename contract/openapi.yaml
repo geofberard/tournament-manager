@@ -17,7 +17,7 @@ info:
     - un match référence un ensemble d'équipes participantes
     - un score est toujours simple, sur un seul set
     - le score est manipulé via une sous-ressource dédiée `/games/{gameId}/score`
-    - le classement est exposé par phase via `/phases/{phaseId}/statistics`
+    - le classement est calculé depuis les matchs d'une phase via `/phases/{phaseId}/games/statistics`
 
     Cette spécification est destinée à devenir la source de vérité du serveur.
 
@@ -568,19 +568,20 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
-  /api/phases/{phaseId}/statistics:
+  /api/phases/{phaseId}/games/statistics:
     parameters:
       - $ref: '#/components/parameters/PhaseId'
     get:
       tags: [Phases]
-      operationId: listPhaseRankings
-      summary: Lire le classement d'une phase
+      operationId: listPhaseGameStatistics
+      summary: Lire les statistiques des matchs d'une phase
       description: |
-        Retourne le classement calculé en ne prenant en compte que les matchs
-        appartenant à la phase demandée.
+        Retourne les statistiques calculées en ne prenant en compte que les matchs
+        appartenant à la phase demandée. Ces statistiques alimentent le classement
+        de la phase.
       responses:
         '200':
-          description: Classement de la phase
+          description: Statistiques des matchs de la phase
           content:
             application/json:
               schema:

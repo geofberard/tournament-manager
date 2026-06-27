@@ -56,7 +56,7 @@ public class PhasesApiDelegateImpl implements PhasesApiDelegate {
     }
 
     @Override
-    public ResponseEntity<List<ContestantStats>> listPhaseRankings(String phaseId) {
+    public ResponseEntity<List<ContestantStats>> listPhaseGameStatistics(String phaseId) {
         findPhaseOrThrow(phaseId);
 
         return ResponseEntity.ok(teamStatsUseCase.getTeamsStatsByPhase(phaseId).stream()
