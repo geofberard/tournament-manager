@@ -9,7 +9,7 @@ vi.mock('../../services/statisticsService', () => ({ getPhaseStatistics: vi.fn()
 describe('PhaseRankingCard', () => {
   it('renders the phase name and ranking', async () => {
     vi.mocked(statisticsService.getPhaseStatistics).mockResolvedValue({
-      completionRate: 1,
+      completionRate: 0.75,
       gameCount: 1,
       teams: [{ id: 'team-1', name: 'Aigles' }],
       teamStats: [{
@@ -25,6 +25,8 @@ describe('PhaseRankingCard', () => {
       </SWRConfig>,
     )
     expect(screen.getByText('Poule A')).toBeInTheDocument()
+    expect(await screen.findByText('75%')).toBeInTheDocument()
+    expect(screen.getByRole('progressbar', { name: 'Progression Poule A' })).toBeInTheDocument()
     expect(await screen.findByText('Aigles')).toBeInTheDocument()
     expect(statisticsService.getPhaseStatistics).toHaveBeenCalledWith('phase-1')
   })
