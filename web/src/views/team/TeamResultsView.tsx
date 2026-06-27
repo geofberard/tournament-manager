@@ -3,7 +3,7 @@ import { TeamResultsContent } from '../../components/team/TeamResultsContent'
 import { MarkdownContent } from '../../components/shared/MarkdownContent'
 import { useState } from 'react'
 import { usePhases } from '../../hooks/usePhases'
-import { resolvePhaseType } from '../../services/phaseHierarchy'
+import { getPoolPhasesInBranch, getRootPhases, resolvePhaseType } from '../../services/phaseHierarchy'
 import type { Team } from '../../services/teamsService'
 
 type TeamResultsViewProps = {
@@ -13,11 +13,13 @@ type TeamResultsViewProps = {
 export const TeamResultsView = ({ currentTeam }: TeamResultsViewProps) => {
   const { errorMessage: phasesErrorMessage, isLoading: isPhasesLoading, phases } = usePhases()
   const [selectedPhaseId, setSelectedPhaseId] = useState<string | null>(null)
-  const effectiveSelectedPhaseId = selectedPhaseId ?? phases[0]?.id ?? null
-  const selectedPhase = phases.find((phase) => phase.id === effectiveSelectedPhaseId) ?? null
+  const rootPhases = getRootPhases(phases)
+  const effectiveSelectedPhaseId = selectedPhaseId ?? rootPhases[0]?.id ?? null
+  const selectedPhase = rootPhases.find((phase) => phase.id === effectiveSelectedPhaseId) ?? null
   const selectedPhaseWithInheritedType = selectedPhase
     ? { ...selectedPhase, type: resolvePhaseType(phases, selectedPhase) }
     : null
+  const poolPhases = selectedPhase ? getPoolPhasesInBranch(phases, selectedPhase) : []
   const phaseDetails = selectedPhase?.details?.trim() ?? ''
 
   return (
@@ -37,7 +39,7 @@ export const TeamResultsView = ({ currentTeam }: TeamResultsViewProps) => {
       ) : null}
 
       <Stack spacing={2}>
-        {phases.length > 0 ? (
+        {rootPhases.length > 0 ? (
           <Tabs
             value={effectiveSelectedPhaseId ?? false}
             onChange={(_event, value: string) => setSelectedPhaseId(value)}
@@ -45,7 +47,7 @@ export const TeamResultsView = ({ currentTeam }: TeamResultsViewProps) => {
             scrollButtons="auto"
             aria-label="Phases du tournoi"
           >
-            {phases.map((phase) => (
+            {rootPhases.map((phase) => (
               <Tab key={phase.id} value={phase.id} label={phase.name} />
             ))}
           </Tabs>
@@ -61,7 +63,11 @@ export const TeamResultsView = ({ currentTeam }: TeamResultsViewProps) => {
             )}
           </Stack>
         </Paper>
-        <TeamResultsContent currentTeam={currentTeam} selectedPhase={selectedPhaseWithInheritedType} />
+        <TeamResultsContent
+          currentTeam={currentTeam}
+          poolPhases={poolPhases}
+          selectedPhase={selectedPhaseWithInheritedType}
+        />
       </Stack>
     </Stack>
   )

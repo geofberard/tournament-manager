@@ -3,12 +3,15 @@ import EmojiEventsIcon from '@mui/icons-material/EmojiEvents'
 import { useState } from 'react'
 import { PhaseRankingCard } from '../../components/shared/PhaseRankingCard'
 import { usePhases } from '../../hooks/usePhases'
+import { getPoolPhasesInBranch, getRootPhases } from '../../services/phaseHierarchy'
 
 export const AdminRankingsView = () => {
   const { phases, isLoading: isPhasesLoading, errorMessage: phasesError } = usePhases()
   const [selectedPhaseId, setSelectedPhaseId] = useState<string | null>(null)
-  const effectiveSelectedPhaseId = selectedPhaseId ?? phases[0]?.id ?? null
-  const selectedPhase = phases.find((phase) => phase.id === effectiveSelectedPhaseId) ?? null
+  const rootPhases = getRootPhases(phases)
+  const effectiveSelectedPhaseId = selectedPhaseId ?? rootPhases[0]?.id ?? null
+  const selectedPhase = rootPhases.find((phase) => phase.id === effectiveSelectedPhaseId) ?? null
+  const poolPhases = selectedPhase ? getPoolPhasesInBranch(phases, selectedPhase) : []
 
   return (
     <Stack spacing={3} sx={{ maxWidth: 960, mx: 'auto', py: { xs: 4, md: 8 }, px: 2 }}>
@@ -22,7 +25,7 @@ export const AdminRankingsView = () => {
         <Stack direction="row" justifyContent="center" sx={{ py: 3 }}>
           <CircularProgress />
         </Stack>
-      ) : phases.length === 0 ? (
+      ) : rootPhases.length === 0 ? (
         <Alert severity="info">Aucune phase n'est disponible pour le moment.</Alert>
       ) : (
         <>
@@ -33,12 +36,16 @@ export const AdminRankingsView = () => {
             scrollButtons="auto"
             aria-label="Phases du tournoi"
           >
-            {phases.map((phase) => (
+            {rootPhases.map((phase) => (
               <Tab key={phase.id} value={phase.id} label={phase.name} />
             ))}
           </Tabs>
-          {selectedPhase ? (
-            <PhaseRankingCard extended phaseId={selectedPhase.id} phaseName={selectedPhase.name} />
+          {poolPhases.length > 0 ? (
+            poolPhases.map((phase) => (
+              <PhaseRankingCard extended key={phase.id} phaseId={phase.id} phaseName={phase.name} />
+            ))
+          ) : selectedPhase ? (
+            <Alert severity="info">Aucune poule n'est disponible pour cette phase.</Alert>
           ) : null}
         </>
       )}

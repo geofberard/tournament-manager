@@ -39,13 +39,27 @@ describe('TeamResultsView', () => {
     usePhasesMock.mockReturnValue({
       errorMessage: null,
       isLoading: false,
-      phases: [{
-        id: 'phase-1',
-        name: 'Brassage',
-        details: 'Premier paragraphe.\n\nSecond paragraphe.',
-        order: 1,
-        type: 'POOL',
-      }],
+      phases: [
+        {
+          id: 'phase-1',
+          name: 'Brassage',
+          details: 'Premier paragraphe.\n\nSecond paragraphe.',
+          order: 1,
+        },
+        {
+          id: 'phase-1-a-parent',
+          parentId: 'phase-1',
+          name: 'Matin',
+          order: 1,
+        },
+        {
+          id: 'phase-1-a',
+          parentId: 'phase-1-a-parent',
+          name: 'Poule A',
+          order: 1,
+          type: 'POOL',
+        },
+      ],
     })
     useTeamRankingsMock.mockReturnValue({
       errorMessage: null,
@@ -66,8 +80,10 @@ describe('TeamResultsView', () => {
     expect(screen.getByText('Bienvenue Tigres')).toBeInTheDocument()
     expect(screen.getByRole('tablist', { name: 'Phases du tournoi' })).toBeInTheDocument()
     expect(screen.getByRole('tab', { name: 'Brassage' })).toBeInTheDocument()
+    expect(screen.queryByRole('tab', { name: 'Poule A' })).not.toBeInTheDocument()
     expect(screen.getByText('Premier paragraphe.')).toBeInTheDocument()
     expect(screen.getByText('Second paragraphe.')).toBeInTheDocument()
+    expect(screen.getByText('Poule A')).toBeInTheDocument()
     expect(screen.getByText("Les resultats ne sont pas encore disponibles.")).toBeInTheDocument()
   })
 

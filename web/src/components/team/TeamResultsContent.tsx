@@ -1,4 +1,4 @@
-import { Alert, Stack } from '@mui/material'
+import { Alert, Card, CardContent, CardHeader, Stack, Typography } from '@mui/material'
 import { GameList } from '../shared/GameList'
 import { RankingTable } from '../shared/RankingTable'
 import { useGames } from '../../hooks/useGames'
@@ -9,31 +9,45 @@ import type { Team } from '../../services/teamsService'
 
 type TeamResultsContentProps = {
   currentTeam: Team
+  poolPhases: Phase[]
   selectedPhase: Phase | null
 }
 
-export const TeamResultsContent = ({ currentTeam, selectedPhase }: TeamResultsContentProps) => {
-  const { errorMessage: gamesErrorMessage, games, isLoading: isGamesLoading } = useGames()
-  const isPoolPhase = selectedPhase?.type === 'POOL'
+const TeamPoolRankingCard = ({ currentTeam, phase }: { currentTeam: Team, phase: Phase }) => {
   const {
     errorMessage: rankingsErrorMessage,
     isLoading: isRankingsLoading,
     rankings,
-  } = useTeamRankings(currentTeam.id, isPoolPhase ? selectedPhase?.id ?? null : null)
+  } = useTeamRankings(currentTeam.id, phase.id)
 
-  if (!selectedPhase) {
-    return <Alert severity="info">Aucune phase n'est disponible pour le moment.</Alert>
-  }
-
-  if (isPoolPhase) {
-    return (
-      <Stack spacing={2}>
+  return (
+    <Card variant="outlined">
+      <CardHeader title={<Typography fontWeight="bold">{phase.name}</Typography>} />
+      <CardContent sx={{ pt: 0 }}>
         <RankingTable
           currentTeamId={currentTeam.id}
           errorMessage={rankingsErrorMessage}
           isLoading={isRankingsLoading}
           rankings={rankings}
         />
+      </CardContent>
+    </Card>
+  )
+}
+
+export const TeamResultsContent = ({ currentTeam, poolPhases, selectedPhase }: TeamResultsContentProps) => {
+  const { errorMessage: gamesErrorMessage, games, isLoading: isGamesLoading } = useGames()
+
+  if (!selectedPhase) {
+    return <Alert severity="info">Aucune phase n'est disponible pour le moment.</Alert>
+  }
+
+  if (poolPhases.length > 0) {
+    return (
+      <Stack spacing={2}>
+        {poolPhases.map((phase) => (
+          <TeamPoolRankingCard currentTeam={currentTeam} key={phase.id} phase={phase} />
+        ))}
       </Stack>
     )
   }

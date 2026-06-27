@@ -39,6 +39,7 @@ describe('TeamResultsContent', () => {
       <ThemeProvider theme={createTheme()}>
         <TeamResultsContent
           currentTeam={{ id: 'team-2', name: 'Tigres' }}
+          poolPhases={[{ id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' }]}
           selectedPhase={{ id: 'phase-1', name: 'Brassage', order: 1, type: 'POOL' }}
         />
       </ThemeProvider>,
