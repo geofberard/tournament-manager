@@ -1,6 +1,9 @@
 package com.gberard.tournament.domain.service;
 
 import com.gberard.tournament.domain.model.Game;
+import com.gberard.tournament.domain.model.GameBuilder;
+import com.gberard.tournament.domain.model.Phase;
+import com.gberard.tournament.domain.model.PhaseType;
 import com.gberard.tournament.domain.model.Team;
 import com.gberard.tournament.domain.model.stats.TeamStats;
 import com.gberard.tournament.domain.port.output.GameRepository;
@@ -104,7 +107,14 @@ class TeamStatsServiceTest {
 
         @Test
         void should_return_only_phase_stats() {
-            when(gameRepository.findByPhaseId(PHASE_A.id())).thenReturn(games.subList(0, 3));
+            Phase childPhase = new Phase("child-phase", "Child phase", PHASE_A.id(), 1, PhaseType.POOL);
+            Phase otherPhase = new Phase("other-phase", "Other phase", null, 2, PhaseType.POOL);
+            when(gameRepository.findAll()).thenReturn(List.of(
+                    games.get(0),
+                    GameBuilder.from(games.get(1)).phasePath(List.of(PHASE_A, childPhase)).build(),
+                    games.get(2),
+                    GameBuilder.from(games.get(3)).phasePath(List.of(otherPhase)).build()
+            ));
 
             List<TeamStats> teamsStats = teamStatsService.getTeamsStatsByPhase(PHASE_A.id());
 

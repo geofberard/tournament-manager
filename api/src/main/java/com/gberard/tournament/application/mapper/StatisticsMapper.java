@@ -19,4 +19,18 @@ public final class StatisticsMapper {
                 .pointsDiff(stats.pointsDiff());
     }
 
+    public static com.gberard.tournament.generated.model.PhaseStatistics toApi(
+            com.gberard.tournament.domain.model.stats.PhaseStatistics statistics
+    ) {
+        return new com.gberard.tournament.generated.model.PhaseStatistics()
+                .gameCount(statistics.gameCount())
+                .completionRate(statistics.completionRate())
+                .teams(statistics.teams().stream()
+                        .map(TeamMapper::toApi)
+                        .toList())
+                .teamStats(statistics.teamStats().stream()
+                        .map(StatisticsMapper::toApi)
+                        .toList());
+    }
+
 }

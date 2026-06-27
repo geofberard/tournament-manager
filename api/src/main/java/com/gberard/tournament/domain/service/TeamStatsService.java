@@ -39,10 +39,12 @@ public class TeamStatsService implements TeamStatsUseCase {
 
     @Override
     public List<TeamStats> getTeamsStatsByPhase(String phaseId) {
-        return buildTeamsStats(gameRepository.findByPhaseId(phaseId));
+        return buildTeamsStats(gameRepository.findAll().stream()
+                .filter(game -> game.phasePath().stream().anyMatch(phase -> phase.id().equals(phaseId)))
+                .toList());
     }
 
-    private List<TeamStats> buildTeamsStats(List<Game> games) {
+    static List<TeamStats> buildTeamsStats(List<Game> games) {
         return games.stream()
                 .flatMap(game -> game.contestants().stream())
                 .distinct()
@@ -50,7 +52,7 @@ public class TeamStatsService implements TeamStatsUseCase {
                 .toList();
     }
 
-    private TeamStats buildTeamStats(Team team, List<Game> games) {
+    private static TeamStats buildTeamStats(Team team, List<Game> games) {
         return games.stream()
                 .filter(game -> game.contestants().stream().anyMatch(contestant -> contestant.id().equals(team.id())))
                 .filter(game -> game.status() == com.gberard.tournament.domain.model.GameStatus.COMPLETED)

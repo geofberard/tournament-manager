@@ -4,12 +4,14 @@ import static org.springframework.http.HttpStatus.CREATED;
 
 import com.gberard.tournament.application.mapper.PhaseMapper;
 import com.gberard.tournament.application.mapper.StatisticsMapper;
+import com.gberard.tournament.domain.port.input.PhaseStatisticsUseCase;
 import com.gberard.tournament.domain.port.input.PhaseService;
 import com.gberard.tournament.domain.port.input.TeamStatsUseCase;
 import com.gberard.tournament.generated.api.PhasesApiDelegate;
 import com.gberard.tournament.generated.model.ContestantStats;
 import com.gberard.tournament.generated.model.CreatePhaseRequest;
 import com.gberard.tournament.generated.model.Phase;
+import com.gberard.tournament.generated.model.PhaseStatistics;
 import com.gberard.tournament.generated.model.UpdatePhaseRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +30,9 @@ public class PhasesApiDelegateImpl implements PhasesApiDelegate {
     @Autowired
     public TeamStatsUseCase teamStatsUseCase;
 
+    @Autowired
+    public PhaseStatisticsUseCase phaseStatisticsUseCase;
+
     @Override
     public ResponseEntity<Phase> createPhase(CreatePhaseRequest createPhaseRequest) {
         var newPhase = phaseService.create(PhaseMapper.toDomain(createPhaseRequest));
@@ -44,6 +49,13 @@ public class PhasesApiDelegateImpl implements PhasesApiDelegate {
     @Override
     public ResponseEntity<Phase> getPhaseById(String phaseId) {
         return ResponseEntity.ok(PhaseMapper.toApi(findPhaseOrThrow(phaseId)));
+    }
+
+    @Override
+    public ResponseEntity<PhaseStatistics> getPhaseStatistics(String phaseId) {
+        findPhaseOrThrow(phaseId);
+
+        return ResponseEntity.ok(StatisticsMapper.toApi(phaseStatisticsUseCase.getPhaseStatistics(phaseId)));
     }
 
     @Override

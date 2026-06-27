@@ -591,6 +591,25 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
+  /api/phases/{phaseId}/statistics:
+    parameters:
+      - $ref: '#/components/parameters/PhaseId'
+    get:
+      tags: [Phases]
+      operationId: getPhaseStatistics
+      summary: Lire les statistiques d'une phase
+      description: |
+        Retourne les statistiques globales des matchs rattachés à la phase demandée.
+      responses:
+        '200':
+          description: Statistiques de la phase
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PhaseStatistics'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
   /api/admin/auth/login:
     post:
       tags: [AdminAuth]
@@ -1232,6 +1251,39 @@ components:
           format: int32
           description: Différence entre points marqués et encaissés
           examples: [9]
+
+    PhaseStatistics:
+      type: object
+      description: Statistiques globales des matchs d'une phase.
+      required:
+        - gameCount
+        - completionRate
+        - teams
+        - teamStats
+      properties:
+        gameCount:
+          type: integer
+          format: int64
+          minimum: 0
+          description: Nombre de matchs rattachés à la phase
+          examples: [12]
+        completionRate:
+          type: number
+          format: double
+          minimum: 0
+          maximum: 1
+          description: Taux de complétion des matchs, entre 0 et 1
+          examples: [0.75]
+        teams:
+          type: array
+          description: Équipes qui jouent dans au moins un match rattaché à la phase
+          items:
+            $ref: '#/components/schemas/Team'
+        teamStats:
+          type: array
+          description: Statistiques des équipes concernées par la phase
+          items:
+            $ref: '#/components/schemas/ContestantStats'
 
     GameScore:
       type: object
