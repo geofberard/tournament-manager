@@ -15,7 +15,7 @@ export const TeamResultsView = ({ currentTeam }: TeamResultsViewProps) => {
   const [selectedPhaseId, setSelectedPhaseId] = useState<string | null>(null)
   const [showAllResults, setShowAllResults] = useState(false)
   const rootPhases = getRootPhases(phases)
-  const effectiveSelectedPhaseId = selectedPhaseId ?? rootPhases[0]?.id ?? null
+  const effectiveSelectedPhaseId = selectedPhaseId ?? rootPhases.at(-1)?.id ?? null
   const selectedPhase = rootPhases.find((phase) => phase.id === effectiveSelectedPhaseId) ?? null
   const selectedPhaseWithInheritedType = selectedPhase
     ? { ...selectedPhase, type: resolvePhaseType(phases, selectedPhase) }

@@ -25,7 +25,7 @@ describe('AdminRankingsView', () => {
   beforeEach(() => vi.clearAllMocks())
   afterEach(() => cleanup())
 
-  it('should display root phase tabs and extended rankings for pool descendants', () => {
+  it('should select the last root phase by default and display rankings after switching tabs', () => {
     usePhasesMock.mockReturnValue({
       errorMessage: null,
       isLoading: false,
@@ -42,6 +42,11 @@ describe('AdminRankingsView', () => {
     expect(screen.getByRole('heading', { name: 'Classements' })).toBeInTheDocument()
     expect(screen.getByRole('tab', { name: 'Brassage' })).toBeInTheDocument()
     expect(screen.queryByRole('tab', { name: 'Poule A' })).not.toBeInTheDocument()
+    expect(screen.getByRole('tab', { name: 'Finales' })).toHaveAttribute('aria-selected', 'true')
+    expect(screen.getByText("Aucune poule n'est disponible pour cette phase.")).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Brassage' }))
+
     expect(screen.getByText('Poule A (phase-1-a) - étendu')).toBeInTheDocument()
     expect(screen.getByText('Poule B (phase-1-b) - étendu')).toBeInTheDocument()
     expect(screen.getByRole('switch', { name: 'Classement global' })).not.toBeChecked()

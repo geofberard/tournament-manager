@@ -9,6 +9,7 @@ import { PitchStatus } from '../../components/shared/PitchStatus'
 import { QrCodeButton } from '../../components/shared/QrCodeButton'
 import { TerrainMapButton } from '../../components/shared/TerrainMapButton'
 import { BuvetteButton } from '../../components/shared/BuvetteButton'
+import { getPoolPhasesInBranch, getRootPhases } from '../../services/phaseHierarchy'
 
 const PUBLIC_REFRESH_INTERVAL = 30_000
 
@@ -22,8 +23,10 @@ export const PublicView = () => {
   }, [])
 
   const [selectedPhaseId, setSelectedPhaseId] = useState<string | null>(null)
-  const effectiveSelectedPhaseId = selectedPhaseId ?? phases[0]?.id ?? null
-  const selectedPhase = phases.find((phase) => phase.id === effectiveSelectedPhaseId) ?? null
+  const rootPhases = getRootPhases(phases)
+  const effectiveSelectedPhaseId = selectedPhaseId ?? rootPhases.at(-1)?.id ?? null
+  const selectedPhase = rootPhases.find((phase) => phase.id === effectiveSelectedPhaseId) ?? null
+  const poolPhases = selectedPhase ? getPoolPhasesInBranch(phases, selectedPhase) : []
 
   const { games, isLoading: isGamesLoading, errorMessage: gamesError } = useGames()
 
@@ -72,7 +75,7 @@ export const PublicView = () => {
           </Box>
           <Divider sx={{ mb: 3 }} />
 
-          {phases.length > 0 && (
+          {rootPhases.length > 0 && (
             <Tabs
               value={effectiveSelectedPhaseId ?? false}
               onChange={(_event, value: string) => setSelectedPhaseId(value)}
@@ -81,13 +84,19 @@ export const PublicView = () => {
               aria-label="Phases du tournoi"
               sx={{ mb: 3, borderBottom: 1, borderColor: 'divider' }}
             >
-              {phases.map((phase) => (
+              {rootPhases.map((phase) => (
                 <Tab key={phase.id} value={phase.id} label={phase.name} />
               ))}
             </Tabs>
           )}
 
-          <PhaseRankingCard phaseId={selectedPhase.id} phaseName={selectedPhase.name} />
+          {poolPhases.length > 0 ? (
+            poolPhases.map((phase) => (
+              <PhaseRankingCard key={phase.id} phaseId={phase.id} phaseName={phase.name} />
+            ))
+          ) : (
+            <Alert severity="info">Aucune poule n'est disponible pour cette phase.</Alert>
+          )}
         </Paper>
       </Stack>
 

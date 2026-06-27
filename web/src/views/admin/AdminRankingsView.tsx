@@ -57,7 +57,7 @@ export const AdminRankingsView = () => {
   const [selectedPhaseId, setSelectedPhaseId] = useState<string | null>(null)
   const [showGlobalRanking, setShowGlobalRanking] = useState(false)
   const rootPhases = getRootPhases(phases)
-  const effectiveSelectedPhaseId = selectedPhaseId ?? rootPhases[0]?.id ?? null
+  const effectiveSelectedPhaseId = selectedPhaseId ?? rootPhases.at(-1)?.id ?? null
   const selectedPhase = rootPhases.find((phase) => phase.id === effectiveSelectedPhaseId) ?? null
   const poolPhases = selectedPhase ? getPoolPhasesInBranch(phases, selectedPhase) : []
 

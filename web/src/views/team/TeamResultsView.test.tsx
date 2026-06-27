@@ -168,6 +168,43 @@ describe('TeamResultsView', () => {
     expect(screen.getByText('Poule B')).toBeInTheDocument()
   })
 
+  it('should select the last root phase by default', () => {
+    // GIVEN
+    useGamesMock.mockReturnValue({
+      errorMessage: null,
+      games: [],
+      isLoading: false,
+    })
+    usePhasesMock.mockReturnValue({
+      errorMessage: null,
+      isLoading: false,
+      phases: [
+        { id: 'phase-1', name: 'Brassage', details: 'Details du brassage', order: 1 },
+        { id: 'phase-1-a', parentId: 'phase-1', name: 'Poule A', order: 1, type: 'POOL' },
+        { id: 'phase-2', name: 'Finales', details: 'Details des finales', order: 2, type: 'BRACKET' },
+      ],
+    })
+    usePhaseRankingsMock.mockReturnValue({
+      errorMessage: null,
+      isLoading: false,
+      rankings: [],
+    })
+
+    // WHEN
+    render(
+      <ThemeProvider theme={createTheme()}>
+        <MemoryRouter>
+          <TeamResultsView currentTeam={{ id: 'team-2', name: 'Tigres' }} />
+        </MemoryRouter>
+      </ThemeProvider>,
+    )
+
+    // THEN
+    expect(screen.getByRole('tab', { name: 'Finales' })).toHaveAttribute('aria-selected', 'true')
+    expect(screen.getByText('Details des finales')).toBeInTheDocument()
+    expect(screen.queryByText('Details du brassage')).not.toBeInTheDocument()
+  })
+
   it('should render a fallback message when the phase has no details', () => {
     // GIVEN
     useGamesMock.mockReturnValue({
