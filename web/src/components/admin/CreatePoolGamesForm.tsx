@@ -8,8 +8,6 @@ import {
   Divider,
   FormControl,
   FormControlLabel,
-  FormGroup,
-  FormHelperText,
   InputLabel,
   MenuItem,
   Select,
@@ -22,6 +20,7 @@ import { fromDateTimeLocalValue, toDateTimeLocalValue } from '../../services/dat
 import type { PoolGamesPayload } from '../../services/gamesService'
 import type { Phase } from '../../services/phasesService'
 import type { Team } from '../../services/teamsService'
+import { MultipleTeamSelect } from './MultipleTeamSelect'
 
 type CreatePoolGamesFormProps = {
   initialValue: PoolGamesPayload
@@ -40,6 +39,7 @@ export const CreatePoolGamesForm = ({
 }: CreatePoolGamesFormProps) => {
   const poolPhases = phases.filter((phase) => phase.type === 'POOL')
   const [formValue, setFormValue] = useState<PoolGamesPayload>(initialValue)
+  const [isLoadingReferencePhase, setIsLoadingReferencePhase] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
 
@@ -61,15 +61,8 @@ export const CreatePoolGamesForm = ({
     setFormValue((currentValue) => ({ ...currentValue, phaseId: event.target.value }))
   }
 
-  const toggleTeam = (teamId: string) => (_event: ChangeEvent<HTMLInputElement>, checked: boolean) => {
+  const updateTeamIds = (teamIds: Set<string>) => {
     setFormValue((currentValue) => {
-      const teamIds = new Set(currentValue.teamIds)
-      if (checked) {
-        teamIds.add(teamId)
-      } else {
-        teamIds.delete(teamId)
-      }
-
       return {
         ...currentValue,
         assignReferees: teamIds.size < 3 ? false : currentValue.assignReferees,
@@ -197,26 +190,13 @@ export const CreatePoolGamesForm = ({
           value={formValue.court}
         />
 
-        <FormControl component="fieldset" required>
-          <Typography component="legend" fontWeight={700}>
-            Equipes
-          </Typography>
-          <FormGroup>
-            {teams.map((team) => (
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={formValue.teamIds.has(team.id)}
-                    onChange={toggleTeam(team.id)}
-                  />
-                }
-                key={team.id}
-                label={team.name}
-              />
-            ))}
-          </FormGroup>
-          <FormHelperText>Selectionnez au moins deux equipes.</FormHelperText>
-        </FormControl>
+        <MultipleTeamSelect
+          onLoadingChange={setIsLoadingReferencePhase}
+          onSelectedTeamIdsChange={updateTeamIds}
+          phases={phases}
+          selectedTeamIds={formValue.teamIds}
+          teams={teams}
+        />
 
         <FormControlLabel
           control={
@@ -237,7 +217,7 @@ export const CreatePoolGamesForm = ({
       <Stack direction="row" justifyContent="flex-end" spacing={1.5} sx={{ p: 2 }}>
         <Button onClick={onClose}>Annuler</Button>
         <Button
-          disabled={isSubmitting || formValue.teamIds.size < 2 || poolPhases.length === 0}
+          disabled={isSubmitting || isLoadingReferencePhase || formValue.teamIds.size < 2 || poolPhases.length === 0}
           type="submit"
           variant="contained"
         >

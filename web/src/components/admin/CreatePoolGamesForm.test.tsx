@@ -2,7 +2,10 @@ import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/re
 import { ThemeProvider, createTheme } from '@mui/material'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { PoolGamesPayload } from '../../services/gamesService'
+import * as statisticsService from '../../services/statisticsService'
 import { CreatePoolGamesForm } from './CreatePoolGamesForm'
+
+vi.mock('../../services/statisticsService', () => ({ getPhaseStatistics: vi.fn() }))
 
 const phases = [
   { id: 'phase-pool', name: 'Brassage', order: 1, type: 'POOL' as const },
@@ -70,6 +73,29 @@ describe('CreatePoolGamesForm', () => {
     expect(
       screen.getByRole('checkbox', { name: 'Attribuer un arbitre parmi les equipes restantes' }),
     ).toBeDisabled()
+  })
+
+  it('should grey out teams already present in the selected reference phase', async () => {
+    // GIVEN
+    vi.mocked(statisticsService.getPhaseStatistics).mockResolvedValue({
+      completionRate: 0,
+      gameCount: 1,
+      teamStats: [],
+      teams: [{ id: 'team-1', name: 'Tigres' }],
+    })
+    renderForm()
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Tigres' }))
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Lynx' }))
+
+    // WHEN
+    fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Phase de filtre' }))
+    fireEvent.click(screen.getByRole('option', { name: 'Brassage' }))
+
+    // THEN
+    await waitFor(() => expect(screen.getByRole('checkbox', { name: /Tigres/ })).toBeDisabled())
+    expect(screen.getByRole('checkbox', { name: /Tigres/ })).not.toBeChecked()
+    expect(screen.getByRole('checkbox', { name: 'Lynx' })).toBeChecked()
+    expect(screen.getByText(/2 equipes disponibles\./)).toBeInTheDocument()
   })
 
   it('should submit trimmed values and selected teams', async () => {
