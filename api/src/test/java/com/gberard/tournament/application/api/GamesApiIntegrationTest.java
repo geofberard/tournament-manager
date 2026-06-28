@@ -20,7 +20,6 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class GamesApiIntegrationTest {
@@ -55,9 +54,10 @@ class GamesApiIntegrationTest {
     @Test
     void shouldCreateACompletePoolScheduleAndRejectDuplicateCreation() throws Exception {
         // GIVEN
+        String phaseId = createPoolPhase();
         String requestBody = """
                 {
-                  "phaseId": "phase_1",
+                  "phaseId": "%s",
                   "startTime": "2026-06-20T09:00:00Z",
                   "gameDurationMinutes": 12,
                   "breakDurationMinutes": 3,
@@ -65,7 +65,7 @@ class GamesApiIntegrationTest {
                   "teamIds": ["team_1", "team_2", "team_3"],
                   "assignReferees": true
                 }
-                """;
+                """.formatted(phaseId);
 
         // WHEN
         HttpResponse<String> response = send("/api/games/bulk-create", "POST", requestBody);
@@ -83,9 +83,9 @@ class GamesApiIntegrationTest {
                 gameTimes(games)
         );
         games.forEach(game -> {
-            assertEquals("phase_1", game.path("phase").path("id").asText());
+            assertEquals(phaseId, game.path("phase").path("id").asText());
             assertEquals("phase_poules", game.path("phasePath").path(0).path("id").asText());
-            assertEquals("phase_1", game.path("phasePath").path(1).path("id").asText());
+            assertEquals(phaseId, game.path("phasePath").path(1).path("id").asText());
             assertEquals("Terrain integration", game.path("court").asText());
             assertFalse(game.path("referee").isNull());
             assertFalse(contestantIds(game).contains(game.path("referee").path("id").asText()));
@@ -93,6 +93,24 @@ class GamesApiIntegrationTest {
 
         HttpResponse<String> duplicateResponse = send("/api/games/bulk-create", "POST", requestBody);
         assertEquals(400, duplicateResponse.statusCode());
+    }
+
+    private String createPoolPhase() throws Exception {
+        HttpResponse<String> response = send(
+                "/api/phases",
+                "POST",
+                """
+                {
+                  "parentId": "phase_poules",
+                  "name": "Poule integration",
+                  "order": 99,
+                  "type": "POOL"
+                }
+                """
+        );
+
+        assertEquals(201, response.statusCode());
+        return objectMapper.readTree(response.body()).path("id").asText();
     }
 
     private Set<String> gameTimes(JsonNode games) {
