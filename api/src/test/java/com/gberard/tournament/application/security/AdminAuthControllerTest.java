@@ -26,11 +26,13 @@ class AdminAuthControllerTest {
     private int port;
 
     private HttpClient httpClient;
+    private CookieManager cookieManager;
 
     @BeforeEach
     void setUp() {
+        this.cookieManager = new CookieManager(null, CookiePolicy.ACCEPT_ALL);
         this.httpClient = HttpClient.newBuilder()
-                .cookieHandler(new CookieManager(null, CookiePolicy.ACCEPT_ALL))
+                .cookieHandler(cookieManager)
                 .build();
     }
 
@@ -61,6 +63,8 @@ class AdminAuthControllerTest {
         );
 
         assertEquals(200, loginResponse.statusCode());
+        assertTrue(cookieManager.getCookieStore().getCookies().stream()
+                .anyMatch(cookie -> cookie.getName().equals("__session")));
         assertTrue(loginResponse.body().contains("\"authenticated\":true"));
         assertTrue(loginResponse.body().contains("\"username\":\"admin\""));
 
