@@ -13,7 +13,6 @@ describe('CourtDetail', () => {
       <CourtDetail
         courts={['Terrain 1', 'Terrain 2']}
         onSelectCourt={vi.fn()}
-        layout="split"
         schedule={{
           court: 'Terrain 1',
           currentGame: buildGame({ id: 'live', teams: ['Aigles', 'Lions'] }),

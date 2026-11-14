@@ -59,6 +59,27 @@ describe('PublicGamesView', () => {
     expect(screen.getByText('25 - 21')).toBeInTheDocument()
   })
 
+  it('should display the most recent completed games first and untimed ones last', () => {
+    useGamesMock.mockReturnValue({
+      games: [
+        buildGame({ id: 'untimed', status: 'completed', court: 'Terrain 1', position: 1, time: undefined, points: [1, 0] }),
+        buildGame({ id: 'early', status: 'completed', court: 'Terrain 1', position: 2, time: new Date(2026, 0, 1, 12, 0), points: [2, 0] }),
+        buildGame({ id: 'late', status: 'completed', court: 'Terrain 2', position: 1, time: new Date(2026, 0, 1, 13, 40), points: [3, 0] }),
+      ],
+      isLoading: false,
+      errorMessage: null,
+    })
+
+    render(<MemoryRouter><PublicGamesView /></MemoryRouter>)
+    fireEvent.click(screen.getByRole('tab', { name: 'Terminés' }))
+
+    expect(screen.getAllByRole('heading', { level: 2 }).map((heading) => heading.textContent)).toEqual([
+      '13:40',
+      '12:00',
+      'Horaire à définir',
+    ])
+  })
+
   it('should display a message when no game is completed', () => {
     useGamesMock.mockReturnValue({ games: [], isLoading: false, errorMessage: 'Erreur matchs' })
 

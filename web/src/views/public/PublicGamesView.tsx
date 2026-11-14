@@ -6,7 +6,7 @@ import type { Game } from '../../services/gamesService'
 import { buildCourtSchedules, formatGameTime, hasValidTime } from '../../services/courtSchedule'
 import { GameRow } from '../../components/public/GameRow'
 import { statusColorByValue, statusLabelByValue, type DisplayedGameStatus } from '../../services/gameStatus'
-import { LiveChip } from '../../components/public/LiveGameScore'
+import { LiveChip } from '../../components/shared/LiveChip'
 
 type GamesFilter = 'upcoming' | 'completed'
 
@@ -15,11 +15,12 @@ type GameGroup = {
   games: Game[]
 }
 
-const compareByTime = (left: Game, right: Game) => {
-  if (hasValidTime(left) && hasValidTime(right)) return left.time.getTime() - right.time.getTime()
+const compareByTime = (left: Game, right: Game, direction: 'asc' | 'desc' = 'asc') => {
+  const order = direction === 'asc' ? 1 : -1
+  if (hasValidTime(left) && hasValidTime(right)) return order * (left.time.getTime() - right.time.getTime())
   if (hasValidTime(left)) return -1
   if (hasValidTime(right)) return 1
-  return (left.position ?? 0) - (right.position ?? 0)
+  return order * ((left.position ?? 0) - (right.position ?? 0))
 }
 
 const groupByTimeSlot = (games: Game[]): GameGroup[] =>
@@ -68,9 +69,9 @@ export const PublicGamesView = () => {
   const schedules = buildCourtSchedules(games)
 
   const liveGames = schedules.flatMap((schedule) => (schedule.currentGame ? [schedule.currentGame] : []))
-  const upcomingGroups = groupByTimeSlot(schedules.flatMap((schedule) => schedule.upcomingGames).sort(compareByTime))
+  const upcomingGroups = groupByTimeSlot(schedules.flatMap((schedule) => schedule.upcomingGames).sort((left, right) => compareByTime(left, right)))
   const completedGroups = groupByTimeSlot(
-    schedules.flatMap((schedule) => schedule.completedGames).sort((left, right) => compareByTime(right, left)),
+    schedules.flatMap((schedule) => schedule.completedGames).sort((left, right) => compareByTime(left, right, 'desc')),
   )
 
   return (

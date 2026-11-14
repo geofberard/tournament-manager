@@ -3,7 +3,8 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import type { CourtSchedule } from '../../services/courtSchedule'
 import { formatGameTime, getGameTeams, getTeamPoints, hasScore } from '../../services/courtSchedule'
 import type { Game } from '../../services/gamesService'
-import { LiveChip, LiveGameScore } from './LiveGameScore'
+import { LiveGameScore } from './LiveGameScore'
+import { LiveChip } from '../shared/LiveChip'
 
 type CourtCardProps = {
   schedule: CourtSchedule

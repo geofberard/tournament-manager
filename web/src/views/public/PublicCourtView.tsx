@@ -30,7 +30,6 @@ export const PublicCourtView = () => {
           schedule={schedule}
           courts={schedules.map((candidate) => candidate.court)}
           onSelectCourt={(selectedCourt) => navigate(getPublicCourtPath(selectedCourt), { replace: true })}
-          layout="split"
         />
       ) : (
         <Alert severity="info">Aucun match n'est prévu sur ce terrain.</Alert>

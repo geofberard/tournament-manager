@@ -7,7 +7,6 @@ type CourtDetailProps = {
   schedule: CourtSchedule
   courts: string[]
   onSelectCourt: (court: string) => void
-  layout?: 'stacked' | 'split'
 }
 
 const SectionTitle = ({ children }: { children: string }) => (
@@ -16,9 +15,7 @@ const SectionTitle = ({ children }: { children: string }) => (
   </Typography>
 )
 
-export const CourtDetail = ({ schedule, courts, onSelectCourt, layout = 'stacked' }: CourtDetailProps) => {
-  const isSplit = layout === 'split'
-
+export const CourtDetail = ({ schedule, courts, onSelectCourt }: CourtDetailProps) => {
   const upcoming = (
     <Box>
       <SectionTitle>{`À venir sur ce terrain (${schedule.upcomingGames.length})`}</SectionTitle>
@@ -66,14 +63,14 @@ export const CourtDetail = ({ schedule, courts, onSelectCourt, layout = 'stacked
       <Box
         sx={{
           display: 'grid',
-          gridTemplateColumns: isSplit ? { xs: '1fr', md: 'minmax(0, 1fr) minmax(0, 1fr)' } : '1fr',
+          gridTemplateColumns: { xs: '1fr', md: 'minmax(0, 1fr) minmax(0, 1fr)' },
           columnGap: 4,
           alignItems: 'start',
         }}
       >
         <Box>
           <Paper elevation={0} sx={{ bgcolor: 'grey.100', borderRadius: 3, p: 2 }}>
-            <LiveGameScore game={schedule.currentGame} size={isSplit ? 'large' : 'regular'} />
+            <LiveGameScore game={schedule.currentGame} size="large" />
           </Paper>
         </Box>
         <Box>

@@ -11,8 +11,7 @@ import {
   ListItemText,
   Stack,
   Typography,
-  Box,
-  keyframes
+  Box
 } from '@mui/material'
 import PlaceIcon from '@mui/icons-material/Place'
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline'
@@ -20,6 +19,7 @@ import ScheduleIcon from '@mui/icons-material/Schedule'
 import type {Game} from '../../services/gamesService'
 import {GameStatus} from "../../generated/api-client";
 import {getDisplayedGameStatus} from '../../services/gameStatus'
+import { LiveChip } from './LiveChip'
 
 type PitchStatusProps = {
   games: Game[]
@@ -39,18 +39,6 @@ const GameTeamsAndReferee = ({game}: {game: Game}) => (
     </Typography>
   </Box>
 )
-
-const pulseAnimation = keyframes`
-  0% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.7;
-  }
-  100% {
-    opacity: 1;
-  }
-`
 
 export const PitchStatus = ({games}: PitchStatusProps) => {
   const gamesByCourt = games
@@ -122,16 +110,7 @@ export const PitchStatus = ({games}: PitchStatusProps) => {
                           En cours
                         </Typography>
                         {inProgressGame && (
-                          <Chip
-                            size="small"
-                            label="Live"
-                            color="success"
-                            sx={{
-                              height: 20,
-                              fontSize: '0.7rem',
-                              animation: `${pulseAnimation} 2s ease-in-out infinite`
-                            }}
-                          />
+                          <LiveChip label="Live" sx={{ height: 20, fontSize: '0.7rem' }} />
                         )}
                       </Box>
                     }
