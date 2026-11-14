@@ -9,6 +9,11 @@ import {
   ADMIN_COURTS_PATH,
   ADMIN_RESULTS_PATH,
   PUBLIC_HOME_PATH,
+  PUBLIC_COURT_PATH,
+  PUBLIC_GAMES_PATH,
+  PUBLIC_INFO_PATH,
+  PUBLIC_RANKINGS_PATH,
+  getPublicCourtPath,
   TEAM_GAMES_PATH,
   TEAM_HOME_PATH,
   TEAM_LOGIN_PATH,
@@ -22,6 +27,11 @@ import {
 describe('routes', () => {
   it('should expose the expected route paths', () => {
     expect(PUBLIC_HOME_PATH).toBe('/public')
+    expect(PUBLIC_GAMES_PATH).toBe('/public/matchs')
+    expect(PUBLIC_RANKINGS_PATH).toBe('/public/classements')
+    expect(PUBLIC_INFO_PATH).toBe('/public/infos')
+    expect(PUBLIC_COURT_PATH).toBe('/public/terrains/:court')
+    expect(getPublicCourtPath('Terrain 1')).toBe('/public/terrains/Terrain%201')
     expect(TEAM_HOME_PATH).toBe('/team')
     expect(TEAM_RESULTS_PATH).toBe('/team/results')
     expect(TEAM_GAMES_PATH).toBe('/team/games')

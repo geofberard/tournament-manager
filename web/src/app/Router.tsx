@@ -17,6 +17,11 @@ import { TeamSelectionView } from '../views/team/TeamSelectionView'
 import { useTeamLogin } from '../hooks/useTeamLogin'
 import { useAdminSession } from '../hooks/useAdminSession'
 import { PublicView } from '../views/public/PublicView'
+import { PublicCourtsView } from '../views/public/PublicCourtsView'
+import { PublicCourtView } from '../views/public/PublicCourtView'
+import { PublicGamesView } from '../views/public/PublicGamesView'
+import { PublicRankingsView } from '../views/public/PublicRankingsView'
+import { PublicInfoView } from '../views/public/PublicInfoView'
 import { AdminGamesView } from '../views/admin/AdminGamesView'
 import { AdminLoginView } from '../views/admin/AdminLoginView'
 import { AdminPhasesView } from '../views/admin/AdminPhasesView'
@@ -126,7 +131,13 @@ const AppRoutes = ({ adminSession, teamSession }: AppRoutesProps) => {
   return (
     <Routes>
       <Route path="/" element={<Navigate to={PUBLIC_HOME_PATH} replace />} />
-      <Route path={PUBLIC_HOME_PATH} element={<PublicView />} />
+      <Route path={PUBLIC_HOME_PATH} element={<PublicView />}>
+        <Route index element={<PublicCourtsView />} />
+        <Route path="terrains/:court" element={<PublicCourtView />} />
+        <Route path="matchs" element={<PublicGamesView />} />
+        <Route path="classements" element={<PublicRankingsView />} />
+        <Route path="infos" element={<PublicInfoView />} />
+      </Route>
 
       <Route
         path={TEAM_LOGIN_PATH}

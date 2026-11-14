@@ -1,4 +1,11 @@
 export const PUBLIC_HOME_PATH = '/public'
+export const PUBLIC_GAMES_PATH = '/public/matchs'
+export const PUBLIC_RANKINGS_PATH = '/public/classements'
+export const PUBLIC_INFO_PATH = '/public/infos'
+export const PUBLIC_COURT_PATH = '/public/terrains/:court'
+
+export const getPublicCourtPath = (court: string) =>
+  PUBLIC_COURT_PATH.replace(':court', encodeURIComponent(court))
 
 export const TEAM_HOME_PATH = '/team'
 export const TEAM_RESULTS_PATH = '/team/results'

@@ -1,125 +1,186 @@
 import { useEffect, useState } from 'react'
-import { Alert, CircularProgress, Stack, Typography, Box, Paper, Divider, Tabs, Tab } from '@mui/material'
-import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered'
+import { Alert, BottomNavigation, BottomNavigationAction, Box, Paper, Stack, Typography } from '@mui/material'
 import StadiumIcon from '@mui/icons-material/Stadium'
+import EventNoteIcon from '@mui/icons-material/EventNote'
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents'
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
+import { Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { SWRConfig } from 'swr'
+import scufLogo from '../../assets/scuf-logo.svg'
+import qrCodeImage from '../../assets/qrcode.png'
 import { usePhases } from '../../hooks/usePhases'
-import { useGames } from '../../hooks/useGames'
-import { PhaseRankingCard } from '../../components/shared/PhaseRankingCard'
-import { PitchStatus } from '../../components/shared/PitchStatus'
-import { QrCodeButton } from '../../components/shared/QrCodeButton'
-import { TerrainMapButton } from '../../components/shared/TerrainMapButton'
-import { BuvetteButton } from '../../components/shared/BuvetteButton'
-import { getPoolPhasesInBranch, getRootPhases } from '../../services/phaseHierarchy'
+import { useKioskMode } from '../../hooks/usePublicLayout'
+import { PUBLIC_REFRESH_INTERVAL } from '../../services/courtSchedule'
+import { PUBLIC_GAMES_PATH, PUBLIC_HOME_PATH, PUBLIC_INFO_PATH, PUBLIC_RANKINGS_PATH } from '../../app/routes'
 
-const PUBLIC_REFRESH_INTERVAL = 30_000
+const KIOSK_IDLE_TIMEOUT = 60_000
 
-export const PublicView = () => {
-  const { phases, isLoading: isPhasesLoading, errorMessage: phasesError } = usePhases()
+const publicTabs = [
+  { label: 'Terrains', path: PUBLIC_HOME_PATH, icon: <StadiumIcon /> },
+  { label: 'Matchs', path: PUBLIC_GAMES_PATH, icon: <EventNoteIcon /> },
+  { label: 'Classements', path: PUBLIC_RANKINGS_PATH, icon: <EmojiEventsIcon /> },
+  { label: 'Infos', path: PUBLIC_INFO_PATH, icon: <InfoOutlinedIcon /> },
+]
+
+const getCurrentTabPath = (pathname: string) =>
+  publicTabs.find((tab) => tab.path !== PUBLIC_HOME_PATH && pathname.startsWith(tab.path))?.path ?? PUBLIC_HOME_PATH
+
+const PublicContent = () => {
+  const { phases, isLoading, errorMessage } = usePhases()
+  const isTournamentMissing = !isLoading && !errorMessage && phases.length === 0
+
+  if (isTournamentMissing) {
+    return <Alert severity="info" variant="outlined">Aucun tournoi n'est configuré pour le moment.</Alert>
+  }
+
+  return <Outlet />
+}
+
+const useKioskIdleReturn = (enabled: boolean) => {
+  const location = useLocation()
+  const navigate = useNavigate()
+  const [lastInteraction, setLastInteraction] = useState(0)
 
   useEffect(() => {
-    const refreshInterval = window.setInterval(() => window.location.reload(), PUBLIC_REFRESH_INTERVAL)
+    if (!enabled || location.pathname === PUBLIC_HOME_PATH) return undefined
+    const timeout = window.setTimeout(() => navigate(PUBLIC_HOME_PATH), KIOSK_IDLE_TIMEOUT)
+    return () => window.clearTimeout(timeout)
+  }, [enabled, location.pathname, lastInteraction, navigate])
 
-    return () => window.clearInterval(refreshInterval)
-  }, [])
+  return () => setLastInteraction(Date.now())
+}
 
-  const [selectedPhaseId, setSelectedPhaseId] = useState<string | null>(null)
-  const rootPhases = getRootPhases(phases)
-  const effectiveSelectedPhaseId = selectedPhaseId ?? rootPhases.at(-1)?.id ?? null
-  const selectedPhase = rootPhases.find((phase) => phase.id === effectiveSelectedPhaseId) ?? null
-  const poolPhases = selectedPhase ? getPoolPhasesInBranch(phases, selectedPhase) : []
-
-  const { games, isLoading: isGamesLoading, errorMessage: gamesError } = useGames()
-
-  if (isPhasesLoading) {
-    return <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" py={8}>
-      <Typography variant="h6" fontWeight="bold" sx={{ mb: 2 }}>
-        Chargement des phases du tournoi...
-      </Typography>
-      <CircularProgress />
-    </Box>
-  }
-
-  if (phasesError) {
-    return <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" py={8}>
-      <Typography variant="h6" fontWeight="bold" sx={{ mb: 2 }}>
-        Erreur de chargement du tournoi
-      </Typography>
-      <Alert severity="error">{phasesError}</Alert>
-    </Box>
-  }
-
-  if (!selectedPhase) {
-    return (
-      <Stack sx={{ maxWidth: 760, mx: 'auto', py: { xs: 4, md: 8 }, px: 2 }}>
-        <Alert severity="info" variant="outlined">Aucun tournoi n'est configuré pour le moment.</Alert>
-      </Stack>
-    )
-  }
+export const PublicView = () => {
+  const location = useLocation()
+  const navigate = useNavigate()
+  const isKioskMode = useKioskMode()
+  const registerInteraction = useKioskIdleReturn(isKioskMode)
+  const currentTabPath = getCurrentTabPath(location.pathname)
+  const currentTabIndex = publicTabs.findIndex((tab) => tab.path === currentTabPath)
 
   return (
-    <Stack spacing={4} direction={{ xs: 'column', md: 'row' }} sx={{ maxWidth: 1200, mx: 'auto', py: { xs: 4, md: 8 }, px: 2 }}>
-
-      {/* Buvette, map and QR code buttons */}
-      <BuvetteButton />
-      <TerrainMapButton />
-      <QrCodeButton />
-
-      {/* Zone Gauche : Classements */}
-      <Stack sx={{ width: { xs: '100%', md: '60%' }, gap: 3 }}>
-        <Paper elevation={0} sx={{ bgcolor: 'transparent' }}>
-          <Box display="flex" alignItems="center" gap={1.5} mb={2}>
-            <FormatListNumberedIcon fontSize="large" />
-            <Typography variant="h4" fontWeight="bold">
-              Classements
+    <SWRConfig value={{ refreshInterval: PUBLIC_REFRESH_INTERVAL }}>
+      <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }} onPointerDown={registerInteraction}>
+        <Box
+          component="header"
+          sx={{ position: 'sticky', top: 0, zIndex: 10, bgcolor: 'primary.main', color: 'primary.contrastText' }}
+        >
+          <Stack
+            direction="row"
+            alignItems="center"
+            gap={{ xs: 1.5, md: 2 }}
+            sx={{
+              maxWidth: 1600,
+              mx: 'auto',
+              px: { xs: 2, md: 3 },
+              pt: 'calc(12px + env(safe-area-inset-top))',
+              pb: 1.5,
+            }}
+          >
+            <Box component="img" src={scufLogo} alt="SCUF" sx={{ height: { xs: 36, md: 44 } }} />
+            <Typography fontWeight={700} sx={{ flex: 1, typography: { xs: 'h6', md: 'h5' } }}>
+              Suivi du tournoi
             </Typography>
-          </Box>
-          <Divider sx={{ mb: 3 }} />
+            <Stack direction="row" alignItems="center" gap={2} sx={{ display: { xs: 'none', md: 'flex' } }}>
+              <Box sx={{ textAlign: 'right' }}>
+                <Typography fontWeight={700}>Suivez le tournoi sur votre téléphone</Typography>
+                <Typography variant="body2" sx={{ opacity: 0.8 }}>Scannez le QR code</Typography>
+              </Box>
+              <Box
+                component="img"
+                src={qrCodeImage}
+                alt="QR Code du tournoi"
+                sx={{ height: 72, width: 72, bgcolor: 'common.white', borderRadius: 1, p: 0.5 }}
+              />
+            </Stack>
+          </Stack>
+        </Box>
 
-          {rootPhases.length > 0 && (
-            <Tabs
-              value={effectiveSelectedPhaseId ?? false}
-              onChange={(_event, value: string) => setSelectedPhaseId(value)}
-              variant="scrollable"
-              scrollButtons="auto"
-              aria-label="Phases du tournoi"
-              sx={{ mb: 3, borderBottom: 1, borderColor: 'divider' }}
+        <Box
+          component="main"
+          sx={{
+            maxWidth: 1600,
+            mx: 'auto',
+            px: { xs: 2, md: 3 },
+            pt: { xs: 2, md: 3 },
+            pb: { xs: 'calc(104px + env(safe-area-inset-bottom))', md: 'calc(120px + env(safe-area-inset-bottom))' },
+          }}
+        >
+          <PublicContent />
+        </Box>
+
+        <Paper
+          elevation={8}
+          sx={{
+            position: 'fixed',
+            zIndex: 10,
+            bottom: 'calc(12px + env(safe-area-inset-bottom))',
+            left: 12,
+            right: 12,
+            mx: 'auto',
+            maxWidth: { xs: 520, md: 760 },
+            borderRadius: 999,
+            overflow: 'hidden',
+            p: 0.75,
+          }}
+        >
+          <Box sx={{ position: 'relative' }}>
+            <Box
+              aria-hidden
+              data-testid="active-tab-indicator"
+              sx={(theme) => ({
+                position: 'absolute',
+                top: 0,
+                bottom: 0,
+                left: 0,
+                width: `${100 / publicTabs.length}%`,
+                borderRadius: 999,
+                bgcolor: 'primary.main',
+                transform: `translateX(${currentTabIndex * 100}%)`,
+                transition: theme.transitions.create('transform', {
+                  duration: 350,
+                  easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
+                }),
+                '@media (prefers-reduced-motion: reduce)': { transition: 'none' },
+              })}
+            />
+            <BottomNavigation
+              showLabels
+              value={currentTabPath}
+              onChange={(_event, path: string) => navigate(path)}
+              aria-label="Sections du tournoi"
+              sx={{ position: 'relative', height: { xs: 60, md: 72 }, bgcolor: 'transparent' }}
             >
-              {rootPhases.map((phase) => (
-                <Tab key={phase.id} value={phase.id} label={phase.name} />
+              {publicTabs.map((tab) => (
+                <BottomNavigationAction
+                  key={tab.path}
+                  value={tab.path}
+                  label={tab.label}
+                  icon={tab.icon}
+                  sx={(theme) => ({
+                    minWidth: 0,
+                    maxWidth: 'none',
+                    borderRadius: 999,
+                    color: 'text.secondary',
+                    transition: theme.transitions.create('color', { duration: 350 }),
+                    '& .MuiSvgIcon-root': { transition: theme.transitions.create('color', { duration: 350 }) },
+                    '& .MuiBottomNavigationAction-label, & .MuiBottomNavigationAction-label.Mui-selected': {
+                      fontSize: 12,
+                      fontWeight: 600,
+                    },
+                    '&.Mui-selected': { color: 'primary.contrastText' },
+                    '&.Mui-selected .MuiSvgIcon-root': { color: 'secondary.main' },
+                    [theme.breakpoints.up('md')]: {
+                      '& .MuiSvgIcon-root': { fontSize: 30 },
+                      '& .MuiBottomNavigationAction-label, & .MuiBottomNavigationAction-label.Mui-selected': { fontSize: 15 },
+                    },
+                  })}
+                />
               ))}
-            </Tabs>
-          )}
-
-          {poolPhases.length > 0 ? (
-            poolPhases.map((phase) => (
-              <PhaseRankingCard key={phase.id} phase={phase} />
-            ))
-          ) : (
-            <Alert severity="info">Aucune poule n'est disponible pour cette phase.</Alert>
-          )}
-        </Paper>
-      </Stack>
-
-      {/* Zone Droite : Terrains */}
-      <Stack sx={{ width: { xs: '100%', md: '40%' }, gap: 3 }}>
-        <Paper elevation={0} sx={{ bgcolor: 'transparent' }}>
-          <Box display="flex" alignItems="center" gap={1.5} mb={2}>
-            <StadiumIcon fontSize="large" />
-            <Typography variant="h4" fontWeight="bold">
-              Terrains
-            </Typography>
+            </BottomNavigation>
           </Box>
-          <Divider sx={{ mb: 3 }} />
-
-          {gamesError && <Alert severity="error">{gamesError}</Alert>}
-          {isGamesLoading ? (
-            <Box display="flex" justifyContent="center" py={4}><CircularProgress /></Box>
-          ) : (
-            <PitchStatus games={games} />
-          )}
         </Paper>
-      </Stack>
-
-    </Stack>
+      </Box>
+    </SWRConfig>
   )
 }
