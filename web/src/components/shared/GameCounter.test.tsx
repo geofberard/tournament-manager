@@ -73,4 +73,68 @@ describe('GameCounter', () => {
     const afterSwitch = document.body.innerHTML
     expect(afterSwitch.indexOf('Aigles')).toBeGreaterThan(afterSwitch.indexOf('Tigres'))
   })
+
+  it('should render the fullscreen mode button', async () => {
+    renderCounter(game)
+
+    expect(screen.getByRole('button', { name: /mode plein écran/i })).toBeInTheDocument()
+  })
+
+  it('should switch to fullscreen scoreboard mode and return on close', async () => {
+    renderCounter(game)
+
+    expect(screen.queryByTestId('fullscreen-scoreboard')).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: /mode plein écran/i }))
+
+    expect(screen.getByTestId('fullscreen-scoreboard')).toBeInTheDocument()
+    expect(screen.getByTestId('score-team-1')).toHaveTextContent('2')
+    expect(screen.getByTestId('score-team-2')).toHaveTextContent('5')
+
+    fireEvent.click(screen.getByRole('button', { name: /quitter le mode plein écran/i }))
+
+    expect(screen.queryByTestId('fullscreen-scoreboard')).not.toBeInTheDocument()
+  })
+
+  it('should update the score when tapping a team block in fullscreen mode', async () => {
+    renderCounter(game)
+
+    fireEvent.click(screen.getByRole('button', { name: /mode plein écran/i }))
+    fireEvent.click(screen.getByRole('button', { name: /ajouter un point à aigles/i }))
+
+    await waitFor(() => expect(screen.getByTestId('score-team-1')).toHaveTextContent('3'))
+    expect(screen.getByTestId('last-point-team-1')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: /retirer un point à tigres/i }))
+
+    await waitFor(() => expect(screen.getByTestId('score-team-2')).toHaveTextContent('4'))
+  })
+
+  it('should switch sides from the fullscreen scoreboard', async () => {
+    renderCounter(game)
+
+    fireEvent.click(screen.getByRole('button', { name: /mode plein écran/i }))
+
+    const blockOrder = () =>
+      screen.getAllByTestId(/^scoreboard-block-/).map((block) => block.dataset.testid)
+
+    expect(blockOrder()).toEqual(['scoreboard-block-team-1', 'scoreboard-block-team-2'])
+
+    fireEvent.click(screen.getByRole('button', { name: /changer de côté/i }))
+
+    await waitFor(() =>
+      expect(blockOrder()).toEqual(['scoreboard-block-team-2', 'scoreboard-block-team-1']),
+    )
+  })
+
+  it('should close the fullscreen scoreboard when native fullscreen is exited', async () => {
+    renderCounter(game)
+
+    fireEvent.click(screen.getByRole('button', { name: /mode plein écran/i }))
+    expect(screen.getByTestId('fullscreen-scoreboard')).toBeInTheDocument()
+
+    fireEvent(document, new Event('fullscreenchange'))
+
+    await waitFor(() => expect(screen.queryByTestId('fullscreen-scoreboard')).not.toBeInTheDocument())
+  })
 })
