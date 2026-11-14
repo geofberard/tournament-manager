@@ -16,8 +16,8 @@ export const BuvetteButton = () => {
         onClick={() => setIsMenuOpen(true)}
         sx={{
           position: 'fixed',
-          bottom: 188,
-          right: 16,
+          bottom: 'calc(188px + env(safe-area-inset-bottom))',
+          right: 'calc(16px + env(safe-area-inset-right))',
           zIndex: 1000,
           padding: '10px',
           margin: 0,

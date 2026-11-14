@@ -11,8 +11,8 @@ export const QrCodeButton = () => {
     <>
       <Button variant="contained" color="primary" onClick={() => setIsQrCodeOpen(true)} sx={{
         position: 'fixed',
-        bottom: 16,
-        right: 16,
+        bottom: 'calc(16px + env(safe-area-inset-bottom))',
+        right: 'calc(16px + env(safe-area-inset-right))',
         zIndex: 1000,
         padding: '10px',
         margin: 0,

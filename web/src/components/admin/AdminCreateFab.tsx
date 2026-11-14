@@ -13,9 +13,9 @@ export const AdminCreateFab = ({ disabled = false, label, onClick }: AdminCreate
       <Box
         component="span"
         sx={{
-          bottom: { xs: 'calc(16px + env(safe-area-inset-bottom))', sm: 24 },
+          bottom: { xs: 'calc(16px + env(safe-area-inset-bottom))', sm: 'calc(24px + env(safe-area-inset-bottom))' },
           position: 'fixed',
-          right: { xs: 16, sm: 24 },
+          right: { xs: 'calc(16px + env(safe-area-inset-right))', sm: 'calc(24px + env(safe-area-inset-right))' },
           zIndex: (theme) => theme.zIndex.speedDial,
         }}
       >

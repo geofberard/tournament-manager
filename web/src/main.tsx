@@ -25,6 +25,18 @@ const theme = createTheme(defaultTheme, {
       paper: '#ffffff',
     },
   },
+  components: {
+    MuiCssBaseline: {
+      styleOverrides: {
+        // index.html utilise viewport-fit=cover pour que le plein écran des scores couvre
+        // tout l'écran. Le reste de l'application garde ses marges hors de l'encoche.
+        body: {
+          paddingLeft: 'env(safe-area-inset-left)',
+          paddingRight: 'env(safe-area-inset-right)',
+        },
+      },
+    },
+  },
   typography: {
     fontFamily: ['Montserrat', 'sans-serif'].join(','),
     h1: {
