@@ -165,7 +165,7 @@ export const FullscreenScoreboard = ({
                   sx={{
                     width: '100%',
                     flexShrink: 0,
-                    fontSize: { xs: '1.4rem', sm: '2rem' },
+                    fontSize: { xs: '1.1rem', sm: '1.5rem' },
                     height: `${TITLE_MAX_LINES * TITLE_LINE_HEIGHT}em`,
                     display: 'grid',
                     gridTemplateColumns: 'minmax(56px, 1fr) auto minmax(56px, 1fr)',
