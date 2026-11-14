@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { GameStatus, type Game } from '../generated/api-client'
-import { countPendingGamesBefore, getDisplayedGameStatus } from './gameStatus'
+import { countPendingGamesBefore, getDisplayedGameStatus, statusColorByValue, statusLabelByValue } from './gameStatus'
 
 const now = new Date('2026-06-20T12:00:00Z')
 const game = (overrides: Partial<Game>): Game => ({
@@ -59,5 +59,12 @@ describe('gameStatus', () => {
 
   it('cannot calculate a waiting count for a game without a position', () => {
     expect(countPendingGamesBefore(game({ position: undefined }), [])).toBeUndefined()
+  })
+})
+
+describe('game status display', () => {
+  it('should share labels and colors for each status', () => {
+    expect(statusLabelByValue).toEqual({ completed: 'Terminé', in_progress: 'En cours', scheduled: 'Planifié' })
+    expect(statusColorByValue).toEqual({ completed: 'default', in_progress: 'success', scheduled: 'info' })
   })
 })

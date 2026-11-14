@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom'
 import { GameStatus, type Team } from '../../generated/api-client'
 import { TEAM_REFEREE_GAME_PATH } from '../../app/routes'
 import type { Game } from '../../services/gamesService'
-import type { DisplayedGameStatus } from '../../services/gameStatus'
+import { statusColorByValue, statusLabelByValue, type DisplayedGameStatus } from '../../services/gameStatus'
 import RoomOutlinedIcon from '@mui/icons-material/RoomOutlined';
 import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
@@ -29,18 +29,6 @@ const timeFormatter = new Intl.DateTimeFormat('fr-FR', {
   hour: '2-digit',
   minute: '2-digit',
 })
-
-const statusLabelByValue: Record<DisplayedGameStatus, string> = {
-  completed: 'Terminé',
-  in_progress: 'En cours',
-  scheduled: 'Planifié',
-}
-
-const statusColorByValue: Record<DisplayedGameStatus, 'default' | 'error' | 'info' | 'success'> = {
-  completed: 'default',
-  in_progress: 'success',
-  scheduled: 'info',
-}
 
 const formatScore = (game: Game) => {
   const scores = Array.from(game.contestants).map(

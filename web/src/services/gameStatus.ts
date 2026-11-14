@@ -3,6 +3,18 @@ import type { Game } from './gamesService'
 
 export type DisplayedGameStatus = 'scheduled' | 'in_progress' | 'completed'
 
+export const statusLabelByValue: Record<DisplayedGameStatus, string> = {
+  completed: 'Terminé',
+  in_progress: 'En cours',
+  scheduled: 'Planifié',
+}
+
+export const statusColorByValue: Record<DisplayedGameStatus, 'default' | 'info' | 'success'> = {
+  completed: 'default',
+  in_progress: 'success',
+  scheduled: 'info',
+}
+
 export const countPendingGamesBefore = (game: Game, allGames: Game[]) => {
   if (game.position == null) return undefined
   const targetPosition = game.position
