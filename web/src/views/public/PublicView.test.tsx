@@ -1,146 +1,128 @@
-import { render, screen } from '@testing-library/react'
-import { ThemeProvider, createTheme } from '@mui/material'
-import { describe, expect, it, vi, beforeEach } from 'vitest'
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { MemoryRouter, Route, Routes } from 'react-router-dom'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { PublicView } from './PublicView'
 import * as usePhasesHook from '../../hooks/usePhases'
-import * as useGamesHook from '../../hooks/useGames'
+import { KIOSK_MODE_STORAGE_KEY } from '../../hooks/usePublicLayout'
 
 vi.mock('../../hooks/usePhases', () => ({
   usePhases: vi.fn(),
 }))
 
-vi.mock('../../hooks/useGames', () => ({
-  useGames: vi.fn(),
-}))
-
-vi.mock('../../components/shared/PhaseRankingCard', () => ({
-  PhaseRankingCard: ({ phase }: { phase: { id: string } }) => <div>PhaseRankingCard {phase.id}</div>,
-}))
-
-vi.mock('../../components/shared/PitchStatus', () => ({
-  PitchStatus: () => <div data-testid="pitch-status">PitchStatus</div>,
-}))
-
 const usePhasesMock = vi.mocked(usePhasesHook.usePhases)
-const useGamesMock = vi.mocked(useGamesHook.useGames)
+
+const renderAt = (path: string) =>
+  render(
+    <MemoryRouter initialEntries={[path]}>
+      <Routes>
+        <Route path="/public" element={<PublicView />}>
+          <Route index element={<div>Contenu terrains</div>} />
+          <Route path="terrains/:court" element={<div>Contenu terrain</div>} />
+          <Route path="matchs" element={<div>Contenu matchs</div>} />
+          <Route path="classements" element={<div>Contenu classements</div>} />
+        </Route>
+      </Routes>
+    </MemoryRouter>,
+  )
+
+afterEach(() => {
+  cleanup()
+  vi.useRealTimers()
+  localStorage.clear()
+})
 
 describe('PublicView', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    usePhasesMock.mockReturnValue({
+      phases: [{ id: 'phase-1', type: 'POOL', name: 'Phase 1', order: 1 }],
+      isLoading: false,
+      errorMessage: null,
+    })
   })
 
-  it('should display an info message if no phase is available', () => {
+  it('should display an info message if no tournament is configured', () => {
     usePhasesMock.mockReturnValue({ phases: [], isLoading: false, errorMessage: null })
-    useGamesMock.mockReturnValue({ games: [], isLoading: false, errorMessage: null })
 
-    render(
-      <ThemeProvider theme={createTheme()}>
-        <PublicView />
-      </ThemeProvider>
-    )
+    renderAt('/public')
 
     expect(screen.getByText("Aucun tournoi n'est configuré pour le moment.")).toBeInTheDocument()
+    expect(screen.queryByText('Contenu terrains')).not.toBeInTheDocument()
   })
 
-  it('should display phase rankings and pitches when data is available', () => {
-    usePhasesMock.mockReturnValue({
-      phases: [{ id: 'phase-1', type: 'POOL', name: 'Phase 1', order: 1 }],
-      isLoading: false,
-      errorMessage: null,
-    })
+  it('should display the header, the QR code and the current section content', () => {
+    renderAt('/public')
 
-    useGamesMock.mockReturnValue({
-      games: [],
-      isLoading: false,
-      errorMessage: null,
-    })
-
-    render(
-      <ThemeProvider theme={createTheme()}>
-        <PublicView />
-      </ThemeProvider>
-    )
-
-    expect(screen.getByText('PhaseRankingCard phase-1')).toBeInTheDocument()
-    expect(screen.getByTestId('pitch-status')).toBeInTheDocument()
+    expect(screen.getByText('Suivi du tournoi')).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: 'QR Code du tournoi' })).toBeInTheDocument()
+    expect(screen.getByText('Contenu terrains')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Terrains' })).toHaveClass('Mui-selected')
   })
 
-  it('should display root phase tabs and select the last root phase by default', () => {
-    usePhasesMock.mockReturnValue({
-      phases: [
-        { id: 'phase-1', name: 'Brassage', order: 1 },
-        { id: 'phase-1-a', parentId: 'phase-1', name: 'Poule A', order: 1, type: 'POOL' },
-        { id: 'phase-2', name: 'Finales', order: 2, type: 'BRACKET' },
-      ],
-      isLoading: false,
-      errorMessage: null,
-    })
+  it('should keep the courts section selected on a court detail page', () => {
+    renderAt('/public/terrains/Terrain%201')
 
-    useGamesMock.mockReturnValue({
-      games: [],
-      isLoading: false,
-      errorMessage: null,
-    })
-
-    render(
-      <ThemeProvider theme={createTheme()}>
-        <PublicView />
-      </ThemeProvider>
-    )
-
-    expect(screen.getByRole('tab', { name: 'Brassage' })).toBeInTheDocument()
-    expect(screen.queryByRole('tab', { name: 'Poule A' })).not.toBeInTheDocument()
-    expect(screen.getByRole('tab', { name: 'Finales' })).toHaveAttribute('aria-selected', 'true')
-    expect(screen.getByText("Aucune poule n'est disponible pour cette phase.")).toBeInTheDocument()
+    expect(screen.getByText('Contenu terrain')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Terrains' })).toHaveClass('Mui-selected')
   })
 
-  it('should display rankings for pool phases inside the selected root phase branch', () => {
-    usePhasesMock.mockReturnValue({
-      phases: [
-        { id: 'phase-1', name: 'Brassage', order: 1 },
-        { id: 'phase-1-a-parent', parentId: 'phase-1', name: 'Matin', order: 1 },
-        { id: 'phase-1-a', parentId: 'phase-1-a-parent', name: 'Poule A', order: 1, type: 'POOL' },
-        { id: 'phase-1-b', parentId: 'phase-1', name: 'Poule B', order: 2, type: 'POOL' },
-      ],
-      isLoading: false,
-      errorMessage: null,
-    })
+  it('should navigate between sections', () => {
+    renderAt('/public')
 
-    useGamesMock.mockReturnValue({
-      games: [],
-      isLoading: false,
-      errorMessage: null,
-    })
+    fireEvent.click(screen.getByRole('button', { name: 'Classements' }))
 
-    render(
-      <ThemeProvider theme={createTheme()}>
-        <PublicView />
-      </ThemeProvider>
-    )
+    expect(screen.getByText('Contenu classements')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Classements' })).toHaveClass('Mui-selected')
+    expect(screen.getByTestId('active-tab-indicator')).toHaveStyle({ transform: 'translateX(200%)' })
 
-    expect(screen.getByText('PhaseRankingCard phase-1-a')).toBeInTheDocument()
-    expect(screen.getByText('PhaseRankingCard phase-1-b')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Matchs' }))
+
+    expect(screen.getByText('Contenu matchs')).toBeInTheDocument()
   })
 
-  it('should display errors from hooks', () => {
-    usePhasesMock.mockReturnValue({
-      phases: [{ id: 'phase-1', type: 'POOL', name: 'Phase 1', order: 1 }],
-      isLoading: false,
-      errorMessage: null,
+  describe('kiosk mode', () => {
+    it('should come back to the courts after one minute without interaction once enabled', () => {
+      vi.useFakeTimers()
+      renderAt('/public/matchs?borne')
+
+      act(() => {
+        vi.advanceTimersByTime(40_000)
+      })
+      fireEvent.pointerDown(screen.getByText('Contenu matchs'))
+      act(() => {
+        vi.advanceTimersByTime(40_000)
+      })
+
+      expect(screen.getByText('Contenu matchs')).toBeInTheDocument()
+
+      act(() => {
+        vi.advanceTimersByTime(20_000)
+      })
+
+      expect(screen.getByText('Contenu terrains')).toBeInTheDocument()
     })
 
-    useGamesMock.mockReturnValue({
-      games: [],
-      isLoading: false,
-      errorMessage: 'Erreur matchs',
+    it('should remember the kiosk mode on the device', () => {
+      vi.useFakeTimers()
+      localStorage.setItem(KIOSK_MODE_STORAGE_KEY, 'true')
+      renderAt('/public/classements')
+
+      act(() => {
+        vi.advanceTimersByTime(60_000)
+      })
+
+      expect(screen.getByText('Contenu terrains')).toBeInTheDocument()
     })
 
-    render(
-      <ThemeProvider theme={createTheme()}>
-        <PublicView />
-      </ThemeProvider>
-    )
+    it('should not come back automatically on personal devices', () => {
+      vi.useFakeTimers()
+      renderAt('/public/matchs')
 
-    expect(screen.getByText('Erreur matchs')).toBeInTheDocument()
+      act(() => {
+        vi.advanceTimersByTime(120_000)
+      })
+
+      expect(screen.getByText('Contenu matchs')).toBeInTheDocument()
+    })
   })
 })

@@ -11,7 +11,8 @@ import { useNavigate } from 'react-router-dom'
 import { GameStatus, type Team } from '../../generated/api-client'
 import { TEAM_REFEREE_GAME_PATH } from '../../app/routes'
 import type { Game } from '../../services/gamesService'
-import type { DisplayedGameStatus } from '../../services/gameStatus'
+import { formatGameTime, getWinnerId } from '../../services/courtSchedule'
+import { statusColorByValue, statusLabelByValue, type DisplayedGameStatus } from '../../services/gameStatus'
 import RoomOutlinedIcon from '@mui/icons-material/RoomOutlined';
 import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
@@ -23,23 +24,6 @@ type GameCardProps = {
   currentTeam: Team
   displayedStatus: DisplayedGameStatus
   waitingGamesCount?: number
-}
-
-const timeFormatter = new Intl.DateTimeFormat('fr-FR', {
-  hour: '2-digit',
-  minute: '2-digit',
-})
-
-const statusLabelByValue: Record<DisplayedGameStatus, string> = {
-  completed: 'Terminé',
-  in_progress: 'En cours',
-  scheduled: 'Planifié',
-}
-
-const statusColorByValue: Record<DisplayedGameStatus, 'default' | 'error' | 'info' | 'success'> = {
-  completed: 'default',
-  in_progress: 'success',
-  scheduled: 'info',
 }
 
 const formatScore = (game: Game) => {
@@ -63,13 +47,9 @@ export const GameCard = ({ game, currentTeam, displayedStatus, waitingGamesCount
   const isCompleted = game.status === GameStatus.Completed;
   const isInProgress = displayedStatus === 'in_progress'
 
-  let winnerIndex = -1;
-  if (isCompleted && game.score?.pointsByTeam) {
-    const score1 = game.score.pointsByTeam[teams[0]?.id] ?? 0;
-    const score2 = game.score.pointsByTeam[teams[1]?.id] ?? 0;
-    if (score1 > score2) winnerIndex = 0;
-    else if (score2 > score1) winnerIndex = 1;
-  }
+  const winnerId = isCompleted ? getWinnerId(game) : null
+  const winnerIndex = teams.findIndex((team) => team.id === winnerId)
+  const time = formatGameTime(game)
 
   return (
     <Card variant="outlined">
@@ -165,10 +145,10 @@ export const GameCard = ({ game, currentTeam, displayedStatus, waitingGamesCount
                     variant="filled"
                     size="small" />
                 ) : null}
-                {game.time ? (
+                {time ? (
                   <Chip
                     avatar={<AccessTimeOutlinedIcon />}
-                    label={timeFormatter.format(new Date(game.time))}
+                    label={time}
                     variant="filled"
                     size="small" />
                 ) : null}

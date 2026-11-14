@@ -115,6 +115,24 @@ describe('GameCard', () => {
 
     // THEN
     expect(screen.getByText('21 - -')).toBeInTheDocument()
+    expect(screen.queryByTestId('EmojiEventsIcon')).not.toBeInTheDocument()
+  })
+
+  it('should highlight the winner of a completed game', () => {
+    // WHEN
+    renderCard(baseGame)
+
+    // THEN
+    expect(screen.getAllByTestId('EmojiEventsIcon')).toHaveLength(1)
+    expect(screen.getByText('Aigles').parentElement).toContainElement(screen.getByTestId('EmojiEventsIcon'))
+  })
+
+  it('should render the planned time', () => {
+    // WHEN
+    renderCard({ ...baseGame, time: new Date(2026, 4, 1, 18, 30), status: GameStatus.Scheduled })
+
+    // THEN
+    expect(screen.getByText('18:30')).toBeInTheDocument()
   })
 
   it('should render the arbitration action next to the alert and navigate on click', () => {
